@@ -7,6 +7,7 @@ import {
 import { type Adapter } from "next-auth/adapters"
 import DiscordProvider from "next-auth/providers/discord"
 import GithubProvider from "next-auth/providers/github"
+import { DefaultPostgresSchema } from "node_modules/@auth/drizzle-adapter/lib/pg"
 import { env } from "@/env"
 import { db } from "@/server/db"
 import {
@@ -52,12 +53,13 @@ export const authOptions: NextAuthOptions = {
       }
     })
   },
+  // @ts-expect-error
   adapter: DrizzleAdapter(db, {
     usersTable: users,
     accountsTable: accounts,
     sessionsTable: sessions,
     verificationTokensTable: verificationTokens
-  }) as Adapter,
+  } as DefaultPostgresSchema) as Adapter,
   providers: [
     GithubProvider({
       clientId: env.GITHUB_CLIENT_ID,
