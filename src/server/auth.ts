@@ -53,7 +53,7 @@ export const authOptions: NextAuthOptions = {
       }
     })
   },
-  // @ts-expect-error
+  // @ts-expect-error adapter just gives schema error but it is valid
   adapter: DrizzleAdapter(db, {
     usersTable: users,
     accountsTable: accounts,
