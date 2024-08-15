@@ -25,14 +25,11 @@ export function Sidebar() {
       <SidebarToggle isOpen={sidebar?.isOpen} setIsOpen={sidebar?.setIsOpen} />
       <div className="relative h-full flex flex-col px-3 py-4 overflow-y-auto shadow-md dark:shadow-zinc-800">
         <Button
-          className={cn("transition-transform ease-in-out duration-300 mb-1", {
-            "translate-x-1": !sidebar?.isOpen,
-            "translate-x-0": sidebar?.isOpen
-          })}
+          className={cn("transition-transform ease-in-out duration-300 mb-1")}
           variant="link"
           asChild
         >
-          <Link href="/dashboard" className="flex items-center">
+          <Link href="/" className="flex items-center">
             <Icons.icon className="w-12 h-12" />
             <h1
               className={cn(

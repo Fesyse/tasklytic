@@ -1,6 +1,9 @@
 "use client"
 
-import { LayoutGrid, LogOut, User } from "lucide-react"
+import { LayoutGrid, LogIn, LogOut, User } from "lucide-react"
+import { Session } from "next-auth"
+import { useSession } from "next-auth/react"
+import Image from "next/image"
 import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -21,6 +24,8 @@ import {
 } from "@/components/ui/tooltip"
 
 export function UserNav() {
+  const user = useSession()?.data?.user
+
   return (
     <DropdownMenu>
       <TooltipProvider disableHoverableContent>
@@ -32,8 +37,13 @@ export function UserNav() {
                 className="relative h-8 w-8 rounded-full"
               >
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src="#" alt="Avatar" />
-                  <AvatarFallback className="bg-transparent">JD</AvatarFallback>
+                  <AvatarImage
+                    className="dark:invert p-0.5"
+                    src={user?.image ?? "/user.svg"}
+                    alt="Avatar"
+                    width={24}
+                    height={24}
+                  />
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
@@ -45,9 +55,11 @@ export function UserNav() {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">John Doe</p>
+            <p className="text-sm font-medium leading-none">
+              {user?.name ?? "Guest"}
+            </p>
             <p className="text-xs leading-none text-muted-foreground">
-              johndoe@example.com
+              {user?.email ?? "No email"}
             </p>
           </div>
         </DropdownMenuLabel>
@@ -67,10 +79,17 @@ export function UserNav() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="hover:cursor-pointer" onClick={() => {}}>
-          <LogOut className="w-4 h-4 mr-3 text-muted-foreground" />
-          Sign out
-        </DropdownMenuItem>
+        {user ? (
+          <DropdownMenuItem className="hover:cursor-pointer">
+            <LogOut className="w-4 h-4 mr-3 text-muted-foreground" />
+            Sign out
+          </DropdownMenuItem>
+        ) : (
+          <DropdownMenuItem className="hover:cursor-pointer">
+            <LogIn className="w-4 h-4 mr-3 text-muted-foreground" />
+            Sign in
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   )
