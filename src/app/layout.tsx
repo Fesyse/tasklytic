@@ -1,23 +1,29 @@
 import { Analytics } from "@vercel/analytics/react"
 import { GeistSans } from "geist/font/sans"
 import { type Metadata } from "next"
+import { PropsWithChildren } from "react"
+import Layout from "@/components/layout"
+import { Providers } from "@/components/providers"
 import "@/styles/globals.css"
-import { TRPCReactProvider } from "@/trpc/react"
 
 export const metadata: Metadata = {
-  title: "Tasklytic",
+  title: {
+    default: "Tasklytic",
+    template: "%s | Tasklytic"
+  },
   description:
     "Streamline your workflow with smart task management. Organize, prioritize, and track your tasks with ease, all in one powerful tool.",
   icons: [{ rel: "icon", url: "/favicon.ico" }]
 }
 
-export default function RootLayout({
-  children
-}: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({ children }: Readonly<PropsWithChildren>) {
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
+      <head />
       <body>
-        <TRPCReactProvider>{children}</TRPCReactProvider>
+        <Providers>
+          <Layout>{children}</Layout>
+        </Providers>
         <Analytics />
       </body>
     </html>
