@@ -17,11 +17,7 @@ export function SignInMenuButton({ isOpen }: SignInMenuButtonProps) {
     <TooltipProvider disableHoverableContent>
       <Tooltip delayDuration={100}>
         <TooltipTrigger asChild>
-          <Button
-            onClick={() => {}}
-            variant="outline"
-            className="w-full justify-center h-10 mt-5"
-          >
+          <Button variant="outline" className="w-full justify-center h-10 mt-5">
             <span
               className={cn({
                 "mr-4": isOpen

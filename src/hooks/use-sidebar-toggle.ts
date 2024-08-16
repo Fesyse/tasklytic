@@ -13,9 +13,13 @@ export const useSidebarToggle = create(
       if (typeof window === "undefined") return { isOpen: false, setIsOpen }
 
       const sidebarStateFromStorage = localStorage.getItem("sidebarOpen")
+      type SidebarStateFromStorage =
+        | { state: useSidebarToggleStore }
+        | undefined
       return {
         isOpen: sidebarStateFromStorage
-          ? !!JSON.parse(sidebarStateFromStorage)?.state?.isOpen
+          ? !!(JSON.parse(sidebarStateFromStorage) as SidebarStateFromStorage)
+              ?.state?.isOpen
           : true,
         setIsOpen
       }

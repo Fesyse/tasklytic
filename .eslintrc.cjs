@@ -20,6 +20,7 @@ const config = {
         fixStyle: "inline-type-imports"
       }
     ],
+    "@typescript-eslint/prefer-optional-chain": ["warn"],
     "@typescript-eslint/no-explicit-any": ["warn"],
     "@typescript-eslint/no-unused-vars": [
       "warn",
