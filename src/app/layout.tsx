@@ -1,9 +1,10 @@
 import { Analytics } from "@vercel/analytics/react"
-import { GeistSans } from "geist/font/sans"
 import { type Metadata } from "next"
+import { Raleway } from "next/font/google"
 import { PropsWithChildren } from "react"
 import Layout from "@/components/layout"
 import { Providers } from "@/components/providers"
+import { cn } from "@/lib/utils"
 import "@/styles/globals.css"
 
 export const metadata: Metadata = {
@@ -16,9 +17,14 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }]
 }
 
+const raleway = Raleway({
+  subsets: ["latin"],
+  variable: "--font-raleway"
+})
+
 export default function RootLayout({ children }: Readonly<PropsWithChildren>) {
   return (
-    <html lang="en" className={`${GeistSans.variable}`}>
+    <html lang="en" className={cn(raleway.variable, "font-raleway")}>
       <head />
       <body>
         <Providers>
