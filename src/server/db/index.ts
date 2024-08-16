@@ -1,3 +1,4 @@
+import { sql } from "@vercel/postgres"
 import { drizzle as developmentDrizzle } from "drizzle-orm/postgres-js"
 import { drizzle as productionDrizzle } from "drizzle-orm/vercel-postgres"
 import postgres from "postgres"
@@ -17,5 +18,5 @@ if (env.NODE_ENV !== "production") globalForDb.conn = conn
 
 export const db =
   env.NODE_ENV === "production"
-    ? productionDrizzle(conn, { schema })
+    ? productionDrizzle(sql, { schema })
     : developmentDrizzle(conn, { schema })
