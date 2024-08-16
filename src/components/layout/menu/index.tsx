@@ -99,7 +99,7 @@ export function Menu({ isOpen }: MenuProps) {
               )}
             </li>
           ))}
-          <li className="w-full grow flex items-end">
+          <li className="w-full grow flex items-end max-w-48 mx-auto">
             <SignInMenuButton isOpen={isOpen} />
           </li>
         </ul>

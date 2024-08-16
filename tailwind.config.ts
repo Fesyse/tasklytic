@@ -1,4 +1,16 @@
-import type { Config } from "tailwindcss"
+import flattenColorPalette from "tailwindcss/lib/util/flattenColorPalette"
+import type { Config, PluginCreator } from "tailwindcss/types/config"
+
+const addVariablesForColors: PluginCreator = ({ addBase, theme }) => {
+  const allColors = flattenColorPalette(theme("colors")) as string | string[]
+  const newVars = Object.fromEntries(
+    Object.entries(allColors).map(([key, val]) => [`--${key}`, val])
+  )
+
+  addBase({
+    ":root": newVars
+  })
+}
 
 const config = {
   darkMode: ["class"],
@@ -19,7 +31,13 @@ const config = {
     },
     extend: {
       fontFamily: {
-        raleway: "var(--font-raleway)"
+        raleway: "var(--font-raleway)",
+        comfortaa: "var(--font-comfortaa)"
+      },
+
+      margin: {
+        sidebar: "13rem",
+        "sidebar-open": "90px"
       },
       colors: {
         border: "hsl(var(--border))",
@@ -77,7 +95,7 @@ const config = {
       }
     }
   },
-  plugins: [require("tailwindcss-animate")]
+  plugins: [require("tailwindcss-animate"), addVariablesForColors]
 } satisfies Config
 
 export default config

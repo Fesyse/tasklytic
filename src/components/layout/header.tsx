@@ -2,13 +2,13 @@ import { SheetMenu } from "@/components/layout/sheet-menu"
 import { UserNav } from "@/components/layout/user-nav"
 import { ThemeToggle } from "@/components/theme-toggle"
 
-interface NavbarProps {
+interface HeaderProps {
   title: string
 }
 
-export function Navbar({ title }: NavbarProps) {
+export function Header({ title }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-10 w-full bg-background/95 shadow backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:shadow-secondary">
+    <header className="sticky top-0 z-10 w-full dark:bg-muted/20 bg-muted border-b backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:shadow-secondary font-comfortaa">
       <div className="mx-4 sm:mx-8 flex h-14 items-center">
         <div className="flex items-center space-x-4 lg:space-x-0">
           <SheetMenu />

@@ -4,7 +4,6 @@ import { useSidebarToggle } from "@/hooks/use-sidebar-toggle"
 import { useStore } from "@/hooks/use-store"
 import { Footer } from "@/components/layout/footer"
 import { Sidebar } from "@/components/layout/sidebar"
-import { Navbar } from "./navbar"
 import { cn } from "@/lib/utils"
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -14,13 +13,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <Sidebar />
+      <Sidebar sidebar={sidebar} />
       <main
         className={cn(
-          "min-h-screen bg-zinc-50 dark:bg-zinc-900 transition-[margin-left] ease-in-out duration-300",
+          "min-h-screen transition-[margin-left] ease-in-out duration-300",
           {
-            "lg:ml-[90px]": !sidebar?.isOpen,
-            "lg:ml-72": sidebar?.isOpen
+            "lg:ml-sidebar-open": !sidebar.isOpen,
+            "lg:ml-sidebar": sidebar.isOpen
           }
         )}
       >
@@ -28,8 +27,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </main>
       <footer
         className={cn("transition-[margin-left] ease-in-out duration-300", {
-          "lg:ml-[90px]": !sidebar?.isOpen,
-          "lg:ml-72": sidebar?.isOpen
+          "lg:ml-sidebar-open": !sidebar.isOpen,
+          "lg:ml-sidebar": sidebar.isOpen
         })}
       >
         <Footer />

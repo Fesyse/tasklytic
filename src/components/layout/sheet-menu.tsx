@@ -2,6 +2,7 @@ import { MenuIcon, PanelsTopLeft } from "lucide-react"
 import Link from "next/link"
 import { Menu } from "@/components/layout/menu"
 import { Button } from "@/components/ui/button"
+import { Icons } from "@/components/ui/icons"
 import {
   Sheet,
   SheetContent,
@@ -25,8 +26,8 @@ export function SheetMenu() {
             asChild
           >
             <Link href="/dashboard" className="flex items-center gap-2">
-              <PanelsTopLeft className="w-6 h-6 mr-1" />
-              <h1 className="font-bold text-lg">Brand</h1>
+              <Icons.icon className="w-10 h-10" />
+              <h1 className="font-bold text-lg">Tasklytic</h1>
             </Link>
           </Button>
         </SheetHeader>

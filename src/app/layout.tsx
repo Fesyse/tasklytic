@@ -1,6 +1,6 @@
 import { Analytics } from "@vercel/analytics/react"
 import { type Metadata } from "next"
-import { Raleway } from "next/font/google"
+import { Comfortaa, Raleway } from "next/font/google"
 import { PropsWithChildren } from "react"
 import Layout from "@/components/layout"
 import { Providers } from "@/components/providers"
@@ -21,10 +21,17 @@ const raleway = Raleway({
   subsets: ["latin"],
   variable: "--font-raleway"
 })
+const comfortaa = Comfortaa({
+  subsets: ["latin"],
+  variable: "--font-comfortaa"
+})
 
 export default function RootLayout({ children }: Readonly<PropsWithChildren>) {
   return (
-    <html lang="en" className={cn(raleway.variable, "font-raleway")}>
+    <html
+      lang="en"
+      className={cn(raleway.variable, comfortaa.variable, "font-raleway")}
+    >
       <head />
       <body>
         <Providers>
