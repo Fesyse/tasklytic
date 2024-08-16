@@ -63,29 +63,25 @@ export function Menu({ isOpen }: MenuProps) {
                               asChild
                             >
                               <Link href={href}>
-                                <span
-                                  className={cn(isOpen === false ? "" : "mr-4")}
-                                >
+                                <span className={cn({ "mr-4": isOpen })}>
                                   <Icon size={18} />
                                 </span>
                                 <p
-                                  className={cn(
-                                    "max-w-[200px] truncate",
-                                    isOpen === false
-                                      ? "-translate-x-96 opacity-0"
-                                      : "translate-x-0 opacity-100"
-                                  )}
+                                  className={cn("max-w-[200px] truncate", {
+                                    "-translate-x-96 opacity-0": !isOpen,
+                                    "translate-x-0 opacity-100": isOpen
+                                  })}
                                 >
                                   {label}
                                 </p>
                               </Link>
                             </Button>
                           </TooltipTrigger>
-                          {isOpen === false && (
+                          {!isOpen ? (
                             <TooltipContent side="right">
                               {label}
                             </TooltipContent>
-                          )}
+                          ) : null}
                         </Tooltip>
                       </TooltipProvider>
                     </div>

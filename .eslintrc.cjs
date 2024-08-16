@@ -21,6 +21,7 @@ const config = {
       }
     ],
     "@typescript-eslint/prefer-optional-chain": ["warn"],
+    "@typescript-eslint/prefer-nullish-coalescing": ["warn"],
     "@typescript-eslint/no-explicit-any": ["warn"],
     "@typescript-eslint/no-unused-vars": [
       "warn",
