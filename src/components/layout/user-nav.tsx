@@ -2,7 +2,9 @@
 
 import { LayoutGrid, LogIn, LogOut, User } from "lucide-react"
 import { signIn, signOut, useSession } from "next-auth/react"
+import Image from "next/image"
 import Link from "next/link"
+import { toast } from "sonner"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -20,10 +22,17 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "@/components/ui/tooltip"
+import { cn } from "@/lib/utils"
 
 export function UserNav() {
   const user = useSession()?.data?.user
 
+  const sign = async (type: "out" | "in") => {
+    if (type === "out") {
+      await signOut()
+      toast.success(`Successfully signed out.`)
+    } else return signIn()
+  }
   return (
     <DropdownMenu>
       <TooltipProvider disableHoverableContent>
@@ -35,8 +44,10 @@ export function UserNav() {
                 className="relative h-8 w-8 rounded-full"
               >
                 <Avatar className="h-8 w-8">
-                  <AvatarImage
-                    className="dark:invert p-0.5"
+                  <Image
+                    className={cn("p-0.5 object-cover w-full h-full", {
+                      "dark:invert": !user?.image
+                    })}
                     src={user?.image ?? "/user.svg"}
                     alt="Avatar"
                     width={24}
@@ -83,7 +94,7 @@ export function UserNav() {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="hover:cursor-pointer"
-          onClick={() => (user ? signOut() : signIn())}
+          onClick={() => (user ? sign("out") : sign("in"))}
         >
           {user ? (
             <>

@@ -1,5 +1,10 @@
+"use client"
+
 import { DiscordLogoIcon, GitHubLogoIcon } from "@radix-ui/react-icons"
+import { BuiltInProviderType } from "next-auth/providers/index"
+import { LiteralUnion, signIn } from "next-auth/react"
 import Image from "next/image"
+import { toast } from "sonner"
 import { ContentLayout } from "@/components/layout/content-layout"
 import { Button } from "@/components/ui/button"
 import {
@@ -13,6 +18,13 @@ import { Icons } from "@/components/ui/icons"
 import { Separator } from "@/components/ui/separator"
 
 export default function SignInPage() {
+  const signInWith = async (provider: LiteralUnion<BuiltInProviderType>) => {
+    const result = await signIn(provider)
+    toast.success(`Successfully signed in with ${provider}.`)
+
+    return result
+  }
+
   return (
     <ContentLayout
       title="Sign in"
@@ -28,17 +40,29 @@ export default function SignInPage() {
             <Separator />
           </CardHeader>
           <CardContent className="space-y-2">
-            <Button variant="outline" className="w-full">
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => signInWith("github")}
+            >
               <GitHubLogoIcon className="mr-2 h-5 w-5" />
               Sign in with GitHub
             </Button>
             <Separator className="mx-auto w-4" />
-            <Button variant="outline" className="w-full">
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => signInWith("google")}
+            >
               <Icons.google className="mr-2 h-5 w-5" />
               Sign in with Google
             </Button>
             <Separator className="mx-auto w-4" />
-            <Button variant="outline" className="w-full">
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => signInWith("discord")}
+            >
               <DiscordLogoIcon className="mr-2 h-5 w-5" />
               Sign in with Discord
             </Button>
