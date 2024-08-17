@@ -1,5 +1,6 @@
 "use client"
 
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import { SessionProvider } from "next-auth/react"
 import { ThemeProvider as NextThemesProvider } from "next-themes"
 import { type ThemeProviderProps } from "next-themes/dist/types"
@@ -18,6 +19,7 @@ export function Providers({ children }: React.PropsWithChildren) {
           {children}
         </ThemeProvider>
         <Toaster />
+        <SpeedInsights />
       </SessionProvider>
     </TRPCReactProvider>
   )
