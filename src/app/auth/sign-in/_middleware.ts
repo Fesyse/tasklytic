@@ -1,9 +1,9 @@
 import { type MiddlewareFunctionProps } from "@rescale/nemo"
+import { getSession } from "next-auth/react"
 import { NextResponse } from "next/server"
-import { getServerAuthSession } from "@/server/auth"
 
 export async function signInMiddleware({ request }: MiddlewareFunctionProps) {
-  const session = await getServerAuthSession()
+  const session = await getSession()
 
   if (session) return NextResponse.redirect(new URL("/dashboard", request.url))
 
