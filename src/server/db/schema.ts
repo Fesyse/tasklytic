@@ -4,7 +4,6 @@ import {
   integer,
   pgTableCreator,
   primaryKey,
-  serial,
   text,
   timestamp,
   varchar

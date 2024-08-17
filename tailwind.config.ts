@@ -34,10 +34,13 @@ const config = {
         raleway: "var(--font-raleway)",
         comfortaa: "var(--font-comfortaa)"
       },
-
+      width: {
+        sidebar: "13rem",
+        "sidebar-collapsed": "90px"
+      },
       margin: {
         sidebar: "13rem",
-        "sidebar-open": "90px"
+        "sidebar-collapsed": "90px"
       },
       colors: {
         border: "hsl(var(--border))",

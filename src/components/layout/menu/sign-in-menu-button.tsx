@@ -1,5 +1,5 @@
 import { LogIn, LogOut } from "lucide-react"
-import { useSession } from "next-auth/react"
+import { signIn, signOut, useSession } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import {
   Tooltip,
@@ -23,6 +23,7 @@ export function SignInMenuButton({ isOpen }: SignInMenuButtonProps) {
           <Button
             variant="outline"
             className="w-full h-10 mt-5 whitespace-nowrap justify-center group/modal-btn overflow-hidden relative hover:bg-background"
+            onClick={() => (user ? signOut() : signIn())}
           >
             {isOpen ? (
               <>

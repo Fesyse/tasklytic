@@ -62,6 +62,10 @@ export const authOptions: NextAuthOptions = {
     sessionsTable: sessions,
     verificationTokensTable: verificationTokens
   } as DefaultPostgresSchema) as Adapter,
+  pages: {
+    signIn: "/auth/sign-in",
+    signOut: "/auth/sign-out"
+  },
   providers: [
     GithubProvider({
       clientId: env.GITHUB_CLIENT_ID,

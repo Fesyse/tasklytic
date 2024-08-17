@@ -1,11 +1,9 @@
 "use client"
 
 import { LayoutGrid, LogIn, LogOut, User } from "lucide-react"
-import { Session } from "next-auth"
-import { useSession } from "next-auth/react"
-import Image from "next/image"
+import { signIn, signOut, useSession } from "next-auth/react"
 import Link from "next/link"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -83,17 +81,22 @@ export function UserNav() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        {user ? (
-          <DropdownMenuItem className="hover:cursor-pointer">
-            <LogOut className="w-4 h-4 mr-3 text-muted-foreground" />
-            Sign out
-          </DropdownMenuItem>
-        ) : (
-          <DropdownMenuItem className="hover:cursor-pointer">
-            <LogIn className="w-4 h-4 mr-3 text-muted-foreground" />
-            Sign in
-          </DropdownMenuItem>
-        )}
+        <DropdownMenuItem
+          className="hover:cursor-pointer"
+          onClick={() => (user ? signOut() : signIn())}
+        >
+          {user ? (
+            <>
+              <LogOut className="w-4 h-4 mr-3 text-muted-foreground" />
+              Sign out
+            </>
+          ) : (
+            <>
+              <LogIn className="w-4 h-4 mr-3 text-muted-foreground" />
+              Sign in
+            </>
+          )}
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )
