@@ -26,10 +26,7 @@ export default function SignInPage() {
   }
 
   return (
-    <ContentLayout
-      title="Sign in"
-      className="!p-0 lg:grid lg:grid-cols-2 max-w-full h-[calc(100vh-57px)] overflow-hidden"
-    >
+    <>
       <div className="flex h-screen w-full items-center justify-center bg-background">
         <Card className="mx-4 w-full max-w-md rounded-2xl border-0 bg-card p-6 shadow-lg md:mx-0">
           <CardHeader>
@@ -79,6 +76,6 @@ export default function SignInPage() {
           className="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
         />
       </div>
-    </ContentLayout>
+    </>
   )
 }
