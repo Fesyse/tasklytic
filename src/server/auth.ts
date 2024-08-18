@@ -1,9 +1,6 @@
 import { DrizzleAdapter } from "@auth/drizzle-adapter"
-import {
-  type DefaultSession,
-  type NextAuthOptions,
-  getServerSession
-} from "next-auth"
+import type { DefaultSession, NextAuthConfig } from "next-auth"
+import NextAuth from "next-auth"
 import { type Adapter } from "next-auth/adapters"
 import DiscordProvider from "next-auth/providers/discord"
 import GithubProvider from "next-auth/providers/github"
@@ -33,12 +30,6 @@ declare module "next-auth" {
       image: string | null
     }
   }
-  interface User {
-    id: string
-    name: string
-    email: string
-    image: string | null
-  }
 }
 
 /**
@@ -46,7 +37,7 @@ declare module "next-auth" {
  *
  * @see https://next-auth.js.org/configuration/options
  */
-export const authOptions: NextAuthOptions = {
+export const authOptions: NextAuthConfig = {
   callbacks: {
     session: ({ session, user }) => ({
       ...session,
@@ -98,9 +89,4 @@ export const authOptions: NextAuthOptions = {
   ]
 }
 
-/**
- * Wrapper for `getServerSession` so that you don't need to import the `authOptions` in every file.
- *
- * @see https://next-auth.js.org/configuration/nextjs
- */
-export const getServerAuthSession = () => getServerSession(authOptions)
+export const { auth, handlers, signIn, signOut } = NextAuth(authOptions)

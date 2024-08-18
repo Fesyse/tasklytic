@@ -1,12 +1,4 @@
-import { createMiddleware } from "@rescale/nemo"
-import { signInMiddleware } from "./app/auth/sign-in/_middleware"
-
-const middlewares = {
-  "/sign-in": signInMiddleware
-}
-
-// Create middlewares helper
-export const middleware = createMiddleware(middlewares)
+export { auth as default } from "@/server/auth"
 
 export const config = {
   /*
