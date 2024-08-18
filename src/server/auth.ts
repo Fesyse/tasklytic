@@ -53,7 +53,7 @@ export const authOptions: NextAuthConfig = {
     accountsTable: accounts,
     sessionsTable: sessions,
     verificationTokensTable: verificationTokens
-  } as DefaultPostgresSchema) as Adapter,
+  } as DefaultPostgresSchema),
   pages: {
     signIn: "/auth/sign-in"
   },
