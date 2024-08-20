@@ -5,7 +5,7 @@ import { signIn, signOut, useSession } from "next-auth/react"
 import Image from "next/image"
 import Link from "next/link"
 import { toast } from "sonner"
-import { Avatar, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -16,6 +16,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
+import { Skeleton } from "@/components/ui/skeleton"
 import {
   Tooltip,
   TooltipContent,
@@ -25,7 +26,8 @@ import {
 import { cn } from "@/lib/utils"
 
 export function UserNav() {
-  const user = useSession()?.data?.user
+  const { data, status } = useSession()
+  const user = data?.user
 
   const sign = async (type: "out" | "in") => {
     if (type === "out") {
@@ -33,7 +35,7 @@ export function UserNav() {
       toast.success(`Successfully signed out.`)
     } else return signIn()
   }
-  return (
+  return user && status !== "loading" ? (
     <DropdownMenu>
       <TooltipProvider disableHoverableContent>
         <Tooltip delayDuration={100}>
@@ -43,17 +45,21 @@ export function UserNav() {
                 variant="outline"
                 className="relative h-8 w-8 rounded-full"
               >
-                <Avatar className="h-8 w-8">
+                <Avatar className="w-8 h-8">
                   <Image
-                    className={cn("p-0.5 object-cover w-full h-full", {
-                      "dark:invert": !user?.image
+                    className={cn("w-full h-full", {
+                      "dark:invert": !user.image
                     })}
-                    src={user?.image ?? "/user.svg"}
+                    src={user.image ?? "/user.svg"}
                     alt="Avatar"
-                    width={24}
-                    height={24}
+                    width={32}
+                    height={32}
                   />
+                  <AvatarFallback>
+                    {user.name.slice(0, 2).toUpperCase()}
+                  </AvatarFallback>
                 </Avatar>
+                <span className="sr-only">Open user menu</span>
               </Button>
             </DropdownMenuTrigger>
           </TooltipTrigger>
@@ -110,5 +116,7 @@ export function UserNav() {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+  ) : (
+    <Skeleton className="w-8 h-8 rounded-full bg-primary/10" />
   )
 }
