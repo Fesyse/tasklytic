@@ -14,7 +14,7 @@ export function Sidebar({ sidebar }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "fixed top-0 left-0 z-20 h-screen -translate-x-full lg:translate-x-0 transition-[width] ease-in-out duration-300 dark:bg-muted/25 bg-muted font-comfortaa",
+        "fixed left-0 top-0 z-20 h-screen -translate-x-full bg-muted font-comfortaa transition-[width] duration-300 ease-in-out dark:bg-muted/25 lg:translate-x-0",
         {
           "w-sidebar-collapsed": !sidebar.isOpen,
           "w-sidebar": sidebar.isOpen
@@ -22,20 +22,20 @@ export function Sidebar({ sidebar }: SidebarProps) {
       )}
     >
       <SidebarToggle isOpen={sidebar.isOpen} setIsOpen={sidebar.setIsOpen} />
-      <div className="relative h-full flex flex-col px-3 py-4 overflow-y-auto shadow-md dark:shadow-zinc-800">
+      <div className="relative flex h-full flex-col overflow-y-auto px-3 py-4 shadow-md dark:shadow-zinc-800">
         <Button
-          className={cn("transition-transform ease-in-out duration-300 mb-1")}
+          className={cn("mb-1 transition-transform duration-300 ease-in-out")}
           variant="link"
           asChild
         >
           <Link href="/" className="flex items-center">
-            <Icons.icon className="w-12 h-12" />
+            <Icons.icon className="h-12 w-12" />
             <div
               className={cn(
-                "font-bold text-lg whitespace-nowrap transition-[transform,opacity,display] ease-in-out duration-300",
+                "whitespace-nowrap text-lg font-bold transition-[transform,opacity,display] duration-300 ease-in-out",
                 {
                   "translate-x-0 opacity-100": sidebar.isOpen,
-                  "-translate-x-96 opacity-0 hidden": !sidebar.isOpen
+                  "hidden -translate-x-96 opacity-0": !sidebar.isOpen
                 }
               )}
             >

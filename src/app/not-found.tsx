@@ -7,17 +7,17 @@ export default function NotFoundPage() {
   return (
     <ContentLayout
       title="Not found"
-      className="!py-0 px-4 max-w-full overflow-hidden flex h-[calc(100vh-var(--header-size))] flex-col items-center justify-center bg-background"
+      className="flex h-[calc(100vh-var(--header-size))] max-w-full flex-col items-center justify-center overflow-hidden bg-background !py-0 px-4"
     >
       <div className="flex h-[calc(100vh-var(--header-size))] flex-col items-center justify-center bg-background">
         <div className="max-w-md text-center">
-          <div className="flex items-center justify-center border rounded-lg mb-8">
+          <div className="mb-8 flex items-center justify-center rounded-lg border">
             <Image
               src="/placeholder.svg"
               alt="404 Error"
               width={300}
               height={300}
-              className="aspect-square sm:w-[300px] w-52"
+              className="aspect-square w-52 sm:w-[300px]"
             />
           </div>
           <h1 className="text-5xl font-bold tracking-tight text-foreground sm:text-6xl">

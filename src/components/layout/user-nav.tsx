@@ -45,9 +45,9 @@ export function UserNav() {
                 variant="outline"
                 className="relative h-8 w-8 rounded-full"
               >
-                <Avatar className="w-8 h-8">
+                <Avatar className="h-8 w-8">
                   <Image
-                    className={cn("w-full h-full", {
+                    className={cn("h-full w-full", {
                       "dark:invert": !user?.image
                     })}
                     src={user?.image ?? "/user.svg"}
@@ -86,13 +86,13 @@ export function UserNav() {
         <DropdownMenuGroup>
           <DropdownMenuItem className="hover:cursor-pointer" asChild>
             <Link href="/dashboard" className="flex items-center">
-              <LayoutGrid className="w-4 h-4 mr-3 text-muted-foreground" />
+              <LayoutGrid className="mr-3 h-4 w-4 text-muted-foreground" />
               Dashboard
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem className="hover:cursor-pointer" asChild>
             <Link href="/account" className="flex items-center">
-              <User className="w-4 h-4 mr-3 text-muted-foreground" />
+              <User className="mr-3 h-4 w-4 text-muted-foreground" />
               Account
             </Link>
           </DropdownMenuItem>
@@ -104,12 +104,12 @@ export function UserNav() {
         >
           {user ? (
             <>
-              <LogOut className="w-4 h-4 mr-3 text-muted-foreground" />
+              <LogOut className="mr-3 h-4 w-4 text-muted-foreground" />
               Sign out
             </>
           ) : (
             <>
-              <LogIn className="w-4 h-4 mr-3 text-muted-foreground" />
+              <LogIn className="mr-3 h-4 w-4 text-muted-foreground" />
               Sign in
             </>
           )}
@@ -117,6 +117,6 @@ export function UserNav() {
       </DropdownMenuContent>
     </DropdownMenu>
   ) : (
-    <Skeleton className="w-8 h-8 rounded-full bg-primary/10" />
+    <Skeleton className="h-8 w-8 rounded-full bg-primary/10" />
   )
 }

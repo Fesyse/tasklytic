@@ -15,7 +15,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
       <Sidebar sidebar={sidebar} />
       <main
         className={cn(
-          "min-h-screen transition-[margin-left] ease-in-out duration-300",
+          "min-h-screen transition-[margin-left] duration-300 ease-in-out",
           {
             "lg:ml-sidebar-collapsed": !sidebar.isOpen,
             "lg:ml-sidebar": sidebar.isOpen
