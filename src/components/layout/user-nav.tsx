@@ -35,7 +35,8 @@ export function UserNav() {
       toast.success(`Successfully signed out.`)
     } else return signIn()
   }
-  return user && status !== "loading" ? (
+  console.log(user, status)
+  return (user && status !== "loading") || status === "unauthenticated" ? (
     <DropdownMenu>
       <TooltipProvider disableHoverableContent>
         <Tooltip delayDuration={100}>
@@ -48,15 +49,15 @@ export function UserNav() {
                 <Avatar className="w-8 h-8">
                   <Image
                     className={cn("w-full h-full", {
-                      "dark:invert": !user.image
+                      "dark:invert": !user?.image
                     })}
-                    src={user.image ?? "/user.svg"}
+                    src={user?.image ?? "/user.svg"}
                     alt="Avatar"
                     width={32}
                     height={32}
                   />
                   <AvatarFallback>
-                    {user.name.slice(0, 2).toUpperCase()}
+                    {(user?.name ?? "guest").slice(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <span className="sr-only">Open user menu</span>
