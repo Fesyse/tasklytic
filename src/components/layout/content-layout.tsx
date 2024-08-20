@@ -17,7 +17,7 @@ export function ContentLayout({
       <Header title={title} />
       <div
         className={cn(
-          "container pt-8 pb-8 px-4 sm:px-8 antialiased",
+          "pt-8 pb-8 px-4 sm:px-8 antialiased min-h-[calc(100vh-var(--header-size))]",
           className
         )}
       >

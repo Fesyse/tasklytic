@@ -35,7 +35,6 @@ export function UserNav() {
       toast.success(`Successfully signed out.`)
     } else return signIn()
   }
-  console.log(user, status)
   return (user && status !== "loading") || status === "unauthenticated" ? (
     <DropdownMenu>
       <TooltipProvider disableHoverableContent>

@@ -19,7 +19,7 @@ import { Separator } from "@/components/ui/separator"
 
 export default function SignInPage() {
   const signInWith = async (provider: LiteralUnion<BuiltInProviderType>) => {
-    const result = await signIn(provider)
+    const result = await signIn(provider, { callbackUrl: "/dashboard" })
     toast.success(`Successfully signed in with ${provider}.`)
 
     return result
