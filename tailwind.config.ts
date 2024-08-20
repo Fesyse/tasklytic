@@ -30,17 +30,14 @@ const config = {
       }
     },
     extend: {
+      spacing: {
+        sidebar: "13rem",
+        "sidebar-collapsed": "90px",
+        header: "var(--header-size)"
+      },
       fontFamily: {
         raleway: "var(--font-raleway)",
         comfortaa: "var(--font-comfortaa)"
-      },
-      width: {
-        sidebar: "13rem",
-        "sidebar-collapsed": "90px"
-      },
-      margin: {
-        sidebar: "13rem",
-        "sidebar-collapsed": "90px"
       },
       colors: {
         border: "hsl(var(--border))",
