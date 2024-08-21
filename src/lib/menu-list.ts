@@ -6,7 +6,7 @@ type Submenu = {
   active: boolean
 }
 
-type Menu = {
+export type Menu = {
   href: string
   label: string
   active: boolean
