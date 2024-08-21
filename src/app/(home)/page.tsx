@@ -32,7 +32,7 @@ export default function Home() {
             <FeaturesSection />
           </div>
 
-          <section className="relative pt-8 text-center md:pt-12">
+          <section className="relative pb-20 pt-8 text-center md:pt-12">
             <div className="relative z-10">
               <h2 className="mb-2 text-2xl font-bold md:mb-4 md:text-3xl">
                 Ready to boost your productivity?

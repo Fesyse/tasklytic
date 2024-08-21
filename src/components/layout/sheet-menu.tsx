@@ -39,5 +39,9 @@ export function SheetMenu() {
         <Menu isOpen />
       </SheetContent>
     </Sheet>
-  ) : null
+  ) : (
+    <Link href="/">
+      <Icons.icon className="h-10 w-10" />
+    </Link>
+  )
 }
