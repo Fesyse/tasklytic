@@ -1,6 +1,9 @@
-import { MenuIcon, PanelsTopLeft } from "lucide-react"
+"use client"
+
+import { MenuIcon } from "lucide-react"
 import Link from "next/link"
 import { Menu } from "@/components/layout/menu"
+import { useUserSettingsStore } from "@/components/providers/user-settings-store-provider"
 import { Button } from "@/components/ui/button"
 import { Icons } from "@/components/ui/icons"
 import {
@@ -11,7 +14,9 @@ import {
 } from "@/components/ui/sheet"
 
 export function SheetMenu() {
-  return (
+  const navigationMenu = useUserSettingsStore(s => s.navigationMenu)
+
+  return navigationMenu === "sidebar" ? (
     <Sheet>
       <SheetTrigger className="lg:hidden" asChild>
         <Button className="h-8" variant="outline" size="icon">
@@ -34,5 +39,5 @@ export function SheetMenu() {
         <Menu isOpen />
       </SheetContent>
     </Sheet>
-  )
+  ) : null
 }
