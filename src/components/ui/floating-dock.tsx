@@ -44,7 +44,7 @@ const FloatingDockMobile = ({
 }) => {
   const [open, setOpen] = useState(false)
   return (
-    <div className={cn("relative block md:hidden", className)}>
+    <div className={cn("relative block min-[500px]:hidden", className)}>
       <AnimatePresence>
         {open && (
           <motion.div
@@ -73,8 +73,8 @@ const FloatingDockMobile = ({
                   key={item.label}
                   className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 dark:bg-neutral-900"
                 >
-                  <div className="h-4 w-4">
-                    <item.icon />
+                  <div className="h-5 w-5">
+                    <item.icon size={20} />
                   </div>
                 </Link>
               </motion.div>
@@ -106,7 +106,7 @@ const FloatingDockDesktop = ({
       onMouseMove={e => mouseX.set(e.pageX)}
       onMouseLeave={() => mouseX.set(Infinity)}
       className={cn(
-        "mx-auto hidden h-16 items-end gap-4 rounded-2xl bg-gray-50 px-4 pb-3 dark:bg-neutral-900 md:flex",
+        "mx-auto hidden h-16 items-end gap-4 rounded-2xl bg-gray-50 px-4 pb-3 dark:bg-neutral-900 min-[500px]:flex",
         className
       )}
     >
@@ -183,7 +183,7 @@ function IconContainer({
               initial={{ opacity: 0, y: 10, x: "-50%" }}
               animate={{ opacity: 1, y: 0, x: "-50%" }}
               exit={{ opacity: 0, y: 2, x: "-50%" }}
-              className="absolute -top-8 left-1/2 w-fit -translate-x-1/2 whitespace-pre rounded-md border border-gray-200 bg-gray-100 px-2 py-0.5 text-xs text-neutral-700 dark:border-neutral-900 dark:bg-neutral-800 dark:text-white"
+              className="whitespac500px absolute -top-8 left-1/2 w-fit -translate-x-1/2 rounded-md border border-gray-200 bg-gray-100 px-2 py-0.5 text-xs text-neutral-700 dark:border-neutral-900 dark:bg-neutral-800 dark:text-white"
             >
               {label}
             </motion.div>
@@ -193,7 +193,7 @@ function IconContainer({
           style={{ width: widthIcon, height: heightIcon }}
           className="flex items-center justify-center"
         >
-          {<Icon />}
+          <Icon />
         </motion.div>
       </motion.div>
     </Link>
