@@ -7,6 +7,7 @@ export type UserSettingsStore = UserSettings & {
   sidebar: {
     setIsOpen: () => void
   }
+  updateUserSettingsStore: (settings: DeepPartial<UserSettings>) => void
 }
 
 export const defaultInitState = {
@@ -24,6 +25,14 @@ export const createUserSettingsStore = (initState = defaultInitState) => {
 
         return {
           sidebar: { isOpen: false, setIsOpen },
+          updateUserSettingsStore: (settings: DeepPartial<UserSettings>) => {
+            const store = get()
+            set({
+              ...store,
+              ...settings,
+              sidebar: { ...store.sidebar, ...settings.sidebar }
+            })
+          },
           ...defaultInitState
         }
       },

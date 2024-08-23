@@ -1,6 +1,8 @@
+import { NAVIGATION_MENU } from "@/lib/constants"
+
 type UserSettings = {
   sidebar: { isOpen: boolean }
-  navigationMenu: "sidebar" | "floating-dock"
+  navigationMenu: (typeof NAVIGATION_MENU)[number]
 }
 
 export type { UserSettings }

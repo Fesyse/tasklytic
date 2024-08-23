@@ -1,6 +1,7 @@
 import { Analytics } from "@vercel/analytics/react"
+import { GeistSans } from "geist/font/sans"
 import { type Metadata } from "next"
-import { Comfortaa, Raleway } from "next/font/google"
+import { Comfortaa } from "next/font/google"
 import { PropsWithChildren } from "react"
 import { Layout } from "@/components/layout"
 import { Providers } from "@/components/providers"
@@ -16,11 +17,6 @@ export const metadata: Metadata = {
     "Streamline your workflow with smart task management. Organize, prioritize, and track your tasks with ease, all in one powerful tool.",
   icons: [{ rel: "icon", url: "/favicon.ico" }]
 }
-
-const raleway = Raleway({
-  subsets: ["latin"],
-  variable: "--font-raleway"
-})
 const comfortaa = Comfortaa({
   subsets: ["latin"],
   variable: "--font-comfortaa"
@@ -37,7 +33,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn(raleway.variable, comfortaa.variable, "font-raleway")}
+      className={cn(GeistSans.variable, comfortaa.variable, "font-geist-sans")}
     >
       <head />
       <body>

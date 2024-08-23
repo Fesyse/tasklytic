@@ -37,7 +37,7 @@ const config = {
         header: "var(--header-size)"
       },
       fontFamily: {
-        raleway: "var(--font-raleway)",
+        "geist-sans": "var(--font-geist-sans)",
         comfortaa: "var(--font-comfortaa)"
       },
       colors: {
