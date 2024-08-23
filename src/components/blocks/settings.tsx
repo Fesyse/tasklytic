@@ -18,9 +18,11 @@ export const Settings = () => {
     resolver: zodResolver(settingsSchema)
   })
 
+  const onSubmit = (data: SettingsSchema) => {}
+
   return (
     <Form {...form}>
-      <form></form>
+      <form onSubmit={form.handleSubmit(onSubmit)}></form>
     </Form>
   )
 }

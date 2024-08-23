@@ -1,5 +1,5 @@
 type UserSettings = {
-  sidebar: { isOpen: boolean; setIsOpen: () => void }
+  sidebar: { isOpen: boolean }
   navigationMenu: "sidebar" | "floating-dock"
 }
 

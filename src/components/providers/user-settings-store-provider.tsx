@@ -1,9 +1,11 @@
 "use client"
 
-import { type ReactNode, createContext, useContext, useRef } from "react"
+import { createContext, useContext, useRef } from "react"
 import { useStore } from "zustand"
-import { UserSettings } from "@/types/user"
-import { createUserSettingsStore } from "@/stores/user-settings.store"
+import {
+  type UserSettingsStore,
+  createUserSettingsStore
+} from "@/stores/user-settings.store"
 
 export type UserSettingsStoreApi = ReturnType<typeof createUserSettingsStore>
 
@@ -11,13 +13,9 @@ export const UserSettingsStoreContext = createContext<
   UserSettingsStoreApi | undefined
 >(undefined)
 
-export interface UserSettingsStoreProviderProps {
-  children: ReactNode
-}
-
 export const UserSettingsStoreProvider = ({
   children
-}: UserSettingsStoreProviderProps) => {
+}: React.PropsWithChildren) => {
   const storeRef = useRef<UserSettingsStoreApi>()
   if (!storeRef.current) {
     storeRef.current = createUserSettingsStore()
@@ -31,7 +29,7 @@ export const UserSettingsStoreProvider = ({
 }
 
 export const useUserSettingsStore = <T,>(
-  selector: (store: UserSettings) => T
+  selector: (store: UserSettingsStore) => T
 ): T => {
   const userSettingsStoreContext = useContext(UserSettingsStoreContext)
 
