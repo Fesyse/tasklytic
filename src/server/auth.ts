@@ -32,6 +32,8 @@ declare module "next-auth" {
   }
 }
 
+const protectedFromAuthorizedUserPages: string[] = ["/auth/sign-in"]
+
 /**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
  *
@@ -39,6 +41,18 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthConfig = {
   callbacks: {
+    authorized: ({ request, auth }) => {
+      const pathname = request.nextUrl.pathname
+
+      if (
+        protectedFromAuthorizedUserPages.some(page =>
+          page.startsWith(pathname)
+        ) &&
+        !!auth
+      ) {
+        return !auth
+      }
+    },
     session: ({ session, user }) => ({
       ...session,
       user: {

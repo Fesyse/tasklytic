@@ -26,7 +26,14 @@ const comfortaa = Comfortaa({
   variable: "--font-comfortaa"
 })
 
-export default function RootLayout({ children }: Readonly<PropsWithChildren>) {
+type RootLayoutProps = {
+  settings: React.ReactNode
+}
+
+export default function RootLayout({
+  children,
+  settings
+}: Readonly<PropsWithChildren<RootLayoutProps>>) {
   return (
     <html
       lang="en"
@@ -35,7 +42,10 @@ export default function RootLayout({ children }: Readonly<PropsWithChildren>) {
       <head />
       <body>
         <Providers>
-          <Layout>{children}</Layout>
+          <Layout>
+            {children}
+            {settings}
+          </Layout>
         </Providers>
         <Analytics />
       </body>

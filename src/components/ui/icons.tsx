@@ -12,18 +12,18 @@ export const Icons = {
       xmlns="http://www.w3.org/2000/svg"
       transform="rotate(0)matrix(1, 0, 0, 1, 0, 0)"
       stroke="#000000"
-      stroke-width="0.168"
+      strokeWidth="0.168"
       className={cn("dark:invert", className)}
       {...props}
     >
-      <g id="SVGRepo_bgCarrier" stroke-width="0" />
+      <g id="SVGRepo_bgCarrier" strokeWidth="0" />
 
       <g
         id="SVGRepo_tracerCarrier"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         stroke="#CCCCCC"
-        stroke-width="0.048"
+        strokeWidth="0.048"
       />
 
       <g id="SVGRepo_iconCarrier">
