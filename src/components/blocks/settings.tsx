@@ -40,7 +40,6 @@ export const Settings = () => {
   })
 
   const onSubmit = (data: SettingsSchema) => {
-    console.log(data)
     updateUserSettingsStore(data)
   }
 
