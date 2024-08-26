@@ -5,7 +5,6 @@ import { SessionProvider } from "next-auth/react"
 import { ThemeProvider as NextThemesProvider } from "next-themes"
 import { type ThemeProviderProps } from "next-themes/dist/types"
 import { Toaster } from "@/components/ui/sonner"
-import { UserSettingsStoreProvider } from "./user-settings-store-provider"
 import { TRPCReactProvider } from "@/trpc/react"
 
 export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
@@ -17,7 +16,7 @@ export function Providers({ children }: React.PropsWithChildren) {
     <TRPCReactProvider>
       <SessionProvider>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <UserSettingsStoreProvider>{children}</UserSettingsStoreProvider>
+          {children}
         </ThemeProvider>
         <Toaster />
         <SpeedInsights />

@@ -33,7 +33,7 @@ const config = {
     extend: {
       spacing: {
         sidebar: "13rem",
-        "sidebar-collapsed": "90px",
+        "sidebar-collapsed": "70px",
         header: "var(--header-size)"
       },
       fontFamily: {

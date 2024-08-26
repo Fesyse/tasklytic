@@ -1,13 +1,13 @@
 import Link from "next/link"
-import { type SidebarStore } from "@/hooks/use-sidebar-toggle"
 import { Menu } from "@/components/layout/menu"
 import { SidebarToggle } from "@/components/layout/sidebar/sidebar-toggle"
 import { Button } from "@/components/ui/button"
 import { Icons } from "@/components/ui/icons"
 import { cn } from "@/lib/utils"
+import { type UserSettingsStore } from "@/stores/user-settings.store"
 
 type SidebarProps = {
-  sidebar: SidebarStore
+  sidebar: UserSettingsStore["sidebar"]
 }
 
 export function Sidebar({ sidebar }: SidebarProps) {
@@ -22,7 +22,7 @@ export function Sidebar({ sidebar }: SidebarProps) {
       )}
     >
       <SidebarToggle isOpen={sidebar.isOpen} setIsOpen={sidebar.setIsOpen} />
-      <div className="relative flex h-full flex-col overflow-y-auto px-3 py-4 shadow-md dark:shadow-zinc-800">
+      <div className="relative flex h-full flex-col overflow-y-auto py-4 shadow-md dark:shadow-zinc-800">
         <Button
           className={cn("mb-1 transition-transform duration-300 ease-in-out")}
           variant="link"

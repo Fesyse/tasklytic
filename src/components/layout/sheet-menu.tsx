@@ -2,8 +2,8 @@
 
 import { MenuIcon } from "lucide-react"
 import Link from "next/link"
+import { useStore } from "@/hooks/use-store"
 import { Menu } from "@/components/layout/menu"
-import { useUserSettingsStore } from "@/components/providers/user-settings-store-provider"
 import { Button } from "@/components/ui/button"
 import { Icons } from "@/components/ui/icons"
 import {
@@ -12,9 +12,10 @@ import {
   SheetHeader,
   SheetTrigger
 } from "@/components/ui/sheet"
+import { useUserSettingsStore } from "@/stores/user-settings.store"
 
 export function SheetMenu() {
-  const navigationMenu = useUserSettingsStore(s => s.navigationMenu)
+  const navigationMenu = useStore(useUserSettingsStore, s => s.navigationMenu)
 
   return navigationMenu === "sidebar" ? (
     <Sheet>
