@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { useStore } from "@/hooks/use-store"
+import { useUserSettingsStore } from "@/components/providers/user-settings-store-provider"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -24,12 +24,11 @@ import {
 import { NAVIGATION_MENU } from "@/lib/constants"
 import { type SettingsSchema, settingsSchema } from "@/lib/schemas"
 import { title } from "@/lib/utils"
-import { useUserSettingsStore } from "@/stores/user-settings.store"
 
 export const Settings = () => {
-  const settingsStore = useStore(useUserSettingsStore, s => s)
-  if (!settingsStore) return null
-
+  const { updateUserSettingsStore, ...settingsStore } = useUserSettingsStore(
+    s => s
+  )
   const form = useForm<SettingsSchema>({
     defaultValues: {
       sidebar: {
@@ -41,7 +40,7 @@ export const Settings = () => {
   })
 
   const onSubmit = (data: SettingsSchema) => {
-    settingsStore.updateUserSettingsStore(data)
+    updateUserSettingsStore(data)
   }
 
   return (

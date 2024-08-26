@@ -61,7 +61,7 @@ export function Menu({ isOpen }: MenuProps) {
                           <TooltipTrigger asChild>
                             <Button
                               variant={active ? "secondary" : "ghost"}
-                              className="mb-1 h-10 w-full justify-center p-2.5"
+                              className="mb-1 h-10 w-full justify-start"
                               asChild
                             >
                               <Link href={href}>
@@ -101,6 +101,9 @@ export function Menu({ isOpen }: MenuProps) {
               )}
             </li>
           ))}
+          {/* <li className="w-full grow flex items-end max-w-48 mx-auto">
+            <SignInMenuButton isOpen={isOpen} />
+          </li> */}
         </ul>
       </nav>
     </ScrollArea>

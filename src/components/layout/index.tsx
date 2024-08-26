@@ -1,36 +1,32 @@
 "use client"
 
-import { useStore } from "@/hooks/use-store"
-import { DockNavigation } from "@/components/layout/dock-navigation"
 import { Sidebar } from "@/components/layout/sidebar"
+import { useUserSettingsStore } from "@/components/providers/user-settings-store-provider"
+import { DockNavigation } from "./dock-navigation"
 import { cn } from "@/lib/utils"
-import { useUserSettingsStore } from "@/stores/user-settings.store"
 
 export function Layout({ children }: React.PropsWithChildren) {
-  const userSettings = useStore(useUserSettingsStore, s => s)
+  const { sidebar, navigationMenu } = useUserSettingsStore(s => s)
 
-  if (!userSettings) return null
-  const { sidebar, navigationMenu } = userSettings
+  if (!sidebar) return null
 
   return (
     <>
-      {navigationMenu === "sidebar" ? (
-        <Sidebar sidebar={sidebar} />
-      ) : navigationMenu === "floating-dock" ? (
-        <DockNavigation />
-      ) : null}
+      {navigationMenu === "sidebar" ? <Sidebar sidebar={sidebar} /> : null}
       <main
         className={cn(
           "min-h-screen transition-[margin-left] duration-300 ease-in-out",
-          {
-            "lg:ml-sidebar-collapsed":
-              !sidebar.isOpen && navigationMenu === "sidebar",
-            "lg:ml-sidebar": sidebar.isOpen && navigationMenu === "sidebar"
-          }
+          navigationMenu === "sidebar"
+            ? {
+                "lg:ml-sidebar-collapsed": !sidebar.isOpen,
+                "lg:ml-sidebar": sidebar.isOpen
+              }
+            : ""
         )}
       >
         {children}
       </main>
+      {navigationMenu === "floating-dock" ? <DockNavigation /> : null}
     </>
   )
 }
