@@ -9,6 +9,7 @@ import {
   varchar
 } from "drizzle-orm/pg-core"
 import { type AdapterAccount } from "next-auth/adapters"
+import { TASK_STATUS } from "@/lib/constants"
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -29,11 +30,20 @@ export const users = createTable("user", {
     mode: "date",
     withTimezone: true
   }).default(sql`CURRENT_TIMESTAMP`),
-  image: varchar("image", { length: 255 })
+  image: varchar("image", { length: 255 }),
+  createdAt: timestamp("created_at", {
+    mode: "date",
+    withTimezone: true
+  }).default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: timestamp("updated_at", {
+    mode: "date",
+    withTimezone: true
+  }).$onUpdate(() => new Date())
 })
 
 export const usersRelations = relations(users, ({ many }) => ({
-  accounts: many(accounts)
+  accounts: many(accounts),
+  tasks: many(tasks)
 }))
 
 export const accounts = createTable(
@@ -106,3 +116,60 @@ export const verificationTokens = createTable(
     compoundKey: primaryKey({ columns: [vt.identifier, vt.token] })
   })
 )
+
+export const tasks = createTable("task", {
+  id: varchar("id", { length: 255 })
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  status: varchar("status", { length: 255, enum: TASK_STATUS }).notNull(),
+  deadLineDate: timestamp("dead_line_date", {
+    mode: "date",
+    withTimezone: true
+  }).default(sql`CURRENT_TIMESTAMP`),
+
+  userId: varchar("user_id", { length: 255 })
+    .notNull()
+    .references(() => users.id),
+  createdAt: timestamp("created_at", {
+    mode: "date",
+    withTimezone: true
+  }).default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: timestamp("updated_at", {
+    mode: "date",
+    withTimezone: true
+  }).$onUpdate(() => new Date())
+})
+
+export const tasksRelations = relations(tasks, ({ one, many }) => ({
+  user: one(users, { fields: [tasks.userId], references: [users.id] }),
+  subTasks: many(subTasks)
+}))
+
+export const subTasks = createTable("sub_task", {
+  id: varchar("id", { length: 255 })
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  status: varchar("status", { length: 255, enum: TASK_STATUS }).notNull(),
+  deadLineDate: timestamp("dead_line_date", {
+    mode: "date",
+    withTimezone: true
+  }).default(sql`CURRENT_TIMESTAMP`),
+
+  taskId: varchar("task_id", { length: 255 })
+    .notNull()
+    .references(() => tasks.id),
+  createdAt: timestamp("created_at", {
+    mode: "date",
+    withTimezone: true
+  }).default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: timestamp("updated_at", {
+    mode: "date",
+    withTimezone: true
+  }).$onUpdate(() => new Date())
+})
