@@ -143,11 +143,6 @@ export const tasks = createTable("task", {
   }).$onUpdate(() => new Date())
 })
 
-export const tasksRelations = relations(tasks, ({ one, many }) => ({
-  user: one(users, { fields: [tasks.userId], references: [users.id] }),
-  subTasks: many(subTasks)
-}))
-
 export const subTasks = createTable("sub_task", {
   id: varchar("id", { length: 255 })
     .notNull()
@@ -173,3 +168,12 @@ export const subTasks = createTable("sub_task", {
     withTimezone: true
   }).$onUpdate(() => new Date())
 })
+
+export const tasksRelations = relations(tasks, ({ one, many }) => ({
+  user: one(users, { fields: [tasks.userId], references: [users.id] }),
+  subTasks: many(subTasks)
+}))
+
+export const subTasksRelations = relations(subTasks, ({ one }) => ({
+  task: one(tasks, { fields: [subTasks.taskId], references: [tasks.id] })
+}))
