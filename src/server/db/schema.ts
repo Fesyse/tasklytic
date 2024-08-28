@@ -41,11 +41,6 @@ export const users = createTable("user", {
   }).$onUpdate(() => new Date())
 })
 
-export const usersRelations = relations(users, ({ many }) => ({
-  accounts: many(accounts),
-  tasks: many(tasks)
-}))
-
 export const accounts = createTable(
   "account",
   {
@@ -98,10 +93,6 @@ export const sessions = createTable(
   })
 )
 
-export const sessionsRelations = relations(sessions, ({ one }) => ({
-  user: one(users, { fields: [sessions.userId], references: [users.id] })
-}))
-
 export const verificationTokens = createTable(
   "verification_token",
   {
@@ -117,6 +108,25 @@ export const verificationTokens = createTable(
   })
 )
 
+export const projects = createTable("project", {
+  id: varchar("id", { length: 255 })
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  name: varchar("name", { length: 255 }).notNull(),
+
+  userId: varchar("user_id", { length: 255 })
+    .notNull()
+    .references(() => users.id),
+  createdAt: timestamp("created_at", {
+    mode: "date",
+    withTimezone: true
+  }).default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: timestamp("updated_at", {
+    mode: "date",
+    withTimezone: true
+  }).$onUpdate(() => new Date())
+})
+
 export const tasks = createTable("task", {
   id: varchar("id", { length: 255 })
     .notNull()
@@ -130,6 +140,9 @@ export const tasks = createTable("task", {
     withTimezone: true
   }).default(sql`CURRENT_TIMESTAMP`),
 
+  projectId: varchar("project_id", { length: 255 })
+    .notNull()
+    .references(() => projects.id),
   userId: varchar("user_id", { length: 255 })
     .notNull()
     .references(() => users.id),
@@ -169,11 +182,31 @@ export const subTasks = createTable("sub_task", {
   }).$onUpdate(() => new Date())
 })
 
+export const sessionsRelations = relations(sessions, ({ one }) => ({
+  user: one(users, { fields: [sessions.userId], references: [users.id] })
+}))
+
+export const usersRelations = relations(users, ({ many }) => ({
+  accounts: many(accounts),
+  projects: many(projects)
+}))
+
 export const tasksRelations = relations(tasks, ({ one, many }) => ({
-  user: one(users, { fields: [tasks.userId], references: [users.id] }),
+  project: one(projects, {
+    fields: [tasks.projectId],
+    references: [projects.id]
+  }),
+  user: one(users, {
+    fields: [tasks.userId],
+    references: [users.id]
+  }),
   subTasks: many(subTasks)
 }))
 
 export const subTasksRelations = relations(subTasks, ({ one }) => ({
   task: one(tasks, { fields: [subTasks.taskId], references: [tasks.id] })
+}))
+
+export const projectsRelations = relations(projects, ({ many }) => ({
+  tasks: many(tasks)
 }))
