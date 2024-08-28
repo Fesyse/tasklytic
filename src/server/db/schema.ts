@@ -70,10 +70,6 @@ export const accounts = createTable(
   })
 )
 
-export const accountsRelations = relations(accounts, ({ one }) => ({
-  user: one(users, { fields: [accounts.userId], references: [users.id] })
-}))
-
 export const sessions = createTable(
   "session",
   {
@@ -182,24 +178,20 @@ export const subTasks = createTable("sub_task", {
   }).$onUpdate(() => new Date())
 })
 
+export const usersRelations = relations(users, ({ many }) => ({
+  accounts: many(accounts)
+}))
+
+export const accountsRelations = relations(accounts, ({ one }) => ({
+  user: one(users, { fields: [accounts.userId], references: [users.id] })
+}))
+
 export const sessionsRelations = relations(sessions, ({ one }) => ({
   user: one(users, { fields: [sessions.userId], references: [users.id] })
 }))
 
-export const usersRelations = relations(users, ({ many }) => ({
-  accounts: many(accounts),
-  projects: many(projects)
-}))
-
 export const tasksRelations = relations(tasks, ({ one, many }) => ({
-  project: one(projects, {
-    fields: [tasks.projectId],
-    references: [projects.id]
-  }),
-  user: one(users, {
-    fields: [tasks.userId],
-    references: [users.id]
-  }),
+  user: one(users, { fields: [tasks.userId], references: [users.id] }),
   subTasks: many(subTasks)
 }))
 
@@ -207,6 +199,9 @@ export const subTasksRelations = relations(subTasks, ({ one }) => ({
   task: one(tasks, { fields: [subTasks.taskId], references: [tasks.id] })
 }))
 
-export const projectsRelations = relations(projects, ({ many }) => ({
-  tasks: many(tasks)
+export const projectsRelations = relations(projects, ({ many, one }) => ({
+  tasks: many(tasks),
+  user: one(users, { fields: [projects.userId], references: [users.id] })
 }))
+
+export type Project = typeof projects.$inferSelect

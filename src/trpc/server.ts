@@ -23,7 +23,6 @@ const getQueryClient = cache(createQueryClient)
 const caller = createCaller(createContext)
 
 export const { trpc: api, HydrateClient } = createHydrationHelpers<AppRouter>(
-  // @ts-expect-error idk why it gives error
   caller,
   getQueryClient
 )

@@ -4,7 +4,7 @@ import { createTRPCRouter, publicProcedure } from "@/server/api/trpc"
 import { tasks as tasksTable } from "@/server/db/schema"
 
 export const taskRouter = createTRPCRouter({
-  getTasks: publicProcedure
+  getAll: publicProcedure
     .input(
       z.object({
         perPage: z.number(),
