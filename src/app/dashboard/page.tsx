@@ -1,4 +1,3 @@
-import { AnimatePresence, motion } from "framer-motion"
 import { Suspense } from "react"
 import { CreateProjectModal } from "@/components/project/create-project-modal"
 import { ScrollArea } from "@/components/ui/scroll-area"

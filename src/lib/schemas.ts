@@ -10,4 +10,17 @@ const settingsSchema = z.object({
 
 type SettingsSchema = z.infer<typeof settingsSchema>
 
-export { settingsSchema, type SettingsSchema }
+const createProjectSchema = z.object({
+  name: z
+    .string()
+    .max(20, { message: "Project name cannot exceed 20 characters" })
+})
+
+type CreateProjectSchema = z.infer<typeof createProjectSchema>
+
+export {
+  settingsSchema,
+  type SettingsSchema,
+  createProjectSchema,
+  type CreateProjectSchema
+}
