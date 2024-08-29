@@ -23,7 +23,7 @@ export const ProjectNavigation: FC<ProjectNavigationProps> = ({ projects }) => {
     ))
   ) : (
     <li className="text-center text-sm text-muted-foreground">
-      There's no projects yet.
+      There&apos;s no projects yet.
     </li>
   )
 }

@@ -28,9 +28,9 @@ const projectKeys: (keyof Project)[] = [
 ]
 
 function getProjectsFromLocalStorage(): Project[] {
-  const projects: unknown[] = JSON.parse(
+  const projects = JSON.parse(
     localStorage.getItem("guest-projects") ?? "[]"
-  )
+  ) as unknown[]
 
   if (
     typeof projects === "object" &&
