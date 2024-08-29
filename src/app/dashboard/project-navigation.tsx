@@ -10,7 +10,7 @@ export const ProjectNavigation = async () => {
 }
 
 export const ProjectNavigationLoading = () => {
-  return new Array(random(3, 10)).fill(
+  return new Array<React.ReactNode>(random(3, 10)).fill(
     <li>
       <Skeleton className="h-8 w-full" />
     </li>

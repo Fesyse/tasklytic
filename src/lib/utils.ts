@@ -28,12 +28,17 @@ const projectKeys: (keyof Project)[] = [
 ]
 
 function getProjectsFromLocalStorage(): Project[] {
-  const projects = JSON.parse(localStorage.getItem("guest-projects") ?? "[]")
+  const projects: unknown[] = JSON.parse(
+    localStorage.getItem("guest-projects") ?? "[]"
+  )
 
   if (
     typeof projects === "object" &&
     Array.isArray(projects) &&
-    !projects.every(project => projectKeys.every(key => key in project))
+    !projects.every(project => {
+      if (typeof project !== "object" || !project) return
+      projectKeys.every(key => key in project)
+    })
   ) {
     toast.error("Your local saved projects has been corrupted or deleted!")
     return []
