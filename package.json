@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "pnpm db:generate && pnpm db:push && next build",
+    "build": "bun db:generate && bun db:push && next build",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
@@ -12,7 +12,7 @@
     "dev": "next dev --turbo",
     "lint": "next lint",
     "start": "next start",
-    "ui": "pnpm dlx shadcn-ui@latest"
+    "ui": "bunx shadcn-ui@latest"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.4.2",
@@ -83,6 +83,5 @@
   },
   "ct3aMetadata": {
     "initVersion": "7.36.2"
-  },
-  "packageManager": "pnpm@9.6.0"
+  }
 }
