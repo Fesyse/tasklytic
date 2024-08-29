@@ -31,18 +31,22 @@ export const CreateProjectForm = () => {
   })
 
   const createProject = (data: CreateProjectSchema) => {
+    const onSuccess = (project: Project) => {
+      router.push(`/project/${project.id}`)
+      toast.success("Successfully created project!")
+    }
+
     if (session)
       return mutate(data, {
         onSuccess: data => {
           const project = data[0]!
-          router.push(`/project/${project.id}`)
-          toast.success("Successfully created project!")
+          onSuccess(project)
         }
       })
 
     // if guest
-    createProjectWithLocalStorage(data)
-    toast.success("Successfully created project!")
+    const project = createProjectWithLocalStorage(data)
+    onSuccess(project)
   }
 
   const createProjectWithLocalStorage = (data: CreateProjectSchema) => {
@@ -66,6 +70,7 @@ export const CreateProjectForm = () => {
     projects.push(project)
 
     localStorage.setItem("projects", JSON.stringify(projects))
+    return project
   }
 
   return (

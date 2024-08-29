@@ -36,8 +36,8 @@ function getProjectsFromLocalStorage(): Project[] {
     typeof projects === "object" &&
     Array.isArray(projects) &&
     !projects.every(project => {
-      if (typeof project !== "object" || !project) return
-      projectKeys.every(key => key in project)
+      if (typeof project !== "object" || !project) return false
+      return projectKeys.every(key => key in project)
     })
   ) {
     toast.error("Your local saved projects has been corrupted or deleted!")
