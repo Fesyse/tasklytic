@@ -9,4 +9,12 @@ function title(string: string) {
   return (string.charAt(0).toUpperCase() + string.slice(1)).replaceAll("-", " ")
 }
 
-export { cn, title }
+function random(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1) + min)
+}
+
+function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+export { cn, title, random, sleep }

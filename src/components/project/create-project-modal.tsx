@@ -1,7 +1,7 @@
 import { Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
-export function CreateProjectModal() {
+export const CreateProjectModal = () => {
   return (
     <Button className="group/modal-btn relative overflow-hidden">
       <span className="text-center transition duration-500 group-hover/modal-btn:translate-x-40">
