@@ -19,6 +19,7 @@ import {
   DrawerTitle,
   DrawerTrigger
 } from "@/components/ui/drawer"
+import { CreateProjectForm } from "./create-project-form"
 
 export const CreateProjectModal = () => {
   const isDesktop = useMediaQuery("(min-width: 640px)")
@@ -36,7 +37,7 @@ export const CreateProjectModal = () => {
     content: {
       title: "Create new project",
       description: "Workspace where you can manage your tasks with ease.",
-      body: <div></div>
+      body: <CreateProjectForm />
     }
   }
 

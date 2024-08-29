@@ -1,4 +1,10 @@
-import { createTRPCRouter, publicProcedure } from "@/server/api/trpc"
+import { createProjectSchema } from "@/lib/schemas"
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure
+} from "@/server/api/trpc"
+import { projects } from "@/server/db/schema"
 
 export const projectRouter = createTRPCRouter({
   getAll: publicProcedure.query(({ ctx }) => {
@@ -9,5 +15,13 @@ export const projectRouter = createTRPCRouter({
       where: (projectsTable, { eq }) =>
         eq(projectsTable.userId, session.user.id)
     })
-  })
+  }),
+  create: protectedProcedure
+    .input(createProjectSchema)
+    .mutation(async ({ input: project, ctx }) => {
+      return ctx.db
+        .insert(projects)
+        .values({ ...project, userId: ctx.session.user.id })
+        .returning()
+    })
 })
