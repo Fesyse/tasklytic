@@ -6,13 +6,15 @@ import { DockNavigation } from "./dock-navigation"
 import { cn } from "@/lib/utils"
 
 export function Layout({ children }: React.PropsWithChildren) {
-  const { sidebar, navigationMenu } = useUserSettingsStore(s => s)
-
-  if (!sidebar) return null
+  const { sidebar, navigationMenu, setIsSidebarOpen } = useUserSettingsStore(
+    s => s
+  )
 
   return (
     <>
-      {navigationMenu === "sidebar" ? <Sidebar sidebar={sidebar} /> : null}
+      {navigationMenu === "sidebar" ? (
+        <Sidebar sidebar={{ ...sidebar, setIsOpen: setIsSidebarOpen }} />
+      ) : null}
       <main
         className={cn(
           "min-h-screen transition-[margin-left] duration-300 ease-in-out",

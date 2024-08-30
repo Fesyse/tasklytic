@@ -15,6 +15,7 @@ import {
 import { LucideIcon } from "lucide-react"
 import Link from "next/link"
 import { useRef, useState } from "react"
+import { Button } from "@/components/ui/button"
 import { Menu } from "@/lib/menu-list"
 import { cn } from "@/lib/utils"
 
@@ -68,15 +69,27 @@ const FloatingDockMobile = ({
                 }}
                 transition={{ delay: (items.length - 1 - idx) * 0.05 }}
               >
-                <Link
-                  href={item.href}
-                  key={item.label}
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 dark:bg-neutral-900"
-                >
-                  <div className="h-5 w-5">
-                    <item.icon size={20} />
-                  </div>
-                </Link>
+                {"href" in item ? (
+                  <Link
+                    href={item.href}
+                    key={item.label}
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 dark:bg-neutral-900"
+                  >
+                    <div className="h-5 w-5">
+                      <item.icon size={20} />
+                    </div>
+                  </Link>
+                ) : (
+                  <Button
+                    key={item.label}
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 dark:bg-neutral-900"
+                    onClick={item.action}
+                  >
+                    <div className="h-5 w-5">
+                      <item.icon size={20} />
+                    </div>
+                  </Button>
+                )}
               </motion.div>
             ))}
           </motion.div>
@@ -121,14 +134,13 @@ type IconContainerProps = {
   mouseX: MotionValue
   label: string
   icon: LucideIcon
-  href: string
-}
+} & ({ href: string } | { action: React.MouseEventHandler<HTMLButtonElement> })
 
 function IconContainer({
   mouseX,
   label,
   icon: Icon,
-  href
+  ...rest
 }: IconContainerProps) {
   const ref = useRef<HTMLDivElement>(null)
 
@@ -176,34 +188,38 @@ function IconContainer({
 
   const [hovered, setHovered] = useState(false)
 
-  return (
-    <Link href={href}>
+  const content = (
+    <motion.div
+      ref={ref}
+      style={{ width, height }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className="relative flex aspect-square items-center justify-center rounded-full bg-gray-200 dark:bg-neutral-800"
+    >
+      <AnimatePresence>
+        {hovered && (
+          <motion.div
+            initial={{ opacity: 0, y: 10, x: "-50%" }}
+            animate={{ opacity: 1, y: 0, x: "-50%" }}
+            exit={{ opacity: 0, y: 2, x: "-50%" }}
+            className="whitespac500px absolute -top-8 left-1/2 w-fit -translate-x-1/2 rounded-md border border-gray-200 bg-gray-100 px-2 py-0.5 text-xs text-neutral-700 dark:border-neutral-900 dark:bg-neutral-800 dark:text-white"
+          >
+            {label}
+          </motion.div>
+        )}
+      </AnimatePresence>
       <motion.div
-        ref={ref}
-        style={{ width, height }}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        className="relative flex aspect-square items-center justify-center rounded-full bg-gray-200 dark:bg-neutral-800"
+        style={{ width: widthIcon, height: heightIcon }}
+        className="flex items-center justify-center"
       >
-        <AnimatePresence>
-          {hovered && (
-            <motion.div
-              initial={{ opacity: 0, y: 10, x: "-50%" }}
-              animate={{ opacity: 1, y: 0, x: "-50%" }}
-              exit={{ opacity: 0, y: 2, x: "-50%" }}
-              className="whitespac500px absolute -top-8 left-1/2 w-fit -translate-x-1/2 rounded-md border border-gray-200 bg-gray-100 px-2 py-0.5 text-xs text-neutral-700 dark:border-neutral-900 dark:bg-neutral-800 dark:text-white"
-            >
-              {label}
-            </motion.div>
-          )}
-        </AnimatePresence>
-        <motion.div
-          style={{ width: widthIcon, height: heightIcon }}
-          className="flex items-center justify-center"
-        >
-          <Icon />
-        </motion.div>
+        <Icon />
       </motion.div>
-    </Link>
+    </motion.div>
+  )
+
+  return "href" in rest ? (
+    <Link href={rest.href}>{content}</Link>
+  ) : (
+    <button onClick={rest.action}>{content}</button>
   )
 }

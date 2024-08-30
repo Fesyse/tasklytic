@@ -2,13 +2,22 @@
 
 import { useRouter } from "next/navigation"
 import type { FC, PropsWithChildren } from "react"
+import { useMediaQuery } from "@/hooks/use-media-query"
 import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogHeader,
   DialogOverlay,
   DialogTitle
 } from "@/components/ui/dialog"
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle
+} from "./ui/drawer"
 
 type ModalProps = {
   title: React.ReactNode
@@ -21,18 +30,38 @@ export const Modal: FC<PropsWithChildren<ModalProps>> = ({
   description
 }) => {
   const router = useRouter()
+  const isDesktop = useMediaQuery("(min-width: 640px)")
 
   const handleOpenChange = () => router.back()
 
-  return (
-    <Dialog defaultOpen={true} open={true} onOpenChange={handleOpenChange}>
+  const modalProps = {
+    defaultOpen: true,
+    open: true,
+    onOpenChange: handleOpenChange
+  }
+  return isDesktop ? (
+    <Dialog {...modalProps}>
       <DialogContent className="overflow-y-hidden">
-        <DialogTitle>{title}</DialogTitle>
-        {description ? (
-          <DialogDescription>{description}</DialogDescription>
-        ) : null}
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          {description ? (
+            <DialogDescription>{description}</DialogDescription>
+          ) : null}
+        </DialogHeader>
         {children}
       </DialogContent>
     </Dialog>
+  ) : (
+    <Drawer {...modalProps}>
+      <DrawerContent>
+        <DrawerHeader>
+          <DrawerTitle>{title}</DrawerTitle>
+          {description ? (
+            <DrawerDescription>{description}</DrawerDescription>
+          ) : null}
+        </DrawerHeader>
+        {children}
+      </DrawerContent>
+    </Drawer>
   )
 }

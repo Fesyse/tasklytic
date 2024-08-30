@@ -1,11 +1,5 @@
-import { Suspense } from "react"
-import { CreateProjectModal } from "@/components/project/create-project-modal"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
-import {
-  ProjectNavigation,
-  ProjectNavigationLoading
-} from "./project-navigation"
 
 type DashboardPageProps = {
   searchParams: {
@@ -22,12 +16,10 @@ export default async function DashboardPage({
 
   return (
     <>
-      <ScrollArea>
+      {/* <ScrollArea>
         <nav className="h-full">
           <ul className="flex flex-col items-stretch gap-4 [&>li>a]:w-full [&>li>button]:w-full">
-            <li>
-              <CreateProjectModal />
-            </li>
+            <li><CreateProjectModal /> </li>
             <li>
               <Separator />
             </li>
@@ -37,6 +29,7 @@ export default async function DashboardPage({
           </ul>
         </nav>
       </ScrollArea>
+      */}
       <div>123</div>
     </>
   )

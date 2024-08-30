@@ -1,12 +1,10 @@
 "use client"
 
-import { usePathname } from "next/navigation"
-import { FloatingDock } from "../ui/floating-dock"
-import { type Menu, getMenuList } from "@/lib/menu-list"
+import { FloatingDock } from "@/components/ui/floating-dock"
+import { type Menu, useMenuList } from "@/lib/menu-list"
 
 export const DockNavigation = () => {
-  const pathname = usePathname()
-  const menuList = getMenuList(pathname)
+  const menuList = useMenuList()
   const items: Menu[] = menuList.map<Menu[]>(group => group.menus).flat()
 
   return (

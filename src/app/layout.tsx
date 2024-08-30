@@ -23,12 +23,12 @@ const comfortaa = Comfortaa({
 })
 
 type RootLayoutProps = {
-  settings: React.ReactNode
+  modal: React.ReactNode
 }
 
 export default function RootLayout({
   children,
-  settings
+  modal
 }: Readonly<PropsWithChildren<RootLayoutProps>>) {
   return (
     <html
@@ -40,7 +40,7 @@ export default function RootLayout({
         <Providers>
           <Layout>
             {children}
-            {settings}
+            {modal}
           </Layout>
         </Providers>
         <Analytics />

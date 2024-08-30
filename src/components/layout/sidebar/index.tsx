@@ -4,10 +4,12 @@ import { SidebarToggle } from "@/components/layout/sidebar/sidebar-toggle"
 import { Button } from "@/components/ui/button"
 import { Icons } from "@/components/ui/icons"
 import { cn } from "@/lib/utils"
-import { UserSettingsStore } from "@/stores/user-settings.store"
 
 type SidebarProps = {
-  sidebar: UserSettingsStore["sidebar"]
+  sidebar: {
+    isOpen: boolean
+    setIsOpen: () => void
+  }
 }
 
 export function Sidebar({ sidebar }: SidebarProps) {

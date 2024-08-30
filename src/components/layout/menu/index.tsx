@@ -1,8 +1,7 @@
 "use client"
 
-import { Ellipsis, LogOut } from "lucide-react"
+import { Ellipsis } from "lucide-react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
 import { CollapseMenuButton } from "@/components/layout/menu/collapse-menu-button"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -12,16 +11,15 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "@/components/ui/tooltip"
-import { getMenuList } from "@/lib/menu-list"
+import { useMenuList } from "@/lib/menu-list"
 import { cn } from "@/lib/utils"
 
 interface MenuProps {
-  isOpen: boolean | undefined
+  isOpen: boolean
 }
 
 export function Menu({ isOpen }: MenuProps) {
-  const pathname = usePathname()
-  const menuList = getMenuList(pathname)
+  const menuList = useMenuList()
 
   return (
     <ScrollArea className="[&>div>div[style]]:!block">
@@ -32,11 +30,11 @@ export function Menu({ isOpen }: MenuProps) {
               className={cn("w-full", className, groupLabel ? "pt-5" : "")}
               key={index}
             >
-              {(isOpen && groupLabel) || isOpen === undefined ? (
+              {isOpen && groupLabel ? (
                 <p className="max-w-[248px] truncate px-4 pb-2 text-sm font-medium text-muted-foreground">
                   {groupLabel}
                 </p>
-              ) : !isOpen && isOpen !== undefined && groupLabel ? (
+              ) : !isOpen && groupLabel ? (
                 <TooltipProvider>
                   <Tooltip delayDuration={100}>
                     <TooltipTrigger className="w-full">
@@ -53,8 +51,8 @@ export function Menu({ isOpen }: MenuProps) {
                 <p className="pb-2"></p>
               )}
               {menus.map(
-                ({ href, label, icon: Icon, active, submenus }, index) =>
-                  submenus.length === 0 ? (
+                ({ label, icon: Icon, active, submenus, ...rest }, index) =>
+                  !submenus.length ? (
                     <div className="w-full" key={index}>
                       <TooltipProvider disableHoverableContent>
                         <Tooltip delayDuration={100}>
@@ -62,21 +60,40 @@ export function Menu({ isOpen }: MenuProps) {
                             <Button
                               variant={active ? "secondary" : "ghost"}
                               className="mb-1 h-10 w-full justify-start"
-                              asChild
+                              onClick={
+                                "action" in rest ? rest.action : undefined
+                              }
+                              asChild={"href" in rest}
                             >
-                              <Link href={href}>
-                                <span className={cn({ "mr-4": isOpen })}>
-                                  <Icon size={18} />
-                                </span>
-                                <p
-                                  className={cn("max-w-[200px] truncate", {
-                                    "-translate-x-96 opacity-0": !isOpen,
-                                    "translate-x-0 opacity-100": isOpen
-                                  })}
-                                >
-                                  {label}
-                                </p>
-                              </Link>
+                              {"href" in rest ? (
+                                <Link href={rest.href}>
+                                  <span className={cn({ "mr-4": isOpen })}>
+                                    <Icon size={18} />
+                                  </span>
+                                  <p
+                                    className={cn("max-w-[200px] truncate", {
+                                      "-translate-x-96 opacity-0": !isOpen,
+                                      "translate-x-0 opacity-100": isOpen
+                                    })}
+                                  >
+                                    {label}
+                                  </p>
+                                </Link>
+                              ) : (
+                                <>
+                                  <span className={cn({ "mr-4": isOpen })}>
+                                    <Icon size={18} />
+                                  </span>
+                                  <p
+                                    className={cn("max-w-[200px] truncate", {
+                                      "-translate-x-96 opacity-0": !isOpen,
+                                      "translate-x-0 opacity-100": isOpen
+                                    })}
+                                  >
+                                    {label}
+                                  </p>
+                                </>
+                              )}
                             </Button>
                           </TooltipTrigger>
                           {!isOpen ? (
@@ -95,15 +112,13 @@ export function Menu({ isOpen }: MenuProps) {
                         active={active}
                         submenus={submenus}
                         isOpen={isOpen}
+                        {...rest}
                       />
                     </div>
                   )
               )}
             </li>
           ))}
-          {/* <li className="w-full grow flex items-end max-w-48 mx-auto">
-            <SignInMenuButton isOpen={isOpen} />
-          </li> */}
         </ul>
       </nav>
     </ScrollArea>

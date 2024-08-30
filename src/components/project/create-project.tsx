@@ -21,7 +21,7 @@ import { getProjectsFromLocalStorage } from "@/lib/utils"
 import { type Project } from "@/server/db/schema"
 import { api } from "@/trpc/react"
 
-export const CreateProjectForm = () => {
+export const CreateProject = () => {
   const router = useRouter()
   const { mutate } = api.project.create.useMutation()
   const { data: session } = useSession()

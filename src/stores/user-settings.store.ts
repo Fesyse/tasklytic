@@ -1,12 +1,10 @@
 import { createJSONStorage, persist } from "zustand/middleware"
 import { createStore } from "zustand/vanilla"
-import { UserSettings } from "@/types/user"
-import { DeepPartial } from "@/types/utils"
+import { type UserSettings } from "@/types/user"
+import { type DeepPartial } from "@/types/utils"
 
 export type UserSettingsStore = UserSettings & {
-  sidebar: {
-    setIsOpen: () => void
-  }
+  setIsSidebarOpen: () => void
   updateUserSettingsStore: (settings: DeepPartial<UserSettings>) => void
 }
 
@@ -18,13 +16,14 @@ export const createUserSettingsStore = (initState = defaultInitState) => {
   return createStore(
     persist<UserSettingsStore>(
       (set, get) => {
-        const setIsOpen = () => {
+        const setIsSidebarOpen = () => {
           const store = get()
           set({ sidebar: { ...store.sidebar, isOpen: !store.sidebar.isOpen } })
         }
 
         return {
-          sidebar: { isOpen: false, setIsOpen },
+          sidebar: { isOpen: false },
+          setIsSidebarOpen,
           updateUserSettingsStore: (settings: DeepPartial<UserSettings>) => {
             const store = get()
             set({
@@ -33,7 +32,7 @@ export const createUserSettingsStore = (initState = defaultInitState) => {
               sidebar: { ...store.sidebar, ...settings.sidebar }
             })
           },
-          ...defaultInitState
+          ...initState
         }
       },
       {
