@@ -92,7 +92,7 @@ export function useMenuList(): Group[] {
 
 const getProjectIcon = (projectName: string): LucideIcon => {
   const letter = projectName[0]!.toUpperCase()
-  const ProjectIcon: LucideIcon = forwardRef(({ className }) => {
+  const ProjectIcon: LucideIcon = forwardRef(({ className }, _ref) => {
     return (
       <div
         className={cn(

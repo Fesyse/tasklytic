@@ -177,7 +177,7 @@ const SubmenuContainer = ({
       initial="hidden"
       animate="visible"
       exit="hidden"
-      className="absolute bottom-[calc(100%+2.5rem)] left-1/2 flex translate-x-[-50%] flex-col gap-2" // Adjusted position
+      className="absolute bottom-[calc(100%+2.5rem)] left-1/2 flex translate-x-[-50%] flex-col-reverse gap-2" // Adjusted position
     >
       {submenus.map((submenu, idx) => (
         <motion.div
@@ -193,14 +193,14 @@ const SubmenuContainer = ({
               href={submenu.href}
               className="flex h-full w-full items-center justify-center rounded-full border border-gray-200 bg-gray-100 px-2 py-0.5 text-xs text-neutral-700 dark:border-neutral-900 dark:bg-neutral-800 dark:text-white"
             >
-              <submenu.icon size={16} />
+              <submenu.icon className="text-xl" />
             </Link>
           ) : (
             <button
               onClick={submenu.action}
               className="flex h-full w-full items-center justify-center rounded-full border border-gray-200 bg-gray-100 px-2 py-0.5 text-xs text-neutral-700 dark:border-neutral-900 dark:bg-neutral-800 dark:text-white"
             >
-              <submenu.icon size={16} />
+              <submenu.icon className="text-xl" />
             </button>
           )}
         </motion.div>
@@ -309,14 +309,14 @@ const SubmenuContainerMobile = ({ submenus }: { submenus: Submenu[] }) => {
               href={submenu.href}
               className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-900"
             >
-              <submenu.icon size={16} />
+              <submenu.icon className="text-sm" size={16} />
             </Link>
           ) : (
             <button
               onClick={submenu.action}
               className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-900"
             >
-              <submenu.icon size={16} />
+              <submenu.icon className="text-sm" size={16} />
             </button>
           )}
         </motion.div>
