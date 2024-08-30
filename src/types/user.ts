@@ -1,4 +1,4 @@
-import { NAVIGATION_MENU } from "@/lib/constants"
+import { type NAVIGATION_MENU } from "@/lib/constants"
 
 type UserSettings = {
   sidebar: { isOpen: boolean }

@@ -8,7 +8,6 @@ import {
   DialogContent,
   DialogDescription,
   DialogHeader,
-  DialogOverlay,
   DialogTitle
 } from "@/components/ui/dialog"
 import {
@@ -17,7 +16,7 @@ import {
   DrawerDescription,
   DrawerHeader,
   DrawerTitle
-} from "./ui/drawer"
+} from "@/components/ui/drawer"
 
 type ModalProps = {
   title: React.ReactNode

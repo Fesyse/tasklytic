@@ -28,14 +28,14 @@ export default function NotFoundPage() {
           </p>
           <div className="mt-6">
             <Link
-              href="/dashboard"
+              href="/projects"
               className={buttonVariants({
                 size: "default",
                 variant: "default"
               })}
               prefetch={false}
             >
-              Go to Dashboard
+              Go to Projects
             </Link>
           </div>
         </div>

@@ -29,6 +29,7 @@ export const TextGenerateEffect = ({
         delay: stagger(0.2)
       }
     )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scope.current])
 
   const renderWords = () => {
@@ -38,7 +39,7 @@ export const TextGenerateEffect = ({
           return (
             <motion.span
               key={word + idx}
-              className="dark:text-white text-black opacity-0"
+              className="text-black opacity-0 dark:text-white"
               style={{
                 filter: filter ? "blur(10px)" : "none"
               }}
@@ -52,9 +53,9 @@ export const TextGenerateEffect = ({
   }
 
   return (
-    <div className={cn("font-bold text-2xl", className)}>
+    <div className={cn("text-2xl font-bold", className)}>
       <div className="mt-4">
-        <div className="text-foreground leading-snug tracking-wide">
+        <div className="leading-snug tracking-wide text-foreground">
           {renderWords()}
         </div>
       </div>

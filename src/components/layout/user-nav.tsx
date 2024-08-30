@@ -35,7 +35,7 @@ export function UserNav() {
       toast.success(`Successfully signed out.`)
     } else return signIn()
   }
-  return (user && status !== "loading") || status === "unauthenticated" ? (
+  return ((user && status !== "loading") ?? status === "unauthenticated") ? (
     <DropdownMenu>
       <TooltipProvider disableHoverableContent>
         <Tooltip delayDuration={100}>
@@ -85,9 +85,9 @@ export function UserNav() {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem className="hover:cursor-pointer" asChild>
-            <Link href="/dashboard" className="flex items-center">
+            <Link href="/projects" className="flex items-center">
               <LayoutGrid className="mr-3 h-4 w-4 text-muted-foreground" />
-              Dashboard
+              Projects
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem className="hover:cursor-pointer" asChild>

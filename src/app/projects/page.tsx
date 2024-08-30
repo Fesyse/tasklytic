@@ -1,18 +1,17 @@
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Separator } from "@/components/ui/separator"
-
-type DashboardPageProps = {
+type ProjectsPageProps = {
   searchParams: {
     page?: string
     perPage?: string
   }
 }
 
-export default async function DashboardPage({
-  searchParams
-}: DashboardPageProps) {
-  const page = searchParams.page ? parseInt(searchParams.page) : 1
-  const perPage = searchParams.perPage ? parseInt(searchParams.perPage) : 10
+export default async function ProjectsPage(
+  {
+    // searchParams
+  }: ProjectsPageProps
+) {
+  // const page = searchParams.page ? parseInt(searchParams.page) : 1
+  // const perPage = searchParams.perPage ? parseInt(searchParams.perPage) : 10
 
   return (
     <>

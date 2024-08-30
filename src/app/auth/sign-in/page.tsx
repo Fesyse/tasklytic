@@ -1,11 +1,10 @@
 "use client"
 
 import { DiscordLogoIcon, GitHubLogoIcon } from "@radix-ui/react-icons"
-import { BuiltInProviderType } from "next-auth/providers/index"
-import { LiteralUnion, signIn } from "next-auth/react"
+import { type BuiltInProviderType } from "next-auth/providers/index"
+import { type LiteralUnion, signIn } from "next-auth/react"
 import Image from "next/image"
 import { toast } from "sonner"
-import { ContentLayout } from "@/components/layout/content-layout"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -19,7 +18,7 @@ import { Separator } from "@/components/ui/separator"
 
 export default function SignInPage() {
   const signInWith = async (provider: LiteralUnion<BuiltInProviderType>) => {
-    const result = await signIn(provider, { callbackUrl: "/dashboard" })
+    const result = await signIn(provider, { callbackUrl: "/projects" })
     toast.success(`Successfully signed in with ${provider}.`)
 
     return result

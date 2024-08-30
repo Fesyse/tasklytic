@@ -4,7 +4,7 @@ import Link from "next/link"
 import { type FC } from "react"
 import { Button } from "@/components/ui/button"
 import { getProjectsFromLocalStorage } from "@/lib/utils"
-import { Project } from "@/server/db/schema"
+import { type Project } from "@/server/db/schema"
 
 type ProjectNavigationProps = {
   projects: Project[] | null
@@ -17,7 +17,7 @@ export const ProjectNavigation: FC<ProjectNavigationProps> = ({ projects }) => {
     projects.map(project => (
       <li key={project.id}>
         <Button variant="outline" asChild>
-          <Link href={`/project/${project.id}/`}>{project.name}</Link>
+          <Link href={`/projects/${project.id}/`}>{project.name}</Link>
         </Button>
       </li>
     ))

@@ -51,8 +51,23 @@ export function Menu({ isOpen }: MenuProps) {
                 <p className="pb-2"></p>
               )}
               {menus.map(
-                ({ label, icon: Icon, active, submenus, ...rest }, index) =>
-                  !submenus.length ? (
+                ({ label, icon: Icon, active, submenus, ...rest }, index) => {
+                  const buttonContent = (
+                    <>
+                      <span className={cn({ "mr-4": isOpen })}>
+                        <Icon size={18} />
+                      </span>
+                      <p
+                        className={cn("max-w-[200px] truncate", {
+                          "-translate-x-96 opacity-0": !isOpen,
+                          "translate-x-0 opacity-100": isOpen
+                        })}
+                      >
+                        {label}
+                      </p>
+                    </>
+                  )
+                  return !submenus.length ? (
                     <div className="w-full" key={index}>
                       <TooltipProvider disableHoverableContent>
                         <Tooltip delayDuration={100}>
@@ -66,33 +81,9 @@ export function Menu({ isOpen }: MenuProps) {
                               asChild={"href" in rest}
                             >
                               {"href" in rest ? (
-                                <Link href={rest.href}>
-                                  <span className={cn({ "mr-4": isOpen })}>
-                                    <Icon size={18} />
-                                  </span>
-                                  <p
-                                    className={cn("max-w-[200px] truncate", {
-                                      "-translate-x-96 opacity-0": !isOpen,
-                                      "translate-x-0 opacity-100": isOpen
-                                    })}
-                                  >
-                                    {label}
-                                  </p>
-                                </Link>
+                                <Link href={rest.href}>{buttonContent}</Link>
                               ) : (
-                                <>
-                                  <span className={cn({ "mr-4": isOpen })}>
-                                    <Icon size={18} />
-                                  </span>
-                                  <p
-                                    className={cn("max-w-[200px] truncate", {
-                                      "-translate-x-96 opacity-0": !isOpen,
-                                      "translate-x-0 opacity-100": isOpen
-                                    })}
-                                  >
-                                    {label}
-                                  </p>
-                                </>
+                                buttonContent
                               )}
                             </Button>
                           </TooltipTrigger>
@@ -116,6 +107,7 @@ export function Menu({ isOpen }: MenuProps) {
                       />
                     </div>
                   )
+                }
               )}
             </li>
           ))}

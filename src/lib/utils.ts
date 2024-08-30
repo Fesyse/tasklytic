@@ -1,7 +1,7 @@
 import { type ClassValue, clsx } from "clsx"
 import { toast } from "sonner"
 import { twMerge } from "tailwind-merge"
-import { Project } from "@/server/db/schema"
+import { type Project } from "@/server/db/schema"
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))

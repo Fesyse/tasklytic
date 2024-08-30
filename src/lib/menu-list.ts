@@ -1,6 +1,7 @@
 import { LayoutDashboard, type LucideIcon, Settings } from "lucide-react"
 import { usePathname } from "next/navigation"
 import { type MouseEventHandler } from "react"
+import { getProjectsFromLocalStorage } from "./utils"
 import { api } from "@/trpc/react"
 
 type _Submenu = {
@@ -44,25 +45,26 @@ export function useMenuList(): Group[] {
   const { data: projects } = api.project.getAll.useQuery(undefined, {
     initialData: []
   })
+  const projectsFromLocalStorage = getProjectsFromLocalStorage()
 
   return [
     {
-      groupLabel: "",
+      groupLabel: "Contents",
       menus: [
         {
-          href: "/dashboard",
-          label: "Dashboard",
-          active: pathname.startsWith("/dashboard"),
+          href: "/projects",
+          label: "Projects",
+          active: pathname.startsWith("/projects"),
           icon: LayoutDashboard,
           submenus: [
             {
-              href: "/dashboard/create-project",
-              active: pathname.startsWith("/dashboard/create-project"),
+              href: "/create-project",
+              active: pathname.startsWith("/create-project"),
               label: "Create new project"
             },
-            ...(projects ?? []).map<Submenu>(project => ({
-              href: `/project/${project.id}`,
-              active: pathname.startsWith(`/project/${project.id}`),
+            ...(projects ?? projectsFromLocalStorage).map<Submenu>(project => ({
+              href: `/projects/${project.id}`,
+              active: pathname.startsWith(`/projects/${project.id}`),
               label: project.name
             }))
           ]

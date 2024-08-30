@@ -1,11 +1,10 @@
 import { DrizzleAdapter } from "@auth/drizzle-adapter"
 import type { DefaultSession, NextAuthConfig } from "next-auth"
 import NextAuth from "next-auth"
-import { type Adapter } from "next-auth/adapters"
 import DiscordProvider from "next-auth/providers/discord"
 import GithubProvider from "next-auth/providers/github"
 import GoogleProvider from "next-auth/providers/google"
-import { DefaultPostgresSchema } from "node_modules/@auth/drizzle-adapter/lib/pg"
+import { type DefaultPostgresSchema } from "node_modules/@auth/drizzle-adapter/lib/pg"
 import { env } from "@/env"
 import { db } from "@/server/db"
 import {

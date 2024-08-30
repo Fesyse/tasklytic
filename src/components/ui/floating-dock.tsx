@@ -6,17 +6,17 @@
 import { IconLayoutNavbarCollapse } from "@tabler/icons-react"
 import {
   AnimatePresence,
-  MotionValue,
+  type MotionValue,
   motion,
   useMotionValue,
   useSpring,
   useTransform
 } from "framer-motion"
-import { LucideIcon } from "lucide-react"
+import { type LucideIcon } from "lucide-react"
 import Link from "next/link"
 import { useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Menu } from "@/lib/menu-list"
+import { type Menu } from "@/lib/menu-list"
 import { cn } from "@/lib/utils"
 
 export const FloatingDock = ({
