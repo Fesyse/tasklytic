@@ -1,12 +1,13 @@
-import { LayoutDashboard, type LucideIcon, Settings } from "lucide-react"
+import { LayoutDashboard, type LucideIcon, Plus, Settings } from "lucide-react"
 import { usePathname } from "next/navigation"
-import { type MouseEventHandler } from "react"
-import { getProjectsFromLocalStorage } from "./utils"
+import { type MouseEventHandler, forwardRef } from "react"
+import { cn, getProjectsFromLocalStorage } from "./utils"
 import { api } from "@/trpc/react"
 
 type _Submenu = {
   label: string
   active: boolean
+  icon: LucideIcon
 }
 
 export type Submenu = _Submenu &
@@ -60,11 +61,13 @@ export function useMenuList(): Group[] {
             {
               href: "/create-project",
               active: pathname.startsWith("/create-project"),
+              icon: Plus,
               label: "Create new project"
             },
             ...(projects ?? projectsFromLocalStorage).map<Submenu>(project => ({
               href: `/projects/${project.id}`,
               active: pathname.startsWith(`/projects/${project.id}`),
+              icon: getProjectIcon(project.name),
               label: project.name
             }))
           ]
@@ -85,4 +88,24 @@ export function useMenuList(): Group[] {
       ]
     }
   ]
+}
+
+const getProjectIcon = (projectName: string): LucideIcon => {
+  const letter = projectName[0]!.toUpperCase()
+  const ProjectIcon: LucideIcon = forwardRef(({ className }) => {
+    return (
+      <div
+        className={cn(
+          "flex h-6 w-6 items-center justify-center text-lg",
+          className
+        )}
+      >
+        {letter}
+      </div>
+    )
+  })
+
+  ProjectIcon.displayName = "ProjectIcon"
+
+  return ProjectIcon
 }
