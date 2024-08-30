@@ -28,6 +28,8 @@ const projectKeys: (keyof Project)[] = [
 ]
 
 function getProjectsFromLocalStorage(): Project[] {
+  if (typeof window === "undefined") return []
+
   const projects = JSON.parse(
     localStorage.getItem("projects") ?? "[]"
   ) as unknown[]

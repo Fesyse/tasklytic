@@ -44,7 +44,7 @@ type Group = {
 export function useMenuList(): Group[] {
   const pathname = usePathname()
   const { data: projects } = api.project.getAll.useQuery(undefined, {
-    initialData: []
+    initialData: null
   })
   const projectsFromLocalStorage = getProjectsFromLocalStorage()
 
