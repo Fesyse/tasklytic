@@ -67,8 +67,8 @@ export default function SignInPage() {
             </Button>
           </CardContent>
           <CardFooter>
-            <Balancer>
-              <p className="text-center text-sm font-thin">
+            <p className="text-center text-sm font-thin">
+              <Balancer>
                 By signing in you accept our{" "}
                 <Link className="underline" href="/terms-of-service">
                   Terms of Service
@@ -77,8 +77,8 @@ export default function SignInPage() {
                 <Link className="underline" href="/privacy-policy">
                   Privacy Policy
                 </Link>
-              </p>
-            </Balancer>
+              </Balancer>
+            </p>
           </CardFooter>
         </Card>
       </div>
