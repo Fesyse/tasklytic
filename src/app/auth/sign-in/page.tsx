@@ -4,12 +4,15 @@ import { DiscordLogoIcon, GitHubLogoIcon } from "@radix-ui/react-icons"
 import { type BuiltInProviderType } from "next-auth/providers/index"
 import { type LiteralUnion, signIn } from "next-auth/react"
 import Image from "next/image"
+import Link from "next/link"
+import Balancer from "react-wrap-balancer"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle
 } from "@/components/ui/card"
@@ -63,6 +66,20 @@ export default function SignInPage() {
               Sign in with Discord
             </Button>
           </CardContent>
+          <CardFooter>
+            <Balancer>
+              <p className="text-center text-sm font-thin">
+                By signing in you accept our{" "}
+                <Link className="underline" href="/terms-of-service">
+                  Terms of Service
+                </Link>{" "}
+                and{" "}
+                <Link className="underline" href="/privacy-policy">
+                  Privacy Policy
+                </Link>
+              </p>
+            </Balancer>
+          </CardFooter>
         </Card>
       </div>
       <div className="hidden bg-muted lg:block">

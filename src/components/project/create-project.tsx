@@ -22,6 +22,7 @@ import { type Project } from "@/server/db/schema"
 import { api } from "@/trpc/react"
 
 export const CreateProject = () => {
+  const utils = api.useUtils()
   const router = useRouter()
   const { mutate } = api.project.create.useMutation()
   const { data: session } = useSession()
@@ -32,6 +33,7 @@ export const CreateProject = () => {
 
   const createProject = (data: CreateProjectSchema) => {
     const onSuccess = (project: Project) => {
+      void utils.project.getAll.invalidate()
       router.push(`/project/${project.id}`)
       toast.success("Successfully created project!")
     }
@@ -52,6 +54,7 @@ export const CreateProject = () => {
   const createProjectWithLocalStorage = (data: CreateProjectSchema) => {
     const projects = getProjectsFromLocalStorage()
 
+    // simple incremental number id - 1 2 3
     const id = `${
       projects[0]
         ? isNaN(parseInt(projects[0].id))
