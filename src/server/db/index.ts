@@ -1,6 +1,4 @@
-import { type NeonQueryFunction, neon } from "@neondatabase/serverless"
-import { drizzle as productionDrizzle } from "drizzle-orm/neon-http"
-import { drizzle as developmentDrizzle } from "drizzle-orm/postgres-js"
+import { drizzle } from "drizzle-orm/postgres-js"
 import postgres from "postgres"
 import * as schema from "./schema"
 import { env } from "@/env"
@@ -10,18 +8,14 @@ import { env } from "@/env"
  * update.
  */
 const globalForDb = globalThis as unknown as {
-  sql: postgres.Sql | NeonQueryFunction<false, false> | undefined
+  sql: postgres.Sql | undefined
 }
 
 const sql =
   globalForDb.sql ??
-  (env.NODE_ENV === "production"
-    ? neon(env.POSTGRES_URL)
-    : postgres(env.POSTGRES_URL))
+  postgres(env.DATABASE_URL, {
+    ssl: env.NODE_ENV === "production" ? "require" : undefined
+  })
+if (env.NODE_ENV !== "production") globalForDb.sql = sql
 
-globalForDb.sql = sql
-
-export const db =
-  env.NODE_ENV === "production"
-    ? productionDrizzle(sql as NeonQueryFunction<false, false>, { schema })
-    : developmentDrizzle(sql as postgres.Sql, { schema })
+export const db = drizzle(sql, { schema })
