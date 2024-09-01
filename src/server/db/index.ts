@@ -1,6 +1,6 @@
-import { sql } from "@vercel/postgres"
+import { type NeonQueryFunction, neon } from "@neondatabase/serverless"
+import { drizzle as productionDrizzle } from "drizzle-orm/neon-http"
 import { drizzle as developmentDrizzle } from "drizzle-orm/postgres-js"
-import { drizzle as productionDrizzle } from "drizzle-orm/vercel-postgres"
 import postgres from "postgres"
 import * as schema from "./schema"
 import { env } from "@/env"
@@ -10,13 +10,18 @@ import { env } from "@/env"
  * update.
  */
 const globalForDb = globalThis as unknown as {
-  conn: postgres.Sql | undefined
+  sql: postgres.Sql | NeonQueryFunction<false, false> | undefined
 }
 
-const conn = globalForDb.conn ?? postgres(env.POSTGRES_URL)
-if (env.NODE_ENV !== "production") globalForDb.conn = conn
+const sql =
+  globalForDb.sql ??
+  (env.NODE_ENV === "production"
+    ? neon(env.POSTGRES_URL)
+    : postgres(env.POSTGRES_URL))
+
+globalForDb.sql = sql
 
 export const db =
   env.NODE_ENV === "production"
-    ? productionDrizzle(sql, { schema })
-    : developmentDrizzle(conn, { schema })
+    ? productionDrizzle(sql as NeonQueryFunction<false, false>, { schema })
+    : developmentDrizzle(sql as postgres.Sql, { schema })
