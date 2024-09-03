@@ -1,4 +1,4 @@
-import { ProjectNavigation as ProjectNavigationClient } from "@/components/project/navigation"
+import { ProjectNavigation as ProjectNavigationClient } from "@/components/projects/navigation"
 import { Skeleton } from "@/components/ui/skeleton"
 import { random } from "@/lib/utils"
 import { api } from "@/trpc/server"

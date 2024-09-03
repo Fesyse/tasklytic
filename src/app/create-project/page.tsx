@@ -1,4 +1,4 @@
-import { CreateProject } from "@/components/project/create-project"
+import { CreateProject } from "@/components/projects/create-project"
 import {
   Card,
   CardContent,

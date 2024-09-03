@@ -5,6 +5,7 @@ import type {
   KeyValuePair,
   PluginCreator
 } from "tailwindcss/types/config"
+import { withUt } from "uploadthing/tw"
 
 // eslint-disable-next-line @typescript-eslint/unbound-method
 const addVariablesForColors: PluginCreator = ({ addBase, theme }) => {
@@ -48,7 +49,7 @@ const gridBackground: PluginCreator = ({ matchUtilities, theme }) => {
   )
 }
 
-const config = {
+const config = withUt({
   darkMode: ["class"],
   content: [
     "./pages/**/*.{ts,tsx}",
@@ -157,6 +158,6 @@ const config = {
     addVariablesForColors,
     gridBackground
   ]
-} satisfies Config
+}) satisfies Config
 
 export default config

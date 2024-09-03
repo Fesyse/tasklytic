@@ -113,7 +113,7 @@ export const projects = createTable("project", {
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   name: varchar("name", { length: 255 }).notNull(),
-
+  icon: varchar("icon", { length: 255 }),
   userId: varchar("user_id", { length: 255 })
     .notNull()
     .references(() => users.id),
@@ -205,7 +205,8 @@ export const subTasksRelations = relations(subTasks, ({ one }) => ({
 
 export const projectsRelations = relations(projects, ({ many, one }) => ({
   tasks: many(tasks),
-  user: one(users, { fields: [projects.userId], references: [users.id] })
+  owner: one(users, { fields: [projects.userId], references: [users.id] }),
+  users: many(users)
 }))
 
 export type Project = typeof projects.$inferSelect
