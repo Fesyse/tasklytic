@@ -7,6 +7,7 @@ import { Layout } from "@/components/layout"
 import { Providers } from "@/components/providers"
 import { cn } from "@/lib/utils"
 import "@/styles/globals.css"
+import { api } from "@/trpc/server"
 
 export const metadata: Metadata = {
   title: {
@@ -26,10 +27,11 @@ type RootLayoutProps = {
   modal: React.ReactNode
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
   modal
 }: Readonly<PropsWithChildren<RootLayoutProps>>) {
+  const projects = await api.project.getAll()
   return (
     <html
       lang="en"
@@ -38,7 +40,7 @@ export default function RootLayout({
       <head />
       <body>
         <Providers>
-          <Layout>
+          <Layout projects={projects}>
             {children}
             {modal}
           </Layout>

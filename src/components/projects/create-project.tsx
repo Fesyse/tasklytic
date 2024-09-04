@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
+import { FileUpload } from "@/components/ui/file-upload"
 import {
   Form,
   FormControl,
@@ -40,10 +41,7 @@ export const CreateProject = () => {
 
     if (session)
       return mutate(data, {
-        onSuccess: data => {
-          const project = data[0]!
-          onSuccess(project)
-        }
+        onSuccess: data => onSuccess(data[0]!)
       })
 
     // if guest
@@ -66,9 +64,9 @@ export const CreateProject = () => {
       id,
       name: data.name,
       userId: "guest",
+      icon: null,
       createdAt: new Date(),
-      updatedAt: new Date(),
-      icon: null
+      updatedAt: new Date()
     }
 
     projects.push(project)
@@ -94,6 +92,22 @@ export const CreateProject = () => {
               </FormControl>
               <FormDescription>
                 This is the name of your project.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          name="icon"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Icon/logo</FormLabel>
+              <FormControl>
+                <FileUpload onChange={field.onChange} multiple={false} />
+              </FormControl>
+              <FormDescription>
+                This is the icon/logo of your project.
               </FormDescription>
               <FormMessage />
             </FormItem>

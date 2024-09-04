@@ -4,8 +4,15 @@ import { Sidebar } from "@/components/layout/sidebar"
 import { useUserSettingsStore } from "@/components/providers/user-settings-store-provider"
 import { DockNavigation } from "./dock-navigation"
 import { cn } from "@/lib/utils"
+import { type Project } from "@/server/db/schema"
 
-export function Layout({ children }: React.PropsWithChildren) {
+type LayoutProps = {
+  projects: Project[] | null
+}
+export function Layout({
+  children,
+  projects
+}: React.PropsWithChildren<LayoutProps>) {
   const { sidebar, navigationMenu, setIsSidebarOpen } = useUserSettingsStore(
     s => s
   )
@@ -13,7 +20,10 @@ export function Layout({ children }: React.PropsWithChildren) {
   return (
     <>
       {navigationMenu === "sidebar" ? (
-        <Sidebar sidebar={{ ...sidebar, setIsOpen: setIsSidebarOpen }} />
+        <Sidebar
+          projects={projects}
+          sidebar={{ ...sidebar, setIsOpen: setIsSidebarOpen }}
+        />
       ) : null}
       <main
         className={cn(
@@ -28,7 +38,9 @@ export function Layout({ children }: React.PropsWithChildren) {
       >
         {children}
       </main>
-      {navigationMenu === "floating-dock" ? <DockNavigation /> : null}
+      {navigationMenu === "floating-dock" ? (
+        <DockNavigation projects={projects} />
+      ) : null}
     </>
   )
 }

@@ -4,15 +4,17 @@ import { SidebarToggle } from "@/components/layout/sidebar/sidebar-toggle"
 import { Button } from "@/components/ui/button"
 import { Icons } from "@/components/ui/icons"
 import { cn } from "@/lib/utils"
+import { type Project } from "@/server/db/schema"
 
 type SidebarProps = {
   sidebar: {
     isOpen: boolean
     setIsOpen: () => void
   }
+  projects: Project[] | null
 }
 
-export function Sidebar({ sidebar }: SidebarProps) {
+export function Sidebar({ sidebar, projects }: SidebarProps) {
   return (
     <aside
       className={cn(
@@ -45,7 +47,7 @@ export function Sidebar({ sidebar }: SidebarProps) {
             </div>
           </Link>
         </Button>
-        <Menu isOpen={sidebar.isOpen} />
+        <Menu projects={projects} isOpen={sidebar.isOpen} />
       </div>
     </aside>
   )

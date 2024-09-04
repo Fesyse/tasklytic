@@ -2,7 +2,7 @@ import { LayoutDashboard, type LucideIcon, Plus, Settings } from "lucide-react"
 import { usePathname } from "next/navigation"
 import { type MouseEventHandler, forwardRef } from "react"
 import { cn, getProjectsFromLocalStorage } from "./utils"
-import { api } from "@/trpc/react"
+import { type Project } from "@/server/db/schema"
 
 type _Submenu = {
   label: string
@@ -41,11 +41,8 @@ type Group = {
   menus: Menu[]
 }
 
-export function useMenuList(): Group[] {
+export function useMenuList(projects: Project[] | null): Group[] {
   const pathname = usePathname()
-  const { data: projects } = api.project.getAll.useQuery(undefined, {
-    initialData: null
-  })
   const projectsFromLocalStorage = getProjectsFromLocalStorage()
 
   return [

@@ -13,13 +13,15 @@ import {
 } from "@/components/ui/tooltip"
 import { useMenuList } from "@/lib/menu-list"
 import { cn } from "@/lib/utils"
+import { type Project } from "@/server/db/schema"
 
 interface MenuProps {
   isOpen: boolean
+  projects: Project[] | null
 }
 
-export function Menu({ isOpen }: MenuProps) {
-  const menuList = useMenuList()
+export function Menu({ isOpen, projects }: MenuProps) {
+  const menuList = useMenuList(projects)
 
   return (
     <ScrollArea className="[&>div>div[style]]:!block">

@@ -2,9 +2,14 @@
 
 import { FloatingDock } from "@/components/ui/floating-dock"
 import { type Menu, useMenuList } from "@/lib/menu-list"
+import { type Project } from "@/server/db/schema"
 
-export const DockNavigation = () => {
-  const menuList = useMenuList()
+type DockNavigationProps = {
+  projects: Project[] | null
+}
+
+export const DockNavigation = ({ projects }: DockNavigationProps) => {
+  const menuList = useMenuList(projects)
   const items: Menu[] = menuList.map<Menu[]>(group => group.menus).flat()
 
   return (

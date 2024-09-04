@@ -19,9 +19,21 @@ export const projectRouter = createTRPCRouter({
   create: protectedProcedure
     .input(createProjectSchema)
     .mutation(async ({ input: project, ctx }) => {
+      const icon = null
+      // if (project.icon) {
+      //   const result = await utapi.uploadFiles(project.icon)
+      //   if (icon?.error)
+      //     return toast.error("An error occured trying to upload image!")
+      //   icon = result.url
+      // }
+
       return ctx.db
         .insert(projects)
-        .values({ ...project, userId: ctx.session.user.id })
+        .values({
+          ...project,
+          userId: ctx.session.user.id,
+          icon
+        })
         .returning()
     })
 })
