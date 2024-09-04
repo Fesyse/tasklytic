@@ -1,3 +1,4 @@
+import { toast } from "sonner"
 import { createProjectSchema } from "@/lib/schemas"
 import {
   createTRPCRouter,
@@ -5,6 +6,7 @@ import {
   publicProcedure
 } from "@/server/api/trpc"
 import { projects } from "@/server/db/schema"
+import { utapi } from "@/server/file-upload"
 
 export const projectRouter = createTRPCRouter({
   getAll: publicProcedure.query(({ ctx }) => {
@@ -19,9 +21,20 @@ export const projectRouter = createTRPCRouter({
   create: protectedProcedure
     .input(createProjectSchema)
     .mutation(async ({ input: project, ctx }) => {
+      let icon = null
+      if (project.icon) {
+        icon = await utapi.uploadFiles(project.icon)
+        if (icon?.error)
+          return toast.error("An error occured trying to upload image!")
+      }
+
       return ctx.db
         .insert(projects)
-        .values({ ...project, userId: ctx.session.user.id })
+        .values({
+          ...project,
+          userId: ctx.session.user.id,
+          icon: icon?.data.url
+        })
         .returning()
     })
 })

@@ -8,14 +8,14 @@ import { env } from "@/env"
  * update.
  */
 const globalForDb = globalThis as unknown as {
-  sql: postgres.Sql | undefined
+  conn: postgres.Sql | undefined
 }
 
-const sql =
-  globalForDb.sql ??
+const conn =
+  globalForDb.conn ??
   postgres(env.DATABASE_URL, {
     ssl: env.NODE_ENV === "production" ? "require" : undefined
   })
-if (env.NODE_ENV !== "production") globalForDb.sql = sql
+if (env.NODE_ENV !== "production") globalForDb.conn = conn
 
-export const db = drizzle(sql, { schema })
+export const db = drizzle(conn, { schema })

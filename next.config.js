@@ -21,6 +21,10 @@ const config = {
         hostname: "cdn.discordapp.com",
         pathname: "/avatars/**"
       }
+      // {
+      //   hostname: "utfs.io",
+      //   pathname: `/a/${env.UPLOADTHING_APP_ID}/**`
+      // }
     ]
   }
 }

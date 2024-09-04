@@ -16,6 +16,7 @@ import {
   FormMessage
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { FileUpload } from "../ui/file-upload"
 import { type CreateProjectSchema, createProjectSchema } from "@/lib/schemas"
 import { getProjectsFromLocalStorage } from "@/lib/utils"
 import { type Project } from "@/server/db/schema"
@@ -41,6 +42,7 @@ export const CreateProject = () => {
     if (session)
       return mutate(data, {
         onSuccess: data => {
+          if (!Array.isArray(data)) return
           const project = data[0]!
           onSuccess(project)
         }
@@ -66,6 +68,7 @@ export const CreateProject = () => {
       id,
       name: data.name,
       userId: "guest",
+      icon: null,
       createdAt: new Date(),
       updatedAt: new Date()
     }
@@ -93,6 +96,26 @@ export const CreateProject = () => {
               </FormControl>
               <FormDescription>
                 This is the name of your project.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          name="icon"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Icon/logo</FormLabel>
+              <FormControl>
+                <FileUpload
+                  ref={field.ref}
+                  onChange={field.onChange}
+                  multiple={false}
+                />
+              </FormControl>
+              <FormDescription>
+                This is the icon/logo of your project.
               </FormDescription>
               <FormMessage />
             </FormItem>
