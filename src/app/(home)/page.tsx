@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils"
 
 export default function Home() {
   return (
-    <div className="min-h-[calc(100vh-var(--header-size))]) relative rounded dark:bg-grid-white/[0.02]">
+    <div className="min-h-[calc(100vh-var(--dashboard-header-size))]) relative rounded dark:bg-grid-white/[0.02]">
       <Spotlight className="hidden dark:block" fill="rgba(255,255,255,0.2)" />
       <div className="px-4">
         <section className="py-6 text-center md:py-10">

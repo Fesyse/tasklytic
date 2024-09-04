@@ -3,11 +3,9 @@ import { GeistSans } from "geist/font/sans"
 import { type Metadata } from "next"
 import { Comfortaa } from "next/font/google"
 import { type PropsWithChildren } from "react"
-import { Layout } from "@/components/layout"
 import { Providers } from "@/components/providers"
 import { cn } from "@/lib/utils"
 import "@/styles/globals.css"
-import { api } from "@/trpc/server"
 
 export const metadata: Metadata = {
   title: {
@@ -31,7 +29,6 @@ export default async function RootLayout({
   children,
   modal
 }: Readonly<PropsWithChildren<RootLayoutProps>>) {
-  const projects = await api.project.getAll()
   return (
     <html
       lang="en"
@@ -40,10 +37,8 @@ export default async function RootLayout({
       <head />
       <body>
         <Providers>
-          <Layout projects={projects}>
-            {children}
-            {modal}
-          </Layout>
+          {children}
+          {modal}
         </Providers>
         <Analytics />
       </body>

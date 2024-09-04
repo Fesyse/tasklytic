@@ -1,6 +1,6 @@
 "use client"
 
-import { Sidebar } from "@/components/layout/sidebar"
+import { Sidebar } from "@/components/layout/dashboard/sidebar"
 import { useUserSettingsStore } from "@/components/providers/user-settings-store-provider"
 import { DockNavigation } from "./dock-navigation"
 import { cn } from "@/lib/utils"
@@ -9,7 +9,7 @@ import { type Project } from "@/server/db/schema"
 type LayoutProps = {
   projects: Project[] | null
 }
-export function Layout({
+export function DashboardLayout({
   children,
   projects
 }: React.PropsWithChildren<LayoutProps>) {

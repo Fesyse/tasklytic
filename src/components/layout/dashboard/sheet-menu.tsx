@@ -2,7 +2,7 @@
 
 import { MenuIcon } from "lucide-react"
 import Link from "next/link"
-import { Menu } from "@/components/layout/menu"
+import { Menu } from "@/components/layout/dashboard/menu"
 import { useUserSettingsStore } from "@/components/providers/user-settings-store-provider"
 import { Button } from "@/components/ui/button"
 import { Icons } from "@/components/ui/icons"

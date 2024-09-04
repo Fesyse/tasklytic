@@ -1,6 +1,6 @@
 import Link from "next/link"
-import { Menu } from "@/components/layout/menu"
-import { SidebarToggle } from "@/components/layout/sidebar/sidebar-toggle"
+import { Menu } from "@/components/layout/dashboard/menu"
+import { SidebarToggle } from "@/components/layout/dashboard/sidebar/sidebar-toggle"
 import { Button } from "@/components/ui/button"
 import { Icons } from "@/components/ui/icons"
 import { cn } from "@/lib/utils"

@@ -2,7 +2,7 @@
 
 import { Ellipsis } from "lucide-react"
 import Link from "next/link"
-import { CollapseMenuButton } from "@/components/layout/menu/collapse-menu-button"
+import { CollapseMenuButton } from "@/components/layout/dashboard/menu/collapse-menu-button"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import {

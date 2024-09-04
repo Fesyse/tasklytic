@@ -1,4 +1,4 @@
-import { Header } from "@/components/layout/header"
+import { Header } from "@/components/layout/dashboard/header"
 import { cn } from "@/lib/utils"
 
 interface ContentLayoutProps {
@@ -19,7 +19,7 @@ export function ContentLayout({
       <Header title={title} isTitleH2={isTitleH2} />
       <div
         className={cn(
-          "min-h-[calc(100vh-var(--header-size))] px-4 pb-8 pt-8 antialiased sm:px-8",
+          "min-h-[calc(100vh-var(--dashboard-header-size))] px-4 pb-8 pt-8 antialiased sm:px-8",
           className
         )}
       >

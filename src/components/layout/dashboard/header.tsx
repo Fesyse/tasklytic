@@ -1,5 +1,5 @@
-import { SheetMenu } from "@/components/layout/sheet-menu"
-import { UserNav } from "@/components/layout/user-nav"
+import { SheetMenu } from "@/components/layout/dashboard/sheet-menu"
+import { UserNav } from "@/components/layout/dashboard/user-nav"
 import { ThemeToggle } from "@/components/theme-toggle"
 
 interface HeaderProps {

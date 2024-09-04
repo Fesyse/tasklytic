@@ -70,7 +70,7 @@ const config = withUt({
       spacing: {
         sidebar: "13rem",
         "sidebar-collapsed": "90px",
-        header: "var(--header-size)"
+        header: "var(--dashboard-header-size)"
       },
       fontFamily: {
         "geist-sans": "var(--font-geist-sans)",

@@ -1,4 +1,4 @@
-import { ContentLayout } from "@/components/layout/content-layout"
+import { ContentLayout } from "@/components/layout/dashboard/content-layout"
 
 export default function Layout({ children }: React.PropsWithChildren) {
   return (

@@ -1,9 +1,5 @@
-import { ContentLayout } from "@/components/layout/content-layout"
+import { HomeLayout as Layout } from "@/components/layout/home"
 
 export default function HomeLayout({ children }: React.PropsWithChildren) {
-  return (
-    <ContentLayout title="Home" className="!p-0" isTitleH2>
-      {children}
-    </ContentLayout>
-  )
+  return <Layout>{children}</Layout>
 }
