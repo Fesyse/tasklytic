@@ -67,7 +67,8 @@ export const CreateProject = () => {
       name: data.name,
       userId: "guest",
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
+      icon: null
     }
 
     projects.push(project)

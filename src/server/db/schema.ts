@@ -30,6 +30,10 @@ export const users = createTable("user", {
     mode: "date",
     withTimezone: true
   }).default(sql`CURRENT_TIMESTAMP`),
+  subscriptionEndDate: timestamp("subscription_end_date", {
+    mode: "date",
+    withTimezone: true
+  }).default(sql`CURRENT_TIMESTAMP`),
   image: varchar("image", { length: 255 }),
   createdAt: timestamp("created_at", {
     mode: "date",
