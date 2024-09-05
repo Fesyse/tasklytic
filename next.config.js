@@ -7,6 +7,13 @@ await import("./src/env.js")
 /** @type {import("next").NextConfig} */
 const config = {
   transpilePackages: ["lucide-react"],
+  redirects: async () => [
+    {
+      source: "/dashboard",
+      destination: "/projects",
+      permanent: true
+    }
+  ],
   images: {
     remotePatterns: [
       {

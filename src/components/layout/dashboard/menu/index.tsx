@@ -28,7 +28,7 @@ export function Menu({ isOpen }: MenuProps) {
   return (
     <ScrollArea className="[&>div>div[style]]:!block">
       <nav className="mt-8 h-full w-full">
-        <ul className="flex min-h-[calc(100vh-48px-36px-16px-32px)] flex-col items-start space-y-1 px-2 lg:min-h-[calc(100vh-32px-40px-32px)]">
+        <ul className="flex min-h-[calc(100vh-48px-36px-16px-32px)] flex-col items-start gap-1 px-2 lg:min-h-[calc(100vh-32px-40px-32px)]">
           {menuList.map(({ groupLabel, className, menus }, index) => (
             <li
               className={cn("w-full", className, groupLabel ? "pt-5" : "")}
@@ -63,7 +63,7 @@ export function Menu({ isOpen }: MenuProps) {
                       </span>
                       <p
                         className={cn("max-w-[200px] truncate", {
-                          "-translate-x-96 opacity-0": !isOpen,
+                          "absolute -translate-x-96 opacity-0": !isOpen,
                           "translate-x-0 opacity-100": isOpen
                         })}
                       >
@@ -78,7 +78,9 @@ export function Menu({ isOpen }: MenuProps) {
                           <TooltipTrigger asChild>
                             <Button
                               variant={active ? "secondary" : "ghost"}
-                              className="mb-1 h-10 w-full justify-start"
+                              className={cn("mb-1 h-10 w-full justify-start", {
+                                "items-center justify-center p-0": !isOpen
+                              })}
                               onClick={
                                 "action" in rest ? rest.action : undefined
                               }

@@ -12,7 +12,7 @@
     "dev": "next dev --turbo",
     "lint": "next lint",
     "start": "next start",
-    "ui": "bunx shadcn-ui@latest"
+    "ui": "bunx shadcn@latest"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.4.2",

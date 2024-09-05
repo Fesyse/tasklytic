@@ -2,21 +2,13 @@
 
 import { useRouter } from "next/navigation"
 import type { FC, PropsWithChildren } from "react"
-import { useMediaQuery } from "@/hooks/use-media-query"
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle
-} from "@/components/ui/dialog"
-import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle
-} from "@/components/ui/drawer"
+  Credenza,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaHeader,
+  CredenzaTitle
+} from "@/components/ui/credenza"
 
 type ModalProps = {
   title: React.ReactNode
@@ -29,38 +21,19 @@ export const Modal: FC<PropsWithChildren<ModalProps>> = ({
   description
 }) => {
   const router = useRouter()
-  const isDesktop = useMediaQuery("(min-width: 640px)")
 
   const handleOpenChange = () => router.back()
-
-  const modalProps = {
-    defaultOpen: true,
-    open: true,
-    onOpenChange: handleOpenChange
-  }
-  return isDesktop ? (
-    <Dialog {...modalProps}>
-      <DialogContent className="overflow-y-hidden">
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
+  return (
+    <Credenza open onOpenChange={handleOpenChange}>
+      <CredenzaContent>
+        <CredenzaHeader>
+          <CredenzaTitle>{title}</CredenzaTitle>
           {description ? (
-            <DialogDescription>{description}</DialogDescription>
+            <CredenzaDescription>{description}</CredenzaDescription>
           ) : null}
-        </DialogHeader>
+        </CredenzaHeader>
         {children}
-      </DialogContent>
-    </Dialog>
-  ) : (
-    <Drawer {...modalProps}>
-      <DrawerContent>
-        <DrawerHeader>
-          <DrawerTitle>{title}</DrawerTitle>
-          {description ? (
-            <DrawerDescription>{description}</DrawerDescription>
-          ) : null}
-        </DrawerHeader>
-        {children}
-      </DrawerContent>
-    </Drawer>
+      </CredenzaContent>
+    </Credenza>
   )
 }

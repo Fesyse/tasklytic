@@ -69,7 +69,7 @@ const config = withUt({
     extend: {
       spacing: {
         sidebar: "13rem",
-        "sidebar-collapsed": "90px",
+        "sidebar-collapsed": "70px",
         header: "var(--dashboard-header-size)"
       },
       fontFamily: {
@@ -148,8 +148,8 @@ const config = withUt({
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         spotlight: "spotlight 2s ease .75s 1 forwards",
-        "collapsible-down": "collapsible-down 0.2s ease-out",
-        "collapsible-up": "collapsible-up 0.2s ease-out"
+        "collapsible-down": "collapsible-down 0.4s ease-out",
+        "collapsible-up": "collapsible-up 0.4s ease-out"
       }
     }
   },

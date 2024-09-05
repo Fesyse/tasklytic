@@ -24,14 +24,14 @@ export function Sidebar({ sidebar }: SidebarProps) {
       )}
     >
       <SidebarToggle isOpen={sidebar.isOpen} setIsOpen={sidebar.setIsOpen} />
-      <div className="relative flex h-full flex-col overflow-y-auto px-3 py-4 shadow-md dark:shadow-zinc-800">
+      <div className="relative flex h-full flex-col overflow-y-auto px-1 py-4 shadow-md dark:shadow-zinc-800">
         <Button
           className={cn("mb-1 transition-transform duration-300 ease-in-out")}
           variant="link"
           asChild
         >
           <Link href="/" className="flex items-center">
-            <Icons.icon className="h-12 w-12" />
+            <Icons.icon size={40} />
             <div
               className={cn(
                 "whitespace-nowrap text-lg font-bold transition-[transform,opacity,display] duration-300 ease-in-out",
