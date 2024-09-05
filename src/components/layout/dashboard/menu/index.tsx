@@ -13,14 +13,16 @@ import {
 } from "@/components/ui/tooltip"
 import { useMenuList } from "@/lib/menu-list"
 import { cn } from "@/lib/utils"
-import { type Project } from "@/server/db/schema"
+import { api } from "@/trpc/react"
 
 interface MenuProps {
   isOpen: boolean
-  projects: Project[] | null
 }
 
-export function Menu({ isOpen, projects }: MenuProps) {
+export function Menu({ isOpen }: MenuProps) {
+  const { data: projects } = api.project.getAll.useQuery(undefined, {
+    initialData: null
+  })
   const menuList = useMenuList(projects)
 
   return (
