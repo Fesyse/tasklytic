@@ -19,7 +19,10 @@ export function SidebarToggle({ isOpen, setIsOpen }: SidebarToggleProps) {
         <ChevronLeft
           className={cn(
             "h-4 w-4 transition-transform duration-700 ease-in-out",
-            isOpen === false ? "rotate-180" : "rotate-0"
+            {
+              "rotate-180": !isOpen,
+              "rotate-0": isOpen
+            }
           )}
         />
       </Button>
