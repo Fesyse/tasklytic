@@ -1,4 +1,6 @@
+import { z } from "zod"
 import { createProjectSchema } from "@/lib/schemas"
+import { isUUID } from "@/lib/utils"
 import {
   createTRPCRouter,
   protectedProcedure,
@@ -7,6 +9,19 @@ import {
 import { projects } from "@/server/db/schema"
 
 export const projectRouter = createTRPCRouter({
+  getById: publicProcedure
+    .input(
+      z.object({
+        id: z.string()
+      })
+    )
+    .query(({ input, ctx }) => {
+      if (!ctx.session || !isUUID.safeParse(input.id).success) return null
+
+      return ctx.db.query.projects.findFirst({
+        where: (projectsTable, { eq }) => eq(projectsTable.id, input.id)
+      })
+    }),
   getAll: publicProcedure.query(({ ctx }) => {
     if (!ctx.session) return null
     const session = ctx.session

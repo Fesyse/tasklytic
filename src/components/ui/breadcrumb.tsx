@@ -1,7 +1,6 @@
-import * as React from "react"
 import { ChevronRightIcon, DotsHorizontalIcon } from "@radix-ui/react-icons"
 import { Slot } from "@radix-ui/react-slot"
-
+import * as React from "react"
 import { cn } from "@/lib/utils"
 
 const Breadcrumb = React.forwardRef<
@@ -13,10 +12,10 @@ const Breadcrumb = React.forwardRef<
 Breadcrumb.displayName = "Breadcrumb"
 
 const BreadcrumbList = React.forwardRef<
-  HTMLOListElement,
-  React.ComponentPropsWithoutRef<"ol">
+  HTMLUListElement,
+  React.ComponentPropsWithoutRef<"ul">
 >(({ className, ...props }, ref) => (
-  <ol
+  <ul
     ref={ref}
     className={cn(
       "flex flex-wrap items-center gap-1.5 break-words text-sm text-muted-foreground sm:gap-2.5",
@@ -111,5 +110,5 @@ export {
   BreadcrumbLink,
   BreadcrumbPage,
   BreadcrumbSeparator,
-  BreadcrumbEllipsis,
+  BreadcrumbEllipsis
 }

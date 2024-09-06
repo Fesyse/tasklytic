@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from "clsx"
 import { toast } from "sonner"
 import { twMerge } from "tailwind-merge"
+import { z } from "zod"
 import { type Project } from "@/server/db/schema"
 
 function cn(...inputs: ClassValue[]) {
@@ -51,4 +52,6 @@ function getProjectsFromLocalStorage(): Project[] {
   else return projects as Project[]
 }
 
-export { cn, title, random, sleep, getProjectsFromLocalStorage }
+const isUUID = z.string().uuid()
+
+export { cn, title, random, sleep, getProjectsFromLocalStorage, isUUID }

@@ -31,7 +31,7 @@ export function SheetMenu() {
             asChild
           >
             <Link href="/projects" className="flex items-center gap-2">
-              <Icons.icon className="h-10 w-10" />
+              <Icons.icon className="h-8 w-8" />
               <h1 className="text-lg font-bold">Tasklytic</h1>
             </Link>
           </Button>
@@ -41,7 +41,7 @@ export function SheetMenu() {
     </Sheet>
   ) : (
     <Link href="/">
-      <Icons.icon className="h-10 w-10" />
+      <Icons.icon className="h-8 w-8" />
     </Link>
   )
 }

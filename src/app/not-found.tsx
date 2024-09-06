@@ -5,10 +5,7 @@ import { buttonVariants } from "@/components/ui/button"
 
 export default function NotFoundPage() {
   return (
-    <ContentLayout
-      title="Not found"
-      className="flex h-[calc(100vh-var(--dashboard-header-size))] max-w-full flex-col items-center justify-center overflow-hidden bg-background !py-0 px-4"
-    >
+    <ContentLayout className="flex h-[calc(100vh-var(--dashboard-header-size))] max-w-full flex-col items-center justify-center overflow-hidden bg-background !py-0 px-4">
       <div className="flex h-[calc(100vh-var(--dashboard-header-size))] flex-col items-center justify-center bg-background">
         <div className="max-w-md text-center">
           <div className="mb-8 flex items-center justify-center rounded-lg border">

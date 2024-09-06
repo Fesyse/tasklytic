@@ -2,6 +2,7 @@
 
 import { Sidebar } from "@/components/layout/dashboard/sidebar"
 import { useUserSettingsStore } from "@/components/providers/user-settings-store-provider"
+import { ContentLayout } from "./content-layout"
 import { DockNavigation } from "./dock-navigation"
 import { cn } from "@/lib/utils"
 
@@ -26,7 +27,7 @@ export function DashboardLayout({ children }: React.PropsWithChildren) {
             : ""
         )}
       >
-        {children}
+        <ContentLayout>{children}</ContentLayout>
       </main>
       {navigationMenu === "floating-dock" ? <DockNavigation /> : null}
     </>
