@@ -1,6 +1,5 @@
 import { SheetMenu } from "@/components/layout/dashboard/sheet-menu"
 import { UserNav } from "@/components/layout/dashboard/user-nav"
-import { ThemeToggle } from "@/components/theme-toggle"
 import { HeaderBreadcrubms } from "./breadcrumbs"
 
 export function Header() {
@@ -12,7 +11,6 @@ export function Header() {
           <HeaderBreadcrubms />
         </div>
         <div className="flex flex-1 items-center justify-end space-x-2">
-          <ThemeToggle />
           <UserNav />
         </div>
       </div>

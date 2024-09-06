@@ -42,15 +42,16 @@ export const HeaderBreadcrubms: FC<HeaderBreadcrubmsProps> = ({
             <BreadcrumbEllipsis />
             <BreadcrumbSeparator />
             <BreadcrumbItem className="md:text-base lg:text-lg">
-              {isUUID.safeParse(previousPage).success ? (
-                <BreadcrumbLink href={previousPagePath} className="">
+              <BreadcrumbLink
+                href={previousPagePath}
+                className="max-w-[75px] truncate"
+              >
+                {isUUID.safeParse(previousPage).success ? (
                   <ProjectBreadcrumb projectId={previousPage} />
-                </BreadcrumbLink>
-              ) : (
-                <BreadcrumbLink href={previousPagePath}>
-                  {title(previousPage)}
-                </BreadcrumbLink>
-              )}
+                ) : (
+                  title(previousPage)
+                )}
+              </BreadcrumbLink>
             </BreadcrumbItem>
           </>
         ) : null}
@@ -58,16 +59,14 @@ export const HeaderBreadcrubms: FC<HeaderBreadcrubmsProps> = ({
           <>
             <BreadcrumbSeparator />
             <BreadcrumbItem className="md:text-base lg:text-lg">
-              {isUUID.safeParse(currentPage).success ||
-              !isNaN(parseInt(currentPage)) ? (
-                <BreadcrumbPage>
+              <BreadcrumbPage className="max-w-[75px] truncate">
+                {isUUID.safeParse(currentPage).success ||
+                !isNaN(parseInt(currentPage)) ? (
                   <ProjectBreadcrumb projectId={currentPage} />
-                </BreadcrumbPage>
-              ) : (
-                <BreadcrumbPage className="">
-                  {title(currentPage)}
-                </BreadcrumbPage>
-              )}
+                ) : (
+                  title(currentPage)
+                )}
+              </BreadcrumbPage>
             </BreadcrumbItem>
           </>
         ) : null}

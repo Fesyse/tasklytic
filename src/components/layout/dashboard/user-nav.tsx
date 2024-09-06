@@ -5,6 +5,7 @@ import { signIn, signOut, useSession } from "next-auth/react"
 import Image from "next/image"
 import Link from "next/link"
 import { toast } from "sonner"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -98,22 +99,27 @@ export function UserNav() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          className="hover:cursor-pointer"
-          onClick={() => (user ? sign("out") : sign("in"))}
-        >
-          {user ? (
-            <>
-              <LogOut className="mr-3 h-4 w-4 text-muted-foreground" />
-              Sign out
-            </>
-          ) : (
-            <>
-              <LogIn className="mr-3 h-4 w-4 text-muted-foreground" />
-              Sign in
-            </>
-          )}
-        </DropdownMenuItem>
+        <DropdownMenuGroup>
+          <DropdownMenuItem
+            className="hover:cursor-pointer"
+            onClick={() => (user ? sign("out") : sign("in"))}
+          >
+            {user ? (
+              <>
+                <LogOut className="mr-3 h-4 w-4 text-muted-foreground" />
+                Sign out
+              </>
+            ) : (
+              <>
+                <LogIn className="mr-3 h-4 w-4 text-muted-foreground" />
+                Sign in
+              </>
+            )}
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <ThemeToggle expanded />
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   ) : (
