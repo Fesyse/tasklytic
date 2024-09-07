@@ -1,10 +1,13 @@
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin"
 import { Analytics } from "@vercel/analytics/react"
 import { GeistSans } from "geist/font/sans"
 import { type Metadata } from "next"
 import { Comfortaa } from "next/font/google"
 import { type PropsWithChildren } from "react"
+import { extractRouterConfig } from "uploadthing/server"
 import { Providers } from "@/components/providers"
 import { cn } from "@/lib/utils"
+import { fileRouter } from "@/server/file-upload"
 import "@/styles/globals.css"
 
 export const metadata: Metadata = {
@@ -36,6 +39,7 @@ export default async function RootLayout({
     >
       <head />
       <body>
+        <NextSSRPlugin routerConfig={extractRouterConfig(fileRouter)} />
         <Providers>
           {children}
           {modal}

@@ -3,7 +3,7 @@ import {
   type FileRouter as _FileRouter,
   createUploadthing
 } from "uploadthing/next"
-import { UploadThingError } from "uploadthing/server"
+import { UTApi, UploadThingError } from "uploadthing/server"
 
 const f = createUploadthing()
 
@@ -24,3 +24,8 @@ export const fileRouter = {
 } satisfies _FileRouter
 
 export type FileRouter = typeof fileRouter
+const utapi = new UTApi()
+
+console.log(
+  typeof window === "undefined" ? "CALLING FROM SERVER" : "CALLING FROM CLIENT"
+)
