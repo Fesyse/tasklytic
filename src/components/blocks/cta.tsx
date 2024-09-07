@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion"
 import Image from "next/image"
+import Balancer from "react-wrap-balancer"
 import { OssChip } from "@/components/ui/oss-chips"
 import { OssLight } from "@/components/ui/oss-lights"
 import { HeroMainboardStuff } from "@/components/ui/shiny-lights"
@@ -14,8 +15,10 @@ export const CTAWithGithub = () => {
       </p>
       <HeroMainboardStuff className="absolute top-[-100px] block brightness-50 invert dark:hidden" />
       <p className="mx-auto mt-4 max-w-xl text-center text-lg tracking-tight text-slate-400">
-        Design assets, icon teardowns, and a community of fellow icon designers
-        where you can ask questions.
+        <Balancer>
+          Contribute, communicate and have fun with our team! We are always glad
+          to help for you.
+        </Balancer>
       </p>
       <div className="relative flex flex-col items-center justify-center gap-6">
         <div className="absolute left-1/2 top-[-100px] -translate-x-1/2">
