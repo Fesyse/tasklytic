@@ -1,6 +1,8 @@
+import { count, eq } from "drizzle-orm"
 import { z } from "zod"
+import { MAX_PROJECTS, MAX_PROJECTS_WITH_SUBSCRIPTION } from "@/lib/constants"
 import { createProjectSchema } from "@/lib/schemas"
-import { isUUID } from "@/lib/utils"
+import { checkIsSubscriptionExpired, isUUID } from "@/lib/utils"
 import {
   createTRPCRouter,
   protectedProcedure,
@@ -35,6 +37,30 @@ export const projectRouter = createTRPCRouter({
   create: protectedProcedure
     .input(createProjectSchema)
     .mutation(async ({ input: project, ctx }) => {
+      const [user, [projectsCount]] = await Promise.all([
+        ctx.db.query.users.findFirst({
+          where: (usersTable, { eq }) => eq(usersTable.id, ctx.session.user.id)
+        }),
+        ctx.db
+          .select({
+            count: count()
+          })
+          .from(projects)
+          .where(eq(projects.userId, ctx.session.user.id))
+      ])
+      const isSubscriptionExpired =
+        !user?.subscriptionEndDate ||
+        checkIsSubscriptionExpired(user?.subscriptionEndDate ?? new Date())
+
+      if (isSubscriptionExpired && (projectsCount?.count ?? 0) >= MAX_PROJECTS)
+        throw new Error(
+          `Max limit of ${MAX_PROJECTS} reached without subscription.`
+        )
+      if ((projectsCount?.count ?? 0) >= MAX_PROJECTS_WITH_SUBSCRIPTION)
+        throw new Error(
+          `Max limit of ${MAX_PROJECTS_WITH_SUBSCRIPTION} reached.`
+        )
+
       let icon = null
       if (project.icon) {
         const result = await utapi.uploadFiles(project.icon)

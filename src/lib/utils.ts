@@ -1,4 +1,5 @@
 import { type ClassValue, clsx } from "clsx"
+import { addMonths, isAfter } from "date-fns"
 import { toast } from "sonner"
 import { twMerge } from "tailwind-merge"
 import { z } from "zod"
@@ -52,6 +53,18 @@ function getProjectsFromLocalStorage(): Project[] {
   else return projects as Project[]
 }
 
+function checkIsSubscriptionExpired(subscriptionEndDate: Date): boolean {
+  return isAfter(addMonths(new Date(), 1), subscriptionEndDate)
+}
+
 const isUUID = z.string().uuid()
 
-export { cn, title, random, sleep, getProjectsFromLocalStorage, isUUID }
+export {
+  cn,
+  title,
+  random,
+  sleep,
+  getProjectsFromLocalStorage,
+  checkIsSubscriptionExpired,
+  isUUID
+}

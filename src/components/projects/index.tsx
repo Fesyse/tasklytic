@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { type FC } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -25,11 +26,19 @@ export const Projects: FC<ProjectsProps> = ({ projects: _projects }) => {
                   <CardTitle>{title(project.name)}</CardTitle>
                 </CardHeader>
                 <CardContent className="relative min-h-48 overflow-hidden">
-                  <CardGlobe
-                    className="absolute -bottom-56 -right-24 sm:-right-20 md:-bottom-52 md:-right-32"
-                    width={400}
-                    height={400}
-                  />
+                  {project.icon ? (
+                    <Image
+                      src={project.icon}
+                      className="h-[400px] w-full object-cover px-2 py-2"
+                      alt={`${project.name} icon`}
+                    />
+                  ) : (
+                    <CardGlobe
+                      className="absolute -bottom-56 -right-24 sm:-right-20 md:-bottom-52 md:-right-32"
+                      width={400}
+                      height={400}
+                    />
+                  )}
                 </CardContent>
               </Card>
             </Link>
