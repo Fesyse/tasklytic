@@ -1,3 +1,3 @@
 export const MobileNav = () => {
-  return <div>MobileNav</div>
+  return <div className="md:hidden">MobileNav</div>
 }

@@ -1,6 +1,6 @@
 "use client"
 
-import { LayoutGrid, LogIn, LogOut, User } from "lucide-react"
+import { LayoutGrid, LogIn, LogOut, Settings } from "lucide-react"
 import { signIn, signOut, useSession } from "next-auth/react"
 import Image from "next/image"
 import Link from "next/link"
@@ -26,7 +26,11 @@ import {
 } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 
-export function UserNav() {
+type UserNavProps = {
+  className?: string
+}
+
+export function UserNav({ className }: UserNavProps) {
   const { data, status } = useSession()
   const user = data?.user
 
@@ -44,7 +48,7 @@ export function UserNav() {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
-                className="relative h-8 w-8 rounded-full"
+                className={cn("relative h-8 w-8 rounded-full", className)}
               >
                 <Avatar className="h-8 w-8">
                   <Image
@@ -92,10 +96,13 @@ export function UserNav() {
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem className="hover:cursor-pointer" asChild>
-            <Link href="/account" className="flex items-center">
-              <User className="mr-3 h-4 w-4 text-muted-foreground" />
-              Account
+            <Link href="/settings" className="flex items-center">
+              <Settings className="mr-3 h-4 w-4 text-muted-foreground" />
+              Account settings
             </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <ThemeToggle expanded />
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
@@ -115,9 +122,6 @@ export function UserNav() {
                 Sign in
               </>
             )}
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <ThemeToggle expanded />
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
