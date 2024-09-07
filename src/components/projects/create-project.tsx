@@ -25,7 +25,9 @@ import { api } from "@/trpc/react"
 export const CreateProject = () => {
   const utils = api.useUtils()
   const router = useRouter()
-  const { mutate } = api.project.create.useMutation()
+  const { mutate } = api.project.create.useMutation({
+    onError: error => toast.error(error.message)
+  })
   const { data: session } = useSession()
 
   const form = useForm<CreateProjectSchema>({

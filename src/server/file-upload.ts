@@ -24,8 +24,5 @@ export const fileRouter = {
 } satisfies _FileRouter
 
 export type FileRouter = typeof fileRouter
-const utapi = new UTApi()
 
-console.log(
-  typeof window === "undefined" ? "CALLING FROM SERVER" : "CALLING FROM CLIENT"
-)
+export const utapi = new UTApi()
