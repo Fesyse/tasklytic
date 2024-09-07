@@ -45,7 +45,7 @@ export function Sidebar({ sidebar }: SidebarProps) {
             </div>
           </Link>
         </Button>
-        <Menu isOpen={sidebar.isOpen} />
+        <Menu className="mt-8" isOpen={sidebar.isOpen} />
       </div>
     </aside>
   )

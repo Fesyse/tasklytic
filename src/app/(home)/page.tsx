@@ -13,14 +13,14 @@ export default function Home() {
       <Spotlight className="hidden dark:block" fill="rgba(255,255,255,0.2)" />
       <div className="px-4">
         <section className="py-6 text-center md:py-10">
-          <h1 className="bg-gradient-to-b from-foreground/25 to-foreground bg-clip-text text-6xl font-bold text-transparent dark:from-neutral-200 dark:to-neutral-600">
+          <h1 className="lgtext-6xl bg-gradient-to-b from-foreground/25 to-foreground bg-clip-text text-5xl font-bold text-transparent dark:from-neutral-200 dark:to-neutral-600">
             Tasklytic
           </h1>
           <Balance>
             <TextGenerateEffect
               words="Streamline your workflow with smart task management. Organize, prioritize, and track your tasks with ease, all in one powerful tool."
               duration={0.5}
-              className="max-w-[40rem] !text-base md:!text-lg"
+              className="max-w-[40rem] !text-sm sm:!text-base md:!text-lg"
             />
           </Balance>
         </section>

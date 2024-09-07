@@ -16,10 +16,11 @@ import { cn } from "@/lib/utils"
 import { api } from "@/trpc/react"
 
 interface MenuProps {
+  className?: string
   isOpen: boolean
 }
 
-export function Menu({ isOpen }: MenuProps) {
+export function Menu({ isOpen, className }: MenuProps) {
   const { data: projects } = api.project.getAll.useQuery(undefined, {
     initialData: null
   })
@@ -27,7 +28,7 @@ export function Menu({ isOpen }: MenuProps) {
 
   return (
     <ScrollArea className="[&>div>div[style]]:!block">
-      <nav className="mt-8 h-full w-full">
+      <nav className={cn("h-full w-full", className)}>
         <ul className="flex min-h-[calc(100vh-48px-36px-16px-32px)] flex-col items-start gap-1 px-2 lg:min-h-[calc(100vh-32px-40px-32px)]">
           {menuList.map(({ groupLabel, className, menus }, index) => (
             <li
