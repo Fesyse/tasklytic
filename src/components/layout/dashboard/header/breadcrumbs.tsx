@@ -28,8 +28,9 @@ export const HeaderBreadcrubms: FC<HeaderBreadcrubmsProps> = ({
   const currentPage = splittedPathname[splittedPathname.length - 1]
   const previousPage = splittedPathname[splittedPathname.length - 2]
   const previousPagePath = splittedPathname
-    .slice(0, splittedPathname.length - 2)
+    .slice(0, splittedPathname.length - 1)
     .join("/")
+
   return (
     <Breadcrumb className={className} {...props}>
       <BreadcrumbList>

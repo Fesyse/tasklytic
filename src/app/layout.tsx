@@ -1,8 +1,7 @@
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin"
 import { Analytics } from "@vercel/analytics/react"
-import { GeistSans } from "geist/font/sans"
 import { type Metadata } from "next"
-import { Comfortaa } from "next/font/google"
+import { Comfortaa, Recursive } from "next/font/google"
 import { type PropsWithChildren } from "react"
 import { extractRouterConfig } from "uploadthing/server"
 import { Providers } from "@/components/providers"
@@ -23,6 +22,10 @@ const comfortaa = Comfortaa({
   subsets: ["latin"],
   variable: "--font-comfortaa"
 })
+const recursive = Recursive({
+  subsets: ["latin"],
+  variable: "--font-recursive"
+})
 
 type RootLayoutProps = {
   modal: React.ReactNode
@@ -35,7 +38,7 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      className={cn(GeistSans.variable, comfortaa.variable, "font-geist-sans")}
+      className={cn(recursive.variable, comfortaa.variable, "font-recursive")}
     >
       <head />
       <body>

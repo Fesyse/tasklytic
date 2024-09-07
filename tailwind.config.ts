@@ -73,7 +73,7 @@ const config = withUt({
         header: "var(--dashboard-header-size)"
       },
       fontFamily: {
-        "geist-sans": "var(--font-geist-sans)",
+        recursive: "var(--font-recursive)",
         comfortaa: "var(--font-comfortaa)"
       },
       colors: {
