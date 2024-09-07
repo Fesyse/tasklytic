@@ -1,8 +1,9 @@
+import { isCuid } from "@paralleldrive/cuid2"
 import { count, eq } from "drizzle-orm"
 import { z } from "zod"
 import { MAX_PROJECTS, MAX_PROJECTS_WITH_SUBSCRIPTION } from "@/lib/constants"
 import { createProjectSchema } from "@/lib/schemas"
-import { checkIsSubscriptionExpired, isUUID } from "@/lib/utils"
+import { checkIsSubscriptionExpired } from "@/lib/utils"
 import {
   createTRPCRouter,
   protectedProcedure,
@@ -19,7 +20,7 @@ export const projectRouter = createTRPCRouter({
       })
     )
     .query(({ input, ctx }) => {
-      if (!ctx.session || !isUUID.safeParse(input.id).success) return null
+      if (!ctx.session || !isCuid(input.id)) return null
 
       return ctx.db.query.projects.findFirst({
         where: (projectsTable, { eq }) => eq(projectsTable.id, input.id)

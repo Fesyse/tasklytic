@@ -2,7 +2,6 @@ import { type ClassValue, clsx } from "clsx"
 import { addMonths, isAfter } from "date-fns"
 import { toast } from "sonner"
 import { twMerge } from "tailwind-merge"
-import { z } from "zod"
 import { type Project } from "@/server/db/schema"
 
 function cn(...inputs: ClassValue[]) {
@@ -57,14 +56,11 @@ function checkIsSubscriptionExpired(subscriptionEndDate: Date): boolean {
   return isAfter(addMonths(new Date(), 1), subscriptionEndDate)
 }
 
-const isUUID = z.string().uuid()
-
 export {
   cn,
   title,
   random,
   sleep,
   getProjectsFromLocalStorage,
-  checkIsSubscriptionExpired,
-  isUUID
+  checkIsSubscriptionExpired
 }

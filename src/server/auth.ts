@@ -39,6 +39,8 @@ const protectedFromAuthorizedUserPages: string[] = ["/auth/sign-in"]
  */
 export const authOptions: NextAuthConfig = {
   callbacks: {
+    // signIn: (a) => {
+    // },
     authorized: ({ request, auth }) => {
       const pathname = request.nextUrl.pathname
 

@@ -1,5 +1,6 @@
 "use client"
 
+import { isCuid } from "@paralleldrive/cuid2"
 import { usePathname } from "next/navigation"
 import { type FC } from "react"
 import { useMediaQuery } from "@/hooks/use-media-query"
@@ -13,7 +14,7 @@ import {
   BreadcrumbSeparator
 } from "@/components/ui/breadcrumb"
 import { ProjectBreadcrumb } from "./project-breadcrumb"
-import { isUUID, title } from "@/lib/utils"
+import { title } from "@/lib/utils"
 
 type HeaderBreadcrubmsProps = React.ComponentPropsWithoutRef<"ul">
 
@@ -47,7 +48,7 @@ export const HeaderBreadcrubms: FC<HeaderBreadcrubmsProps> = ({
                 href={previousPagePath}
                 className="max-w-[75px] truncate"
               >
-                {isUUID.safeParse(previousPage).success ? (
+                {isCuid(previousPage) ? (
                   <ProjectBreadcrumb projectId={previousPage} />
                 ) : (
                   title(previousPage)
@@ -61,8 +62,7 @@ export const HeaderBreadcrubms: FC<HeaderBreadcrubmsProps> = ({
             <BreadcrumbSeparator />
             <BreadcrumbItem className="md:text-base lg:text-lg">
               <BreadcrumbPage className="max-w-[75px] truncate">
-                {isUUID.safeParse(currentPage).success ||
-                !isNaN(parseInt(currentPage)) ? (
+                {isCuid(currentPage) || !isNaN(parseInt(currentPage)) ? (
                   <ProjectBreadcrumb projectId={currentPage} />
                 ) : (
                   title(currentPage)
