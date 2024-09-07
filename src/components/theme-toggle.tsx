@@ -29,25 +29,38 @@ export function ThemeToggle({
           variant="outline"
           size={expanded ? "default" : "icon"}
           className={cn({
-            "flex w-full items-center justify-start gap-2 border-0 px-2":
+            "flex h-auto w-full items-center justify-start gap-3 rounded-sm border-0 px-2 py-1.5":
               expanded
           })}
         >
           <SunIcon
             width={iconSize}
             height={iconSize}
-            className="rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
+            className={cn(
+              "rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0",
+              {
+                "text-muted-foreground": expanded
+              }
+            )}
           />
           <MoonIcon
             width={iconSize}
             height={iconSize}
-            className="absolute rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
+            className={cn(
+              "absolute rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100",
+              {
+                "text-muted-foreground": expanded
+              }
+            )}
           />
           {expanded ? "Change theme" : null}
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent
+        align={expanded ? "start" : "end"}
+        className="w-[215px]"
+      >
         <DropdownMenuItem onClick={() => setTheme("light")}>
           Light
         </DropdownMenuItem>

@@ -3,7 +3,6 @@
 import { DiscordLogoIcon, GitHubLogoIcon } from "@radix-ui/react-icons"
 import { type BuiltInProviderType } from "next-auth/providers/index"
 import { type LiteralUnion, signIn } from "next-auth/react"
-import Image from "next/image"
 import Link from "next/link"
 import Balancer from "react-wrap-balancer"
 import { toast } from "sonner"
@@ -21,10 +20,8 @@ import { Separator } from "@/components/ui/separator"
 
 export default function SignInPage() {
   const signInWith = async (provider: LiteralUnion<BuiltInProviderType>) => {
-    const result = await signIn(provider, { callbackUrl: "/projects" })
+    await signIn(provider, { callbackUrl: "/projects" })
     toast.success(`Successfully signed in with ${provider}.`)
-
-    return result
   }
 
   return (
@@ -83,14 +80,7 @@ export default function SignInPage() {
         </Card>
       </div>
       <div className="hidden bg-muted lg:block">
-        <Image
-          // create some image for this
-          src="/placeholder.svg"
-          alt="Image"
-          width="480"
-          height="480"
-          className="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-        />
+        <Icons.placeholder className="aspect-square h-full w-full object-cover dark:brightness-[0.375]" />
       </div>
     </>
   )

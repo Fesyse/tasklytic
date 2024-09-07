@@ -56,7 +56,7 @@ export default function Home() {
         </section>
 
         <section className="relative h-full w-full">
-          <Beam className="-mt-[5.75rem] hidden xl:ml-28 xl:block" />
+          <Beam className="-mt-[5rem] hidden xl:ml-28 xl:block" />
           <h2 className="mb-2 text-center text-xl font-bold md:mb-4 md:text-2xl">
             Our features
           </h2>

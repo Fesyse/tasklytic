@@ -59,13 +59,12 @@ export const authOptions: NextAuthConfig = {
       }
     })
   },
-  // @ts-expect-error adapter just gives schema error but it is valid
   adapter: DrizzleAdapter(db, {
     usersTable: users,
     accountsTable: accounts,
     sessionsTable: sessions,
     verificationTokensTable: verificationTokens
-  } as DefaultPostgresSchema),
+  } as unknown as DefaultPostgresSchema),
   pages: {
     signIn: "/auth/sign-in"
   },
