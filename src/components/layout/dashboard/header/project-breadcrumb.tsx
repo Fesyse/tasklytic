@@ -21,7 +21,7 @@ export const ProjectBreadcrumb: FC<ProjectBreadcrumbProps> = ({
   const { isLoading } = query
   let { data: project } = query
 
-  // make sure project is not fething and user is guest
+  // make sure project is not fetching and user is guest
   if (!project && !isLoading && status === "unauthenticated")
     project = getProjectsFromLocalStorage().find(
       localProject => localProject.id === projectId
