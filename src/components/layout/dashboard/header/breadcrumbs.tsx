@@ -57,7 +57,7 @@ export const HeaderBreadcrubms: FC<HeaderBreadcrubmsProps> = ({
             </BreadcrumbItem>
           </>
         ) : null}
-        {currentPage ? (
+        {currentPage && currentPage !== "projects" ? (
           <>
             <BreadcrumbSeparator />
             <BreadcrumbItem className="md:text-base lg:text-lg">
