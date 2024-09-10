@@ -1,5 +1,3 @@
-"use client"
-
 import { Plus } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -12,16 +10,14 @@ import {
   GlowingStarsDescription,
   GlowingStarsTitle
 } from "@/components/ui/glowing-stars"
-import { cn, getProjectsFromLocalStorage, title } from "@/lib/utils"
-import { type Project } from "@/server/db/schema"
+import { cn, title } from "@/lib/utils"
+import { type Project, type ProjectWithTasks } from "@/server/db/schema"
 
 type ProjectsProps = {
-  projects: Project[] | null
+  projects: Project[] | ProjectWithTasks[]
 }
 
-export const Projects: FC<ProjectsProps> = ({ projects: _projects }) => {
-  const projects = _projects ?? getProjectsFromLocalStorage()
-
+export const Projects: FC<ProjectsProps> = ({ projects }) => {
   return (
     <section
       className={cn("mx-auto w-full max-w-[1000px]", {

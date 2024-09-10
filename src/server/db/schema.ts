@@ -211,4 +211,8 @@ export const projectsRelations = relations(projects, ({ many, one }) => ({
   users: many(users)
 }))
 
+export type Task = typeof tasks.$inferSelect
 export type Project = typeof projects.$inferSelect
+export type ProjectWithTasks = Project & {
+  tasks: Task[]
+}

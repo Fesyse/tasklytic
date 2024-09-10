@@ -2,7 +2,7 @@ import { type ClassValue, clsx } from "clsx"
 import { addMonths, isAfter } from "date-fns"
 import { toast } from "sonner"
 import { twMerge } from "tailwind-merge"
-import { type Project } from "@/server/db/schema"
+import { type ProjectWithTasks } from "@/server/db/schema"
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -20,15 +20,16 @@ function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-const projectKeys: (keyof Project)[] = [
+const projectKeys: (keyof ProjectWithTasks)[] = [
   "id",
   "name",
   "userId",
   "createdAt",
-  "updatedAt"
+  "updatedAt",
+  "tasks"
 ]
 
-function getProjectsFromLocalStorage(): Project[] {
+function getProjectsFromLocalStorage(): ProjectWithTasks[] {
   if (typeof window === "undefined") return []
 
   const projects = JSON.parse(
@@ -49,7 +50,7 @@ function getProjectsFromLocalStorage(): Project[] {
 
   if (typeof projects === "undefined") return []
   // above we checked that project is typeof Project
-  else return projects as Project[]
+  else return projects as ProjectWithTasks[]
 }
 
 function checkIsSubscriptionExpired(subscriptionEndDate: Date): boolean {

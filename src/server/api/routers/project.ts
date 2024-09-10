@@ -16,18 +16,25 @@ export const projectRouter = createTRPCRouter({
   getById: publicProcedure
     .input(
       z.object({
-        id: z.string()
+        id: z.string(),
+        with: z
+          .object({
+            tasks: z.boolean().optional()
+          })
+          .default({})
       })
     )
     .query(({ input, ctx }) => {
-      if (!ctx.session || !isCuid(input.id)) return null
+      if (!ctx.session || !isCuid(input.id)) return undefined
+      const _with = input.with as Record<keyof typeof input.with, true>
 
       return ctx.db.query.projects.findFirst({
-        where: (projectsTable, { eq }) => eq(projectsTable.id, input.id)
+        where: (projectsTable, { eq }) => eq(projectsTable.id, input.id),
+        with: _with
       })
     }),
   getAll: publicProcedure.query(({ ctx }) => {
-    if (!ctx.session) return null
+    if (!ctx.session) return undefined
     const session = ctx.session
 
     return ctx.db.query.projects.findMany({

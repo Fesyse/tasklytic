@@ -19,7 +19,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { type CreateProjectSchema, createProjectSchema } from "@/lib/schemas"
 import { getProjectsFromLocalStorage } from "@/lib/utils"
-import { type Project } from "@/server/db/schema"
+import { type Project, type ProjectWithTasks } from "@/server/db/schema"
 import { api } from "@/trpc/react"
 
 export const CreateProject = () => {
@@ -62,13 +62,14 @@ export const CreateProject = () => {
           : parseInt(projects[0].id)
         : 1
     }`
-    const project: Project = {
+    const project: ProjectWithTasks = {
       id,
       name: data.name,
       userId: "guest",
       icon: null,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
+      tasks: []
     }
 
     projects.push(project)

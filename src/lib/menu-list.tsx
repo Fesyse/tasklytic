@@ -41,9 +41,13 @@ type Group = {
   menus: Menu[]
 }
 
-export function useMenuList(projects: Project[] | null): Group[] {
+export function useMenuList(
+  _projects: Project[] | undefined,
+  isLoading = false
+): Group[] {
   const pathname = usePathname()
-  const projectsFromLocalStorage = getProjectsFromLocalStorage()
+  const projects =
+    isLoading && !_projects ? [] : (_projects ?? getProjectsFromLocalStorage())
 
   return [
     {
@@ -61,7 +65,7 @@ export function useMenuList(projects: Project[] | null): Group[] {
               icon: Plus,
               label: "Create new project"
             },
-            ...(projects ?? projectsFromLocalStorage).map<Submenu>(project => ({
+            ...projects.map<Submenu>(project => ({
               href: `/projects/${project.id}`,
               active: pathname.startsWith(`/projects/${project.id}`),
               icon: getProjectIcon(project.name),

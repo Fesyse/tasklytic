@@ -21,10 +21,10 @@ interface MenuProps {
 }
 
 export function Menu({ isOpen, className }: MenuProps) {
-  const { data: projects } = api.project.getAll.useQuery(undefined, {
-    initialData: null
+  const { data: projects, isLoading } = api.project.getAll.useQuery(undefined, {
+    initialData: undefined
   })
-  const menuList = useMenuList(projects)
+  const menuList = useMenuList(projects, isLoading)
 
   return (
     <ScrollArea className="[&>div>div[style]]:!block">

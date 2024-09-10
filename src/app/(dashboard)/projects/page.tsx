@@ -1,5 +1,6 @@
 import Balancer from "react-wrap-balancer"
 import { Projects } from "@/components/projects"
+import { ProjectsClientWrapper } from "@/components/projects/projects-client-wrapper"
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect"
 import { api } from "@/trpc/server"
 
@@ -34,7 +35,7 @@ export default async function ProjectsPage(
           />
         </Balancer>
       </section>
-      <Projects projects={projects} />
+      {projects ? <Projects projects={projects} /> : <ProjectsClientWrapper />}
     </div>
   )
 }
