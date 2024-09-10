@@ -1,4 +1,4 @@
-import { createId } from "@paralleldrive/cuid2"
+import { createId as createCuid } from "@paralleldrive/cuid2"
 import { relations, sql } from "drizzle-orm"
 import {
   index,
@@ -24,8 +24,9 @@ export const users = createTable("user", {
   id: varchar("id", { length: 255 })
     .notNull()
     .primaryKey()
-    .$defaultFn(() => createId()),
+    .$defaultFn(() => createCuid()),
   name: varchar("name", { length: 255 }).notNull(),
+  description: varchar("description", { length: 255 }),
   email: varchar("email", { length: 255 }).notNull(),
   emailVerified: timestamp("email_verified", {
     mode: "date",
@@ -112,7 +113,7 @@ export const verificationTokens = createTable(
 export const projects = createTable("project", {
   id: varchar("id", { length: 255 })
     .primaryKey()
-    .$defaultFn(() => createId()),
+    .$defaultFn(() => createCuid()),
   name: varchar("name", { length: 255 }).notNull(),
   icon: varchar("icon", { length: 255 }),
   userId: varchar("user_id", { length: 255 })
@@ -132,7 +133,7 @@ export const tasks = createTable("task", {
   id: varchar("id", { length: 255 })
     .notNull()
     .primaryKey()
-    .$defaultFn(() => createId()),
+    .$defaultFn(() => createCuid()),
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description"),
   status: varchar("status", { length: 255, enum: TASK_STATUS }).notNull(),
@@ -161,7 +162,7 @@ export const subTasks = createTable("sub_task", {
   id: varchar("id", { length: 255 })
     .notNull()
     .primaryKey()
-    .$defaultFn(() => createId()),
+    .$defaultFn(() => createCuid()),
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description"),
   status: varchar("status", { length: 255, enum: TASK_STATUS }).notNull(),
