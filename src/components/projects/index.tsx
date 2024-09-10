@@ -50,7 +50,9 @@ export const Projects: FC<ProjectsProps> = ({ projects: _projects }) => {
               key={project.id}
               className={cn({
                 "md:col-span-2":
-                  (i !== 0 && i % 2 === 1) || i - (projects.length - 1) === 0
+                  (i - (projects.length - 2) === 0 &&
+                    projects.length % 2 === 1) ||
+                  (i - (projects.length - 1) === 0 && projects.length !== 1)
               })}
             >
               <Link href={`/projects/${project.id}`}>
