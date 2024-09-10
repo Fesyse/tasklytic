@@ -20,14 +20,16 @@ type ProjectsProps = {
 export const Projects: FC<ProjectsProps> = ({ projects }) => {
   // columns
   const c = 17
+  // rows
+  const r = 16
 
   // prettier-ignore
   const glowingStarsOnHover: number[] = [
-                      8 + c * 1,
-                      8 + c * 2,
-6 + c * 3, 7 + c * 3, 8 + c * 3, 9 + c * 3, 10 + c * 3,  
-                      8 + c * 4,
-                      8 + c * 5
+                                      r/2 + c * 1,
+                                      r/2 + c * 2,
+    r/2 - 2 + c * 3, r/2 - 1  + c * 3,r/2 + c * 3, r/2 + 1 + c * 3, r/2 + 2 + c * 3,
+                                      r/2 + c * 4, 
+                                      r/2 + c * 5
   ]
   return (
     <section
