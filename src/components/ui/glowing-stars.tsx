@@ -1,16 +1,20 @@
 "use client"
 
 import { AnimatePresence, motion } from "framer-motion"
-import React, { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { cn } from "@/lib/utils"
+
+type GlowingStarsBackgroundCardProps = {
+  className?: string
+  children?: React.ReactNode
+  glowingStarsOnHover?: number[]
+}
 
 export const GlowingStarsBackgroundCard = ({
   className,
-  children
-}: {
-  className?: string
-  children?: React.ReactNode
-}) => {
+  children,
+  glowingStarsOnHover
+}: GlowingStarsBackgroundCardProps) => {
   const [mouseEnter, setMouseEnter] = useState(false)
 
   return (
@@ -27,7 +31,10 @@ export const GlowingStarsBackgroundCard = ({
       )}
     >
       <div className="flex items-center justify-center">
-        <Illustration mouseEnter={mouseEnter} />
+        <Illustration
+          mouseEnter={mouseEnter}
+          glowingStarsOnHover={glowingStarsOnHover}
+        />
       </div>
       <div className="px-2 pb-6">{children}</div>
     </div>
@@ -62,9 +69,15 @@ export const GlowingStarsTitle = ({
   )
 }
 
-export const Illustration = ({ mouseEnter }: { mouseEnter: boolean }) => {
-  const stars = 108
-  const columns = 18
+export const Illustration = ({
+  mouseEnter,
+  glowingStarsOnHover
+}: {
+  mouseEnter: boolean
+  glowingStarsOnHover: GlowingStarsBackgroundCardProps["glowingStarsOnHover"]
+}) => {
+  const stars = 114
+  const columns = 17
 
   const [glowingStars, setGlowingStars] = useState<number[]>([])
 
@@ -92,20 +105,30 @@ export const Illustration = ({ mouseEnter }: { mouseEnter: boolean }) => {
     >
       {[...Array<undefined>(stars)].map((_, starIdx) => {
         const isGlowing = glowingStars.includes(starIdx)
+        const isGlowingStarOnHover = glowingStarsOnHover
+          ? glowingStarsOnHover.includes(starIdx)
+          : true
         const delay = (starIdx % 10) * 0.1
         const staticDelay = starIdx * 0.01
+
+        console.log(starIdx, mouseEnter ? isGlowingStarOnHover : isGlowing)
+
         return (
           <div
             key={`matrix-col-${starIdx}}`}
             className="relative flex items-center justify-center"
           >
             <Star
-              isGlowing={mouseEnter ? true : isGlowing}
+              isGlowing={mouseEnter ? isGlowingStarOnHover : isGlowing}
               delay={mouseEnter ? staticDelay : delay}
             />
-            {mouseEnter && <Glow delay={staticDelay} />}
+            {mouseEnter && glowingStarsOnHover
+              ? isGlowingStarOnHover
+              : false && <Glow delay={staticDelay} />}
             <AnimatePresence mode="wait">
-              {isGlowing && <Glow delay={delay} />}
+              {isGlowing && glowingStarsOnHover
+                ? isGlowingStarOnHover
+                : false && <Glow delay={delay} />}
             </AnimatePresence>
           </div>
         )

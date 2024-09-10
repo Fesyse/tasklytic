@@ -18,6 +18,17 @@ type ProjectsProps = {
 }
 
 export const Projects: FC<ProjectsProps> = ({ projects }) => {
+  // columns
+  const c = 17
+
+  // prettier-ignore
+  const glowingStarsOnHover: number[] = [
+                      8 + c * 1,
+                      8 + c * 2,
+6 + c * 3, 7 + c * 3, 8 + c * 3, 9 + c * 3, 10 + c * 3,  
+                      8 + c * 4,
+                      8 + c * 5
+  ]
   return (
     <section
       className={cn("mx-auto w-full max-w-[1000px]", {
@@ -28,7 +39,10 @@ export const Projects: FC<ProjectsProps> = ({ projects }) => {
         <ul className="align-stretch grid grid-cols-1 gap-12 md:grid-cols-2">
           <li>
             <Link href="/create-project">
-              <GlowingStarsBackgroundCard className="w-full">
+              <GlowingStarsBackgroundCard
+                className="w-full"
+                glowingStarsOnHover={glowingStarsOnHover}
+              >
                 <GlowingStarsTitle>Create new project</GlowingStarsTitle>
                 <div className="flex items-end justify-between">
                   <GlowingStarsDescription>

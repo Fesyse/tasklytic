@@ -29,6 +29,7 @@ export const ProjectBreadcrumb: FC<ProjectBreadcrumbProps> = ({
 
   // redirect to not-found if project is not found in database or localstorage
   if (!project && !isLoading) {
+    throw new Error("test")
     router.push("/not-found")
     return <></>
   }
