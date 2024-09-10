@@ -49,7 +49,8 @@ export const Projects: FC<ProjectsProps> = ({ projects: _projects }) => {
             <li
               key={project.id}
               className={cn({
-                "md:col-span-2": i !== 0 && i % 2 === 0
+                "md:col-span-2":
+                  (i !== 0 && i % 2 === 1) || i - (projects.length - 1) === 0
               })}
             >
               <Link href={`/projects/${project.id}`}>
@@ -58,9 +59,7 @@ export const Projects: FC<ProjectsProps> = ({ projects: _projects }) => {
                     <CardTitle>{title(project.name)}</CardTitle>
                   </CardHeader>
                   <CardContent
-                    className={cn("relative h-[17rem] overflow-hidden", {
-                      "sm:max-h-80": i !== 0 && i % 2 === 0
-                    })}
+                    className={cn("relative h-[17rem] overflow-hidden")}
                   >
                     {project.icon ? (
                       <Image
@@ -74,7 +73,7 @@ export const Projects: FC<ProjectsProps> = ({ projects: _projects }) => {
                     ) : (
                       <CardGlobe
                         className={cn("absolute -right-12", {
-                          "-left-0 sm:-left-20": i !== 0 && i % 2 === 0
+                          "-left-0 sm:-left-20": i % 2 === 1
                         })}
                       />
                     )}
