@@ -2,13 +2,9 @@
 
 import { FloatingDock } from "@/components/ui/floating-dock"
 import { type Menu, useMenuList } from "@/lib/menu-list"
-import { api } from "@/trpc/react"
 
 export const DockNavigation = () => {
-  const { data: projects, isLoading } = api.project.getAll.useQuery(undefined, {
-    initialData: undefined
-  })
-  const menuList = useMenuList(projects, isLoading)
+  const menuList = useMenuList()
   const items: Menu[] = menuList.map<Menu[]>(group => group.menus).flat()
 
   return (

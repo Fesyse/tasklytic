@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/tooltip"
 import { useMenuList } from "@/lib/menu-list"
 import { cn } from "@/lib/utils"
-import { api } from "@/trpc/react"
 
 interface MenuProps {
   className?: string
@@ -21,10 +20,7 @@ interface MenuProps {
 }
 
 export function Menu({ isOpen, className }: MenuProps) {
-  const { data: projects, isLoading } = api.project.getAll.useQuery(undefined, {
-    initialData: undefined
-  })
-  const menuList = useMenuList(projects, isLoading)
+  const menuList = useMenuList()
 
   return (
     <ScrollArea className="[&>div>div[style]]:!block">

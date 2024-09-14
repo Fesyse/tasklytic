@@ -1,8 +1,10 @@
+import { isCuid } from "@paralleldrive/cuid2"
 import { LayoutDashboard, type LucideIcon, Plus, Settings } from "lucide-react"
 import { usePathname } from "next/navigation"
-import { type MouseEventHandler, forwardRef } from "react"
+import React, { type MouseEventHandler, forwardRef } from "react"
+import { Skeleton } from "@/components/ui/skeleton"
 import { cn, getProjectsFromLocalStorage } from "./utils"
-import { type Project } from "@/server/db/schema"
+import { api } from "@/trpc/react"
 
 type _Submenu = {
   label: string
@@ -36,18 +38,34 @@ export type Menu = (
   _Menu
 
 type Group = {
-  groupLabel: string
+  groupLabel?: React.ReactNode
   className?: string
   menus: Menu[]
 }
 
-export function useMenuList(
-  _projects: Project[] | undefined,
-  isLoading = false
-): Group[] {
+export function useMenuList(): Group[] {
   const pathname = usePathname()
+  const splittedPathname = pathname.split("/")
+  const isProjectPage =
+    splittedPathname[0] === "project" && splittedPathname[1]
+      ? isCuid(splittedPathname[1])
+      : false
+
+  const { data: project, isLoading: isProjectLoading } =
+    api.project.getById.useQuery(
+      { id: isProjectPage ? splittedPathname[1]! : `${Math.random()}` },
+      {
+        initialData: undefined
+      }
+    )
+  const { data: _projects, isLoading: isProjectsLoading } =
+    api.project.getAll.useQuery(undefined, {
+      initialData: undefined
+    })
   const projects =
-    isLoading && !_projects ? [] : (_projects ?? getProjectsFromLocalStorage())
+    isProjectsLoading && !_projects
+      ? []
+      : (_projects ?? getProjectsFromLocalStorage())
 
   return [
     {
@@ -75,8 +93,17 @@ export function useMenuList(
         }
       ]
     },
+    isProjectPage
+      ? ({
+          groupLabel: project ? (
+            project.name
+          ) : (
+            <Skeleton className="h-8 w-full" />
+          ),
+          menus: []
+        } satisfies Group)
+      : undefined,
     {
-      groupLabel: "",
       className: "grow flex items-end",
       menus: [
         {
@@ -88,7 +115,7 @@ export function useMenuList(
         }
       ]
     }
-  ]
+  ].filter(m => !!m)
 }
 
 const getProjectIcon = (projectName: string): LucideIcon => {

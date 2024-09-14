@@ -111,8 +111,6 @@ export const Illustration = ({
         const delay = (starIdx % 10) * 0.1
         const staticDelay = starIdx * 0.01
 
-        console.log(starIdx, mouseEnter ? isGlowingStarOnHover : isGlowing)
-
         return (
           <div
             key={`matrix-col-${starIdx}}`}
