@@ -7,7 +7,7 @@ import { getProjectsFromLocalStorage } from "@/lib/utils"
 import { type Project } from "@/server/db/schema"
 
 type ProjectNavigationProps = {
-  projects: Project[] | null
+  projects: Project[] | undefined
 }
 
 export const ProjectNavigation: FC<ProjectNavigationProps> = ({ projects }) => {

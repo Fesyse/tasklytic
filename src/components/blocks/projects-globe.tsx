@@ -398,6 +398,7 @@ export function ProjectsGlobe() {
     <div className="relative mx-auto h-full w-full max-w-7xl overflow-hidden px-4 md:h-[40rem]">
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-40 h-40 w-full select-none bg-gradient-to-b from-transparent to-white dark:to-black" />
       <div className="absolute -bottom-20 z-10 h-72 w-full md:h-full">
+        {/* @ts-expect-error data is absolutely normal */}
         <World data={sampleArcs} globeConfig={globeConfig} />
       </div>
     </div>
