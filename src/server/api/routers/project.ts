@@ -4,16 +4,12 @@ import { z } from "zod"
 import { MAX_PROJECTS, MAX_PROJECTS_WITH_SUBSCRIPTION } from "@/lib/constants"
 import { createProjectSchema } from "@/lib/schemas"
 import { checkIsSubscriptionExpired } from "@/lib/utils"
-import {
-  createTRPCRouter,
-  protectedProcedure,
-  publicProcedure
-} from "@/server/api/trpc"
+import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { projects } from "@/server/db/schema"
 import { utapi } from "@/server/file-upload"
 
 export const projectRouter = createTRPCRouter({
-  getById: publicProcedure
+  getById: protectedProcedure
     .input(
       z.object({
         id: z.string(),
@@ -25,17 +21,16 @@ export const projectRouter = createTRPCRouter({
       })
     )
     .query(async ({ input, ctx }) => {
-      if (!ctx.session || !isCuid(input.id)) return null
+      if (!isCuid(input.id)) return undefined
       const _with = input.with as Record<keyof typeof input.with, true>
 
       const task = await ctx.db.query.projects.findFirst({
         where: (projectsTable, { eq }) => eq(projectsTable.id, input.id),
         with: _with
       })
-      return task ?? null
+      return task
     }),
-  getAll: publicProcedure.query(({ ctx }) => {
-    if (!ctx.session) return null
+  getAll: protectedProcedure.query(({ ctx }) => {
     const session = ctx.session
 
     return ctx.db.query.projects.findMany({

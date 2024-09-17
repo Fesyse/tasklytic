@@ -55,15 +55,15 @@ export function useMenuList(): Group[] {
     api.project.getById.useQuery(
       { id: isProjectPage ? splittedPathname[1]! : `${Math.random()}` },
       {
-        initialData: null
+        initialData: undefined
       }
     )
   const { data: _projects, isLoading: isProjectsLoading } =
     api.project.getAll.useQuery(undefined, {
-      initialData: null
+      initialData: []
     })
   const projects =
-    isProjectsLoading && !_projects
+    isProjectsLoading && !_projects.length
       ? []
       : (_projects ?? getProjectsFromLocalStorage())
 

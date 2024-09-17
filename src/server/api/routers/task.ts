@@ -1,10 +1,10 @@
-import { and, count, eq } from "drizzle-orm"
+import { count, eq } from "drizzle-orm"
 import { z } from "zod"
-import { createTRPCRouter, publicProcedure } from "@/server/api/trpc"
+import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { tasks as tasksTable } from "@/server/db/schema"
 
 export const taskRouter = createTRPCRouter({
-  getAll: publicProcedure
+  getAll: protectedProcedure
     .input(
       z.object({
         perPage: z.number(),
@@ -13,26 +13,15 @@ export const taskRouter = createTRPCRouter({
       })
     )
     .query(async ({ input, ctx }) => {
-      if (!ctx.session) return null
-      const session = ctx.session
-
       const countQuery = ctx.db
         .select({
           count: count()
         })
         .from(tasksTable)
-        .where(
-          and(
-            eq(tasksTable.userId, session.user.id),
-            eq(tasksTable.projectId, input.projectId)
-          )
-        )
+        .where(eq(tasksTable.projectId, input.projectId))
 
       const tasksQuery = ctx.db.query.tasks.findMany({
-        where: and(
-          eq(tasksTable.userId, session.user.id),
-          eq(tasksTable.projectId, input.projectId)
-        ),
+        where: eq(tasksTable.projectId, input.projectId),
         limit: input.perPage,
         offset: input.page * input.perPage
       })

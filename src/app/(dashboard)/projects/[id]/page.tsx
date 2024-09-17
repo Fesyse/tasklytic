@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation"
 import { Project } from "@/components/projects/project"
 import { api } from "@/trpc/server"
 
@@ -10,6 +11,8 @@ export default async function ProjectPage({ params: { id } }: ProjectsProps) {
       tasks: true
     }
   })
+
+  if (!project) redirect("/not_found")
 
   return <Project project={project} />
 }

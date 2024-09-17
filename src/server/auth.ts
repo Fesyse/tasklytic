@@ -30,8 +30,6 @@ declare module "next-auth" {
   }
 }
 
-const protectedFromAuthorizedUserPages: string[] = ["/auth/sign-in"]
-
 /**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
  *
@@ -39,20 +37,6 @@ const protectedFromAuthorizedUserPages: string[] = ["/auth/sign-in"]
  */
 export const authOptions: NextAuthConfig = {
   callbacks: {
-    // signIn: (a) => {
-    // },
-    authorized: ({ request, auth }) => {
-      const pathname = request.nextUrl.pathname
-
-      if (
-        protectedFromAuthorizedUserPages.some(page =>
-          page.startsWith(pathname)
-        ) &&
-        !!auth
-      ) {
-        return !auth
-      }
-    },
     session: ({ session, user }) => ({
       ...session,
       user: {
@@ -61,15 +45,15 @@ export const authOptions: NextAuthConfig = {
       }
     })
   },
+  pages: {
+    signIn: "/auth/sign-in"
+  },
   adapter: DrizzleAdapter(db, {
     usersTable: users,
     accountsTable: accounts,
     sessionsTable: sessions,
     verificationTokensTable: verificationTokens
   } as unknown as DefaultPostgresSchema),
-  pages: {
-    signIn: "/auth/sign-in"
-  },
   providers: [
     GithubProvider({
       clientId: env.GITHUB_CLIENT_ID,
