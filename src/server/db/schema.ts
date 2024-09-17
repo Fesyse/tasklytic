@@ -145,9 +145,6 @@ export const tasks = createTable("task", {
   projectId: varchar("project_id", { length: 255 })
     .notNull()
     .references(() => projects.id),
-  userId: varchar("user_id", { length: 255 })
-    .notNull()
-    .references(() => users.id),
   createdAt: timestamp("created_at", {
     mode: "date",
     withTimezone: true
@@ -185,19 +182,38 @@ export const subTasks = createTable("sub_task", {
 })
 
 export const usersRelations = relations(users, ({ many }) => ({
-  accounts: many(accounts)
+  accounts: many(accounts),
+  projects: many(projectsToUsers)
 }))
 
 export const accountsRelations = relations(accounts, ({ one }) => ({
   user: one(users, { fields: [accounts.userId], references: [users.id] })
 }))
 
+export const projectsToUsers = createTable(
+  "projects_to_users",
+  {
+    projectId: varchar("project_id", { length: 255 })
+      .notNull()
+      .references(() => projects.id),
+    userId: varchar("user_id", { length: 255 })
+      .notNull()
+      .references(() => users.id)
+  },
+  t => ({
+    pk: primaryKey({ columns: [t.projectId, t.userId] })
+  })
+)
+
 export const sessionsRelations = relations(sessions, ({ one }) => ({
   user: one(users, { fields: [sessions.userId], references: [users.id] })
 }))
 
 export const tasksRelations = relations(tasks, ({ one, many }) => ({
-  user: one(users, { fields: [tasks.userId], references: [users.id] }),
+  project: one(projects, {
+    fields: [tasks.projectId],
+    references: [projects.id]
+  }),
   subTasks: many(subTasks)
 }))
 
@@ -208,9 +224,22 @@ export const subTasksRelations = relations(subTasks, ({ one }) => ({
 export const projectsRelations = relations(projects, ({ many, one }) => ({
   tasks: many(tasks),
   owner: one(users, { fields: [projects.userId], references: [users.id] }),
-  users: many(users)
+  users: many(projectsToUsers)
 }))
 
+export const projectsToUsersRelations = relations(
+  projectsToUsers,
+  ({ one }) => ({
+    project: one(projects, {
+      fields: [projectsToUsers.projectId],
+      references: [projects.id]
+    }),
+    user: one(users, {
+      fields: [projectsToUsers.userId],
+      references: [users.id]
+    })
+  })
+)
 export type Task = typeof tasks.$inferSelect
 export type Project = typeof projects.$inferSelect
 export type ProjectWithTasks = Project & {

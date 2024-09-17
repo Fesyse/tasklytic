@@ -1,3 +1,5 @@
+"use client"
+
 import { Plus } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -10,27 +12,16 @@ import {
   GlowingStarsDescription,
   GlowingStarsTitle
 } from "@/components/ui/glowing-stars"
-import { cn, title } from "@/lib/utils"
+import { glowingStarsOnHover_PLUS } from "@/lib/glowing-stars"
+import { cn, getProjectsFromLocalStorage, title } from "@/lib/utils"
 import { type Project, type ProjectWithTasks } from "@/server/db/schema"
 
 type ProjectsProps = {
-  projects: Project[] | ProjectWithTasks[]
+  projects: (Project[] | ProjectWithTasks[]) | null
 }
 
-export const Projects: FC<ProjectsProps> = ({ projects }) => {
-  // columns
-  const c = 17
-  // rows
-  const r = 16
-
-  // prettier-ignore
-  const glowingStarsOnHover: number[] = [
-                                      r/2 + c * 1,
-                                      r/2 + c * 2,
-    r/2 - 2 + c * 3, r/2 - 1  + c * 3,r/2 + c * 3, r/2 + 1 + c * 3, r/2 + 2 + c * 3,
-                                      r/2 + c * 4, 
-                                      r/2 + c * 5
-  ]
+export const Projects: FC<ProjectsProps> = ({ projects: _projects }) => {
+  const projects = _projects ?? getProjectsFromLocalStorage()
   return (
     <section
       className={cn("mx-auto w-full max-w-[1000px]", {
@@ -43,7 +34,7 @@ export const Projects: FC<ProjectsProps> = ({ projects }) => {
             <Link href="/create-project">
               <GlowingStarsBackgroundCard
                 className="w-full"
-                glowingStarsOnHover={glowingStarsOnHover}
+                glowingStarsOnHover={glowingStarsOnHover_PLUS}
               >
                 <GlowingStarsTitle>Create new project</GlowingStarsTitle>
                 <div className="flex items-end justify-between">

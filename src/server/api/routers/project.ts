@@ -24,17 +24,18 @@ export const projectRouter = createTRPCRouter({
           .default({})
       })
     )
-    .query(({ input, ctx }) => {
-      if (!ctx.session || !isCuid(input.id)) return undefined
+    .query(async ({ input, ctx }) => {
+      if (!ctx.session || !isCuid(input.id)) return null
       const _with = input.with as Record<keyof typeof input.with, true>
 
-      return ctx.db.query.projects.findFirst({
+      const task = await ctx.db.query.projects.findFirst({
         where: (projectsTable, { eq }) => eq(projectsTable.id, input.id),
         with: _with
       })
+      return task ?? null
     }),
   getAll: publicProcedure.query(({ ctx }) => {
-    if (!ctx.session) return undefined
+    if (!ctx.session) return null
     const session = ctx.session
 
     return ctx.db.query.projects.findMany({
