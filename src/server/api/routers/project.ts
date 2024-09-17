@@ -31,11 +31,9 @@ export const projectRouter = createTRPCRouter({
       return task
     }),
   getAll: protectedProcedure.query(({ ctx }) => {
-    const session = ctx.session
-
     return ctx.db.query.projects.findMany({
       where: (projectsTable, { eq }) =>
-        eq(projectsTable.userId, session.user.id)
+        eq(projectsTable.userId, ctx.session.user.id)
     })
   }),
   create: protectedProcedure

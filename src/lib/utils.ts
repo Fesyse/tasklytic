@@ -19,7 +19,7 @@ function sleep(ms: number) {
 }
 
 function checkIsSubscriptionExpired(subscriptionEndDate: Date): boolean {
-  return isAfter(addMonths(new Date(), 1), subscriptionEndDate)
+  return isAfter(subscriptionEndDate, addMonths(new Date(), 1))
 }
 
 export { cn, title, random, sleep, checkIsSubscriptionExpired }
