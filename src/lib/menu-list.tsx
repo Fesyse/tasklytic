@@ -3,7 +3,7 @@ import { LayoutDashboard, type LucideIcon, Plus, Settings } from "lucide-react"
 import { usePathname } from "next/navigation"
 import React, { type MouseEventHandler, forwardRef } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
-import { cn, getProjectsFromLocalStorage } from "./utils"
+import { cn } from "./utils"
 import { api } from "@/trpc/react"
 
 type _Submenu = {
@@ -51,21 +51,15 @@ export function useMenuList(): Group[] {
       ? isCuid(splittedPathname[1])
       : false
 
-  const { data: project, isLoading: isProjectLoading } =
-    api.project.getById.useQuery(
-      { id: isProjectPage ? splittedPathname[1]! : `${Math.random()}` },
-      {
-        initialData: undefined
-      }
-    )
-  const { data: _projects, isLoading: isProjectsLoading } =
-    api.project.getAll.useQuery(undefined, {
-      initialData: []
-    })
-  const projects =
-    isProjectsLoading && !_projects.length
-      ? []
-      : (_projects ?? getProjectsFromLocalStorage())
+  const { data: project } = api.project.getById.useQuery(
+    { id: isProjectPage ? splittedPathname[1]! : `${Math.random()}` },
+    {
+      initialData: undefined
+    }
+  )
+  const { data: projects } = api.project.getAll.useQuery(undefined, {
+    initialData: []
+  })
 
   return [
     {
