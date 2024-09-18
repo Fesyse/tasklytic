@@ -134,13 +134,13 @@ export const notes = createTable("notes", {
   id: varchar("id", { length: 255 })
     .primaryKey()
     .$defaultFn(() => createCuid()),
-  title: varchar("id", { length: 255 })
+  title: varchar("title", { length: 255 })
     .notNull()
     .$defaultFn(() => "Untitled"),
   private: boolean("private")
     .notNull()
     .$defaultFn(() => false),
-  projectId: varchar("id", { length: 255 })
+  projectId: varchar("project_id", { length: 255 })
     .notNull()
     .references(() => projects.id)
 })
