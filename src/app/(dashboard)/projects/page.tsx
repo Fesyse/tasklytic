@@ -17,7 +17,7 @@ export default async function ProjectsPage(
 ) {
   // const page = searchParams.page ? parseInt(searchParams.page) : 1
   // const perPage = searchParams.perPage ? parseInt(searchParams.perPage) : 10
-  const projects = await api.project.getAll()
+  const projects = await api.projects.getAll()
 
   return (
     <div className="my-20 flex flex-col gap-16">

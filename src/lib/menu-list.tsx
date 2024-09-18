@@ -51,13 +51,13 @@ export function useMenuList(): Group[] {
       ? isCuid(splittedPathname[1])
       : false
 
-  const { data: project } = api.project.getById.useQuery(
+  const { data: project } = api.projects.getById.useQuery(
     { id: isProjectPage ? splittedPathname[1]! : `${Math.random()}` },
     {
       initialData: undefined
     }
   )
-  const { data: projects } = api.project.getAll.useQuery(undefined, {
+  const { data: projects } = api.projects.getAll.useQuery(undefined, {
     initialData: []
   })
 

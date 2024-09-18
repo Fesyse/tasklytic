@@ -14,7 +14,7 @@ export const ProjectBreadcrumb: FC<ProjectBreadcrumbProps> = ({
   projectId
 }) => {
   const router = useRouter()
-  const { isLoading, data: project } = api.project.getById.useQuery({
+  const { isLoading, data: project } = api.projects.getById.useQuery({
     id: projectId
   })
 

@@ -8,7 +8,7 @@ import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { projects } from "@/server/db/schema"
 import { utapi } from "@/server/file-upload"
 
-export const projectRouter = createTRPCRouter({
+export const projectsRouter = createTRPCRouter({
   getById: protectedProcedure
     .input(
       z.object({
