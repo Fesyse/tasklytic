@@ -29,7 +29,6 @@ const config = {
         argsIgnorePattern: "^_"
       }
     ],
-    "@typescript-eslint/no-unsafe-member-access": ["warn"],
     "@typescript-eslint/no-unsafe-return": ["warn"],
     "@typescript-eslint/no-unsafe-call": ["warn"],
     "@typescript-eslint/require-await": "off",
