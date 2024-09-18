@@ -34,7 +34,7 @@ export const CreateProject = () => {
     return mutate(data, {
       onSuccess: data => {
         const project = data[0]!
-        void utils.project.getAll.invalidate()
+        void utils.projects.getAll.invalidate()
         router.push(`/project/${project.id}`)
         toast.success("Successfully created project!")
       }
