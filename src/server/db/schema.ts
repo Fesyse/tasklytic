@@ -1,6 +1,7 @@
 import { createId as createCuid } from "@paralleldrive/cuid2"
 import { relations, sql } from "drizzle-orm"
 import {
+  boolean,
   index,
   integer,
   pgTableCreator,
@@ -129,6 +130,21 @@ export const projects = createTable("project", {
   }).$onUpdate(() => new Date())
 })
 
+export const notes = createTable("notes", {
+  id: varchar("id", { length: 255 })
+    .primaryKey()
+    .$defaultFn(() => createCuid()),
+  title: varchar("id", { length: 255 })
+    .notNull()
+    .$defaultFn(() => "Untitled"),
+  private: boolean("private")
+    .notNull()
+    .$defaultFn(() => false),
+  projectId: varchar("id", { length: 255 })
+    .notNull()
+    .references(() => projects.id)
+})
+
 export const tasks = createTable("task", {
   id: varchar("id", { length: 255 })
     .notNull()
@@ -141,10 +157,9 @@ export const tasks = createTable("task", {
     mode: "date",
     withTimezone: true
   }).default(sql`CURRENT_TIMESTAMP`),
-
-  projectId: varchar("project_id", { length: 255 })
+  noteId: varchar("note_id", { length: 255 })
     .notNull()
-    .references(() => projects.id),
+    .references(() => notes.id),
   createdAt: timestamp("created_at", {
     mode: "date",
     withTimezone: true
@@ -190,6 +205,10 @@ export const accountsRelations = relations(accounts, ({ one }) => ({
   user: one(users, { fields: [accounts.userId], references: [users.id] })
 }))
 
+export const sessionsRelations = relations(sessions, ({ one }) => ({
+  user: one(users, { fields: [sessions.userId], references: [users.id] })
+}))
+
 export const projectsToUsers = createTable(
   "projects_to_users",
   {
@@ -205,14 +224,18 @@ export const projectsToUsers = createTable(
   })
 )
 
-export const sessionsRelations = relations(sessions, ({ one }) => ({
-  user: one(users, { fields: [sessions.userId], references: [users.id] })
+export const notesRelations = relations(notes, ({ many, one }) => ({
+  project: one(projects, {
+    fields: [notes.projectId],
+    references: [projects.id]
+  }),
+  tasks: many(tasks)
 }))
 
 export const tasksRelations = relations(tasks, ({ one, many }) => ({
-  project: one(projects, {
-    fields: [tasks.projectId],
-    references: [projects.id]
+  note: one(notes, {
+    fields: [tasks.noteId],
+    references: [notes.id]
   }),
   subTasks: many(subTasks)
 }))
@@ -222,7 +245,7 @@ export const subTasksRelations = relations(subTasks, ({ one }) => ({
 }))
 
 export const projectsRelations = relations(projects, ({ many, one }) => ({
-  tasks: many(tasks),
+  notes: many(notes),
   owner: one(users, { fields: [projects.userId], references: [users.id] }),
   users: many(projectsToUsers)
 }))
@@ -241,7 +264,8 @@ export const projectsToUsersRelations = relations(
   })
 )
 export type Task = typeof tasks.$inferSelect
+export type Note = typeof notes.$inferSelect
 export type Project = typeof projects.$inferSelect
-export type ProjectWithTasks = Project & {
-  tasks: Task[]
+export type ProjectWithNotes = Project & {
+  notes: Note[]
 }

@@ -1,8 +1,8 @@
 import { type FC } from "react"
-import { type ProjectWithTasks } from "@/server/db/schema"
+import { type ProjectWithNotes } from "@/server/db/schema"
 
 type ProjectProps = {
-  project: ProjectWithTasks
+  project: ProjectWithNotes
 }
 
 export const Project: FC<ProjectProps> = ({}) => {

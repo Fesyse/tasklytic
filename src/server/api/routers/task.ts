@@ -1,7 +1,6 @@
-import { count, eq } from "drizzle-orm"
+// TODO: setup this with notes
 import { z } from "zod"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
-import { tasks as tasksTable } from "@/server/db/schema"
 
 export const taskRouter = createTRPCRouter({
   getAll: protectedProcedure
@@ -12,24 +11,21 @@ export const taskRouter = createTRPCRouter({
         projectId: z.string().uuid()
       })
     )
-    .query(async ({ input, ctx }) => {
-      const countQuery = ctx.db
-        .select({
-          count: count()
-        })
-        .from(tasksTable)
-        .where(eq(tasksTable.projectId, input.projectId))
-
-      const tasksQuery = ctx.db.query.tasks.findMany({
-        where: eq(tasksTable.projectId, input.projectId),
-        limit: input.perPage,
-        offset: input.page * input.perPage
-      })
-
-      const result = await Promise.all([countQuery, tasksQuery])
-      const tasksCount = result[0][0]!.count
-      const tasks = result[1]
-
-      return [tasksCount, tasks]
+    .query(() => {
+      // const countQuery = ctx.db
+      //   .select({
+      //     count: count()
+      //   })
+      //   .from(tasksTable)
+      //   .where(eq(tasksTable.projectId, input.projectId))
+      // const tasksQuery = ctx.db.query.tasks.findMany({
+      //   where: eq(tasksTable.projectId, input.projectId),
+      //   limit: input.perPage,
+      //   offset: input.page * input.perPage
+      // })
+      // const result = await Promise.all([countQuery, tasksQuery])
+      // const tasksCount = result[0][0]!.count
+      // const tasks = result[1]
+      // return [tasksCount, tasks]
     })
 })

@@ -15,7 +15,7 @@ export const projectRouter = createTRPCRouter({
         id: z.string(),
         with: z
           .object({
-            tasks: z.boolean().optional()
+            notes: z.boolean().optional()
           })
           .default({})
       })

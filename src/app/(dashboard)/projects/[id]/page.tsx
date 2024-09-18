@@ -8,7 +8,7 @@ export default async function ProjectPage({ params: { id } }: ProjectsProps) {
   const project = await api.project.getById({
     id,
     with: {
-      tasks: true
+      notes: true
     }
   })
 
