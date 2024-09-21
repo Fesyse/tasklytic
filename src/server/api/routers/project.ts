@@ -12,23 +12,16 @@ export const projectsRouter = createTRPCRouter({
   getById: protectedProcedure
     .input(
       z.object({
-        id: z.string(),
-        with: z
-          .object({
-            notes: z.boolean().optional()
-          })
-          .default({})
+        id: z.string()
       })
     )
     .query(async ({ input, ctx }) => {
       if (!isCuid(input.id)) return undefined
-      const _with = input.with as Record<keyof typeof input.with, true>
 
-      const task = await ctx.db.query.projects.findFirst({
-        where: (projectsTable, { eq }) => eq(projectsTable.id, input.id),
-        with: _with
+      const project = await ctx.db.query.projects.findFirst({
+        where: (projectsTable, { eq }) => eq(projectsTable.id, input.id)
       })
-      return task
+      return project
     }),
   getAll: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.projects.findMany({

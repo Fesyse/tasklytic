@@ -51,12 +51,15 @@ export function useMenuList(): Group[] {
       ? isCuid(splittedPathname[1])
       : false
 
-  const { data: project } = api.projects.getById.useQuery(
-    { id: isProjectPage ? splittedPathname[1]! : `${Math.random()}` },
-    {
-      initialData: undefined
-    }
-  )
+  const { data: project, isLoading: isProjectLoading } =
+    api.projects.getById.useQuery(
+      {
+        id: isProjectPage ? splittedPathname[1]! : `${Math.random()}`
+      },
+      {
+        initialData: undefined
+      }
+    )
   const { data: projects } = api.projects.getAll.useQuery(undefined, {
     initialData: []
   })
@@ -87,16 +90,19 @@ export function useMenuList(): Group[] {
         }
       ]
     },
-    isProjectPage
-      ? ({
-          groupLabel: project ? (
-            project.name
-          ) : (
-            <Skeleton className="h-8 w-full" />
-          ),
-          menus: []
-        } satisfies Group)
-      : undefined,
+    ...(isProjectPage
+      ? [
+          {
+            groupLabel:
+              project && !isProjectLoading ? (
+                project.name
+              ) : (
+                <Skeleton className="h-8 w-full" />
+              ),
+            menus: project && !isProjectLoading ? [] : []
+          } satisfies Group
+        ]
+      : []),
     {
       className: "grow flex items-end",
       menus: [
@@ -109,7 +115,7 @@ export function useMenuList(): Group[] {
         }
       ]
     }
-  ].filter(m => !!m)
+  ]
 }
 
 const getProjectIcon = (projectName: string): LucideIcon => {
