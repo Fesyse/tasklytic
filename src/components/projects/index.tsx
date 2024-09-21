@@ -91,7 +91,10 @@ export const Projects: FC<ProjectsProps> = ({ projects }) => {
         <>
           <div className="w-full text-center">
             You dont have any projects right know. Consider{" "}
-            <button className="font-bold underline">making one</button>!
+            <Link href="/create-project" className="font-bold underline">
+              making one
+            </Link>
+            !
           </div>
           <div className="-mt-20">
             <ProjectsGlobe />

@@ -117,7 +117,7 @@ export const projects = createTable("project", {
     .$defaultFn(() => createCuid()),
   name: varchar("name", { length: 255 }).notNull(),
   icon: varchar("icon", { length: 255 }),
-  userId: varchar("user_id", { length: 255 })
+  ownerId: varchar("owner_id", { length: 255 })
     .notNull()
     .references(() => users.id),
   createdAt: timestamp("created_at", {
@@ -198,7 +198,7 @@ export const subTasks = createTable("sub_task", {
 
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
-  projects: many(projectsToUsers)
+  ownedProjects: many(projects)
 }))
 
 export const accountsRelations = relations(accounts, ({ one }) => ({
@@ -246,23 +246,9 @@ export const subTasksRelations = relations(subTasks, ({ one }) => ({
 
 export const projectsRelations = relations(projects, ({ many, one }) => ({
   notes: many(notes),
-  owner: one(users, { fields: [projects.userId], references: [users.id] }),
-  users: many(projectsToUsers)
+  owner: one(users, { fields: [projects.ownerId], references: [users.id] })
 }))
 
-export const projectsToUsersRelations = relations(
-  projectsToUsers,
-  ({ one }) => ({
-    project: one(projects, {
-      fields: [projectsToUsers.projectId],
-      references: [projects.id]
-    }),
-    user: one(users, {
-      fields: [projectsToUsers.userId],
-      references: [users.id]
-    })
-  })
-)
 export type Task = typeof tasks.$inferSelect
 export type Note = typeof notes.$inferSelect
 export type Project = typeof projects.$inferSelect
