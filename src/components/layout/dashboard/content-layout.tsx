@@ -12,7 +12,7 @@ export function ContentLayout({ children, className }: ContentLayoutProps) {
       <Header />
       <div
         className={cn(
-          "min-h-[calc(100vh-var(--dashboard-header-size))] px-4 pb-8 pt-8 antialiased sm:px-8",
+          "relative min-h-[calc(100vh-var(--dashboard-header-size))] px-4 pb-8 pt-8 antialiased sm:px-8",
           className
         )}
       >

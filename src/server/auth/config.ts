@@ -25,6 +25,5 @@ export const config: NextAuthConfig = {
   pages: {
     signIn: "/auth/sign-in"
   },
-  debug: env.NODE_ENV !== "production",
   secret: env.NEXTAUTH_SECRET
 }

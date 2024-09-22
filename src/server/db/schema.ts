@@ -142,7 +142,10 @@ export const notes = createTable("notes", {
     .$defaultFn(() => false),
   projectId: varchar("project_id", { length: 255 })
     .notNull()
-    .references(() => projects.id)
+    .references(() => projects.id),
+  userId: varchar("user_id", { length: 255 })
+    .notNull()
+    .references(() => users.id)
 })
 
 export const tasks = createTable("task", {
@@ -209,25 +212,14 @@ export const sessionsRelations = relations(sessions, ({ one }) => ({
   user: one(users, { fields: [sessions.userId], references: [users.id] })
 }))
 
-export const projectsToUsers = createTable(
-  "projects_to_users",
-  {
-    projectId: varchar("project_id", { length: 255 })
-      .notNull()
-      .references(() => projects.id),
-    userId: varchar("user_id", { length: 255 })
-      .notNull()
-      .references(() => users.id)
-  },
-  t => ({
-    pk: primaryKey({ columns: [t.projectId, t.userId] })
-  })
-)
-
 export const notesRelations = relations(notes, ({ many, one }) => ({
   project: one(projects, {
     fields: [notes.projectId],
     references: [projects.id]
+  }),
+  user: one(users, {
+    fields: [notes.userId],
+    references: [users.id]
   }),
   tasks: many(tasks)
 }))
@@ -246,6 +238,7 @@ export const subTasksRelations = relations(subTasks, ({ one }) => ({
 
 export const projectsRelations = relations(projects, ({ many, one }) => ({
   notes: many(notes),
+  users: many(users),
   owner: one(users, { fields: [projects.ownerId], references: [users.id] })
 }))
 

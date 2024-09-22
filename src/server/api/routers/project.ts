@@ -1,11 +1,11 @@
 import { isCuid } from "@paralleldrive/cuid2"
-import { count, eq } from "drizzle-orm"
+import { count, eq, or } from "drizzle-orm"
 import { z } from "zod"
 import { MAX_PROJECTS, MAX_PROJECTS_WITH_SUBSCRIPTION } from "@/lib/constants"
 import { createProjectSchema } from "@/lib/schemas"
 import { checkIsSubscriptionExpired } from "@/lib/utils"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
-import { projects } from "@/server/db/schema"
+import { projects, users } from "@/server/db/schema"
 import { utapi } from "@/server/file-upload"
 
 export const projectsRouter = createTRPCRouter({
@@ -26,7 +26,16 @@ export const projectsRouter = createTRPCRouter({
   getAll: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.projects.findMany({
       where: (projectsTable, { eq }) =>
-        eq(projectsTable.userId, ctx.session.user.id)
+        or(
+          eq(projectsTable.ownerId, ctx.session.user.id),
+          eq(
+            projects.id,
+            ctx.db
+              .select({ id: projects.id })
+              .from(projects)
+              .innerJoin(users, eq(users.id, ctx.session.user.id))
+          )
+        )
     })
   }),
   create: protectedProcedure
@@ -41,7 +50,7 @@ export const projectsRouter = createTRPCRouter({
             count: count()
           })
           .from(projects)
-          .where(eq(projects.userId, ctx.session.user.id))
+          .where(eq(projects.ownerId, ctx.session.user.id))
       ])
       const isSubscriptionExpired =
         !user?.subscriptionEndDate ||
@@ -68,7 +77,7 @@ export const projectsRouter = createTRPCRouter({
         .insert(projects)
         .values({
           ...project,
-          userId: ctx.session.user.id,
+          ownerId: ctx.session.user.id,
           icon
         })
         .returning()

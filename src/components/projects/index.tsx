@@ -89,7 +89,7 @@ export const Projects: FC<ProjectsProps> = ({ projects }) => {
         </ul>
       ) : (
         <>
-          <div className="w-full text-center">
+          <div className="relative z-50 w-full text-center">
             You dont have any projects right know. Consider{" "}
             <Link href="/create-project" className="font-bold underline">
               making one

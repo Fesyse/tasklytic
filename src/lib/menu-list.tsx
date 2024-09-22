@@ -54,9 +54,10 @@ export function useMenuList(): Group[] {
   const { data: project, isLoading: isProjectLoading } =
     api.projects.getById.useQuery(
       {
-        id: isProjectPage ? splittedPathname[1]! : `${Math.random()}`
+        id: splittedPathname[1]!
       },
       {
+        enabled: isProjectPage,
         initialData: undefined
       }
     )

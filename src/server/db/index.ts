@@ -16,6 +16,7 @@ const sql =
   postgres(env.DATABASE_URL, {
     ssl: env.NODE_ENV === "production" ? "require" : undefined
   })
+
 if (env.NODE_ENV !== "production") globalForDb.sql = sql
 
 export const db = drizzle(sql, { schema })
