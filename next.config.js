@@ -30,7 +30,7 @@ const config = {
       },
       {
         hostname: "utfs.io",
-        pathname: "/a/<APP_ID>/*"
+        pathname: "/f/*"
       }
     ]
   }

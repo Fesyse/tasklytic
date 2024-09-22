@@ -1,7 +1,11 @@
 import { createRouteHandler } from "uploadthing/next"
+import { env } from "@/env"
 import { fileRouter } from "@/server/file-upload"
 
-// Export routes for Next App Router
-export const { GET, POST } = createRouteHandler({
-  router: fileRouter
+const handler = createRouteHandler({
+  router: fileRouter,
+  config: {
+    token: env.UPLOADTHING_TOKEN
+  }
 })
+export { handler as GET, handler as POST }

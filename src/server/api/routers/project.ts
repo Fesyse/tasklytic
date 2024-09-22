@@ -2,11 +2,9 @@ import { isCuid } from "@paralleldrive/cuid2"
 import { count, eq, or } from "drizzle-orm"
 import { z } from "zod"
 import { MAX_PROJECTS, MAX_PROJECTS_WITH_SUBSCRIPTION } from "@/lib/constants"
-import { createProjectSchema } from "@/lib/schemas"
 import { checkIsSubscriptionExpired } from "@/lib/utils"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { projects, users } from "@/server/db/schema"
-import { utapi } from "@/server/file-upload"
 
 export const projectsRouter = createTRPCRouter({
   getById: protectedProcedure
@@ -39,7 +37,14 @@ export const projectsRouter = createTRPCRouter({
     })
   }),
   create: protectedProcedure
-    .input(createProjectSchema)
+    .input(
+      z.object({
+        name: z
+          .string()
+          .max(20, { message: "Project name cannot exceed 20 characters" }),
+        icon: z.string().url().optional()
+      })
+    )
     .mutation(async ({ input: project, ctx }) => {
       const [user, [projectsCount]] = await Promise.all([
         ctx.db.query.users.findFirst({
@@ -65,20 +70,12 @@ export const projectsRouter = createTRPCRouter({
           `Max limit of ${MAX_PROJECTS_WITH_SUBSCRIPTION} reached.`
         )
 
-      let icon = null
-      if (project.icon) {
-        const result = await utapi.uploadFiles(project.icon)
-        if (result?.error)
-          throw new Error("An error occured trying to upload image!")
-        icon = result.data.url
-      }
-
       return ctx.db
         .insert(projects)
         .values({
           ...project,
           ownerId: ctx.session.user.id,
-          icon
+          icon: project.icon
         })
         .returning()
     })

@@ -16,6 +16,7 @@ import {
   FormMessage
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { type FileUploadResponse } from "@/app/api/file-upload/route"
 import { type CreateProjectSchema, createProjectSchema } from "@/lib/schemas"
 import { api } from "@/trpc/react"
 
@@ -23,22 +24,37 @@ export const CreateProject = () => {
   const utils = api.useUtils()
   const router = useRouter()
   const { mutate } = api.projects.create.useMutation({
-    onError: error => toast.error(error.message)
+    onError: error => toast.error(error.message),
+    onSuccess: async data => {
+      const project = data[0]!
+      router.push(`/projects/${project.id}`)
+      toast.success("Successfully created project!")
+      await utils.projects.getAll.invalidate()
+    }
   })
 
   const form = useForm<CreateProjectSchema>({
     resolver: zodResolver(createProjectSchema)
   })
 
-  const createProject = (data: CreateProjectSchema) => {
-    return mutate(data, {
-      onSuccess: data => {
-        const project = data[0]!
-        void utils.projects.getAll.invalidate()
-        router.push(`/project/${project.id}`)
-        toast.success("Successfully created project!")
-      }
-    })
+  const createProject = async (data: CreateProjectSchema) => {
+    let icon = undefined
+
+    if (data.icon) {
+      const formData = new FormData()
+      formData.append("file", data.icon)
+
+      const { file } = (await fetch("/api/file-upload", {
+        method: "POST",
+        headers: {},
+        body: formData
+      }).then(res => res.json())) as FileUploadResponse
+
+      icon = file
+    }
+
+    const project = { ...data, icon }
+    mutate(project)
   }
 
   return (

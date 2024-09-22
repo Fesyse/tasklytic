@@ -1,9 +1,9 @@
-import { toast } from "sonner"
 import {
   type FileRouter as _FileRouter,
   createUploadthing
 } from "uploadthing/next"
 import { UTApi, UploadThingError } from "uploadthing/server"
+import { auth } from "./auth"
 
 const f = createUploadthing()
 
@@ -13,13 +13,13 @@ export const fileRouter = {
     image: { maxFileSize: "1MB", maxFileCount: 1, minFileCount: 1 }
   })
     .middleware(async () => {
-      const session = null
+      const session = await auth()
 
       if (!session) throw new UploadThingError("Unauthorized")
-      else return {}
+      else return { session }
     })
     .onUploadComplete(() => {
-      toast.success("Successfully uploaded image!")
+      return
     })
 } satisfies _FileRouter
 

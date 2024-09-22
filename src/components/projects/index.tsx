@@ -68,10 +68,9 @@ export const Projects: FC<ProjectsProps> = ({ projects }) => {
                     {project.icon ? (
                       <Image
                         src={project.icon}
-                        style={{
-                          height: i !== 0 && i % 2 === 0 ? 800 : 200
-                        }}
-                        className="w-full object-cover px-2 py-2"
+                        height={i !== 0 && i % 2 === 0 ? 300 : 300}
+                        width={i !== 0 && i % 2 === 0 ? 400 : 300}
+                        className="absolute left-1/2 top-[calc(50%-10px)] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-xl"
                         alt={`${project.name} icon`}
                       />
                     ) : (
