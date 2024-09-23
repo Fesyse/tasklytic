@@ -15,8 +15,7 @@ export const metadata: Metadata = {
     template: "%s | Tasklytic"
   },
   description:
-    "Streamline your workflow with smart task management. Organize, prioritize, and track your tasks with ease, all in one powerful tool.",
-  icons: [{ rel: "icon", url: "/favicon.ico" }]
+    "Streamline your workflow with smart task management. Organize, prioritize, and track your tasks with ease, all in one powerful tool."
 }
 const comfortaa = Comfortaa({
   subsets: ["latin"],
@@ -40,7 +39,10 @@ export default async function RootLayout({
       lang="en"
       className={cn(recursive.variable, comfortaa.variable, "font-recursive")}
     >
-      <head />
+      <head>
+        <link rel="icon" href="/favicon.ico" sizes="32x32" />
+        <link rel="icon" href="/icon.svg" sizes="any" type="image/svg+" />
+      </head>
       <body>
         <NextSSRPlugin routerConfig={extractRouterConfig(fileRouter)} />
         <Providers>
