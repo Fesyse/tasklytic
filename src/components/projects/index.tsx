@@ -12,6 +12,7 @@ import {
   GlowingStarsDescription,
   GlowingStarsTitle
 } from "@/components/ui/glowing-stars"
+import { ProjectOptions } from "./project-options"
 import { glowingStarsOnHover_PLUS } from "@/lib/glowing-stars"
 import { cn, title } from "@/lib/utils"
 import { type Project } from "@/server/db/schema"
@@ -57,11 +58,12 @@ export const Projects: FC<ProjectsProps> = ({ projects }) => {
                   (i - (projects.length - 1) === 0 && projects.length !== 1)
               })}
             >
-              <Link href={`/projects/${project.id}`}>
-                <Card className="h-full">
-                  <CardHeader>
-                    <CardTitle>{title(project.name)}</CardTitle>
-                  </CardHeader>
+              <Card className="h-full">
+                <CardHeader className="flex w-full flex-row items-center justify-between">
+                  <CardTitle>{title(project.name)}</CardTitle>
+                  <ProjectOptions project={project} />
+                </CardHeader>
+                <Link href={`/projects/${project.id}`}>
                   <CardContent
                     className={cn("relative h-[17rem] overflow-hidden")}
                   >
@@ -70,7 +72,7 @@ export const Projects: FC<ProjectsProps> = ({ projects }) => {
                         src={project.icon}
                         height={i !== 0 && i % 2 === 0 ? 300 : 300}
                         width={i !== 0 && i % 2 === 0 ? 400 : 300}
-                        className="absolute left-1/2 top-[calc(50%-10px)] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-xl"
+                        className="absolute left-1/2 top-[calc(50%-10px)] z-10 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-xl"
                         alt={`${project.name} icon`}
                       />
                     ) : (
@@ -81,8 +83,8 @@ export const Projects: FC<ProjectsProps> = ({ projects }) => {
                       />
                     )}
                   </CardContent>
-                </Card>
-              </Link>
+                </Link>
+              </Card>
             </li>
           ))}
         </ul>
