@@ -1,10 +1,9 @@
-"use client"
-
 import { Plus } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { type FC } from "react"
 import { ProjectsGlobe } from "@/components/blocks/projects-globe"
+import { ProjectOptions } from "@/components/projects/project-options"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { CardGlobe } from "@/components/ui/card-globe"
 import {
@@ -12,7 +11,6 @@ import {
   GlowingStarsDescription,
   GlowingStarsTitle
 } from "@/components/ui/glowing-stars"
-import { ProjectOptions } from "./project-options"
 import { glowingStarsOnHover_PLUS } from "@/lib/glowing-stars"
 import { cn, title } from "@/lib/utils"
 import { type Project } from "@/server/db/schema"

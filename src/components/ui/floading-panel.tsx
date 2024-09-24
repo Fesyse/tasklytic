@@ -40,7 +40,7 @@ const FloatingPanelContext = createContext<
   FloatingPanelContextType | undefined
 >(undefined)
 
-function useFloatingPanel() {
+export function useFloatingPanel() {
   const context = useContext(FloatingPanelContext)
   if (!context) {
     throw new Error(
@@ -472,13 +472,10 @@ export function FloatingPanelButton({
 }: FloatingPanelButtonProps) {
   return (
     <motion.button
-      className={cn(
-        "flex w-full items-center gap-2 rounded-md px-4 py-2 text-left text-sm hover:bg-zinc-100 dark:hover:bg-zinc-700",
-        className
-      )}
+      className={cn(className)}
       onClick={onClick}
-      whileHover={{ backgroundColor: "rgba(0, 0, 0, 0.05)" }}
-      whileTap={{ scale: 0.98 }}
+      // whileHover={{ backgroundColor: "rgba(0, 0, 0, 0.05)" }}
+      // whileTap={{ scale: 0.98 }}
     >
       {children}
     </motion.button>
