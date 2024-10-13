@@ -1,10 +1,16 @@
-import { isCuid } from "@paralleldrive/cuid2"
-import { count, eq, or } from "drizzle-orm"
+import { isCuid } from "@/lib/utils"
+import { and, count, eq, or } from "drizzle-orm"
 import { z } from "zod"
 import { MAX_PROJECTS, MAX_PROJECTS_WITH_SUBSCRIPTION } from "@/lib/constants"
 import { checkIsSubscriptionExpired } from "@/lib/utils"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
-import { projects, users } from "@/server/db/schema"
+import {
+  Project,
+  projectMemberships,
+  projects,
+  ProjectWithMemberShip,
+  users
+} from "@/server/db/schema"
 import { utapi } from "@/server/file-upload"
 
 const deleteIcon = async (fileKey: string) => {
@@ -43,6 +49,7 @@ export const projectsRouter = createTRPCRouter({
       })
     )
     .query(async ({ input, ctx }) => {
+      console.log(input.id, isCuid(input.id))
       if (!isCuid(input.id)) return undefined
 
       const project = await ctx.db.query.projects.findFirst({
@@ -50,21 +57,22 @@ export const projectsRouter = createTRPCRouter({
       })
       return project
     }),
-  getAll: protectedProcedure.query(({ ctx }) => {
-    return ctx.db.query.projects.findMany({
-      where: (projectsTable, { eq }) =>
-        or(
-          eq(projectsTable.ownerId, ctx.session.user.id),
-          eq(
-            projects.id,
-            ctx.db
-              .select({ id: projects.id })
-              .from(projects)
-              .innerJoin(users, eq(users.id, ctx.session.user.id))
-          )
+  getAll: protectedProcedure.query(
+    async ({ ctx }): Promise<ProjectWithMemberShip[]> => {
+      const response = await ctx.db
+        .select()
+        .from(projects)
+        .innerJoin(
+          projectMemberships,
+          eq(projectMemberships.projectId, projects.id)
         )
-    })
-  }),
+        .where(eq(projectMemberships.userId, ctx.session.user.id))
+      return response.map<ProjectWithMemberShip>(r => ({
+        ...r.project,
+        membership: r.project_membership
+      }))
+    }
+  ),
   create: protectedProcedure
     .input(
       z.object({
@@ -83,12 +91,17 @@ export const projectsRouter = createTRPCRouter({
           .select({
             count: count()
           })
-          .from(projects)
-          .where(eq(projects.ownerId, ctx.session.user.id))
+          .from(projectMemberships)
+          .where(
+            and(
+              eq(projectMemberships.role, "owner"),
+              eq(projectMemberships.userId, ctx.session.user.id)
+            )
+          )
       ])
-      const isSubscriptionExpired =
-        !user?.subscriptionEndDate ||
-        checkIsSubscriptionExpired(user?.subscriptionEndDate ?? new Date())
+      const isSubscriptionExpired = checkIsSubscriptionExpired(
+        user?.subscriptionEndDate ?? new Date()
+      )
 
       if (isSubscriptionExpired && (projectsCount?.count ?? 0) >= MAX_PROJECTS)
         throw new Error(
@@ -99,14 +112,21 @@ export const projectsRouter = createTRPCRouter({
           `Max limit of ${MAX_PROJECTS_WITH_SUBSCRIPTION} reached.`
         )
 
-      return ctx.db
+      const [createdProject] = await ctx.db
         .insert(projects)
         .values({
           ...project,
-          ownerId: ctx.session.user.id,
           icon: project.icon
         })
         .returning()
+
+      await ctx.db.insert(projectMemberships).values({
+        projectId: createdProject!.id,
+        userId: ctx.session.user.id,
+        role: "owner"
+      })
+
+      return createdProject
     }),
   delete: protectedProcedure
     .input(

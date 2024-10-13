@@ -1,4 +1,4 @@
-import { isCuid } from "@paralleldrive/cuid2"
+import { isCuid } from "@/lib/utils"
 import { LayoutDashboard, type LucideIcon, Plus, Settings } from "lucide-react"
 import { usePathname } from "next/navigation"
 import React, { type MouseEventHandler, forwardRef } from "react"

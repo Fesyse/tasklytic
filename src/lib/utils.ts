@@ -22,4 +22,10 @@ function checkIsSubscriptionExpired(subscriptionEndDate: Date): boolean {
   return isAfter(subscriptionEndDate, addMonths(new Date(), 1))
 }
 
-export { cn, title, random, sleep, checkIsSubscriptionExpired }
+function isCuid(string: string) {
+  if (string.length !== 20) return false
+
+  return isCuid(string)
+}
+
+export { cn, title, random, sleep, checkIsSubscriptionExpired, isCuid }

@@ -1,6 +1,6 @@
 "use client"
 
-import { isCuid } from "@paralleldrive/cuid2"
+import { isCuid } from "@/lib/utils"
 import { usePathname } from "next/navigation"
 import { type FC } from "react"
 import { useMediaQuery } from "@/hooks/use-media-query"

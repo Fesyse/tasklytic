@@ -1,4 +1,4 @@
-import { createId as createCuid } from "@paralleldrive/cuid2"
+import { init } from "@paralleldrive/cuid2"
 import { relations, sql } from "drizzle-orm"
 import {
   boolean,
@@ -12,6 +12,11 @@ import {
 } from "drizzle-orm/pg-core"
 import { type AdapterAccount } from "next-auth/adapters"
 import { TASK_STATUS } from "@/lib/constants"
+
+export const createCuid = init({
+  fingerprint: "tasklytic",
+  length: 20
+})
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -117,9 +122,6 @@ export const projects = createTable("project", {
     .$defaultFn(() => createCuid()),
   name: varchar("name", { length: 255 }).notNull(),
   icon: varchar("icon", { length: 255 }),
-  ownerId: varchar("owner_id", { length: 255 })
-    .notNull()
-    .references(() => users.id),
   createdAt: timestamp("created_at", {
     mode: "date",
     withTimezone: true
@@ -199,9 +201,33 @@ export const subTasks = createTable("sub_task", {
   }).$onUpdate(() => new Date())
 })
 
+export const projectMemberships = createTable("project_membership", {
+  id: varchar("id", { length: 255 })
+    .primaryKey()
+    .$defaultFn(() => createCuid()),
+  userId: varchar("user_id", { length: 255 })
+    .notNull()
+    .references(() => users.id),
+  projectId: varchar("project_id", { length: 255 })
+    .notNull()
+    .references(() => projects.id),
+  role: varchar("role", {
+    length: 255,
+    enum: ["participant", "admin", "owner"]
+  }).notNull(),
+  createdAt: timestamp("created_at", {
+    mode: "date",
+    withTimezone: true
+  }).default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: timestamp("updated_at", {
+    mode: "date",
+    withTimezone: true
+  }).$onUpdate(() => new Date())
+})
+
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
-  ownedProjects: many(projects)
+  projectMemberships: many(projectMemberships)
 }))
 
 export const accountsRelations = relations(accounts, ({ one }) => ({
@@ -216,10 +242,6 @@ export const notesRelations = relations(notes, ({ many, one }) => ({
   project: one(projects, {
     fields: [notes.projectId],
     references: [projects.id]
-  }),
-  user: one(users, {
-    fields: [notes.userId],
-    references: [users.id]
   }),
   tasks: many(tasks)
 }))
@@ -238,13 +260,30 @@ export const subTasksRelations = relations(subTasks, ({ one }) => ({
 
 export const projectsRelations = relations(projects, ({ many, one }) => ({
   notes: many(notes),
-  users: many(users),
-  owner: one(users, { fields: [projects.ownerId], references: [users.id] })
+  projectMemberships: many(projectMemberships)
 }))
+
+export const projectMembershipsRelations = relations(
+  projectMemberships,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [projectMemberships.userId],
+      references: [users.id]
+    }),
+    project: one(projects, {
+      fields: [projectMemberships.projectId],
+      references: [projects.id]
+    })
+  })
+)
 
 export type Task = typeof tasks.$inferSelect
 export type Note = typeof notes.$inferSelect
 export type Project = typeof projects.$inferSelect
+export type ProjectMembership = typeof projectMemberships.$inferSelect
+export type ProjectWithMemberShip = Project & {
+  membership: ProjectMembership
+}
 export type ProjectWithNotes = Project & {
   notes: Note[]
 }

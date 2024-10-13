@@ -11,9 +11,7 @@ type ProjectsPageProps = {
 }
 
 export default async function ProjectsPage(
-  {
-    // searchParams
-  }: ProjectsPageProps
+  _props: ProjectsPageProps
 ) {
   // const page = searchParams.page ? parseInt(searchParams.page) : 1
   // const perPage = searchParams.perPage ? parseInt(searchParams.perPage) : 10

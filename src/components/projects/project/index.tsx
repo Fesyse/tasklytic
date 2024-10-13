@@ -5,6 +5,6 @@ type ProjectProps = {
   project: ProjectWithNotes
 }
 
-export const Project: FC<ProjectProps> = ({}) => {
+export const Project: FC<ProjectProps> = () => {
   return <div>Project</div>
 }

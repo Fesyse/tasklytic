@@ -26,7 +26,7 @@ export const CreateProject = () => {
   const { mutate } = api.projects.create.useMutation({
     onError: error => toast.error(error.message),
     onSuccess: async data => {
-      const project = data[0]!
+      const project = data!
       router.push(`/projects/${project.id}`)
       toast.success("Successfully created project!")
       await utils.projects.getAll.invalidate()
