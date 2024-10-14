@@ -49,7 +49,6 @@ export const projectsRouter = createTRPCRouter({
       })
     )
     .query(async ({ input, ctx }) => {
-      console.log(input.id, isCuid(input.id))
       if (!isCuid(input.id)) return undefined
 
       const project = await ctx.db.query.projects.findFirst({

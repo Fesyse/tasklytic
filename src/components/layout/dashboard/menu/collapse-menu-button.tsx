@@ -101,12 +101,10 @@ export function CollapseMenuButton({
         </div>
       </Button>
       <CollapsibleContent className="mt-1 overflow-hidden data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
-        {submenus.map(({ label, active, ...rest }, index) => {
+        {submenus.map(({ label, active, icon: Icon, ...rest }, index) => {
           const buttonContent = (
             <>
-              <span className="ml-2 mr-4">
-                <Dot size={18} />
-              </span>
+              <Icon size={18} className="mr-2" />
               <p
                 className={cn(
                   "max-w-[170px] truncate",
