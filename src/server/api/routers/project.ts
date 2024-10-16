@@ -1,5 +1,5 @@
 import { isCuid } from "@/lib/utils"
-import { and, count, eq, or } from "drizzle-orm"
+import { and, count, eq } from "drizzle-orm"
 import { z } from "zod"
 import { MAX_PROJECTS, MAX_PROJECTS_WITH_SUBSCRIPTION } from "@/lib/constants"
 import { checkIsSubscriptionExpired } from "@/lib/utils"

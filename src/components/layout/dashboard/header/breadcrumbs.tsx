@@ -2,7 +2,7 @@
 
 import { isCuid } from "@/lib/utils"
 import { usePathname } from "next/navigation"
-import { type FC } from "react"
+import { type FC, useMemo } from "react"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import {
   Breadcrumb,
@@ -13,24 +13,25 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator
 } from "@/components/ui/breadcrumb"
-import { ProjectBreadcrumb } from "./project-breadcrumb"
+import { ProjectBreadcrumb } from "@/components/layout/dashboard/header/project-breadcrumb"
 import { title } from "@/lib/utils"
 
-type HeaderBreadcrubmsProps = React.ComponentPropsWithoutRef<"ul">
+type HeaderBreadcrumbsProps = React.ComponentPropsWithoutRef<"ul">
 
-export const HeaderBreadcrubms: FC<HeaderBreadcrubmsProps> = ({
+export const HeaderBreadcrumbs: FC<HeaderBreadcrumbsProps> = ({
   className,
   ...props
 }) => {
   const isDesktop = useMediaQuery("(min-width: 500px)")
   const pathname = usePathname()
-  const splittedPathname = pathname.split("/")
+  const splittedPathname = useMemo(() => pathname.split("/"), [pathname])
 
   const currentPage = splittedPathname[splittedPathname.length - 1]
   const previousPage = splittedPathname[splittedPathname.length - 2]
-  const previousPagePath = splittedPathname
-    .slice(0, splittedPathname.length - 1)
-    .join("/")
+  const previousPagePath = useMemo(
+    () => splittedPathname.slice(0, splittedPathname.length - 1).join("/"),
+    [splittedPathname]
+  )
 
   return (
     <Breadcrumb className={className} {...props}>

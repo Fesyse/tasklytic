@@ -61,7 +61,7 @@ const FloatingDockDesktop = ({
       onMouseMove={e => mouseX.set(e.pageX)}
       onMouseLeave={() => mouseX.set(Infinity)}
       className={cn(
-        "supports-backdrop-blur:bg-white/10 supports-backdrop-blur:dark:bg-black/10 mx-auto mt-8 flex h-[58px] w-max gap-2 rounded-xl border p-2 backdrop-blur-md",
+        "mx-auto mt-8 flex h-[58px] w-max gap-2 rounded-xl border bg-background p-2",
         className
       )}
     >
@@ -127,8 +127,6 @@ function IconContainer({
           <SubmenuContainer submenus={submenus} width={width} />
         )}
       </AnimatePresence>
-      {/* fixes user cant click on submenu */}
-      <div className="absolute bottom-full left-1/2 hidden h-10 w-12 -translate-x-1/2 min-[500px]:block" />
     </motion.div>
   )
 
@@ -145,15 +143,15 @@ type SubmenuContainerProps = {
 }
 
 const SubmenuContainer = ({ submenus, width }: SubmenuContainerProps) => {
-  const ref = useRef<HTMLDivElement>(null)
-
   return (
     <motion.div
       key="submenus"
-      initial="hidden"
-      animate="visible"
-      exit="hidden"
-      className="absolute bottom-[calc(100%+0.5rem)] left-1/2 flex translate-x-[-50%] flex-col-reverse gap-2" // Adjusted position
+      className="supports-backdrop-blur:bg-white/10 supports-backdrop-blur:dark:bg-black/10 absolute bottom-[calc(100%+0.5rem)] left-1/2 z-[51] flex w-full translate-x-[-50%] flex-col items-center gap-2 rounded-t-xl border border-b-0 bg-background p-2" // Adjusted position
+      initial={{ height: 0, padding: 0 }}
+      animate={{
+        height: submenus.length * 60 + (submenus.length - 1) * 8
+      }}
+      exit={{ height: 0, padding: 0 }}
     >
       <TooltipProvider>
         {submenus.map((submenu, idx) => (
@@ -163,7 +161,7 @@ const SubmenuContainer = ({ submenus, width }: SubmenuContainerProps) => {
                 key={submenu.label}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10, transition: { delay: 0.5 } }}
+                exit={{ opacity: 0, y: 10 }}
                 transition={{ delay: (idx + 1) * 0.1 }}
                 style={{ width, height: width }} // Ensure same width as parent
                 className="z-[52] flex items-center justify-center" // !!!!52!!!! swaaag
@@ -191,15 +189,14 @@ const SubmenuContainer = ({ submenus, width }: SubmenuContainerProps) => {
           </Tooltip>
         ))}
       </TooltipProvider>
-      <motion.div
-        ref={ref}
+      {/* <motion.div
         className="absolute left-0 z-[51] w-full rounded-t-xl border border-b-0 p-2 backdrop-blur-md"
         initial={{ height: 0 }}
         animate={{
           height: submenus.length * 60 + (submenus.length - 1) * 8
         }}
         exit={{ height: 0, transition: { delay: 0.5 } }}
-      ></motion.div>
+      ></motion.div> */}
     </motion.div>
   )
 }

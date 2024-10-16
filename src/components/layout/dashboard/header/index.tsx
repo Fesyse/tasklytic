@@ -1,6 +1,6 @@
 import { SheetMenu } from "@/components/layout/dashboard/sheet-menu"
 import { UserNav } from "@/components/layout/dashboard/user-nav"
-import { HeaderBreadcrubms } from "./breadcrumbs"
+import { HeaderBreadcrumbs } from "./breadcrumbs"
 
 export function Header() {
   return (
@@ -8,7 +8,7 @@ export function Header() {
       <div className="mx-4 flex h-14 items-center sm:mx-8">
         <div className="flex items-center gap-x-2">
           <SheetMenu />
-          <HeaderBreadcrubms />
+          <HeaderBreadcrumbs />
         </div>
         <div className="flex flex-1 items-center justify-end gap-x-2">
           <UserNav />

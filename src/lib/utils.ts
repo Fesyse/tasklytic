@@ -24,6 +24,7 @@ function checkIsSubscriptionExpired(subscriptionEndDate: Date): boolean {
 
 function isCuid(string: string) {
   if (string.length !== 20) return false
+  console.log("ISCUIDIING")
 
   return isCuid(string)
 }
