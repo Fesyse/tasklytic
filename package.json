@@ -9,7 +9,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "dev": "next dev --turbo",
+    "dev": "next dev --turbopack",
     "lint": "next lint",
     "start": "next start",
     "ui": "bunx shadcn@latest"
@@ -53,12 +53,12 @@
     "globe": "^0.3.1",
     "lucide-react": "^0.427.0",
     "mini-svg-data-uri": "^1.4.4",
-    "next": "^14.2.15",
+    "next": "15.0.3",
     "next-auth": "5.0.0-beta.18",
     "next-themes": "^0.3.0",
     "postgres": "^3.4.4",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "react": "19.0.0-rc-66855b96-20241106",
+    "react-dom": "19.0.0-rc-66855b96-20241106",
     "react-dropzone": "^14.2.9",
     "react-hook-form": "^7.53.0",
     "react-wrap-balancer": "^1.1.1",
@@ -77,13 +77,13 @@
   "devDependencies": {
     "@types/eslint": "^8.56.12",
     "@types/node": "^22.7.5",
-    "@types/react": "^18.3.11",
-    "@types/react-dom": "^18.3.1",
+    "@types/react": "npm:types-react@19.0.0-rc.1",
+    "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1",
     "@types/react-dropzone": "^5.1.0",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
     "drizzle-kit": "^0.21.4",
-    "eslint-config-next": "^14.2.15",
+    "eslint-config-next": "15.0.3",
     "eslint-plugin-drizzle": "^0.2.3",
     "oxlint": "^0.9.10",
     "postcss": "^8.4.47",
@@ -95,5 +95,11 @@
   "ct3aMetadata": {
     "initVersion": "7.36.2"
   },
-  "packageManager": "pnpm@9.6.0"
+  "packageManager": "pnpm@9.6.0",
+  "pnpm": {
+    "overrides": {
+      "@types/react": "npm:types-react@19.0.0-rc.1",
+      "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1"
+    }
+  }
 }

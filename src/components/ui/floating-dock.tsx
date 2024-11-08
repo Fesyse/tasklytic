@@ -155,7 +155,7 @@ const SubmenuContainer = ({ submenus, width }: SubmenuContainerProps) => {
     >
       <TooltipProvider>
         {submenus.map((submenu, idx) => (
-          <Tooltip>
+          <Tooltip key={idx}>
             <TooltipTrigger asChild>
               <motion.div
                 key={submenu.label}

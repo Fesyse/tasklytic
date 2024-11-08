@@ -9,7 +9,20 @@ export const notesRouter = createTRPCRouter({
         projectId: z.string().cuid()
       })
     )
-    .query(() => {
-      return [] as Note[]
+    .query(async ({ ctx, input }) => {
+      const result: Note[] = await ctx.db.query.notes.findMany({
+        where: (notesTable, { and, not, eq }) =>
+          and(
+            eq(notesTable.projectId, input.projectId),
+            and(
+              not(eq(notesTable.private, true)),
+              not(eq(notesTable.userId, ctx.session.user.id))
+            )
+          )
+      })
+
+      console.log(true)
+
+      return result
     })
 })

@@ -1,4 +1,4 @@
-type ProjectsProps = { params: { id: string } }
+type ProjectsProps = { params: Promise<{ id: string }> }
 
 export default async function ProjectPage(_props: ProjectsProps) {
   // const project = await api.projects.getById({

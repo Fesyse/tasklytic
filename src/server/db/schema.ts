@@ -18,6 +18,13 @@ export const createCuid = init({
   length: 20
 })
 
+export const BLOCK_TYPE = [
+  "md",
+  "tasks-list",
+  "tasks-table",
+  "tasks-kanban"
+] as const
+
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
  * database instance for multiple projects.
@@ -150,6 +157,18 @@ export const notes = createTable("notes", {
     .references(() => users.id)
 })
 
+export const blocks = createTable("block", {
+  id: varchar("id", { length: 255 })
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => createCuid()),
+  type: varchar("type", { enum: BLOCK_TYPE }).notNull(),
+  mdContent: text("md_content"),
+  noteId: varchar("note_id", { length: 255 })
+    .notNull()
+    .references(() => notes.id)
+})
+
 export const tasks = createTable("task", {
   id: varchar("id", { length: 255 })
     .notNull()
@@ -242,6 +261,14 @@ export const notesRelations = relations(notes, ({ many, one }) => ({
   project: one(projects, {
     fields: [notes.projectId],
     references: [projects.id]
+  }),
+  tasks: many(tasks)
+}))
+
+export const blocksRelations = relations(blocks, ({ many, one }) => ({
+  notes: one(notes, {
+    fields: [blocks.noteId],
+    references: [notes.id]
   }),
   tasks: many(tasks)
 }))

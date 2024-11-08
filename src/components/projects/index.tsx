@@ -1,8 +1,3 @@
-import { Plus } from "lucide-react"
-import Image from "next/image"
-import Link from "next/link"
-import { type FC } from "react"
-import { ProjectsGlobe } from "@/components/blocks/projects-globe"
 import { ProjectOptions } from "@/components/projects/project-options"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { CardGlobe } from "@/components/ui/card-globe"
@@ -14,6 +9,10 @@ import {
 import { glowingStarsOnHover_PLUS } from "@/lib/glowing-stars"
 import { cn, title } from "@/lib/utils"
 import { type Project } from "@/server/db/schema"
+import { Plus } from "lucide-react"
+import Image from "next/image"
+import Link from "next/link"
+import { type FC } from "react"
 
 type ProjectsProps = {
   projects: Project[]
@@ -96,7 +95,8 @@ export const Projects: FC<ProjectsProps> = ({ projects }) => {
             !
           </div>
           <div className="-mt-20">
-            <ProjectsGlobe />
+            {/* FIXME: ProjectsGlobe is throwing error */}
+            {/* <ProjectsGlobe /> */}
           </div>
         </>
       )}

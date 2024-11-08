@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from "clsx"
 import { addMonths, isAfter } from "date-fns"
 import { twMerge } from "tailwind-merge"
+import { isCuid as isCuid2 } from "@paralleldrive/cuid2"
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -24,9 +25,8 @@ function checkIsSubscriptionExpired(subscriptionEndDate: Date): boolean {
 
 function isCuid(string: string) {
   if (string.length !== 20) return false
-  console.log("ISCUIDIING")
 
-  return isCuid(string)
+  return isCuid2(string)
 }
 
 export { cn, title, random, sleep, checkIsSubscriptionExpired, isCuid }

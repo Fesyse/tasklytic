@@ -1,9 +1,14 @@
-import { isCuid } from "@/lib/utils"
-import { LayoutDashboard, type LucideIcon, Plus, Settings } from "lucide-react"
+import { isCuid, cn } from "@/lib/utils"
+import {
+  FileIcon,
+  LayoutDashboard,
+  type LucideIcon,
+  Plus,
+  Settings
+} from "lucide-react"
 import { usePathname } from "next/navigation"
-import React, { type MouseEventHandler, forwardRef } from "react"
+import React, { type MouseEventHandler, forwardRef, useEffect } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
-import { cn } from "./utils"
 import { api } from "@/trpc/react"
 
 type _Submenu = {
@@ -45,16 +50,19 @@ type Group = {
 
 export function useMenuList(): Group[] {
   const pathname = usePathname()
-  const splittedPathname = pathname.split("/")
+  const splittedPathname = pathname.split("/").slice(1)
   const isProjectPage =
-    splittedPathname[0] === "project" && splittedPathname[1]
+    splittedPathname[0] === "projects" && splittedPathname[1]
       ? isCuid(splittedPathname[1])
       : false
 
-  const { data: project, isLoading: isProjectLoading } =
-    api.projects.getById.useQuery(
+  /** Use only if isProjectPage checks */
+  const projectId = isProjectPage ? splittedPathname[1]! : undefined
+
+  const { data: projectNotes, isLoading: isProjectNotesLoading } =
+    api.notes.getAll.useQuery(
       {
-        id: splittedPathname[1]!
+        projectId: splittedPathname[1]!
       },
       {
         enabled: isProjectPage,
@@ -94,13 +102,20 @@ export function useMenuList(): Group[] {
     ...(isProjectPage
       ? [
           {
-            groupLabel:
-              project && !isProjectLoading ? (
-                project.name
-              ) : (
-                <Skeleton className="h-8 w-full" />
-              ),
-            menus: project && !isProjectLoading ? [] : []
+            groupLabel: "Notes",
+            menus:
+              projectNotes && !isProjectNotesLoading
+                ? projectNotes.map(note => {
+                    const href = `/project/${projectId}/${note.id}`
+                    return {
+                      active: pathname.startsWith(href),
+                      icon: FileIcon,
+                      label: note.title,
+                      href,
+                      submenus: []
+                    }
+                  })
+                : []
           } satisfies Group
         ]
       : []),

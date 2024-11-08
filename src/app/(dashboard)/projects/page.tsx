@@ -3,18 +3,7 @@ import { Projects } from "@/components/projects"
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect"
 import { api } from "@/trpc/server"
 
-type ProjectsPageProps = {
-  searchParams: {
-    page?: string
-    perPage?: string
-  }
-}
-
-export default async function ProjectsPage(
-  _props: ProjectsPageProps
-) {
-  // const page = searchParams.page ? parseInt(searchParams.page) : 1
-  // const perPage = searchParams.perPage ? parseInt(searchParams.perPage) : 10
+export default async function ProjectsPage() {
   const projects = await api.projects.getAll()
 
   return (

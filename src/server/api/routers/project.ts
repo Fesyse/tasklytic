@@ -51,27 +51,35 @@ export const projectsRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       if (!isCuid(input.id)) return undefined
 
-      const project = await ctx.db.query.projects.findFirst({
-        where: (projectsTable, { eq }) => eq(projectsTable.id, input.id)
-      })
-      return project
+      const projectMembership = await ctx.db.query.projectMemberships.findFirst(
+        {
+          where: (projectMembershipsTable, { eq }) =>
+            and(
+              eq(projectMemberships.userId, ctx.session.user.id),
+              eq(projectMembershipsTable.projectId, input.id)
+            ),
+          with: {
+            project: true
+          }
+        }
+      )
+      return projectMembership?.project
     }),
-  getAll: protectedProcedure.query(
-    async ({ ctx }): Promise<ProjectWithMemberShip[]> => {
-      const response = await ctx.db
-        .select()
-        .from(projects)
-        .innerJoin(
-          projectMemberships,
-          eq(projectMemberships.projectId, projects.id)
-        )
-        .where(eq(projectMemberships.userId, ctx.session.user.id))
-      return response.map<ProjectWithMemberShip>(r => ({
-        ...r.project,
-        membership: r.project_membership
-      }))
-    }
-  ),
+  getAll: protectedProcedure.query(async ({ ctx }) => {
+    const response = await ctx.db
+      .select()
+      .from(projects)
+      .innerJoin(
+        projectMemberships,
+        eq(projectMemberships.projectId, projects.id)
+      )
+      .where(eq(projectMemberships.userId, ctx.session.user.id))
+
+    return response.map<ProjectWithMemberShip>(r => ({
+      ...r.project,
+      membership: r.project_membership
+    }))
+  }),
   create: protectedProcedure
     .input(
       z.object({
