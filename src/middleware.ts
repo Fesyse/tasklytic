@@ -1,11 +1,6 @@
-import { auth } from "@/server/auth"
 import { type NextRequest, NextResponse } from "next/server"
 
-export const middleware = async (req: NextRequest) => {
-  const session = await auth()
-
-  console.log(session)
-
+export const middleware = async (req: NextRequest, res: NextResponse) => {
   return NextResponse.next()
 }
 
