@@ -2,7 +2,6 @@
 
 import { AppSidebar } from "@/components/app-sidebar"
 import { NavActions } from "@/components/nav-actions"
-import { useUserSettingsStore } from "@/components/providers/user-settings-store-provider"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -15,9 +14,26 @@ import {
   SidebarProvider,
   SidebarTrigger
 } from "@/components/ui/sidebar"
+import { Skeleton } from "@/components/ui/skeleton"
+import { api } from "@/trpc/react"
+import { useParams } from "next/navigation"
 
 export function DashboardLayout({ children }: React.PropsWithChildren) {
-  const { sidebar, navigationMenu } = useUserSettingsStore(s => s)
+  const { id: projectId, noteId } = useParams<{ id: string; noteId?: string }>()
+  const { data: project, isLoading: isProjectsLoading } =
+    api.projects.getById.useQuery(
+      {
+        id: projectId
+      },
+      { enabled: !noteId }
+    )
+  const { data: note, isLoading: isNoteLoading } = api.notes.getById.useQuery(
+    {
+      // remove ts error, either way it's not used when its not note page
+      id: noteId ?? "ID"
+    },
+    { enabled: !!noteId }
+  )
 
   return (
     <SidebarProvider>
@@ -31,7 +47,15 @@ export function DashboardLayout({ children }: React.PropsWithChildren) {
               <BreadcrumbList>
                 <BreadcrumbItem>
                   <BreadcrumbPage className="line-clamp-1">
-                    Project Management & Task Tracking
+                    {noteId && note && !isNoteLoading ? (
+                      note.title
+                    ) : isNoteLoading ? (
+                      <Skeleton className="h-6 w-24" />
+                    ) : project && !isProjectsLoading ? (
+                      project.name
+                    ) : (
+                      <Skeleton className="h-6 w-24" />
+                    )}
                   </BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>

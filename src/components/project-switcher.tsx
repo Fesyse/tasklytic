@@ -18,7 +18,8 @@ import {
 import { SidebarNav } from "@/lib/menu-list"
 import { ChevronDownIcon, PlusIcon } from "@radix-ui/react-icons"
 import Link from "next/link"
-import * as React from "react"
+import { useParams } from "next/navigation"
+import { useEffect, useState } from "react"
 import { Skeleton } from "./ui/skeleton"
 
 export function ProjectSwitcher({
@@ -26,7 +27,15 @@ export function ProjectSwitcher({
 }: {
   projects: SidebarNav["projects"]
 }) {
-  const [activeProject, setActiveProject] = React.useState(projects.items?.[0])
+  const { id: projectId } = useParams<{ id: string }>()
+  const [activeProject, setActiveProject] = useState(
+    projects.items?.find(p => p.id === projectId)
+  )
+
+  useEffect(() => {
+    const newActiveProject = projects.items?.find(p => p.id === projectId)
+    setActiveProject(newActiveProject)
+  }, [projectId])
 
   return (
     <SidebarMenu>
@@ -60,31 +69,32 @@ export function ProjectSwitcher({
             <DropdownMenuLabel className="text-xs text-muted-foreground">
               Projects
             </DropdownMenuLabel>
-            {projects.items?.length && !projects.isLoading ? (
-              projects.items.map((project, index) => (
-                <DropdownMenuItem
-                  key={project.name}
-                  onClick={() => setActiveProject(project)}
-                  className="gap-2 p-2"
-                >
-                  <div className="flex size-6 items-center justify-center rounded-sm border">
-                    <project.logo className="size-4 shrink-0" />
-                  </div>
-                  {project.name}
-                  <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
-                </DropdownMenuItem>
-              ))
-            ) : projects.isLoading ? (
-              Array.from({ length: 3 }).map((_, i) => (
-                <DropdownMenuItem key={i}>
-                  <SidebarMenuSkeleton />
-                </DropdownMenuItem>
-              ))
-            ) : (
-              <SidebarMenuItem>
-                <span className="text-muted-foreground">No other projects</span>
-              </SidebarMenuItem>
-            )}
+            {projects.items?.length && !projects.isLoading
+              ? projects.items?.map((project, index) => (
+                  <DropdownMenuItem
+                    key={project.name}
+                    className="gap-2 p-2"
+                    asChild
+                  >
+                    <Link
+                      href={`/projects/${project.id}`}
+                      data-active={project.id === projectId}
+                    >
+                      <div className="flex size-6 items-center justify-center rounded-sm border">
+                        <project.logo className="size-4 shrink-0" />
+                      </div>
+                      {project.name}
+                      <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
+                    </Link>
+                  </DropdownMenuItem>
+                ))
+              : projects.isLoading
+                ? Array.from({ length: 3 }).map((_, i) => (
+                    <DropdownMenuItem key={i}>
+                      <SidebarMenuSkeleton />
+                    </DropdownMenuItem>
+                  ))
+                : null}
             <DropdownMenuSeparator />
             <DropdownMenuItem className="gap-2 p-2" asChild>
               <Link href="/create-project">

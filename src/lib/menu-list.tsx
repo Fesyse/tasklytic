@@ -22,6 +22,7 @@ export type SidebarNav = {
     isLoading: boolean
     items:
       | {
+          id: string
           name: string
           logo: LogoComponent
           plan: (typeof PROJECT_PLANS)[number]
@@ -57,6 +58,8 @@ export function useSidebarNav(): SidebarNav {
       initialData: []
     })
 
+  console.log(projects)
+
   const { data: notes, isLoading: isNotesLoading } = api.notes.getAll.useQuery(
     { projectId },
     {
@@ -77,6 +80,7 @@ export function useSidebarNav(): SidebarNav {
       items: projects?.map<
         NonNullable<SidebarNav["projects"]["items"]>[number]
       >(project => ({
+        id: project.id,
         logo: project.icon
           ? props => (
               <Image

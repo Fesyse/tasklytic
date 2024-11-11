@@ -33,7 +33,7 @@ import {
   SidebarMenuItem
 } from "@/components/ui/sidebar"
 import { DotsHorizontalIcon } from "@radix-ui/react-icons"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 
 const data = [
   [
@@ -100,8 +100,6 @@ const data = [
 
 export function NavActions() {
   const [isOpen, setIsOpen] = useState(false)
-
-  useEffect(() => setIsOpen(true), [])
 
   return (
     <div className="flex items-center gap-2 text-sm">

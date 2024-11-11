@@ -1,17 +1,14 @@
-import { isCuid } from "@/lib/utils"
-import { and, count, eq } from "drizzle-orm"
-import { z } from "zod"
 import { MAX_PROJECTS, MAX_PROJECTS_WITH_SUBSCRIPTION } from "@/lib/constants"
-import { checkIsSubscriptionExpired } from "@/lib/utils"
+import { checkIsSubscriptionExpired, isCuid } from "@/lib/utils"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import {
-  Project,
   projectMemberships,
   projects,
-  ProjectWithMemberShip,
-  users
+  ProjectWithMemberShip
 } from "@/server/db/schema"
 import { utapi } from "@/server/file-upload"
+import { and, count, eq } from "drizzle-orm"
+import { z } from "zod"
 
 const deleteIcon = async (fileKey: string) => {
   const response = await utapi.deleteFiles(fileKey)
