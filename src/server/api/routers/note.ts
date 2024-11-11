@@ -1,6 +1,6 @@
-import { z } from "zod"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { type Note } from "@/server/db/schema"
+import { z } from "zod"
 
 export const notesRouter = createTRPCRouter({
   getAll: protectedProcedure
@@ -21,7 +21,27 @@ export const notesRouter = createTRPCRouter({
           )
       })
 
-      console.log(true)
+      return result
+    }),
+
+  getAllPinned: protectedProcedure
+    .input(
+      z.object({
+        projectId: z.string().cuid()
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const result: Note[] = await ctx.db.query.notes.findMany({
+        where: (notesTable, { and, not, eq }) =>
+          and(
+            eq(notesTable.projectId, input.projectId),
+            eq(notesTable.isPinned, true),
+            and(
+              not(eq(notesTable.private, true)),
+              not(eq(notesTable.userId, ctx.session.user.id))
+            )
+          )
+      })
 
       return result
     })

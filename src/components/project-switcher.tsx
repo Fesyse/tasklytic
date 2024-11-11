@@ -1,6 +1,5 @@
 "use client"
 
-import * as React from "react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,25 +7,23 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuShortcut,
-  DropdownMenuTrigger,
+  DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import {
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem,
+  SidebarMenuItem
 } from "@/components/ui/sidebar"
+import { SidebarNav } from "@/lib/menu-list"
 import { ChevronDownIcon, PlusIcon } from "@radix-ui/react-icons"
+import * as React from "react"
 
-export function TeamSwitcher({
-  teams,
+export function ProjectSwitcher({
+  project
 }: {
-  teams: {
-    name: string
-    logo: React.ElementType
-    plan: string
-  }[]
+  project: SidebarNav["projects"]
 }) {
-  const [activeTeam, setActiveTeam] = React.useState(teams[0])
+  const [activeTeam, setActiveTeam] = React.useState(project?.[0])
 
   return (
     <SidebarMenu>
@@ -48,9 +45,9 @@ export function TeamSwitcher({
             sideOffset={4}
           >
             <DropdownMenuLabel className="text-xs text-muted-foreground">
-              Teams
+              project
             </DropdownMenuLabel>
-            {teams.map((team, index) => (
+            {project.map((team, index) => (
               <DropdownMenuItem
                 key={team.name}
                 onClick={() => setActiveTeam(team)}

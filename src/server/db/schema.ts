@@ -1,3 +1,4 @@
+import { PROJECT_PLANS, TASK_STATUS } from "@/lib/constants"
 import { init } from "@paralleldrive/cuid2"
 import { relations, sql } from "drizzle-orm"
 import {
@@ -11,7 +12,6 @@ import {
   varchar
 } from "drizzle-orm/pg-core"
 import { type AdapterAccount } from "next-auth/adapters"
-import { TASK_STATUS } from "@/lib/constants"
 
 export const createCuid = init({
   fingerprint: "tasklytic",
@@ -129,6 +129,7 @@ export const projects = createTable("project", {
     .$defaultFn(() => createCuid()),
   name: varchar("name", { length: 255 }).notNull(),
   icon: varchar("icon", { length: 255 }),
+  plan: varchar("plan", { length: 255, enum: PROJECT_PLANS }).notNull(),
   createdAt: timestamp("created_at", {
     mode: "date",
     withTimezone: true
@@ -154,7 +155,8 @@ export const notes = createTable("notes", {
     .references(() => projects.id),
   userId: varchar("user_id", { length: 255 })
     .notNull()
-    .references(() => users.id)
+    .references(() => users.id),
+  isPinned: boolean("is_pinned").notNull().default(false)
 })
 
 export const blocks = createTable("block", {
