@@ -12,7 +12,8 @@ import {
 import {
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem
+  SidebarMenuItem,
+  SidebarMenuSkeleton
 } from "@/components/ui/sidebar"
 import { SidebarNav } from "@/lib/menu-list"
 import { ChevronDownIcon, PlusIcon } from "@radix-ui/react-icons"
@@ -59,25 +60,31 @@ export function ProjectSwitcher({
             <DropdownMenuLabel className="text-xs text-muted-foreground">
               Projects
             </DropdownMenuLabel>
-            {projects.items?.length && !projects.isLoading
-              ? projects.items.map((project, index) => (
-                  <DropdownMenuItem
-                    key={project.name}
-                    onClick={() => setActiveProject(project)}
-                    className="gap-2 p-2"
-                  >
-                    <div className="flex size-6 items-center justify-center rounded-sm border">
-                      <project.logo className="size-4 shrink-0" />
-                    </div>
-                    {project.name}
-                    <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
-                  </DropdownMenuItem>
-                ))
-              : Array.from({ length: 3 }).map((_, i) => (
-                  <DropdownMenuItem key={i}>
-                    <Skeleton className="h-full w-full" />
-                  </DropdownMenuItem>
-                ))}
+            {projects.items?.length && !projects.isLoading ? (
+              projects.items.map((project, index) => (
+                <DropdownMenuItem
+                  key={project.name}
+                  onClick={() => setActiveProject(project)}
+                  className="gap-2 p-2"
+                >
+                  <div className="flex size-6 items-center justify-center rounded-sm border">
+                    <project.logo className="size-4 shrink-0" />
+                  </div>
+                  {project.name}
+                  <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
+                </DropdownMenuItem>
+              ))
+            ) : projects.isLoading ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <DropdownMenuItem key={i}>
+                  <SidebarMenuSkeleton />
+                </DropdownMenuItem>
+              ))
+            ) : (
+              <SidebarMenuItem>
+                <span className="text-muted-foreground">No other projects</span>
+              </SidebarMenuItem>
+            )}
             <DropdownMenuSeparator />
             <DropdownMenuItem className="gap-2 p-2" asChild>
               <Link href="/create-project">

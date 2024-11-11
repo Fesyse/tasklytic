@@ -1,9 +1,9 @@
 "use client"
 
 import { NavMain } from "@/components/nav-main"
+import { NavNotes } from "@/components/nav-notes"
 import { NavPinnedNotes } from "@/components/nav-pinned-notes"
 import { NavSecondary } from "@/components/nav-secondary"
-import { NavWorkspaces } from "@/components/nav-workspaces"
 import { ProjectSwitcher } from "@/components/project-switcher"
 import {
   Sidebar,
@@ -24,7 +24,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavPinnedNotes pinnedNotes={data.pinnedNotes} />
-        <NavWorkspaces workspaces={data.workspaces} />
+        <NavNotes notes={data.notes} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarRail />

@@ -50,7 +50,7 @@ export type SidebarNav = {
 }
 export function useSidebarNav(): SidebarNav {
   const pathname = usePathname()
-  const { projectId } = useParams<{ projectId: string }>()
+  const { id: projectId } = useParams<{ id: string }>()
 
   const { data: projects, isLoading: isProjectsLoading } =
     api.projects.getAll.useQuery(undefined, {

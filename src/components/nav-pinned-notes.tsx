@@ -16,6 +16,7 @@ import {
   SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSkeleton,
   useSidebar
 } from "@/components/ui/sidebar"
 import { SidebarNav } from "@/lib/menu-list"
@@ -32,58 +33,64 @@ export function NavPinnedNotes({
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Pinned notes</SidebarGroupLabel>
       <SidebarMenu>
-        {!pinnedNotes.isLoading && pinnedNotes.items?.length
-          ? pinnedNotes.items.map(item => (
-              <SidebarMenuItem key={item.name}>
-                <SidebarMenuButton asChild>
-                  <a href={item.href} title={item.name}>
-                    <span>
-                      <item.emoji />
-                    </span>
-                    <span>{item.name}</span>
-                  </a>
-                </SidebarMenuButton>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <SidebarMenuAction showOnHover>
-                      <DotsHorizontalIcon />
-                      <span className="sr-only">More</span>
-                    </SidebarMenuAction>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent
-                    className="w-56 rounded-lg"
-                    side={isMobile ? "bottom" : "right"}
-                    align={isMobile ? "end" : "start"}
-                  >
-                    <DropdownMenuItem>
-                      <StarOff className="text-muted-foreground" />
-                      <span>Remove from pinned notes</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem>
-                      <Link className="text-muted-foreground" />
-                      <span>Copy Link</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <ArrowUpRight className="text-muted-foreground" />
-                      <span>Open in New Tab</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem>
-                      <Trash2 className="text-muted-foreground" />
-                      <span>Delete</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </SidebarMenuItem>
-            ))
-          : Array.from({ length: 5 }).map((_, index) => (
-              <SidebarMenuItem key={index}>
-                <SidebarMenuButton className="text-muted-foreground">
-                  <span>No pinned notes</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
+        {!pinnedNotes.isLoading && pinnedNotes.items?.length ? (
+          pinnedNotes.items.map(item => (
+            <SidebarMenuItem key={item.name}>
+              <SidebarMenuButton asChild>
+                <a href={item.href} title={item.name}>
+                  <span>
+                    <item.emoji />
+                  </span>
+                  <span>{item.name}</span>
+                </a>
+              </SidebarMenuButton>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <SidebarMenuAction showOnHover>
+                    <DotsHorizontalIcon />
+                    <span className="sr-only">More</span>
+                  </SidebarMenuAction>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  className="w-56 rounded-lg"
+                  side={isMobile ? "bottom" : "right"}
+                  align={isMobile ? "end" : "start"}
+                >
+                  <DropdownMenuItem>
+                    <StarOff className="text-muted-foreground" />
+                    <span>Remove from pinned notes</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
+                    <Link className="text-muted-foreground" />
+                    <span>Copy Link</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <ArrowUpRight className="text-muted-foreground" />
+                    <span>Open in New Tab</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
+                    <Trash2 className="text-muted-foreground" />
+                    <span>Delete</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </SidebarMenuItem>
+          ))
+        ) : pinnedNotes.isLoading ? (
+          Array.from({ length: 2 }).map((_, index) => (
+            <SidebarMenuItem key={index}>
+              <SidebarMenuSkeleton />
+            </SidebarMenuItem>
+          ))
+        ) : (
+          <SidebarMenuItem className="justify-center">
+            <span className="ml-2 text-xs text-muted-foreground">
+              No pinned notes
+            </span>
+          </SidebarMenuItem>
+        )}
         <SidebarMenuItem>
           <SidebarMenuButton className="text-sidebar-foreground/70">
             <DotsHorizontalIcon />

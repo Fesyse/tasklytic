@@ -6,7 +6,7 @@ export const notesRouter = createTRPCRouter({
   getAll: protectedProcedure
     .input(
       z.object({
-        projectId: z.string().cuid()
+        projectId: z.string()
       })
     )
     .query(async ({ ctx, input }) => {
@@ -27,7 +27,7 @@ export const notesRouter = createTRPCRouter({
   getAllPinned: protectedProcedure
     .input(
       z.object({
-        projectId: z.string().cuid()
+        projectId: z.string()
       })
     )
     .query(async ({ ctx, input }) => {
