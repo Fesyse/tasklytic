@@ -25,7 +25,7 @@ export function ProjectSwitcher({
 }: {
   projects: SidebarNav["projects"]
 }) {
-  const [activeProject, setActiveProject] = React.useState(projects?.[0])
+  const [activeProject, setActiveProject] = React.useState(projects.items?.[0])
 
   return (
     <SidebarMenu>
@@ -59,19 +59,25 @@ export function ProjectSwitcher({
             <DropdownMenuLabel className="text-xs text-muted-foreground">
               Projects
             </DropdownMenuLabel>
-            {projects?.map((project, index) => (
-              <DropdownMenuItem
-                key={project.name}
-                onClick={() => setActiveProject(project)}
-                className="gap-2 p-2"
-              >
-                <div className="flex size-6 items-center justify-center rounded-sm border">
-                  <project.logo className="size-4 shrink-0" />
-                </div>
-                {project.name}
-                <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
-              </DropdownMenuItem>
-            ))}
+            {projects.items?.length && !projects.isLoading
+              ? projects.items.map((project, index) => (
+                  <DropdownMenuItem
+                    key={project.name}
+                    onClick={() => setActiveProject(project)}
+                    className="gap-2 p-2"
+                  >
+                    <div className="flex size-6 items-center justify-center rounded-sm border">
+                      <project.logo className="size-4 shrink-0" />
+                    </div>
+                    {project.name}
+                    <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
+                  </DropdownMenuItem>
+                ))
+              : Array.from({ length: 3 }).map((_, i) => (
+                  <DropdownMenuItem key={i}>
+                    <Skeleton className="h-full w-full" />
+                  </DropdownMenuItem>
+                ))}
             <DropdownMenuSeparator />
             <DropdownMenuItem className="gap-2 p-2" asChild>
               <Link href="/create-project">

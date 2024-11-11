@@ -18,49 +18,44 @@ import { type PROJECT_PLANS } from "./constants"
 type LogoComponent = FC<{ className?: string }>
 
 export type SidebarNav = {
-  projects:
-    | {
-        name: string
-        logo: LogoComponent
-        plan: (typeof PROJECT_PLANS)[number]
-      }[]
-    | undefined
+  projects: {
+    isLoading: boolean
+    items:
+      | {
+          name: string
+          logo: LogoComponent
+          plan: (typeof PROJECT_PLANS)[number]
+        }[]
+      | undefined
+  }
   navMain: ({
     title: string
     icon: LogoComponent
     isActive: boolean
   } & ({ href: string } | { action: () => void }))[]
-  pinnedNotes:
-    | {
-        name: string
-        href: string
-        emoji: LogoComponent
-        isActive: boolean
-      }[]
-    | undefined
-  notes:
-    | {
-        name: string
-        href: string
-        emoji: LogoComponent
-        isActive: boolean
-      }[]
-    | undefined
+  pinnedNotes: SidebarNav["notes"]
+  notes: {
+    isLoading: boolean
+    items:
+      | {
+          name: string
+          href: string
+          emoji: LogoComponent
+          isActive: boolean
+        }[]
+      | undefined
+  }
 
-  navSecondary: {
-    title: string
-    href: string
-    icon: LogoComponent
-    isActive: boolean
-  }[]
+  navSecondary: SidebarNav["navMain"]
 }
 export function useSidebarNav(): SidebarNav {
   const pathname = usePathname()
   const { projectId } = useParams<{ projectId: string }>()
 
-  const { data: projects } = api.projects.getAll.useQuery(undefined, {
-    initialData: []
-  })
+  const { data: projects, isLoading: isProjectsLoading } =
+    api.projects.getAll.useQuery(undefined, {
+      initialData: []
+    })
 
   const { data: notes, isLoading: isNotesLoading } = api.notes.getAll.useQuery(
     { projectId },
@@ -77,8 +72,11 @@ export function useSidebarNav(): SidebarNav {
     )
 
   return {
-    projects: projects?.map<NonNullable<SidebarNav["projects"]>[number]>(
-      project => ({
+    projects: {
+      isLoading: isProjectsLoading,
+      items: projects?.map<
+        NonNullable<SidebarNav["projects"]["items"]>[number]
+      >(project => ({
         logo: project.icon
           ? props => (
               <Image
@@ -92,8 +90,8 @@ export function useSidebarNav(): SidebarNav {
           : Presentation,
         name: project.name,
         plan: project.plan
-      })
-    ),
+      }))
+    },
     navMain: [
       {
         title: "Dashboard",
@@ -115,24 +113,30 @@ export function useSidebarNav(): SidebarNav {
       }
     ],
 
-    pinnedNotes: pinnedNotes?.map(note => {
-      const href = `/project/${projectId}/${note.id}`
-      return {
-        name: note.title,
-        emoji: FileIcon,
-        href,
-        isActive: pathname.startsWith(href)
-      }
-    }),
-    notes: notes?.map(note => {
-      const href = `/project/${projectId}/${note.id}`
-      return {
-        name: note.title,
-        emoji: FileIcon,
-        href,
-        isActive: pathname.startsWith(href)
-      }
-    }),
+    pinnedNotes: {
+      isLoading: isPinnedNotesLoading,
+      items: pinnedNotes?.map(note => {
+        const href = `/project/${projectId}/${note.id}`
+        return {
+          name: note.title,
+          emoji: FileIcon,
+          href,
+          isActive: pathname.startsWith(href)
+        }
+      })
+    },
+    notes: {
+      isLoading: isNotesLoading,
+      items: notes?.map(note => {
+        const href = `/project/${projectId}/${note.id}`
+        return {
+          name: note.title,
+          emoji: FileIcon,
+          href,
+          isActive: pathname.startsWith(href)
+        }
+      })
+    },
     navSecondary: [
       {
         title: "Calendar",

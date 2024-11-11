@@ -1,35 +1,39 @@
 "use client"
 
-import { type LucideIcon } from "lucide-react"
-
 import {
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem,
+  SidebarMenuItem
 } from "@/components/ui/sidebar"
+import { type SidebarNav } from "@/lib/menu-list"
+import Link from "next/link"
 
-export function NavMain({
-  items,
-}: {
-  items: {
-    title: string
-    url: string
-    icon: LucideIcon
-    isActive?: boolean
-  }[]
-}) {
+export function NavMain({ navigation }: { navigation: SidebarNav["navMain"] }) {
   return (
     <SidebarMenu>
-      {items.map((item) => (
-        <SidebarMenuItem key={item.title}>
-          <SidebarMenuButton asChild isActive={item.isActive}>
-            <a href={item.url}>
-              <item.icon />
-              <span>{item.title}</span>
-            </a>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      ))}
+      {navigation.map(item => {
+        const children = (
+          <>
+            <item.icon />
+            <span>{item.title}</span>
+          </>
+        )
+        return (
+          <SidebarMenuItem key={item.title}>
+            <SidebarMenuButton
+              asChild={"href" in item}
+              isActive={item.isActive}
+              onClick={"action" in item ? item.action : undefined}
+            >
+              {"href" in item ? (
+                <Link href={item.href}>{children}</Link>
+              ) : (
+                children
+              )}
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        )
+      })}
     </SidebarMenu>
   )
 }

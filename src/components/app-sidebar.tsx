@@ -1,7 +1,7 @@
 "use client"
 
-import { NavFavorites } from "@/components/nav-favorites"
 import { NavMain } from "@/components/nav-main"
+import { NavPinnedNotes } from "@/components/nav-pinned-notes"
 import { NavSecondary } from "@/components/nav-secondary"
 import { NavWorkspaces } from "@/components/nav-workspaces"
 import { ProjectSwitcher } from "@/components/project-switcher"
@@ -13,8 +13,6 @@ import {
 } from "@/components/ui/sidebar"
 import { useSidebarNav } from "@/lib/menu-list"
 
-// This is sample data.
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const data = useSidebarNav()
 
@@ -22,10 +20,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <Sidebar className="border-r-0" {...props}>
       <SidebarHeader>
         <ProjectSwitcher projects={data.projects} />
-        <NavMain items={data.navMain} />
+        <NavMain navigation={data.navMain} />
       </SidebarHeader>
       <SidebarContent>
-        <NavFavorites favorites={data.favorites} />
+        <NavPinnedNotes pinnedNotes={data.pinnedNotes} />
         <NavWorkspaces workspaces={data.workspaces} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
