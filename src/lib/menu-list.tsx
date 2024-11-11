@@ -1,39 +1,40 @@
-import { cn } from "@/lib/utils"
 import { api } from "@/trpc/react"
 import {
   Blocks,
   Calendar,
   FileIcon,
   Inbox,
+  LayoutDashboard,
   MessageCircleQuestion,
   Presentation,
   Settings2,
-  Sparkles,
-  type LucideIcon
+  Sparkles
 } from "lucide-react"
 import Image from "next/image"
 import { useParams, usePathname } from "next/navigation"
-import React, { forwardRef } from "react"
+import { type FC } from "react"
 import { type PROJECT_PLANS } from "./constants"
+
+type LogoComponent = FC<{ className?: string }>
 
 export type SidebarNav = {
   projects:
     | {
         name: string
-        logo: React.ReactNode
+        logo: LogoComponent
         plan: (typeof PROJECT_PLANS)[number]
       }[]
     | undefined
   navMain: ({
     title: string
-    icon: React.ReactNode
+    icon: LogoComponent
     isActive: boolean
   } & ({ href: string } | { action: () => void }))[]
   pinnedNotes:
     | {
         name: string
         href: string
-        emoji: React.ReactNode
+        emoji: LogoComponent
         isActive: boolean
       }[]
     | undefined
@@ -41,7 +42,7 @@ export type SidebarNav = {
     | {
         name: string
         href: string
-        emoji: React.ReactNode
+        emoji: LogoComponent
         isActive: boolean
       }[]
     | undefined
@@ -49,7 +50,7 @@ export type SidebarNav = {
   navSecondary: {
     title: string
     href: string
-    icon: React.ReactNode
+    icon: LogoComponent
     isActive: boolean
   }[]
 }
@@ -76,32 +77,40 @@ export function useSidebarNav(): SidebarNav {
     )
 
   return {
-    projects: projects?.map(project => ({
-      logo: project.icon ? (
-        <Image src={project.icon} alt={project.name} width={40} height={40} />
-      ) : (
-        <Presentation />
-      ),
-      name: project.name,
-      plan: project.plan
-    })),
+    projects: projects?.map<NonNullable<SidebarNav["projects"]>[number]>(
+      project => ({
+        logo: project.icon
+          ? props => (
+              <Image
+                src={project.icon!}
+                alt={project.name}
+                width={40}
+                height={40}
+                className={props.className}
+              />
+            )
+          : Presentation,
+        name: project.name,
+        plan: project.plan
+      })
+    ),
     navMain: [
       {
         title: "Dashboard",
-        icon: "/dashboard",
-        isActive: pathname.startsWith("/dashboard"),
-        href: "/dashboard"
+        href: "/dashboard",
+        icon: LayoutDashboard,
+        isActive: pathname.startsWith("/dashboard")
       },
       {
         title: "Ask AI",
         action: () => {},
-        icon: <Sparkles />,
+        icon: Sparkles,
         isActive: false
       },
       {
         title: "Inbox",
         href: `/${projectId}/inbox`,
-        icon: <Inbox />,
+        icon: Inbox,
         isActive: pathname.startsWith(`/${projectId}/inbox`)
       }
     ],
@@ -110,7 +119,7 @@ export function useSidebarNav(): SidebarNav {
       const href = `/project/${projectId}/${note.id}`
       return {
         name: note.title,
-        emoji: <FileIcon />,
+        emoji: FileIcon,
         href,
         isActive: pathname.startsWith(href)
       }
@@ -119,7 +128,7 @@ export function useSidebarNav(): SidebarNav {
       const href = `/project/${projectId}/${note.id}`
       return {
         name: note.title,
-        emoji: <FileIcon />,
+        emoji: FileIcon,
         href,
         isActive: pathname.startsWith(href)
       }
@@ -128,47 +137,27 @@ export function useSidebarNav(): SidebarNav {
       {
         title: "Calendar",
         href: `/${projectId}/calendar`,
-        icon: <Calendar />,
+        icon: Calendar,
         isActive: pathname.startsWith(`/${projectId}/calendar`)
       },
       {
         title: "Settings",
         href: "/settings",
-        icon: <Settings2 />,
+        icon: Settings2,
         isActive: pathname.startsWith("/settings")
       },
       {
         title: "Templates",
         href: "/templates",
-        icon: <Blocks />,
+        icon: Blocks,
         isActive: pathname.startsWith("/templates")
       },
       {
         title: "Help",
         href: "/help",
-        icon: <MessageCircleQuestion />,
+        icon: MessageCircleQuestion,
         isActive: pathname.startsWith("/help")
       }
     ]
   }
-}
-
-const getProjectIcon = (projectName: string): LucideIcon => {
-  const letter = projectName[0]!.toUpperCase()
-  const ProjectIcon: LucideIcon = forwardRef(({ className }, _ref) => {
-    return (
-      <div
-        className={cn(
-          "flex h-6 w-6 items-center justify-center text-lg",
-          className
-        )}
-      >
-        {letter}
-      </div>
-    )
-  })
-
-  ProjectIcon.displayName = "ProjectIcon"
-
-  return ProjectIcon
 }

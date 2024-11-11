@@ -4,7 +4,7 @@ import { NavFavorites } from "@/components/nav-favorites"
 import { NavMain } from "@/components/nav-main"
 import { NavSecondary } from "@/components/nav-secondary"
 import { NavWorkspaces } from "@/components/nav-workspaces"
-import { TeamSwitcher } from "@/components/project-switcher"
+import { ProjectSwitcher } from "@/components/project-switcher"
 import {
   Sidebar,
   SidebarContent,
@@ -21,7 +21,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar className="border-r-0" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <ProjectSwitcher projects={data.projects} />
         <NavMain items={data.navMain} />
       </SidebarHeader>
       <SidebarContent>

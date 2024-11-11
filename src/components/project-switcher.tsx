@@ -16,14 +16,16 @@ import {
 } from "@/components/ui/sidebar"
 import { SidebarNav } from "@/lib/menu-list"
 import { ChevronDownIcon, PlusIcon } from "@radix-ui/react-icons"
+import Link from "next/link"
 import * as React from "react"
+import { Skeleton } from "./ui/skeleton"
 
 export function ProjectSwitcher({
-  project
+  projects
 }: {
-  project: SidebarNav["projects"]
+  projects: SidebarNav["projects"]
 }) {
-  const [activeTeam, setActiveTeam] = React.useState(project?.[0])
+  const [activeProject, setActiveProject] = React.useState(projects?.[0])
 
   return (
     <SidebarMenu>
@@ -32,9 +34,19 @@ export function ProjectSwitcher({
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton className="w-fit px-1.5">
               <div className="flex aspect-square size-5 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
-                <activeTeam.logo className="size-3" />
+                {activeProject ? (
+                  <activeProject.logo className="size-3" />
+                ) : (
+                  <Skeleton className="size-3 rounded" />
+                )}
               </div>
-              <span className="truncate font-semibold">{activeTeam.name}</span>
+              <span className="truncate font-semibold">
+                {activeProject ? (
+                  activeProject.name
+                ) : (
+                  <Skeleton className="h-6 w-full" />
+                )}
+              </span>
               <ChevronDownIcon className="opacity-50" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
@@ -45,27 +57,31 @@ export function ProjectSwitcher({
             sideOffset={4}
           >
             <DropdownMenuLabel className="text-xs text-muted-foreground">
-              project
+              Projects
             </DropdownMenuLabel>
-            {project.map((team, index) => (
+            {projects?.map((project, index) => (
               <DropdownMenuItem
-                key={team.name}
-                onClick={() => setActiveTeam(team)}
+                key={project.name}
+                onClick={() => setActiveProject(project)}
                 className="gap-2 p-2"
               >
                 <div className="flex size-6 items-center justify-center rounded-sm border">
-                  <team.logo className="size-4 shrink-0" />
+                  <project.logo className="size-4 shrink-0" />
                 </div>
-                {team.name}
+                {project.name}
                 <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="gap-2 p-2">
-              <div className="flex size-6 items-center justify-center rounded-md border bg-background">
-                <PlusIcon className="size-4" />
-              </div>
-              <div className="font-medium text-muted-foreground">Add team</div>
+            <DropdownMenuItem className="gap-2 p-2" asChild>
+              <Link href="/create-project">
+                <div className="flex size-6 items-center justify-center rounded-md border bg-background">
+                  <PlusIcon className="size-4" />
+                </div>
+                <div className="font-medium text-muted-foreground">
+                  Add project
+                </div>
+              </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
