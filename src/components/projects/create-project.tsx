@@ -1,10 +1,8 @@
 "use client"
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useRouter } from "next/navigation"
-import { useForm } from "react-hook-form"
-import { toast } from "sonner"
+import { type FileUploadResponse } from "@/app/api/file-upload/route"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import { FileUpload } from "@/components/ui/file-upload"
 import {
   Form,
@@ -16,9 +14,12 @@ import {
   FormMessage
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { type FileUploadResponse } from "@/app/api/file-upload/route"
 import { type CreateProjectSchema, createProjectSchema } from "@/lib/schemas"
 import { api } from "@/trpc/react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useRouter } from "next/navigation"
+import { useForm } from "react-hook-form"
+import { toast } from "sonner"
 
 export const CreateProject = () => {
   const utils = api.useUtils()
@@ -27,6 +28,7 @@ export const CreateProject = () => {
     onError: error => toast.error(error.message),
     onSuccess: async data => {
       const project = data!
+
       router.push(`/projects/${project.id}`)
       toast.success("Successfully created project!")
       await utils.projects.getAll.invalidate()
@@ -57,6 +59,8 @@ export const CreateProject = () => {
     mutate(project)
   }
 
+  const formValues = form.watch()
+
   return (
     <Form {...form}>
       <form
@@ -80,21 +84,39 @@ export const CreateProject = () => {
           )}
         />
         <FormField
-          name="icon"
+          name="checkIcon"
           control={form.control}
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Icon/logo</FormLabel>
+            <FormItem className="flex items-center gap-2 space-y-0">
               <FormControl>
-                <FileUpload onChange={field.onChange} multiple={false} />
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
               </FormControl>
-              <FormDescription>
-                This is the icon/logo of your project.
-              </FormDescription>
+              <FormLabel>Add icon</FormLabel>
               <FormMessage />
             </FormItem>
           )}
         />
+        {formValues.checkIcon ? (
+          <FormField
+            name="icon"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Icon/logo</FormLabel>
+                <FormControl>
+                  <FileUpload onChange={field.onChange} multiple={false} />
+                </FormControl>
+                <FormDescription>
+                  This is the icon/logo of your project.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        ) : null}
         <Button>Submit</Button>
       </form>
     </Form>

@@ -1,9 +1,9 @@
-import { z } from "zod"
 import {
   ACCEPTED_IMAGE_TYPES,
   MAX_FILE_SIZE,
   NAVIGATION_MENU
 } from "@/lib/constants"
+import { z } from "zod"
 
 const settingsSchema = z.object({
   sidebar: z.object({
@@ -17,6 +17,7 @@ const createProjectSchema = z.object({
   name: z
     .string()
     .max(20, { message: "Project name cannot exceed 20 characters" }),
+  checkIcon: z.boolean().default(false),
   icon: z
     .custom<File | null>()
     .refine(file => !file || file?.size <= MAX_FILE_SIZE.number, {
@@ -47,10 +48,10 @@ const updateProjectSchema = z.object({
 type UpdateProjectSchema = z.infer<typeof updateProjectSchema>
 
 export {
-  settingsSchema,
-  type SettingsSchema,
   createProjectSchema,
-  type CreateProjectSchema,
+  settingsSchema,
   updateProjectSchema,
+  type CreateProjectSchema,
+  type SettingsSchema,
   type UpdateProjectSchema
 }
