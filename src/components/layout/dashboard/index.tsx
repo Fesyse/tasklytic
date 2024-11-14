@@ -1,5 +1,3 @@
-"use client"
-
 import { AppSidebar } from "@/components/app-sidebar"
 import { NavActions } from "@/components/nav-actions"
 import {
@@ -14,26 +12,30 @@ import {
   SidebarProvider,
   SidebarTrigger
 } from "@/components/ui/sidebar"
-import { Skeleton } from "@/components/ui/skeleton"
-import { api } from "@/trpc/react"
-import { useParams } from "next/navigation"
+import { title } from "@/lib/utils"
+import type { Note, Project } from "@/server/db/schema"
+import { api } from "@/trpc/server"
+import { redirect } from "next/navigation"
 
-export function DashboardLayout({ children }: React.PropsWithChildren) {
-  const { id: projectId, noteId } = useParams<{ id: string; noteId?: string }>()
-  const { data: project, isLoading: isProjectsLoading } =
-    api.projects.getById.useQuery(
-      {
-        id: projectId
-      },
-      { enabled: !noteId }
-    )
-  const { data: note, isLoading: isNoteLoading } = api.notes.getById.useQuery(
-    {
-      // remove ts error, either way it's not used when its not note page
-      id: noteId ?? "ID"
-    },
-    { enabled: !!noteId }
-  )
+export async function DashboardLayout({
+  params,
+  children,
+  ...rest
+}: React.PropsWithChildren<{
+  params: Promise<{ id: string; noteId?: string }>
+}>) {
+  const { id: projectId, noteId } = await params
+
+  let project: Project | undefined
+  let note: Note | undefined
+  if (noteId) {
+    note = await api.notes.getById({ id: noteId })
+    if (!note) redirect("/not-found")
+  } else {
+    project = await api.projects.getById({ id: projectId })
+    console.log(project)
+    if (!project) redirect("/not-found")
+  }
 
   return (
     <SidebarProvider>
@@ -47,14 +49,8 @@ export function DashboardLayout({ children }: React.PropsWithChildren) {
               <BreadcrumbList>
                 <BreadcrumbItem>
                   <BreadcrumbPage className="line-clamp-1">
-                    {noteId && note && !isNoteLoading ? (
-                      note.title
-                    ) : isNoteLoading ? (
-                      <Skeleton className="h-6 w-24" />
-                    ) : project && !isProjectsLoading ? (
-                      project.name
-                    ) : (
-                      <Skeleton className="h-6 w-24" />
+                    {title(
+                      note ? note.title : project ? project.name : "Loading..."
                     )}
                   </BreadcrumbPage>
                 </BreadcrumbItem>

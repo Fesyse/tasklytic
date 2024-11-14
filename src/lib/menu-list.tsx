@@ -58,8 +58,6 @@ export function useSidebarNav(): SidebarNav {
       initialData: []
     })
 
-  console.log(projects)
-
   const { data: notes, isLoading: isNotesLoading } = api.notes.getAll.useQuery(
     { projectId },
     {
@@ -120,7 +118,7 @@ export function useSidebarNav(): SidebarNav {
     pinnedNotes: {
       isLoading: isPinnedNotesLoading,
       items: pinnedNotes?.map(note => {
-        const href = `/project/${projectId}/${note.id}`
+        const href = `/projects/${projectId}/${note.id}`
         return {
           name: note.title,
           emoji: FileIcon,
@@ -132,7 +130,7 @@ export function useSidebarNav(): SidebarNav {
     notes: {
       isLoading: isNotesLoading,
       items: notes?.map(note => {
-        const href = `/project/${projectId}/${note.id}`
+        const href = `/projects/${projectId}/${note.id}`
         return {
           name: note.title,
           emoji: FileIcon,

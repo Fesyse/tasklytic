@@ -1,7 +1,8 @@
+import { isCuid as isCuid2 } from "@paralleldrive/cuid2"
 import { type ClassValue, clsx } from "clsx"
 import { addMonths, isAfter } from "date-fns"
+import { toast } from "sonner"
 import { twMerge } from "tailwind-merge"
-import { isCuid as isCuid2 } from "@paralleldrive/cuid2"
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -29,4 +30,30 @@ function isCuid(string: string) {
   return isCuid2(string)
 }
 
-export { cn, title, random, sleep, checkIsSubscriptionExpired, isCuid }
+type ClipboardOptions = {
+  toast?: boolean
+}
+
+async function copyToClipboard(text: string, options?: ClipboardOptions) {
+  try {
+    await navigator.clipboard.writeText(text)
+    if (options?.toast) toast.success("Copied to clipboard")
+  } catch {
+    if (options?.toast) toast.error("Failed to copy to clipboard")
+  }
+}
+
+function openInNewTab(url: string) {
+  window.open(url, "_blank")
+}
+
+export {
+  checkIsSubscriptionExpired,
+  cn,
+  copyToClipboard,
+  isCuid,
+  openInNewTab,
+  random,
+  sleep,
+  title
+}

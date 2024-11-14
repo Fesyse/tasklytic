@@ -273,8 +273,7 @@ export const blocksRelations = relations(blocks, ({ many, one }) => ({
   notes: one(notes, {
     fields: [blocks.noteId],
     references: [notes.id]
-  }),
-  tasks: many(tasks)
+  })
 }))
 
 export const tasksRelations = relations(tasks, ({ one, many }) => ({

@@ -1,18 +1,13 @@
 "use client"
 
-import {
-  Folder,
-  Share,
-  Trash2,
-  type LucideIcon,
-} from "lucide-react"
+import { Folder, Share, Trash2, type LucideIcon } from "lucide-react"
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
+  DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import {
   SidebarGroup,
@@ -21,12 +16,12 @@ import {
   SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
+  useSidebar
 } from "@/components/ui/sidebar"
 import { DotsHorizontalIcon } from "@radix-ui/react-icons"
 
 export function NavProjects({
-  projects,
+  projects
 }: {
   projects: {
     name: string
@@ -40,7 +35,7 @@ export function NavProjects({
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Projects</SidebarGroupLabel>
       <SidebarMenu>
-        {projects.map((item) => (
+        {projects.map(item => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild>
               <a href={item.url}>
