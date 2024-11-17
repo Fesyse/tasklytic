@@ -98,9 +98,9 @@ export function useSidebarNav(): SidebarNav {
     navMain: [
       {
         title: "Dashboard",
-        href: "/dashboard",
+        href: `/projects/${projectId}`,
         icon: LayoutDashboard,
-        isActive: pathname.startsWith("/dashboard")
+        isActive: pathname.startsWith(`/projects/${projectId}`)
       },
       {
         title: "Ask AI",
@@ -110,9 +110,9 @@ export function useSidebarNav(): SidebarNav {
       },
       {
         title: "Inbox",
-        href: `/${projectId}/inbox`,
+        href: `/projects/${projectId}/inbox`,
         icon: Inbox,
-        isActive: pathname.startsWith(`/${projectId}/inbox`)
+        isActive: pathname.startsWith(`/projects/${projectId}/inbox`)
       }
     ],
 
