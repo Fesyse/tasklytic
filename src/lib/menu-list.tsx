@@ -59,20 +59,15 @@ export function useSidebarNav(): SidebarNav {
       initialData: undefined
     })
 
-  const { data: notes, isLoading: isNotesLoading } =
-    api.notes.getAllUnpinned.useQuery(
-      { projectId },
-      {
-        initialData: undefined
-      }
-    )
-  const { data: pinnedNotes, isLoading: isPinnedNotesLoading } =
-    api.notes.getAllPinned.useQuery(
-      { projectId },
-      {
-        initialData: undefined
-      }
-    )
+  const { data: notes, isLoading: isNotesLoading } = api.notes.getAll.useQuery(
+    { projectId },
+    {
+      initialData: undefined
+    }
+  )
+
+  const pinnedNotes = notes?.filter(note => note.isPinned) ?? []
+  const unpinnedNotes = notes?.filter(note => !note.isPinned) ?? []
 
   return {
     projects: {
@@ -118,7 +113,7 @@ export function useSidebarNav(): SidebarNav {
     ],
 
     pinnedNotes: {
-      isLoading: isPinnedNotesLoading,
+      isLoading: isNotesLoading,
       items: pinnedNotes?.map(note => {
         const href = `/projects/${projectId}/${note.id}`
         return {
@@ -132,7 +127,7 @@ export function useSidebarNav(): SidebarNav {
     },
     notes: {
       isLoading: isNotesLoading,
-      items: notes?.map(note => {
+      items: unpinnedNotes?.map(note => {
         const href = `/projects/${projectId}/${note.id}`
         return {
           id: note.id,

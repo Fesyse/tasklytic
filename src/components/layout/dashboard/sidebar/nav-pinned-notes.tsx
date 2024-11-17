@@ -1,6 +1,6 @@
 "use client"
 
-import { ArrowUpRight, Link, StarOff, Trash2 } from "lucide-react"
+import { ArrowUpRight, Link, Pin, StarOff, Trash2 } from "lucide-react"
 
 import {
   DropdownMenu,
@@ -31,7 +31,9 @@ export function NavPinnedNotes({
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Pinned notes</SidebarGroupLabel>
+      <SidebarGroupLabel className="flex items-center gap-1.5">
+        <Pin className="-rotate-45" size={14} /> Pinned notes
+      </SidebarGroupLabel>
       <SidebarMenu>
         {!pinnedNotes.isLoading && pinnedNotes.items?.length ? (
           pinnedNotes.items.map(note => (

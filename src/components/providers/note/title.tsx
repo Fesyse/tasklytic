@@ -17,19 +17,7 @@ export const NoteTitle: FC<NoteTitleProps> = ({ note }) => {
     debounce(async (e: React.ChangeEvent<HTMLInputElement>) => {
       await updateNoteTitle({ id: note.id, title: e.target.value })
 
-      const getAllInvalidation = utils.notes.getAll.invalidate()
-      const getAllPinnedInvalidation = note.isPinned
-        ? utils.notes.getAllPinned.invalidate()
-        : Promise.resolve()
-      const getAllUnpinnedInvalidation = !note.isPinned
-        ? utils.notes.getAllUnpinned.invalidate()
-        : Promise.resolve()
-
-      await Promise.all([
-        getAllInvalidation,
-        getAllPinnedInvalidation,
-        getAllUnpinnedInvalidation
-      ])
+      await utils.notes.getAll.invalidate()
     }, 750),
     [note.id]
   )
