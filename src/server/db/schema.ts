@@ -161,16 +161,33 @@ export const notes = createTable("notes", {
   isPinned: boolean("is_pinned").notNull().default(false)
 })
 
+export const databases = createTable("database", {
+  id: varchar("id", { length: 255 })
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => createCuid())
+})
+
 export const blocks = createTable("block", {
   id: varchar("id", { length: 255 })
     .notNull()
     .primaryKey()
     .$defaultFn(() => createCuid()),
   type: varchar("type", { enum: BLOCK_TYPE }).notNull(),
-  mdContent: text("md_content"),
-  noteId: varchar("note_id", { length: 255 })
+  databaseId: varchar("database_id", { length: 255 }).references(
+    () => databases.id
+  ),
+  projectId: varchar("project_id", { length: 255 })
     .notNull()
-    .references(() => notes.id)
+    .references(() => projects.id),
+  createdAt: timestamp("created_at", {
+    mode: "date",
+    withTimezone: true
+  }).default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: timestamp("updated_at", {
+    mode: "date",
+    withTimezone: true
+  }).$onUpdate(() => new Date())
 })
 
 export const tasks = createTable("task", {
@@ -185,9 +202,9 @@ export const tasks = createTable("task", {
     mode: "date",
     withTimezone: true
   }).default(sql`CURRENT_TIMESTAMP`),
-  noteId: varchar("note_id", { length: 255 })
+  databaseId: varchar("database_id", { length: 255 })
     .notNull()
-    .references(() => notes.id),
+    .references(() => databases.id),
   createdAt: timestamp("created_at", {
     mode: "date",
     withTimezone: true
@@ -265,21 +282,17 @@ export const notesRelations = relations(notes, ({ many, one }) => ({
   project: one(projects, {
     fields: [notes.projectId],
     references: [projects.id]
-  }),
-  tasks: many(tasks)
-}))
-
-export const blocksRelations = relations(blocks, ({ many, one }) => ({
-  notes: one(notes, {
-    fields: [blocks.noteId],
-    references: [notes.id]
   })
 }))
 
+export const databasesRelations = relations(databases, ({ many }) => ({
+  tasks: many(tasks)
+}))
+
 export const tasksRelations = relations(tasks, ({ one, many }) => ({
-  note: one(notes, {
-    fields: [tasks.noteId],
-    references: [notes.id]
+  database: one(databases, {
+    fields: [tasks.databaseId],
+    references: [databases.id]
   }),
   subTasks: many(subTasks)
 }))
