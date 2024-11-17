@@ -36,13 +36,17 @@ export function NavPinnedNotes({
         {!pinnedNotes.isLoading && pinnedNotes.items?.length ? (
           pinnedNotes.items.map(item => (
             <SidebarMenuItem key={item.name}>
-              <SidebarMenuButton asChild isActive={item.isActive}>
-                <link href={item.href} title={item.name}>
+              <SidebarMenuButton
+                asChild
+                isActive={item.isActive}
+                title={item.name}
+              >
+                <Link href={item.href}>
                   <span>
                     <item.emoji />
                   </span>
                   <span>{item.name}</span>
-                </link>
+                </Link>
               </SidebarMenuButton>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

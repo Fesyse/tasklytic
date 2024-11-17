@@ -15,12 +15,12 @@ import {
   SidebarMenuItem,
   SidebarMenuSkeleton
 } from "@/components/ui/sidebar"
+import { Skeleton } from "@/components/ui/skeleton"
 import { SidebarNav } from "@/lib/menu-list"
 import { ChevronDownIcon, PlusIcon } from "@radix-ui/react-icons"
 import Link from "next/link"
 import { useParams } from "next/navigation"
 import { useEffect, useState } from "react"
-import { Skeleton } from "./ui/skeleton"
 
 export function ProjectSwitcher({
   projects
@@ -35,7 +35,7 @@ export function ProjectSwitcher({
   useEffect(() => {
     const newActiveProject = projects.items?.find(p => p.id === projectId)
     setActiveProject(newActiveProject)
-  }, [projectId])
+  }, [projectId, projects])
 
   return (
     <SidebarMenu>
@@ -44,17 +44,17 @@ export function ProjectSwitcher({
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton className="w-fit px-1.5">
               <div className="flex aspect-square size-5 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
-                {activeProject ? (
+                {activeProject && !projects.isLoading ? (
                   <activeProject.logo className="size-3" />
                 ) : (
                   <Skeleton className="size-3 rounded" />
                 )}
               </div>
               <span className="truncate font-semibold">
-                {activeProject ? (
+                {activeProject && !projects.isLoading ? (
                   activeProject.name
                 ) : (
-                  <Skeleton className="h-6 w-full" />
+                  <Skeleton className="h-4 w-16" />
                 )}
               </span>
               <ChevronDownIcon className="opacity-50" />

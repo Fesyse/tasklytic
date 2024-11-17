@@ -1,10 +1,10 @@
 "use client"
 
-import { NavMain } from "@/components/nav-main"
-import { NavNotes } from "@/components/nav-notes"
-import { NavPinnedNotes } from "@/components/nav-pinned-notes"
-import { NavSecondary } from "@/components/nav-secondary"
-import { ProjectSwitcher } from "@/components/project-switcher"
+import { NavMain } from "@/components/layout/dashboard/sidebar/nav-main"
+import { NavNotes } from "@/components/layout/dashboard/sidebar/nav-notes"
+import { NavPinnedNotes } from "@/components/layout/dashboard/sidebar/nav-pinned-notes"
+import { NavSecondary } from "@/components/layout/dashboard/sidebar/nav-secondary"
+import { ProjectSwitcher } from "@/components/layout/dashboard/sidebar/project-switcher"
 import {
   Sidebar,
   SidebarContent,

@@ -1,10 +1,9 @@
 import { AppSidebar } from "@/components/app-sidebar"
-import { NavActions } from "@/components/nav-actions"
+import { NavActions } from "@/components/layout/dashboard/nav-actions"
 import {
   Breadcrumb,
   BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage
+  BreadcrumbList
 } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
 import {
@@ -12,31 +11,13 @@ import {
   SidebarProvider,
   SidebarTrigger
 } from "@/components/ui/sidebar"
-import { title } from "@/lib/utils"
-import type { Note, Project } from "@/server/db/schema"
-import { api } from "@/trpc/server"
-import { redirect } from "next/navigation"
+import { DashboardBreadcrumbPage } from "./breadcrumb-page"
 
-export async function DashboardLayout({
-  params,
-  children,
-  ...rest
-}: React.PropsWithChildren<{
+type DashboardLayoutProps = React.PropsWithChildren<{
   params: Promise<{ id: string; noteId?: string }>
-}>) {
-  const { id: projectId, noteId } = await params
+}>
 
-  let project: Project | undefined
-  let note: Note | undefined
-  if (noteId) {
-    note = await api.notes.getById({ id: noteId })
-    if (!note) redirect("/not-found")
-  } else {
-    project = await api.projects.getById({ id: projectId })
-    console.log(project)
-    if (!project) redirect("/not-found")
-  }
-
+export async function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -48,11 +29,7 @@ export async function DashboardLayout({
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem>
-                  <BreadcrumbPage className="line-clamp-1">
-                    {title(
-                      note ? note.title : project ? project.name : "Loading..."
-                    )}
-                  </BreadcrumbPage>
+                  <DashboardBreadcrumbPage />
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>

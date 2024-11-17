@@ -39,6 +39,7 @@ export type SidebarNav = {
     isLoading: boolean
     items:
       | {
+          id: string
           name: string
           href: string
           emoji: LogoComponent
@@ -55,7 +56,7 @@ export function useSidebarNav(): SidebarNav {
 
   const { data: projects, isLoading: isProjectsLoading } =
     api.projects.getAll.useQuery(undefined, {
-      initialData: []
+      initialData: undefined
     })
 
   const { data: notes, isLoading: isNotesLoading } = api.notes.getAll.useQuery(
@@ -65,7 +66,7 @@ export function useSidebarNav(): SidebarNav {
     }
   )
   const { data: pinnedNotes, isLoading: isPinnedNotesLoading } =
-    api.notes.getAll.useQuery(
+    api.notes.getAllPinned.useQuery(
       { projectId },
       {
         initialData: undefined
@@ -120,8 +121,9 @@ export function useSidebarNav(): SidebarNav {
       items: pinnedNotes?.map(note => {
         const href = `/projects/${projectId}/${note.id}`
         return {
+          id: note.id,
           name: note.title,
-          emoji: FileIcon,
+          emoji: () => <FileIcon size={18} />,
           href,
           isActive: pathname.startsWith(href)
         }
@@ -132,8 +134,9 @@ export function useSidebarNav(): SidebarNav {
       items: notes?.map(note => {
         const href = `/projects/${projectId}/${note.id}`
         return {
+          id: note.id,
           name: note.title,
-          emoji: FileIcon,
+          emoji: () => <FileIcon size={18} />,
           href,
           isActive: pathname.startsWith(href)
         }
