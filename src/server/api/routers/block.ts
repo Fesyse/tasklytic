@@ -12,15 +12,17 @@ export const blocksRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      const cached = (await kv.get(`blocks:${input.noteId}`)) as Block[]
+      const cached = (await kv.get(
+        `projects:notes:blocks:${input.noteId}`
+      )) as Block[]
       if (cached) return cached
 
       const blocks = (await db.query.blocks.findMany({
         where: (blocksTable, { and, eq }) =>
           and(eq(blocksTable.noteId, input.noteId))
       })) satisfies Block[]
-      kv.set(`blocks:${input.noteId}`, blocks)
-      kv.expire(`blocks:${input.noteId}`, 1800)
+      kv.set(`projects:notes:blocks:${input.noteId}`, blocks)
+      kv.expire(`projects:notes:blocks:${input.noteId}`, 1800)
 
       return blocks
     })

@@ -10,7 +10,7 @@ type NotePageProps = {
 }
 
 export default async function NotePage({ params }: NotePageProps) {
-  const { id, noteId } = await params
+  const { id: projectId, noteId } = await params
 
   const notePromise = api.notes.getById({ id: noteId })
   const blocksPromise = api.blocks.getAll({ noteId })

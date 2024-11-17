@@ -1,10 +1,12 @@
 import { MAX_PROJECTS, MAX_PROJECTS_WITH_SUBSCRIPTION } from "@/lib/constants"
 import { checkIsSubscriptionExpired, isCuid } from "@/lib/utils"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
+import { kv } from "@/server/cache"
 import {
+  type Project,
   projectMemberships,
   projects,
-  ProjectWithMemberShip
+  type ProjectWithMemberShip
 } from "@/server/db/schema"
 import { utapi } from "@/server/file-upload"
 import { and, count, eq } from "drizzle-orm"
@@ -48,6 +50,9 @@ export const projectsRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       if (!isCuid(input.id)) return undefined
 
+      const cached = await kv.get(`projects:${input.id}`)
+      if (cached) return cached as Project
+
       const projectMembership = await ctx.db.query.projectMemberships.findFirst(
         {
           where: (projectMembershipsTable, { eq }) =>
@@ -60,9 +65,16 @@ export const projectsRouter = createTRPCRouter({
           }
         }
       )
+
+      kv.set(`projects:${input.id}`, projectMembership?.project)
+      kv.expire(`projects:${input.id}`, 6400)
+
       return projectMembership?.project
     }),
   getAll: protectedProcedure.query(async ({ ctx }) => {
+    const cached = await kv.get(`projects:all`)
+    if (cached) return cached
+
     const response = await ctx.db
       .select()
       .from(projects)

@@ -1,7 +1,15 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
+import { kv } from "@/server/cache"
 import { notes, type Note } from "@/server/db/schema"
 import { eq, or } from "drizzle-orm"
 import { z } from "zod"
+
+const cacheKeys = {
+  all: `projects:notes:all`,
+  one: `projects:notes:one`,
+  pinned: `projects:notes:all:pinned`,
+  unpinned: `projects:notes:all:unpinned`
+}
 
 export const notesRouter = createTRPCRouter({
   getById: protectedProcedure
@@ -11,6 +19,10 @@ export const notesRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
+      const key = `${cacheKeys.one}:${input.id}`
+      const cached = await kv.get(key)
+      if (cached) return cached as Note
+
       const result = await ctx.db.query.notes.findFirst({
         where: (notesTable, { and, not, eq }) =>
           or(
@@ -23,6 +35,8 @@ export const notesRouter = createTRPCRouter({
             and(eq(notesTable.id, input.id), eq(notesTable.private, false))
           )
       })
+      kv.set(key, result)
+      kv.expire(key, 3200)
 
       return result
     }),
@@ -33,6 +47,10 @@ export const notesRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
+      const key = `${cacheKeys.all}:${input.projectId}`
+      const cached = await kv.get(key)
+      if (cached) return cached as Note[]
+
       const result: Note[] = await ctx.db.query.notes.findMany({
         where: (notesTable, { and, not, eq }) =>
           or(
@@ -48,6 +66,8 @@ export const notesRouter = createTRPCRouter({
             )
           )
       })
+      kv.set(key, result)
+      kv.expire(key, 1800)
 
       return result
     }),
@@ -59,6 +79,10 @@ export const notesRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
+      const key = `${cacheKeys.pinned}:${input.projectId}`
+      const cached = await kv.get(key)
+      if (cached) return cached as Note[]
+
       const result: Note[] = await ctx.db.query.notes.findMany({
         where: (notesTable, { and, not, eq }) =>
           and(
@@ -77,6 +101,8 @@ export const notesRouter = createTRPCRouter({
             eq(notesTable.isPinned, true)
           )
       })
+      kv.set(key, result)
+      kv.expire(key, 1800)
 
       return result
     }),
@@ -87,6 +113,11 @@ export const notesRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
+      const key = `${cacheKeys.unpinned}:${input.projectId}`
+
+      const cached = await kv.get(key)
+      if (cached) return cached as Note[]
+
       const result: Note[] = await ctx.db.query.notes.findMany({
         where: (notesTable, { and, not, eq }) =>
           and(
@@ -105,6 +136,8 @@ export const notesRouter = createTRPCRouter({
             eq(notesTable.isPinned, false)
           )
       })
+      kv.set(key, result)
+      kv.expire(key, 1800)
 
       return result
     }),
@@ -146,6 +179,11 @@ export const notesRouter = createTRPCRouter({
         .where(eq(notes.id, input.id))
         .returning()
         .then(r => r[0]!)
+
+      const key = `${cacheKeys.one}:${input.id}`
+
+      kv.set(key, result)
+      kv.expire(key, 3200)
 
       return result
     })
