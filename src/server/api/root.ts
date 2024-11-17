@@ -1,5 +1,5 @@
-import { notes, projects } from "./routers"
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc"
+import { blocks, notes, projects } from "./routers"
 
 /**
  * This is the primary router for your server.
@@ -8,7 +8,8 @@ import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc"
  */
 export const appRouter = createTRPCRouter({
   notes,
-  projects
+  projects,
+  blocks
 })
 
 // export type definition of API

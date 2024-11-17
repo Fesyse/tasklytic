@@ -174,12 +174,19 @@ export const blocks = createTable("block", {
     .primaryKey()
     .$defaultFn(() => createCuid()),
   type: varchar("type", { enum: BLOCK_TYPE }).notNull(),
-  databaseId: varchar("database_id", { length: 255 }).references(
-    () => databases.id
-  ),
+  content: text("content"),
+
   projectId: varchar("project_id", { length: 255 })
     .notNull()
     .references(() => projects.id),
+  noteId: varchar("note_id", { length: 255 })
+    .notNull()
+    .references(() => notes.id),
+
+  databaseId: varchar("database_id", { length: 255 }).references(
+    () => databases.id
+  ),
+
   createdAt: timestamp("created_at", {
     mode: "date",
     withTimezone: true
@@ -282,11 +289,19 @@ export const notesRelations = relations(notes, ({ many, one }) => ({
   project: one(projects, {
     fields: [notes.projectId],
     references: [projects.id]
-  })
+  }),
+  blocks: many(blocks)
 }))
 
 export const databasesRelations = relations(databases, ({ many }) => ({
   tasks: many(tasks)
+}))
+
+export const blocksRelations = relations(blocks, ({ one }) => ({
+  note: one(notes, {
+    fields: [blocks.noteId],
+    references: [notes.id]
+  })
 }))
 
 export const tasksRelations = relations(tasks, ({ one, many }) => ({

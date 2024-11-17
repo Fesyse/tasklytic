@@ -59,12 +59,13 @@ export function useSidebarNav(): SidebarNav {
       initialData: undefined
     })
 
-  const { data: notes, isLoading: isNotesLoading } = api.notes.getAll.useQuery(
-    { projectId },
-    {
-      initialData: undefined
-    }
-  )
+  const { data: notes, isLoading: isNotesLoading } =
+    api.notes.getAllUnpinned.useQuery(
+      { projectId },
+      {
+        initialData: undefined
+      }
+    )
   const { data: pinnedNotes, isLoading: isPinnedNotesLoading } =
     api.notes.getAllPinned.useQuery(
       { projectId },

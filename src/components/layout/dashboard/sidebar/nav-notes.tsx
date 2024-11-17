@@ -49,7 +49,7 @@ export function NavNotes({ notes }: { notes: SidebarNav["notes"] }) {
                     <span>
                       <note.emoji />
                     </span>
-                    <span>{note.name}</span>
+                    <span>{note.name ?? "Untitled"}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
