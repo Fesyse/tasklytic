@@ -1,4 +1,7 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
+import { kv } from "@/server/cache"
+import { db } from "@/server/db"
+import { type Block } from "@/server/db/schema"
 import { z } from "zod"
 
 export const blocksRouter = createTRPCRouter({
@@ -9,9 +12,16 @@ export const blocksRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      return ctx.db.query.blocks.findMany({
+      const cached = (await kv.get(`blocks:${input.noteId}`)) as Block[]
+      if (cached) return cached
+
+      const blocks = (await db.query.blocks.findMany({
         where: (blocksTable, { and, eq }) =>
           and(eq(blocksTable.noteId, input.noteId))
-      })
+      })) satisfies Block[]
+      kv.set(`blocks:${input.noteId}`, blocks)
+      kv.expire(`blocks:${input.noteId}`, 1800)
+
+      return blocks
     })
 })

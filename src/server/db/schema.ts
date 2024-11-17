@@ -335,8 +335,6 @@ export const projectMembershipsRelations = relations(
   })
 )
 
-export type Task = typeof tasks.$inferSelect
-export type Note = typeof notes.$inferSelect
 export type Project = typeof projects.$inferSelect
 export type ProjectMembership = typeof projectMemberships.$inferSelect
 export type ProjectWithMemberShip = Project & {
@@ -345,3 +343,6 @@ export type ProjectWithMemberShip = Project & {
 export type ProjectWithNotes = Project & {
   notes: Note[]
 }
+export type Task = typeof tasks.$inferSelect
+export type Note = typeof notes.$inferSelect
+export type Block = typeof blocks.$inferSelect
