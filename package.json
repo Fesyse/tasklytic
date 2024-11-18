@@ -69,8 +69,6 @@
     "react-hook-form": "^7.53.2",
     "react-wrap-balancer": "^1.1.1",
     "server-only": "^0.0.1",
-    "slate": "^0.110.2",
-    "slate-react": "^0.111.0",
     "sonner": "^1.7.0",
     "superjson": "^2.2.1",
     "tailwind-merge": "^2.5.4",

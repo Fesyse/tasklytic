@@ -1,5 +1,5 @@
-import { type ElementType } from "@/components/projects/project/note/.d"
 import { cn } from "@/lib/utils"
+import { BLOCK_TYPE } from "@/server/db/schema"
 
 export const Md = {
   h1: ({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
@@ -62,12 +62,15 @@ export const Md = {
       {...props}
     />
   ),
-  p: ({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) => (
-    <p
-      className={cn("leading-7 [&:not(:first-child)]:mt-6", className)}
-      {...props}
-    />
-  ),
+  p: ({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) => {
+    console.log("PIZDA", props)
+    return (
+      <p
+        className={cn("leading-7 [&:not(:first-child)]:mt-6", className)}
+        {...props}
+      />
+    )
+  },
   ul: ({ className, ...props }: React.HTMLAttributes<HTMLUListElement>) => (
     <ul className={cn("my-6 ml-6 list-disc", className)} {...props} />
   ),
@@ -138,4 +141,4 @@ export const Md = {
       {...props}
     />
   )
-} as const satisfies Record<ElementType, React.FC>
+} as const satisfies Record<(typeof BLOCK_TYPE)[number], React.FC>
