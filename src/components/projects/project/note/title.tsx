@@ -24,7 +24,7 @@ export const NoteTitle: FC<NoteTitleProps> = ({ note }) => {
 
   return (
     <input
-      className="border-b bg-transparent pb-2 text-3xl outline-none"
+      className="border-b bg-transparent pb-2 text-4xl outline-none"
       defaultValue={note.title === "Untitled" ? "" : note.title}
       placeholder="Untitled"
       maxLength={20}

@@ -19,10 +19,27 @@ export const createCuid = init({
 })
 
 export const BLOCK_TYPE = [
-  "md",
-  "tasks-list",
-  "tasks-table",
-  "tasks-kanban"
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "a",
+  "p",
+  "ul",
+  "ol",
+  "li",
+  "pre",
+  "code",
+  "blockquote",
+  "table",
+  "tr",
+  "td",
+  "th",
+  "hr",
+  "br",
+  "img"
 ] as const
 
 /**
