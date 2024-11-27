@@ -1,11 +1,21 @@
-import { createRouteHandler } from "uploadthing/next"
-import { env } from "@/env"
-import { fileRouter } from "@/server/file-upload"
+import type { FileRouter } from 'uploadthing/next';
 
-const handler = createRouteHandler({
-  router: fileRouter,
-  config: {
-    token: env.UPLOADTHING_TOKEN
-  }
-})
-export { handler as GET, handler as POST }
+import { createRouteHandler, createUploadthing } from 'uploadthing/next';
+
+const f = createUploadthing();
+
+const ourFileRouter = {
+  editorUploader: f(['image', 'text', 'blob', 'pdf', 'video', 'audio'])
+    .middleware(() => {
+      return {};
+    })
+    .onUploadComplete(({ file }) => {
+      return { file };
+    }),
+} satisfies FileRouter;
+
+export type OurFileRouter = typeof ourFileRouter;
+
+export const { GET, POST } = createRouteHandler({
+  router: ourFileRouter,
+});
