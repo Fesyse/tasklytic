@@ -168,7 +168,7 @@ export const blocks = createTable("block", {
     .notNull()
     .primaryKey()
     .$defaultFn(() => createCuid()),
-  content: jsonb("content").$type<TElement>(),
+  content: jsonb("content").default({}).$type<TElement>(),
 
   projectId: varchar("project_id", { length: 255 })
     .notNull()
