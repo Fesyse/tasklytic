@@ -4,30 +4,17 @@ import { generateText } from "ai"
 import { NextResponse, type NextRequest } from "next/server"
 
 export async function POST(req: NextRequest) {
-  const {
-    apiKey: key,
-    model = "gpt-4o-mini",
-    prompt,
-    system
-  } = await req.json()
+  const { prompt, system } = await req.json()
 
-  const apiKey = key || env.OPENAI_API_KEY
-
-  if (!apiKey) {
-    return NextResponse.json(
-      { error: "Missing OpenAI API key." },
-      { status: 401 }
-    )
-  }
-
-  const openai = createOpenAI({ apiKey })
+  const apiKey = env.OPENAI_API_KEY
+  const openai = createOpenAI({ apiKey, project: "tasklytic" })
 
   try {
     const result = await generateText({
       abortSignal: req.signal,
       maxTokens: 50,
-      model: openai(model),
-      prompt: prompt,
+      model: openai("gpt-4"),
+      prompt,
       system,
       temperature: 0.7
     })

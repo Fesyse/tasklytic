@@ -1,4 +1,3 @@
-const NAVIGATION_MENU = ["sidebar", "floating-dock"] as const
 const TASK_STATUS = ["completed", "in-progress", "to-do"] as const
 const MAX_FILE_SIZE = {
   string: "1MB",
