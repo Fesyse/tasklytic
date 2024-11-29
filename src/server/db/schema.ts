@@ -1,10 +1,12 @@
 import { PROJECT_PLANS, TASK_STATUS } from "@/lib/constants"
 import { init } from "@paralleldrive/cuid2"
+import { TElement } from "@udecode/plate-common"
 import { relations, sql } from "drizzle-orm"
 import {
   boolean,
   index,
   integer,
+  jsonb,
   pgTableCreator,
   primaryKey,
   text,
@@ -17,30 +19,6 @@ export const createCuid = init({
   fingerprint: "tasklytic",
   length: 20
 })
-
-export const BLOCK_TYPE = [
-  "h1",
-  "h2",
-  "h3",
-  "h4",
-  "h5",
-  "h6",
-  "a",
-  "p",
-  "ul",
-  "ol",
-  "li",
-  "pre",
-  "code",
-  "blockquote",
-  "table",
-  "tr",
-  "td",
-  "th",
-  "hr",
-  "br",
-  "img"
-] as const
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -190,8 +168,7 @@ export const blocks = createTable("block", {
     .notNull()
     .primaryKey()
     .$defaultFn(() => createCuid()),
-  type: varchar("type", { enum: BLOCK_TYPE }).notNull(),
-  content: text("content"),
+  content: jsonb("content").$type<TElement>(),
 
   projectId: varchar("project_id", { length: 255 })
     .notNull()

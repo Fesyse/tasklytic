@@ -13,7 +13,7 @@ export default async function NotePage(props: NotePageProps) {
   return (
     <div className="mx-auto w-full max-w-[900px] py-28 font-comfortaa">
       <NoteTitle noteId={noteId} />
-      <Note className="mt-4" />
+      <Note />
     </div>
   )
 }

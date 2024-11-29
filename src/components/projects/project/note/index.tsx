@@ -10,7 +10,7 @@ export const Note: FC<NoteProps> = ({ className }) => {
   return (
     <div className={cn("h-screen w-full", className)} data-registry="plate">
       <EditorContainer>
-        <Editor variant="ai" />
+        <Editor variant="default" />
       </EditorContainer>
     </div>
   )

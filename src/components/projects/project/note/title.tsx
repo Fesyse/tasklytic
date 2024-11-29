@@ -30,7 +30,7 @@ export const NoteTitle: FC<NoteTitleProps> = ({ noteId }) => {
     <Skeleton className="h-10 w-44" />
   ) : (
     <input
-      className="border-b bg-transparent pb-2 text-4xl outline-none"
+      className="w-full border-b bg-transparent pb-2 text-4xl outline-none"
       defaultValue={note?.title === "Untitled" ? "" : (note?.title ?? "")}
       placeholder="Untitled"
       maxLength={20}
