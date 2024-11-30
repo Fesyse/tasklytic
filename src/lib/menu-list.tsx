@@ -67,8 +67,6 @@ export function useSidebarNav(): SidebarNav {
     }
   )
 
-  console.log(notes)
-
   const pinnedNotes = notes?.filter(note => note.isPinned) ?? []
   const unpinnedNotes = notes?.filter(note => !note.isPinned) ?? []
 

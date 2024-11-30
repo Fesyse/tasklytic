@@ -26,6 +26,25 @@ export const blocksRouter = createTRPCRouter({
 
       return blocks
     }),
+  create: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        content: z.any(),
+        noteId: z.string(),
+        projectId: z.string(),
+        order: z.number()
+      })
+    )
+    .mutation(async ({ ctx, input: block }) => {
+      const result = await ctx.db
+        .insert(blocks)
+        .values(block)
+        .returning()
+        .then(r => r[0]!)
+
+      return result
+    }),
   updateOrder: protectedProcedure
     .input(
       z.object({
