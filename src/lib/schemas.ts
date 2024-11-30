@@ -1,15 +1,10 @@
-import {
-  ACCEPTED_IMAGE_TYPES,
-  MAX_FILE_SIZE,
-  NAVIGATION_MENU
-} from "@/lib/constants"
+import { ACCEPTED_IMAGE_TYPES, MAX_FILE_SIZE } from "@/lib/constants"
 import { z } from "zod"
 
 const settingsSchema = z.object({
   sidebar: z.object({
     isOpen: z.boolean().default(false)
-  }),
-  navigationMenu: z.enum(NAVIGATION_MENU)
+  })
 })
 type SettingsSchema = z.infer<typeof settingsSchema>
 

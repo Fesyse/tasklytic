@@ -62,9 +62,12 @@ export function useSidebarNav(): SidebarNav {
   const { data: notes, isLoading: isNotesLoading } = api.notes.getAll.useQuery(
     { projectId },
     {
+      enabled: !!projectId,
       initialData: undefined
     }
   )
+
+  console.log(notes)
 
   const pinnedNotes = notes?.filter(note => note.isPinned) ?? []
   const unpinnedNotes = notes?.filter(note => !note.isPinned) ?? []

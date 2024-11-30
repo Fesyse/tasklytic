@@ -1,29 +1,11 @@
 "use client"
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
 import { useUserSettingsStore } from "@/components/providers/user-settings-store-provider"
 import { Button } from "@/components/ui/button"
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from "@/components/ui/form"
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/ui/select"
-import { NAVIGATION_MENU } from "@/lib/constants"
+import { Form } from "@/components/ui/form"
 import { type SettingsSchema, settingsSchema } from "@/lib/schemas"
-import { title } from "@/lib/utils"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
 
 export const Settings = () => {
   const { updateUserSettingsStore, ...settingsStore } = useUserSettingsStore(
@@ -33,8 +15,7 @@ export const Settings = () => {
     defaultValues: {
       sidebar: {
         isOpen: settingsStore.sidebar.isOpen
-      },
-      navigationMenu: settingsStore.navigationMenu
+      }
     },
     resolver: zodResolver(settingsSchema)
   })
@@ -49,7 +30,7 @@ export const Settings = () => {
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex flex-col space-y-3"
       >
-        <FormField
+        {/* <FormField
           name="navigationMenu"
           control={form.control}
           render={({ field }) => (
@@ -77,7 +58,7 @@ export const Settings = () => {
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
         <Button type="submit">Apply changes</Button>
       </form>
     </Form>

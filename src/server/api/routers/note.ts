@@ -154,6 +154,7 @@ export const notesRouter = createTRPCRouter({
         .values({
           projectId: input.projectId,
           userId: ctx.session.user.id,
+          private: false,
           isPinned: false
         })
         .returning()

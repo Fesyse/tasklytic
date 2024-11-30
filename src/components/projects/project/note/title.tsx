@@ -21,6 +21,7 @@ export const NoteTitle: FC<NoteTitleProps> = ({ noteId }) => {
 
       await updateNoteTitle({ id: note.id, title: e.target.value })
 
+      await utils.notes.getById.invalidate({ id: note.id })
       await utils.notes.getAll.invalidate()
     }, 750),
     [note?.id]
