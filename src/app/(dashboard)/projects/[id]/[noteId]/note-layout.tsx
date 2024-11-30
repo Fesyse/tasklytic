@@ -13,6 +13,7 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Block } from "@/server/db/schema"
+import { api } from "@/trpc/react"
 import { Plate } from "@udecode/plate-common/react"
 import { DndProvider } from "react-dnd"
 import { HTML5Backend } from "react-dnd-html5-backend"
@@ -22,11 +23,20 @@ type NoteLayoutProps = React.PropsWithChildren<{
 }>
 
 export function NoteLayout({ blocks, children }: NoteLayoutProps) {
+  const { mutate: updateOrder } = api.blocks.updateOrder.useMutation()
   const editor = useCreateEditor(blocks.map(b => b.content!))
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <Plate editor={editor}>
+      <Plate
+        editor={editor}
+        onChange={({ editor, value }) => {
+          if (editor.operations.some(op => op.type === "move_node")) {
+            console.log(value)
+            // updateOrder(value.map(b => b))
+          }
+        }}
+      >
         <header className="flex h-14 shrink-0 items-center gap-2">
           <div className="flex flex-1 items-center gap-2 px-3">
             <SidebarTrigger />
