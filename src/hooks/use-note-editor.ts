@@ -1,9 +1,9 @@
 import { useCreateEditor } from "@/components/editor/use-create-editor"
-import { Block, createCuid } from "@/server/db/schema"
+import { type Block, createCuid } from "@/server/db/schema"
 import { api } from "@/trpc/react"
-import { ArgumentTypes } from "@/types/utils"
+import type { ArgumentTypes } from "@/types/utils"
 import type { TElement, TOperation } from "@udecode/plate-common"
-import { PlateStoreState } from "@udecode/plate-common/react"
+import type { PlateStoreState } from "@udecode/plate-common/react"
 import debounce from "lodash.debounce"
 import { useParams } from "next/navigation"
 import { useCallback, useMemo, useState } from "react"
@@ -20,22 +20,23 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
     noteId: string
   }>()
   const { mutate: createBlock } = api.blocks.create.useMutation()
-  const { mutate: updateOrder } = api.blocks.updateOrder.useMutation()
-  const editor = useCreateEditor(blocks.map(b => b.content!))
+  const { mutate: updateBlockContent } = api.blocks.updateContent.useMutation()
+  const { mutate: updateBlockOrder } = api.blocks.updateOrder.useMutation()
 
-  const [currentBlock, setCurrentBlock] = useState<TElement>()
+  const editor = useCreateEditor(blocks.map(b => b.content!))
+  /* Dont use currentBlock outside of a operation handlers! */
+  const [currentBlock, setCurrentBlock] = useState<TElement | undefined>(
+    editor.children[0]
+  )
 
   type HandleChangeOptions = ArgumentTypes<
     NonNullable<PlateStoreState<typeof editor>["onChange"]>
   >[0] & {
     /**
-     * Plate.js operations is simply a state
-     *
-     * And it changes overtime
-     *
-     * That's why we need pass it to the function
+     * **Plate.js** operations is simply a **state**, that's why we need pass it to the function, rather than getting from `editor`
      */
     operations: TOperation[]
+    currentBlock: TElement | undefined
   }
 
   const handleCreateBlock = useCallback(
@@ -59,7 +60,7 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
       const ids = value.map(b => b.id as string)
 
       // TODO: uncomment this after implement all other operations
-      // updateOrder({
+      // updateBlockOrder({
       //   noteId,
       //   ids
       // })
@@ -67,9 +68,27 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
     []
   )
   const handleUpdateBlock = useCallback(
-    debounce(({ editor, value, operations }: HandleChangeOptions) => {
-      // console.log(editor, value, operations)
-    }, DEBOUNCE_DELAY),
+    debounce(
+      async ({
+        editor,
+        value,
+        operations,
+        currentBlock
+      }: HandleChangeOptions) => {
+        if (!currentBlock) return
+
+        const order = blocks.findIndex(b => b.id === currentBlock.id)
+
+        updateBlockContent({
+          id: currentBlock.id as string,
+          content: value.find(b => b.id === currentBlock.id)!,
+          order: order === -1 ? 0 : order,
+          noteId,
+          projectId
+        })
+      },
+      DEBOUNCE_DELAY
+    ),
     []
   )
   const handleDeleteBlock = useCallback(
@@ -95,6 +114,8 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
     []
   )
 
+  console.log(currentBlock)
+
   const handlers: Record<
     TOperation["type"],
     (options: HandleChangeOptions) => void
@@ -108,11 +129,11 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
       insert_text: handleUpdateBlock,
       remove_node: handleDeleteBlock,
       move_node: handleUpdateOrder,
-      split_node: ({ editor, value, operations }) => {
+      split_node: ({ editor, value, operations, currentBlock }) => {
         const newBlock = value[value.length - 1]!
 
         setCurrentBlock(newBlock)
-        handleCreateBlock({ editor, value, operations })
+        handleCreateBlock({ editor, value, operations, currentBlock })
       }
     }),
     []
@@ -121,11 +142,16 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
   const handleChange = ({
     editor,
     value
-  }: Omit<HandleChangeOptions, "operations">) => {
-    for (const operation of editor.operations) {
+  }: Omit<HandleChangeOptions, "operations" | "currentBlock">) => {
+    const operations = editor.operations.filter(
+      (value, index, self) =>
+        index === self.findIndex(t => t.type === value.type)
+    )
+
+    for (const operation of operations) {
       const handler = handlers[operation.type]
 
-      if (handler) handler({ editor, value, operations: editor.operations })
+      if (handler) handler({ editor, value, operations, currentBlock })
     }
   }
 

@@ -169,7 +169,7 @@ export const blocks = createTable("block", {
    */
   id: varchar("id", { length: 255 }).notNull().primaryKey(),
   order: integer("order").notNull(),
-  content: jsonb("content").default({}).notNull().$type<TElement>(),
+  content: jsonb("content").notNull().$type<TElement>(),
 
   projectId: varchar("project_id", { length: 255 })
     .notNull()
