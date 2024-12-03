@@ -22,12 +22,14 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
   const { mutate: createBlock } = api.blocks.create.useMutation()
   const { mutate: updateBlockContent } = api.blocks.updateContent.useMutation()
   const { mutate: updateBlockOrder } = api.blocks.updateOrder.useMutation()
+  const { mutate: deleteBlocks } = api.blocks.deleteMany.useMutation()
 
   const editor = useCreateEditor(blocks.map(b => b.content!))
   /* Dont use currentBlock outside of a operation handlers! */
   const [currentBlock, setCurrentBlock] = useState<TElement | undefined>(
     editor.children[0]
   )
+  const [deletingBlockIds, setDeletingBlockIds] = useState<string[]>([])
 
   type HandleChangeOptions = ArgumentTypes<
     NonNullable<PlateStoreState<typeof editor>["onChange"]>
@@ -96,7 +98,13 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
   )
   const handleDeleteBlock = useCallback(
     debounce(
-      ({ editor, value, operations }: HandleChangeOptions) => {},
+      ({
+        deletingBlockIds
+      }: HandleChangeOptions & { deletingBlockIds: string[] }) => {
+        console.log(deletingBlockIds)
+
+        deleteBlocks({ ids: deletingBlockIds, noteId, projectId })
+      },
       DEBOUNCE_DELAY
     ),
     []
@@ -117,18 +125,45 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
     []
   )
 
+  const deleteBlock = useCallback(
+    (options: HandleChangeOptions) => {
+      const { editor } = options
+
+      const operation = editor.operations.find(
+        op => op.type === "remove_node" || op.type === "merge_node"
+      )
+      if (!operation || !operation.properties) return
+
+      const id = (
+        operation.properties as { id: string; type: TOperation["type"] }
+      ).id
+      setDeletingBlockIds(deletingBlockIds => {
+        const newDeletingBlockIds = [...deletingBlockIds, id]
+        handleDeleteBlock({
+          ...options,
+          deletingBlockIds: newDeletingBlockIds
+        })
+
+        console.log(newDeletingBlockIds)
+
+        return newDeletingBlockIds
+      })
+    },
+    [setDeletingBlockIds, handleDeleteBlock]
+  )
+
   const handlers: Record<
     TOperation["type"],
     (options: HandleChangeOptions) => void
   > = useMemo(
     () => ({
-      insert_node: () => {},
-      merge_node: () => {},
+      insert_node: handleUpdateBlock,
+      merge_node: deleteBlock,
       set_node: handleUpdateBlock,
       set_selection: handleSelection,
       remove_text: handleUpdateBlock,
       insert_text: handleUpdateBlock,
-      remove_node: handleDeleteBlock,
+      remove_node: deleteBlock,
       move_node: handleUpdateOrder,
       split_node: ({ editor, value, operations, currentBlock }) => {
         const newBlock = value[value.length - 1]!

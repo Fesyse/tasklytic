@@ -1,7 +1,7 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { kv } from "@/server/cache"
 import { blocks, type Block } from "@/server/db/schema"
-import { and, eq } from "drizzle-orm"
+import { and, eq, inArray } from "drizzle-orm"
 import { z } from "zod"
 
 const cacheKeys = {
@@ -44,8 +44,6 @@ export const blocksRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input: block }) => {
-      console.log(JSON.stringify(block))
-
       const result = await ctx.db
         .insert(blocks)
         .values({
@@ -72,8 +70,6 @@ export const blocksRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      console.log(JSON.stringify(input))
-
       const block =
         (kv.get(`${cacheKeys.one}:${input.id}`) as Block | undefined) ??
         (await ctx.db.query.blocks.findFirst({
@@ -131,5 +127,32 @@ export const blocksRouter = createTRPCRouter({
       })
 
       kv.del(`${cacheKeys.all}:${noteId}`)
+    }),
+  delete: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        noteId: z.string(),
+        projectId: z.string()
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.delete(blocks).where(eq(blocks.id, input.id))
+
+      kv.del(`${cacheKeys.all}:${input.noteId}`)
+      kv.del(`${cacheKeys.one}:${input.id}`)
+    }),
+  deleteMany: protectedProcedure
+    .input(
+      z.object({
+        ids: z.array(z.string()),
+        noteId: z.string(),
+        projectId: z.string()
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.delete(blocks).where(inArray(blocks.id, input.ids))
+
+      kv.del(`${cacheKeys.all}:${input.noteId}`)
     })
 })
