@@ -81,7 +81,10 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
 
         updateBlockContent({
           id: currentBlock.id as string,
-          content: value.find(b => b.id === currentBlock.id)!,
+          content: {
+            ...currentBlock,
+            ...value.find(b => b.id === currentBlock.id)!
+          },
           order: order === -1 ? 0 : order,
           noteId,
           projectId
@@ -114,8 +117,6 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
     []
   )
 
-  console.log(currentBlock)
-
   const handlers: Record<
     TOperation["type"],
     (options: HandleChangeOptions) => void
@@ -123,7 +124,7 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
     () => ({
       insert_node: () => {},
       merge_node: () => {},
-      set_node: () => {},
+      set_node: handleUpdateBlock,
       set_selection: handleSelection,
       remove_text: handleUpdateBlock,
       insert_text: handleUpdateBlock,
