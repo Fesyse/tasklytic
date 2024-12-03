@@ -101,8 +101,6 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
       ({
         deletingBlockIds
       }: HandleChangeOptions & { deletingBlockIds: string[] }) => {
-        console.log(deletingBlockIds)
-
         deleteBlocks({ ids: deletingBlockIds, noteId, projectId })
       },
       DEBOUNCE_DELAY
@@ -143,8 +141,6 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
           ...options,
           deletingBlockIds: newDeletingBlockIds
         })
-
-        console.log(newDeletingBlockIds)
 
         return newDeletingBlockIds
       })
