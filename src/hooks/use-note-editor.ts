@@ -30,6 +30,9 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
     editor.children[0]
   )
   const [deletingBlockIds, setDeletingBlockIds] = useState<string[]>([])
+  const [updatingBlocks, setUpdatingBlocks] = useState<
+    { content: TElement; id: string }[]
+  >([])
 
   type HandleChangeOptions = ArgumentTypes<
     NonNullable<PlateStoreState<typeof editor>["onChange"]>
@@ -62,10 +65,10 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
       const ids = value.map(b => b.id as string)
 
       // TODO: uncomment this after implement all other operations
-      // updateBlockOrder({
-      //   noteId,
-      //   ids
-      // })
+      updateBlockOrder({
+        noteId,
+        ids
+      })
     }, DEBOUNCE_DELAY),
     []
   )
@@ -96,7 +99,7 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
     ),
     []
   )
-  const handleDeleteBlock = useCallback(
+  const debouncedDeleteBlocks = useCallback(
     debounce(
       ({
         deletingBlockIds
@@ -123,7 +126,7 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
     []
   )
 
-  const deleteBlock = useCallback(
+  const handleDeleteBlocks = useCallback(
     (options: HandleChangeOptions) => {
       const { editor } = options
 
@@ -137,7 +140,7 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
       ).id
       setDeletingBlockIds(deletingBlockIds => {
         const newDeletingBlockIds = [...deletingBlockIds, id]
-        handleDeleteBlock({
+        debouncedDeleteBlocks({
           ...options,
           deletingBlockIds: newDeletingBlockIds
         })
@@ -145,7 +148,7 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
         return newDeletingBlockIds
       })
     },
-    [setDeletingBlockIds, handleDeleteBlock]
+    [setDeletingBlockIds, debouncedDeleteBlocks]
   )
 
   const handlers: Record<
@@ -153,20 +156,20 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
     (options: HandleChangeOptions) => void
   > = useMemo(
     () => ({
-      insert_node: handleUpdateBlock,
-      merge_node: deleteBlock,
-      set_node: handleUpdateBlock,
       set_selection: handleSelection,
-      remove_text: handleUpdateBlock,
-      insert_text: handleUpdateBlock,
-      remove_node: deleteBlock,
-      move_node: handleUpdateOrder,
       split_node: ({ editor, value, operations, currentBlock }) => {
         const newBlock = value[value.length - 1]!
 
         setCurrentBlock(newBlock)
         handleCreateBlock({ editor, value, operations, currentBlock })
-      }
+      },
+      insert_node: handleUpdateBlock,
+      set_node: handleUpdateBlock,
+      remove_text: handleUpdateBlock,
+      insert_text: handleUpdateBlock,
+      move_node: handleUpdateOrder,
+      merge_node: handleDeleteBlocks,
+      remove_node: handleDeleteBlocks
     }),
     []
   )
