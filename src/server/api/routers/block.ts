@@ -79,6 +79,7 @@ export const blocksRouter = createTRPCRouter({
           console.log(block)
 
           if (!block) {
+            console.log(updatingBlock)
             await trx
               .insert(blocks)
               .values({

@@ -16,7 +16,7 @@ type UseNoteEditorProps = {
   blocks: Block[]
 }
 
-const DEBOUNCE_DELAY = 750
+const DEBOUNCE_DELAY = 2000
 
 const getIdFromOperation = (
   operation: TOperation,
@@ -28,8 +28,7 @@ const getIdFromOperation = (
     case "insert_text":
       return value[operation.path[0]!]!.id as string
     case "merge_node":
-      return (operation.properties as { id: string; type: TOperation["type"] })
-        .id
+      return (operation.properties as { id: string; type: TElement["type"] }).id
     case "move_node":
       return value[operation.newPath[0]!]!.id as string
     case "remove_node":
@@ -160,6 +159,7 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
     (options: HandleChangeOptions) => {
       const { operation, value } = options
 
+      console.log(operation)
       const id = getIdFromOperation(operation, value)
       if (!id) throw new Error("No id found")
 
