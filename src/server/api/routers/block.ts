@@ -1,6 +1,6 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { kv } from "@/server/cache"
-import { blocks, type Block } from "@/server/db/schema"
+import { blocks } from "@/server/db/schema"
 import { and, eq, inArray } from "drizzle-orm"
 import { z } from "zod"
 
@@ -59,52 +59,52 @@ export const blocksRouter = createTRPCRouter({
 
       return result
     }),
-  updateContent: protectedProcedure
+  updateOrCreateBlock: protectedProcedure
     .input(
       z.object({
-        id: z.string(),
-        content: z.any(),
+        blocks: z.array(
+          z.object({ id: z.string(), order: z.number(), content: z.any() })
+        ),
         noteId: z.string(),
-        order: z.number(),
         projectId: z.string()
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const block =
-        (kv.get(`${cacheKeys.one}:${input.id}`) as Block | undefined) ??
-        (await ctx.db.query.blocks.findFirst({
-          where: eq(blocks.id, input.id)
-        }))
-
-      if (!block) {
-        const result = await ctx.db
-          .insert(blocks)
-          .values({
-            ...input,
-            content: { ...input.content, id: input.id }
+      ctx.db.transaction(async trx => {
+        for (const updatingBlock of input.blocks) {
+          const block = await ctx.db.query.blocks.findFirst({
+            where: (blocksTable, { eq }) => eq(blocksTable.id, updatingBlock.id)
           })
-          .returning()
-          .then(r => r[0]!)
 
-        kv.del(`${cacheKeys.all}:${result.noteId}`)
-        kv.set(`${cacheKeys.one}:${result.id}`, result)
-        kv.expire(`${cacheKeys.one}:${result.id}`, 1800)
+          console.log(block)
 
-        return result
-      }
+          if (!block) {
+            await trx
+              .insert(blocks)
+              .values({
+                id: updatingBlock.id,
+                order: updatingBlock.order,
+                content: { ...updatingBlock.content, id: updatingBlock.id },
+                noteId: input.noteId,
+                projectId: input.projectId
+              })
+              .returning()
+              .then(r => r[0]!)
 
-      const result = await ctx.db
-        .update(blocks)
-        .set({ content: { ...input.content, id: input.id } })
-        .where(eq(blocks.id, input.id))
-        .returning()
-        .then(r => r[0]!)
+            kv.del(`${cacheKeys.all}:${input.noteId}`)
+          } else {
+            await trx
+              .update(blocks)
+              .set({ content: { ...updatingBlock.content, id: block.id } })
+              .where(eq(blocks.id, block.id))
+              .returning()
+              .then(r => r[0]!)
+          }
+        }
+      })
+      kv.del(`${cacheKeys.all}:${input.noteId}`)
 
-      kv.del(`${cacheKeys.all}:${result.noteId}`)
-      kv.set(`${cacheKeys.one}:${result.id}`, result)
-      kv.expire(`${cacheKeys.one}:${result.id}`, 1800)
-
-      return result
+      return true
     }),
   updateOrder: protectedProcedure
     .input(

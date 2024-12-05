@@ -1,8 +1,12 @@
 import { useCreateEditor } from "@/components/editor/use-create-editor"
-import { type Block, createCuid } from "@/server/db/schema"
+import { type Block } from "@/server/db/schema"
 import { api } from "@/trpc/react"
 import type { ArgumentTypes } from "@/types/utils"
-import type { TElement, TOperation } from "@udecode/plate-common"
+import type {
+  TElement,
+  TOperation,
+  TSelectionOperation
+} from "@udecode/plate-common"
 import type { PlateStoreState } from "@udecode/plate-common/react"
 import debounce from "lodash.debounce"
 import { useParams } from "next/navigation"
@@ -14,13 +18,42 @@ type UseNoteEditorProps = {
 
 const DEBOUNCE_DELAY = 750
 
+const getIdFromOperation = (
+  operation: TOperation,
+  value: TElement[]
+): string | undefined => {
+  switch (operation.type) {
+    case "insert_node":
+      return value[operation.path[0]!]!.id as string
+    case "insert_text":
+      return value[operation.path[0]!]!.id as string
+    case "merge_node":
+      return (operation.properties as { id: string; type: TOperation["type"] })
+        .id
+    case "move_node":
+      return value[operation.newPath[0]!]!.id as string
+    case "remove_node":
+      return operation.node.id as string
+    case "remove_text":
+      return value[operation.path[0]!]!.id as string
+    case "set_node":
+      return value[operation.path[0]!]!.id as string
+    case "set_selection":
+      return value[operation.properties!.anchor!.path[0]!]!.id as string
+    case "split_node":
+      return value[operation.path[0]!]!.id as string
+    default:
+      return undefined
+  }
+}
+
 export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
   const { id: projectId, noteId } = useParams<{
     id: string
     noteId: string
   }>()
-  const { mutate: createBlock } = api.blocks.create.useMutation()
-  const { mutate: updateBlockContent } = api.blocks.updateContent.useMutation()
+  const { mutate: updateOrCreateBlock } =
+    api.blocks.updateOrCreateBlock.useMutation()
   const { mutate: updateBlockOrder } = api.blocks.updateOrder.useMutation()
   const { mutate: deleteBlocks } = api.blocks.deleteMany.useMutation()
 
@@ -30,41 +63,19 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
     editor.children[0]
   )
   const [deletingBlockIds, setDeletingBlockIds] = useState<string[]>([])
-  const [updatingBlocks, setUpdatingBlocks] = useState<
-    { content: TElement; id: string }[]
-  >([])
+  const [updatingBlockIds, setUpdatingBlockIds] = useState<string[]>([])
 
   type HandleChangeOptions = ArgumentTypes<
     NonNullable<PlateStoreState<typeof editor>["onChange"]>
   >[0] & {
-    /**
-     * **Plate.js** operations is simply a **state**, that's why we need pass it to the function, rather than getting from `editor`
-     */
-    operations: TOperation[]
+    operation: TOperation
     currentBlock: TElement | undefined
   }
 
-  const handleCreateBlock = useCallback(
-    debounce(({ editor, value, operations }: HandleChangeOptions) => {
-      const newBlock = value[value.length - 1]!
-      const id = "id" in newBlock ? (newBlock.id as string) : createCuid()
-
-      setCurrentBlock(newBlock)
-      createBlock({
-        id,
-        noteId,
-        content: newBlock,
-        projectId,
-        order: blocks.length
-      })
-    }, DEBOUNCE_DELAY),
-    []
-  )
   const handleUpdateOrder = useCallback(
-    debounce(({ editor, value, operations }: HandleChangeOptions) => {
+    debounce(({ value }: HandleChangeOptions) => {
       const ids = value.map(b => b.id as string)
 
-      // TODO: uncomment this after implement all other operations
       updateBlockOrder({
         noteId,
         ids
@@ -72,47 +83,66 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
     }, DEBOUNCE_DELAY),
     []
   )
-  const handleUpdateBlock = useCallback(
+  const debouncedUpdateOrCreateBlocks = useCallback(
     debounce(
       async ({
-        editor,
         value,
-        operations,
-        currentBlock
-      }: HandleChangeOptions) => {
-        if (!currentBlock) return
-
-        const order = blocks.findIndex(b => b.id === currentBlock.id)
-
-        updateBlockContent({
-          id: currentBlock.id as string,
-          content: {
-            ...currentBlock,
-            ...value.find(b => b.id === currentBlock.id)!
-          },
-          order: order === -1 ? 0 : order,
+        updatingBlockIds
+      }: HandleChangeOptions & { updatingBlockIds: string[] }) => {
+        updateOrCreateBlock({
+          blocks: updatingBlockIds.map(id => ({
+            id,
+            content: value.find(b => (b.id as string) === id)!,
+            order: value.findIndex(b => (b.id as string) === id)
+          })),
           noteId,
           projectId
         })
+
+        setUpdatingBlockIds([])
       },
       DEBOUNCE_DELAY
     ),
     []
   )
+  const handleUpdateOrCreateBlocks = useCallback(
+    (options: HandleChangeOptions) => {
+      const { value, operation } = options
+
+      const id = getIdFromOperation(operation, value)
+      if (!id) throw new Error("No id found")
+
+      setUpdatingBlockIds(updatingBlockIds => {
+        const newUpdatingBlockIds = Array.from(
+          new Set([...updatingBlockIds, id])
+        )
+        debouncedUpdateOrCreateBlocks({
+          ...options,
+          operation,
+          updatingBlockIds: newUpdatingBlockIds
+        })
+        return newUpdatingBlockIds
+      })
+    },
+    [setUpdatingBlockIds, debouncedUpdateOrCreateBlocks]
+  )
+
   const debouncedDeleteBlocks = useCallback(
     debounce(
       ({
         deletingBlockIds
       }: HandleChangeOptions & { deletingBlockIds: string[] }) => {
         deleteBlocks({ ids: deletingBlockIds, noteId, projectId })
+
+        setDeletingBlockIds([])
       },
       DEBOUNCE_DELAY
     ),
     []
   )
   const handleSelection = useCallback(
-    ({ value, operations }: HandleChangeOptions) => {
-      const operation = operations.find(op => op.type === "set_selection")
+    ({ value, ...options }: HandleChangeOptions) => {
+      const operation = options.operation as TSelectionOperation
 
       if (
         !operation ||
@@ -128,18 +158,15 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
 
   const handleDeleteBlocks = useCallback(
     (options: HandleChangeOptions) => {
-      const { editor } = options
+      const { operation, value } = options
 
-      const operation = editor.operations.find(
-        op => op.type === "remove_node" || op.type === "merge_node"
-      )
-      if (!operation || !operation.properties) return
+      const id = getIdFromOperation(operation, value)
+      if (!id) throw new Error("No id found")
 
-      const id = (
-        operation.properties as { id: string; type: TOperation["type"] }
-      ).id
       setDeletingBlockIds(deletingBlockIds => {
-        const newDeletingBlockIds = [...deletingBlockIds, id]
+        const newDeletingBlockIds = Array.from(
+          new Set([...deletingBlockIds, id])
+        )
         debouncedDeleteBlocks({
           ...options,
           deletingBlockIds: newDeletingBlockIds
@@ -157,16 +184,19 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
   > = useMemo(
     () => ({
       set_selection: handleSelection,
-      split_node: ({ editor, value, operations, currentBlock }) => {
-        const newBlock = value[value.length - 1]!
+      split_node: ({ editor, value, operation, currentBlock }) => {
+        const id = (
+          operation.properties as { id: string; type: TOperation["type"] }
+        ).id
+        const newBlock = value.find(b => (b.id as string) === id)
 
         setCurrentBlock(newBlock)
-        handleCreateBlock({ editor, value, operations, currentBlock })
+        handleUpdateOrCreateBlocks({ editor, value, operation, currentBlock })
       },
-      insert_node: handleUpdateBlock,
-      set_node: handleUpdateBlock,
-      remove_text: handleUpdateBlock,
-      insert_text: handleUpdateBlock,
+      insert_node: handleUpdateOrCreateBlocks,
+      set_node: handleUpdateOrCreateBlocks,
+      remove_text: handleUpdateOrCreateBlocks,
+      insert_text: handleUpdateOrCreateBlocks,
       move_node: handleUpdateOrder,
       merge_node: handleDeleteBlocks,
       remove_node: handleDeleteBlocks
@@ -177,7 +207,7 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
   const handleChange = ({
     editor,
     value
-  }: Omit<HandleChangeOptions, "operations" | "currentBlock">) => {
+  }: Omit<HandleChangeOptions, "operation" | "currentBlock">) => {
     const operations = editor.operations.filter(
       (value, index, self) =>
         index === self.findIndex(t => t.type === value.type)
@@ -186,7 +216,7 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
     for (const operation of operations) {
       const handler = handlers[operation.type]
 
-      if (handler) handler({ editor, value, operations, currentBlock })
+      if (handler) handler({ editor, value, operation, currentBlock })
     }
   }
 
