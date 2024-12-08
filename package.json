@@ -112,11 +112,11 @@
     "pdf-lib": "^1.17.1",
     "postgres": "^3.4.5",
     "prismjs": "^1.29.0",
-    "react": "19.0.0-rc-66855b96-20241106",
+    "react": "19.0.0",
     "react-day-picker": "8.10.1",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
-    "react-dom": "19.0.0-rc-66855b96-20241106",
+    "react-dom": "19.0.0",
     "react-dropzone": "^14.3.5",
     "react-hook-form": "^7.53.2",
     "react-lite-youtube-embed": "^2.4.0",
@@ -147,8 +147,8 @@
     "@types/eslint": "^8.56.12",
     "@types/lodash.debounce": "^4.0.9",
     "@types/node": "^22.10.1",
-    "@types/react": "npm:types-react@19.0.0-rc.1",
-    "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1",
+    "@types/react": "19.0.0",
+    "@types/react-dom": "19.0.0",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
     "drizzle-kit": "^0.21.4",
@@ -161,18 +161,7 @@
     "tailwindcss": "^3.4.15",
     "typescript": "^5.7.2"
   },
-  "peerDependencies": {
-    "react": "^16.8 || ^17.0 || ^18.0 || ^19.0",
-    "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0"
-  },
   "ct3aMetadata": {
     "initVersion": "7.36.2"
-  },
-  "packageManager": "pnpm@9.6.0",
-  "pnpm": {
-    "overrides": {
-      "@types/react": "npm:types-react@19.0.0-rc.1",
-      "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1"
-    }
   }
 }
