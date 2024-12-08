@@ -1,5 +1,5 @@
-type ProjectsProps = { params: Promise<{ id: string }> }
+// type ProjectsProps = { params: Promise<{ id: string }> }
 
-export default async function ProjectPage(_props: ProjectsProps) {
+export default async function ProjectPage() {
   return <div></div>
 }

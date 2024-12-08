@@ -20,8 +20,13 @@ export async function POST(req: NextRequest) {
     })
 
     return NextResponse.json(result)
-  } catch (error: any) {
-    if (error.name === "AbortError") {
+  } catch (error: unknown) {
+    if (
+      typeof error === "object" &&
+      !!error &&
+      "name" in error &&
+      error.name === "AbortError"
+    ) {
       return NextResponse.json(null, { status: 408 })
     }
 

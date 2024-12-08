@@ -10,25 +10,27 @@ import { usePathname } from "next/navigation"
 export const FixedToolbarPlugin = createPlatePlugin({
   key: "fixed-toolbar",
   render: {
-    beforeEditable: () => {
-      const pathname = usePathname()
-      const splittedPathname = pathname
-        .split("/")
-        .slice(1, pathname.split("/").length)
-
-      if (
-        splittedPathname[0] === "projects" &&
-        (splittedPathname[1] ? isCuid(splittedPathname[1]) : false) &&
-        (splittedPathname[2] ? isCuid(splittedPathname[2]) : false)
-      ) {
-        return null
-      }
-
-      return (
-        <FixedToolbar>
-          <FixedToolbarButtons />
-        </FixedToolbar>
-      )
-    }
+    beforeEditable: ToolbarBeforeEditor
   }
 })
+
+function ToolbarBeforeEditor() {
+  const pathname = usePathname()
+  const splittedPathname = pathname
+    .split("/")
+    .slice(1, pathname.split("/").length)
+
+  if (
+    splittedPathname[0] === "projects" &&
+    (splittedPathname[1] ? isCuid(splittedPathname[1]) : false) &&
+    (splittedPathname[2] ? isCuid(splittedPathname[2]) : false)
+  ) {
+    return null
+  }
+
+  return (
+    <FixedToolbar>
+      <FixedToolbarButtons />
+    </FixedToolbar>
+  )
+}
