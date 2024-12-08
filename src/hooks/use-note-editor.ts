@@ -69,7 +69,7 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
     editor.children[0]
   )
   const [deletingBlockIds, setDeletingBlockIds] = useState<string[]>([])
-  const [updatingBlockIds, setUpdatingBlockIds] = useState<string[]>([])
+  const [_updatingBlockIds, setUpdatingBlockIds] = useState<string[]>([])
 
   type HandleChangeOptions = ArgumentTypes<
     NonNullable<PlateStoreState<typeof editor>["onChange"]>

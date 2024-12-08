@@ -10,7 +10,7 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "dev": "next dev --turbopack",
-    "lint": "next lint",
+    "lint": "pnpm oxlint",
     "start": "next start",
     "ui": "pnpm dlx shadcn@latest"
   },

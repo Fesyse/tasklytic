@@ -1,6 +1,6 @@
-import { type NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 
-export const middleware = async (req: NextRequest, res: NextResponse) => {
+export const middleware = async () => {
   return NextResponse.next()
 }
 

@@ -1,8 +1,8 @@
 "use client"
 
+import { cn } from "@/lib/utils"
 import { AnimatePresence, motion } from "framer-motion"
 import { useEffect, useRef, useState } from "react"
-import { cn } from "@/lib/utils"
 
 type GlowingStarsBackgroundCardProps = {
   className?: string
@@ -120,13 +120,17 @@ export const Illustration = ({
               isGlowing={mouseEnter ? isGlowingStarOnHover : isGlowing}
               delay={mouseEnter ? staticDelay : delay}
             />
-            {mouseEnter && glowingStarsOnHover
-              ? isGlowingStarOnHover
-              : false && <Glow delay={staticDelay} />}
+            {(
+              mouseEnter && glowingStarsOnHover ? isGlowingStarOnHover : false
+            ) ? (
+              <Glow delay={staticDelay} />
+            ) : null}
             <AnimatePresence mode="wait">
-              {isGlowing && glowingStarsOnHover
-                ? isGlowingStarOnHover
-                : false && <Glow delay={delay} />}
+              {(
+                isGlowing && glowingStarsOnHover ? isGlowingStarOnHover : false
+              ) ? (
+                <Glow delay={delay} />
+              ) : null}
             </AnimatePresence>
           </div>
         )

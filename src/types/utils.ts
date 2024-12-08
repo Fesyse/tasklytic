@@ -15,4 +15,4 @@ type AddArgument<
   ? (...args: [...PrevArg, NextArg]) => Return
   : never
 
-export type { ArgumentTypes, DeepPartial }
+export type { AddArgument, ArgumentTypes, DeepPartial }

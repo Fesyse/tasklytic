@@ -108,8 +108,8 @@ export default function PrivacyPolicyPage() {
             <strong>Website</strong> refers to Tasklytic, accessible from{" "}
             <a
               href="https://task-lytic.vercel.app"
-              rel="external nofollow noopener"
               target="_blank"
+              rel="noreferrer"
             >
               https://task-lytic.vercel.app
             </a>
@@ -220,6 +220,7 @@ export default function PrivacyPolicyPage() {
         <a
           href="https://www.termsfeed.com/blog/cookies/#What_Are_Cookies"
           target="_blank"
+          rel="noreferrer"
         >
           TermsFeed website
         </a>{" "}

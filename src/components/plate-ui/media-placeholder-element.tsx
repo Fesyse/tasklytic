@@ -67,7 +67,7 @@ const CONTENT: Record<
 export const MediaPlaceholderElement = withHOC(
   PlaceholderProvider,
   withRef<typeof PlateElement>(
-    ({ children, className, editor, nodeProps, ...props }, ref) => {
+    ({ children, className, editor, nodeProps: _nodeProps, ...props }, ref) => {
       const element = props.element as TPlaceholderElement
 
       const { api } = useEditorPlugin(PlaceholderPlugin)
