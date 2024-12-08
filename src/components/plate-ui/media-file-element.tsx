@@ -1,37 +1,35 @@
-'use client';
+"use client"
 
-import React from 'react';
+import { cn, withRef } from "@udecode/cn"
+import { withHOC } from "@udecode/plate-common/react"
+import { useMediaState } from "@udecode/plate-media/react"
+import { ResizableProvider } from "@udecode/plate-resizable"
+import { FileUp } from "lucide-react"
+import { useReadOnly } from "slate-react"
 
-import { cn, withRef } from '@udecode/cn';
-import { withHOC } from '@udecode/plate-common/react';
-import { useMediaState } from '@udecode/plate-media/react';
-import { ResizableProvider } from '@udecode/plate-resizable';
-import { FileUp } from 'lucide-react';
-import { useReadOnly } from 'slate-react';
-
-import { Caption, CaptionTextarea } from './caption';
-import { PlateElement } from './plate-element';
+import { Caption, CaptionTextarea } from "./caption"
+import { PlateElement } from "./plate-element"
 
 export const MediaFileElement = withHOC(
   ResizableProvider,
   withRef<typeof PlateElement>(
     ({ children, className, nodeProps, ...props }, ref) => {
-      const readOnly = useReadOnly();
+      const readOnly = useReadOnly()
 
-      const { name, unsafeUrl } = useMediaState();
+      const { name, unsafeUrl } = useMediaState()
 
       const onDownload = () => {
-        window.open(unsafeUrl);
-      };
+        window.open(unsafeUrl)
+      }
 
       return (
         <PlateElement
           ref={ref}
-          className={cn('relative my-px rounded-sm', className)}
+          className={cn("relative my-px rounded-sm", className)}
           {...props}
         >
           <div
-            className="group relative m-0 flex cursor-pointer items-center rounded px-0.5 py-[3px] hover:bg-muted"
+            className="group relative m-0 flex cursor-pointer items-center rounded px-0.5 py-[3px] transition-colors duration-200 hover:bg-muted hover:text-muted-foreground"
             onClick={onDownload}
             contentEditable={false}
             role="button"
@@ -55,7 +53,7 @@ export const MediaFileElement = withHOC(
           </div>
           {children}
         </PlateElement>
-      );
+      )
     }
   )
-);
+)

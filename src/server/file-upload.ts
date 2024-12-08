@@ -20,6 +20,13 @@ export const fileRouter = {
     })
     .onUploadComplete(() => {
       return
+    }),
+  editorUploader: f(["image", "text", "blob", "pdf", "video", "audio"])
+    .middleware(() => {
+      return {}
+    })
+    .onUploadComplete(({ file }) => {
+      return { file }
     })
 } satisfies _FileRouter
 

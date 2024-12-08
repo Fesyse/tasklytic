@@ -37,7 +37,6 @@ const getIdFromOperation = (
       return value[operation.newPath[0]!]!.id as string
     case "remove_node":
       const block = value[operation.path[0]!]
-
       if (!block) return operation.node.id as string
 
       return block.id as string

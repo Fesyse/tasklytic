@@ -1,22 +1,22 @@
-'use client';
+"use client"
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import type { ReactNode } from 'react';
+import type { ReactNode } from "react"
+import React, { useCallback, useEffect, useRef, useState } from "react"
 
-import type { TPlaceholderElement } from '@udecode/plate-media';
+import type { TPlaceholderElement } from "@udecode/plate-media"
 
-import { cn } from '@udecode/cn';
+import { cn } from "@udecode/cn"
 import {
   insertNodes,
   removeNodes,
-  withoutSavingHistory,
-} from '@udecode/plate-common';
+  withoutSavingHistory
+} from "@udecode/plate-common"
 import {
   findNodePath,
   useEditorPlugin,
   withHOC,
-  withRef,
-} from '@udecode/plate-common/react';
+  withRef
+} from "@udecode/plate-common/react"
 import {
   AudioPlugin,
   FilePlugin,
@@ -24,144 +24,144 @@ import {
   PlaceholderPlugin,
   PlaceholderProvider,
   VideoPlugin,
-  updateUploadHistory,
-} from '@udecode/plate-media/react';
-import { AudioLines, FileUp, Film, ImageIcon } from 'lucide-react';
-import { useFilePicker } from 'use-file-picker';
+  updateUploadHistory
+} from "@udecode/plate-media/react"
+import { AudioLines, FileUp, Film, ImageIcon } from "lucide-react"
+import { useFilePicker } from "use-file-picker"
 
-import { useUploadFile } from '@/lib/uploadthing';
+import { useUploadFile } from "@/lib/uploadthing"
 
-import { PlateElement } from './plate-element';
-import { Spinner } from './spinner';
+import { PlateElement } from "./plate-element"
+import { Spinner } from "./spinner"
 
 const CONTENT: Record<
   string,
   {
-    accept: string[];
-    content: ReactNode;
-    icon: ReactNode;
+    accept: string[]
+    content: ReactNode
+    icon: ReactNode
   }
 > = {
   [AudioPlugin.key]: {
-    accept: ['audio/*'],
-    content: 'Add an audio file',
-    icon: <AudioLines />,
+    accept: ["audio/*"],
+    content: "Add an audio file",
+    icon: <AudioLines />
   },
   [FilePlugin.key]: {
-    accept: ['*'],
-    content: 'Add a file',
-    icon: <FileUp />,
+    accept: ["*"],
+    content: "Add a file",
+    icon: <FileUp />
   },
   [ImagePlugin.key]: {
-    accept: ['image/*'],
-    content: 'Add an image',
-    icon: <ImageIcon />,
+    accept: ["image/*"],
+    content: "Add an image",
+    icon: <ImageIcon />
   },
   [VideoPlugin.key]: {
-    accept: ['video/*'],
-    content: 'Add a video',
-    icon: <Film />,
-  },
-};
+    accept: ["video/*"],
+    content: "Add a video",
+    icon: <Film />
+  }
+}
 
 export const MediaPlaceholderElement = withHOC(
   PlaceholderProvider,
   withRef<typeof PlateElement>(
     ({ children, className, editor, nodeProps, ...props }, ref) => {
-      const element = props.element as TPlaceholderElement;
+      const element = props.element as TPlaceholderElement
 
-      const { api } = useEditorPlugin(PlaceholderPlugin);
+      const { api } = useEditorPlugin(PlaceholderPlugin)
 
       const { isUploading, progress, uploadFile, uploadedFile, uploadingFile } =
-        useUploadFile();
+        useUploadFile()
 
-      const loading = isUploading && uploadingFile;
+      const loading = isUploading && uploadingFile
 
-      const currentContent = CONTENT[element.mediaType];
+      const currentContent = CONTENT[element.mediaType]!
 
-      const isImage = element.mediaType === ImagePlugin.key;
+      const isImage = element.mediaType === ImagePlugin.key
 
-      const imageRef = useRef<HTMLImageElement>(null);
+      const imageRef = useRef<HTMLImageElement>(null)
 
       const { openFilePicker } = useFilePicker({
         accept: currentContent.accept,
         multiple: true,
         onFilesSelected: ({ plainFiles: updatedFiles }) => {
-          const firstFile = updatedFiles[0];
-          const restFiles = updatedFiles.slice(1);
+          const firstFile = updatedFiles[0]
+          const restFiles = updatedFiles.slice(1)
 
-          replaceCurrentPlaceholder(firstFile);
+          replaceCurrentPlaceholder(firstFile)
 
-          restFiles.length > 0 && (editor as any).tf.insert.media(restFiles);
-        },
-      });
+          restFiles.length > 0 && (editor as any).tf.insert.media(restFiles)
+        }
+      })
 
       const replaceCurrentPlaceholder = useCallback(
         (file: File) => {
-          void uploadFile(file);
-          api.placeholder.addUploadingFile(element.id as string, file);
+          void uploadFile(file)
+          api.placeholder.addUploadingFile(element.id as string, file)
         },
         [api.placeholder, element.id, uploadFile]
-      );
+      )
 
       useEffect(() => {
-        if (!uploadedFile) return;
+        if (!uploadedFile) return
 
-        const path = findNodePath(editor, element);
+        const path = findNodePath(editor, element)
 
         withoutSavingHistory(editor, () => {
-          removeNodes(editor, { at: path });
+          removeNodes(editor, { at: path })
 
           const node = {
-            children: [{ text: '' }],
+            children: [{ text: "" }],
             initialHeight: imageRef.current?.height,
             initialWidth: imageRef.current?.width,
             isUpload: true,
-            name: element.mediaType === FilePlugin.key ? uploadedFile.name : '',
+            name: element.mediaType === FilePlugin.key ? uploadedFile.name : "",
             placeholderId: element.id as string,
             type: element.mediaType!,
-            url: uploadedFile.url,
-          };
+            url: uploadedFile.url
+          }
 
-          insertNodes(editor, node, { at: path });
+          insertNodes(editor, node, { at: path })
 
-          updateUploadHistory(editor, node);
-        });
+          updateUploadHistory(editor, node)
+        })
 
-        api.placeholder.removeUploadingFile(element.id as string);
+        api.placeholder.removeUploadingFile(element.id as string)
         // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, [uploadedFile, element.id]);
+      }, [uploadedFile, element.id])
 
       // React dev mode will call useEffect twice
-      const isReplaced = useRef(false);
+      const isReplaced = useRef(false)
 
       /** Paste and drop */
       useEffect(() => {
-        if (isReplaced.current) return;
+        if (isReplaced.current) return
 
-        isReplaced.current = true;
+        isReplaced.current = true
         const currentFiles = api.placeholder.getUploadingFile(
           element.id as string
-        );
+        )
 
-        if (!currentFiles) return;
+        if (!currentFiles) return
 
-        replaceCurrentPlaceholder(currentFiles);
+        replaceCurrentPlaceholder(currentFiles)
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, [isReplaced]);
+      }, [isReplaced])
 
       return (
         <PlateElement
           ref={ref}
-          className={cn('relative my-1', className)}
+          className={cn("relative my-1", className)}
           editor={editor}
           {...props}
         >
           {(!loading || !isImage) && (
             <div
               className={cn(
-                'flex cursor-pointer select-none items-center rounded-sm bg-muted p-3 pr-9 hover:bg-primary/10'
+                "flex cursor-pointer select-none items-center rounded-sm bg-muted p-3 pr-9 hover:bg-primary/10"
               )}
               onClick={() => !loading && openFilePicker()}
               contentEditable={false}
@@ -198,39 +198,39 @@ export const MediaPlaceholderElement = withHOC(
 
           {children}
         </PlateElement>
-      );
+      )
     }
   )
-);
+)
 
 export function ImageProgress({
   className,
   file,
   imageRef,
-  progress = 0,
+  progress = 0
 }: {
-  file: File;
-  className?: string;
-  imageRef?: React.RefObject<HTMLImageElement>;
-  progress?: number;
+  file: File
+  className?: string
+  imageRef?: React.RefObject<HTMLImageElement>
+  progress?: number
 }) {
-  const [objectUrl, setObjectUrl] = useState<string | null>(null);
+  const [objectUrl, setObjectUrl] = useState<string | null>(null)
 
   useEffect(() => {
-    const url = URL.createObjectURL(file);
-    setObjectUrl(url);
+    const url = URL.createObjectURL(file)
+    setObjectUrl(url)
 
     return () => {
-      URL.revokeObjectURL(url);
-    };
-  }, [file]);
+      URL.revokeObjectURL(url)
+    }
+  }, [file])
 
   if (!objectUrl) {
-    return null;
+    return null
   }
 
   return (
-    <div className={cn('relative', className)} contentEditable={false}>
+    <div className={cn("relative", className)} contentEditable={false}>
       <img
         ref={imageRef}
         className="h-auto w-full rounded-sm object-cover"
@@ -246,28 +246,28 @@ export function ImageProgress({
         </div>
       )}
     </div>
-  );
+  )
 }
 
 export function formatBytes(
   bytes: number,
   opts: {
-    decimals?: number;
-    sizeType?: 'accurate' | 'normal';
+    decimals?: number
+    sizeType?: "accurate" | "normal"
   } = {}
 ) {
-  const { decimals = 0, sizeType = 'normal' } = opts;
+  const { decimals = 0, sizeType = "normal" } = opts
 
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-  const accurateSizes = ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB'];
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB"]
+  const accurateSizes = ["Bytes", "KiB", "MiB", "GiB", "TiB"]
 
-  if (bytes === 0) return '0 Byte';
+  if (bytes === 0) return "0 Byte"
 
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  const i = Math.floor(Math.log(bytes) / Math.log(1024))
 
   return `${(bytes / Math.pow(1024, i)).toFixed(decimals)} ${
-    sizeType === 'accurate'
-      ? (accurateSizes[i] ?? 'Bytest')
-      : (sizes[i] ?? 'Bytes')
-  }`;
+    sizeType === "accurate"
+      ? (accurateSizes[i] ?? "Bytest")
+      : (sizes[i] ?? "Bytes")
+  }`
 }
