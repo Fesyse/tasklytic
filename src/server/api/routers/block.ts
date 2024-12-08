@@ -76,10 +76,7 @@ export const blocksRouter = createTRPCRouter({
             where: (blocksTable, { eq }) => eq(blocksTable.id, updatingBlock.id)
           })
 
-          console.log(block)
-
           if (!block) {
-            console.log(updatingBlock)
             await trx
               .insert(blocks)
               .values({

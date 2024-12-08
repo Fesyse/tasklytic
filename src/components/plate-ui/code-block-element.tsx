@@ -1,27 +1,25 @@
-'use client';
+"use client"
 
-import React from 'react';
+import { cn, withRef } from "@udecode/cn"
+import { useCodeBlockElementState } from "@udecode/plate-code-block/react"
 
-import { cn, withRef } from '@udecode/cn';
-import { useCodeBlockElementState } from '@udecode/plate-code-block/react';
+import { CodeBlockCombobox } from "./code-block-combobox"
+import { PlateElement } from "./plate-element"
 
-import { CodeBlockCombobox } from './code-block-combobox';
-import { PlateElement } from './plate-element';
-
-import './code-block-element.css';
+import "./code-block-element.css"
 
 export const CodeBlockElement = withRef<typeof PlateElement>(
   ({ children, className, ...props }, ref) => {
-    const { element } = props;
-    const state = useCodeBlockElementState({ element });
+    const { element } = props
+    const state = useCodeBlockElementState({ element })
 
     return (
       <PlateElement
         ref={ref}
-        className={cn('relative py-1', state.className, className)}
+        className={cn("relative py-1", state.className, className)}
         {...props}
       >
-        <pre className="overflow-x-auto rounded-md bg-muted px-6 py-8 font-mono text-sm leading-[normal] [tab-size:2]">
+        <pre className="overflow-x-auto rounded-md border border-muted-foreground px-3 py-5 font-mono text-sm leading-[normal] [tab-size:2]">
           <code>{children}</code>
         </pre>
 
@@ -34,6 +32,6 @@ export const CodeBlockElement = withRef<typeof PlateElement>(
           </div>
         )}
       </PlateElement>
-    );
+    )
   }
-);
+)

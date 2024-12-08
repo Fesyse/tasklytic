@@ -28,11 +28,19 @@ const getIdFromOperation = (
     case "insert_text":
       return value[operation.path[0]!]!.id as string
     case "merge_node":
-      return (operation.properties as { id: string; type: TElement["type"] }).id
+      if ("id" in operation.properties) {
+        return (operation.properties as { id: string; type: TElement["type"] })
+          .id
+      }
+      return value[operation.path[0]!]!.id as string
     case "move_node":
       return value[operation.newPath[0]!]!.id as string
     case "remove_node":
-      return operation.node.id as string
+      const block = value[operation.path[0]!]
+
+      if (!block) return operation.node.id as string
+
+      return block.id as string
     case "remove_text":
       return value[operation.path[0]!]!.id as string
     case "set_node":
@@ -89,11 +97,13 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
         updatingBlockIds
       }: HandleChangeOptions & { updatingBlockIds: string[] }) => {
         updateOrCreateBlock({
-          blocks: updatingBlockIds.map(id => ({
-            id,
-            content: value.find(b => (b.id as string) === id)!,
-            order: value.findIndex(b => (b.id as string) === id)
-          })),
+          blocks: updatingBlockIds
+            .filter(id => value.findIndex(b => (b.id as string) === id) !== -1)
+            .map(id => ({
+              id,
+              content: value.find(b => (b.id as string) === id)!,
+              order: value.findIndex(b => (b.id as string) === id)
+            })),
           noteId,
           projectId
         })
@@ -159,8 +169,9 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
     (options: HandleChangeOptions) => {
       const { operation, value } = options
 
-      console.log(operation)
       const id = getIdFromOperation(operation, value)
+      console.log(operation)
+
       if (!id) throw new Error("No id found")
 
       setDeletingBlockIds(deletingBlockIds => {
@@ -208,12 +219,7 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
     editor,
     value
   }: Omit<HandleChangeOptions, "operation" | "currentBlock">) => {
-    const operations = editor.operations.filter(
-      (value, index, self) =>
-        index === self.findIndex(t => t.type === value.type)
-    )
-
-    for (const operation of operations) {
+    for (const operation of editor.operations) {
       const handler = handlers[operation.type]
 
       if (handler) handler({ editor, value, operation, currentBlock })
