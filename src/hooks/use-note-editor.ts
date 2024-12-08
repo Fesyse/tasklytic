@@ -95,6 +95,8 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
         value,
         updatingBlockIds
       }: HandleChangeOptions & { updatingBlockIds: string[] }) => {
+        if (!updatingBlockIds.length) return
+
         updateOrCreateBlock({
           blocks: updatingBlockIds
             .filter(id => value.findIndex(b => (b.id as string) === id) !== -1)
@@ -123,6 +125,9 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
       setUpdatingBlockIds(updatingBlockIds => {
         const newUpdatingBlockIds = Array.from(
           new Set([...updatingBlockIds, id])
+        ).filter(
+          updatingId =>
+            deletingBlockIds.findIndex(id => id === updatingId) === -1
         )
         debouncedUpdateOrCreateBlocks({
           ...options,
