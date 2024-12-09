@@ -24,8 +24,6 @@ import { TrailingBlockPlugin } from "@udecode/plate-trailing-block"
 import { FixedToolbarPlugin } from "@/components/editor/plugins/fixed-toolbar-plugin"
 import { FloatingToolbarPlugin } from "@/components/editor/plugins/floating-toolbar-plugin"
 
-import { CursorOverlay } from "@/components/plate-ui/cursor-overlay"
-import { CursorOverlayPlugin } from "@udecode/plate-selection/react"
 import { aiPlugins } from "./ai-plugins"
 import { alignPlugin } from "./align-plugin"
 import { autoformatPlugin } from "./autoformat-plugin"
@@ -96,11 +94,6 @@ export const editorPlugins = [
   ...deletePlugins,
   softBreakPlugin,
   TrailingBlockPlugin.configure({ options: { type: ParagraphPlugin.key } }),
-
-  // Cursor
-  CursorOverlayPlugin.configure({
-    render: { afterEditable: () => <CursorOverlay /> }
-  }),
 
   // Deserialization
   DocxPlugin,

@@ -174,7 +174,6 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
       const { operation, value } = options
 
       const id = getIdFromOperation(operation, value)
-      console.log(operation)
 
       if (!id) throw new Error("No id found")
 
@@ -219,16 +218,20 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
     []
   )
 
-  const handleChange = ({
-    editor,
-    value
-  }: Omit<HandleChangeOptions, "operation" | "currentBlock">) => {
-    for (const operation of editor.operations) {
-      const handler = handlers[operation.type]
+  const handleChange = useCallback(
+    ({
+      editor,
+      value
+    }: Omit<HandleChangeOptions, "operation" | "currentBlock">) => {
+      console.log(value)
+      for (const operation of editor.operations) {
+        const handler = handlers[operation.type]
 
-      if (handler) handler({ editor, value, operation, currentBlock })
-    }
-  }
+        if (handler) handler({ editor, value, operation, currentBlock })
+      }
+    },
+    []
+  )
 
   return {
     editor,

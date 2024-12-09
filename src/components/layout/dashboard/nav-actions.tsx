@@ -31,7 +31,11 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from "@/components/ui/sidebar"
+import { Skeleton } from "@/components/ui/skeleton"
+import { api } from "@/trpc/react"
 import { DotsHorizontalIcon } from "@radix-ui/react-icons"
+import { format } from "date-fns"
+import { useParams } from "next/navigation"
 import { useState } from "react"
 
 const data = [
@@ -98,12 +102,19 @@ const data = [
 ]
 
 export function NavActions() {
+  const { noteId } = useParams<{ id: string; noteId: string }>()
+  const { data: note, isLoading } = api.notes.getById.useQuery({ id: noteId })
   const [isOpen, setIsOpen] = useState(false)
 
   return (
     <div className="flex items-center gap-2 text-sm">
-      <div className="hidden font-medium text-muted-foreground md:inline-block">
-        Edited Oct 08
+      <div className="hidden font-medium text-muted-foreground md:inline-flex md:items-center md:gap-2">
+        Edited{" "}
+        {isLoading || !note ? (
+          <Skeleton className="h-5 w-14" />
+        ) : (
+          format(note.updatedAt ?? new Date(), "HH:mm do MMM")
+        )}
       </div>
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>

@@ -26,7 +26,7 @@ export function NoteLayout({ blocks, children }: NoteLayoutProps) {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <Plate editor={editor} onChange={handleChange}>
+      <Plate editor={editor} onValueChange={handleChange}>
         <header className="flex h-14 shrink-0 items-center gap-2">
           <div className="flex flex-1 items-center gap-2 px-3">
             <SidebarTrigger />

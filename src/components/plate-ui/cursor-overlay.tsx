@@ -1,24 +1,22 @@
-'use client';
+"use client"
 
-import React from 'react';
-
-import { cn } from '@udecode/cn';
-import { isCollapsed } from '@udecode/plate-common';
+import { cn } from "@udecode/cn"
+import { isCollapsed } from "@udecode/plate-common"
 import {
   type CursorData,
   type CursorOverlayState,
-  useCursorOverlay,
-} from '@udecode/plate-selection/react';
+  useCursorOverlay
+} from "@udecode/plate-selection/react"
 
 export function Cursor({
   id,
   caretPosition,
   data,
   selection,
-  selectionRects,
+  selectionRects
 }: CursorOverlayState<CursorData>) {
-  const { style, selectionStyle = style } = data ?? ({} as CursorData);
-  const isCursor = isCollapsed(selection);
+  const { style, selectionStyle = style } = data ?? ({} as CursorData)
+  const isCursor = isCollapsed(selection)
 
   return (
     <>
@@ -27,38 +25,38 @@ export function Cursor({
           <div
             key={i}
             className={cn(
-              'pointer-events-none absolute z-10',
-              id === 'selection' && 'bg-brand/25',
-              id === 'selection' && isCursor && 'bg-primary'
+              "pointer-events-none absolute z-10",
+              id === "selection" && "bg-brand/25",
+              id === "selection" && isCursor && "bg-primary"
             )}
             style={{
               ...selectionStyle,
-              ...position,
+              ...position
             }}
           />
-        );
+        )
       })}
-      {caretPosition && (
+      {caretPosition ? (
         <div
           className={cn(
-            'pointer-events-none absolute z-10 w-0.5',
-            id === 'drag' && 'w-px bg-brand'
+            "pointer-events-none absolute z-10 w-0.5",
+            id === "drag" && "w-px bg-green-700"
           )}
           style={{ ...caretPosition, ...style }}
         />
-      )}
+      ) : null}
     </>
-  );
+  )
 }
 
 export function CursorOverlay() {
-  const { cursors } = useCursorOverlay();
+  const { cursors } = useCursorOverlay()
 
   return (
     <>
-      {cursors.map((cursor) => (
+      {cursors.map(cursor => (
         <Cursor key={cursor.id} {...cursor} />
       ))}
     </>
-  );
+  )
 }

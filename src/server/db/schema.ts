@@ -153,7 +153,16 @@ export const notes = createTable("notes", {
   userId: varchar("user_id", { length: 255 })
     .notNull()
     .references(() => users.id),
-  isPinned: boolean("is_pinned").notNull().default(false)
+  isPinned: boolean("is_pinned").notNull().default(false),
+
+  createdAt: timestamp("created_at", {
+    mode: "date",
+    withTimezone: true
+  }).default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: timestamp("updated_at", {
+    mode: "date",
+    withTimezone: true
+  }).$onUpdate(() => new Date())
 })
 
 export const databases = createTable("database", {
