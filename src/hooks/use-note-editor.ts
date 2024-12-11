@@ -54,8 +54,8 @@ const getIdFromOperation = (
 }
 
 export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
-  const { id: projectId, noteId } = useParams<{
-    id: string
+  const { projectId, noteId } = useParams<{
+    projectId: string
     noteId: string
   }>()
   const { mutate: updateOrCreateBlock } =

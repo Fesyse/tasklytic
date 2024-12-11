@@ -52,7 +52,7 @@ export type SidebarNav = {
 }
 export function useSidebarNav(): SidebarNav {
   const pathname = usePathname()
-  const { id: projectId } = useParams<{ id: string }>()
+  const { projectId } = useParams<{ projectId: string }>()
 
   const { data: projects, isLoading: isProjectsLoading } =
     api.projects.getAll.useQuery(undefined, {
@@ -116,7 +116,7 @@ export function useSidebarNav(): SidebarNav {
     pinnedNotes: {
       isLoading: isNotesLoading,
       items: pinnedNotes?.map(note => {
-        const href = `/projects/${projectId}/${note.id}`
+        const href = `/projects/${projectId}/note/${note.id}`
         return {
           id: note.id,
           name: note.title,
@@ -129,7 +129,7 @@ export function useSidebarNav(): SidebarNav {
     notes: {
       isLoading: isNotesLoading,
       items: unpinnedNotes?.map(note => {
-        const href = `/projects/${projectId}/${note.id}`
+        const href = `/projects/${projectId}/note/${note.id}`
         return {
           id: note.id,
           name: note.title,

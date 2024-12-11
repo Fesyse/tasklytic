@@ -7,7 +7,10 @@ import { api } from "@/trpc/react"
 import { useParams } from "next/navigation"
 
 export const DashboardBreadcrumbPage = () => {
-  const { id: projectId, noteId } = useParams<{ id: string; noteId?: string }>()
+  const { projectId, noteId } = useParams<{
+    projectId: string
+    noteId?: string
+  }>()
 
   const { data: note, isLoading: isLoadingNote } = api.notes.getById.useQuery(
     { id: noteId ?? "" },

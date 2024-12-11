@@ -160,6 +160,8 @@ export const notesRouter = createTRPCRouter({
         .returning()
         .then(r => r[0]!)
 
+      kv.del(`${cacheKeys.all}:${input.projectId}`)
+
       return result
     }),
   update: protectedProcedure
@@ -183,6 +185,7 @@ export const notesRouter = createTRPCRouter({
 
       const key = `${cacheKeys.one}:${input.id}`
 
+      kv.del(`${cacheKeys.all}:${result.projectId}`)
       kv.set(key, result)
       kv.expire(key, 3200)
 

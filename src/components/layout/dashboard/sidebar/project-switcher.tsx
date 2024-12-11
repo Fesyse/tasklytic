@@ -27,7 +27,7 @@ export function ProjectSwitcher({
 }: {
   projects: SidebarNav["projects"]
 }) {
-  const { id: projectId } = useParams<{ id: string }>()
+  const { projectId } = useParams<{ projectId: string }>()
   const [activeProject, setActiveProject] = useState(
     projects.items?.find(p => p.id === projectId)
   )

@@ -23,7 +23,7 @@ function ToolbarBeforeEditor() {
   if (
     splittedPathname[0] === "projects" &&
     (splittedPathname[1] ? isCuid(splittedPathname[1]) : false) &&
-    (splittedPathname[2] ? isCuid(splittedPathname[2]) : false)
+    (splittedPathname[3] ? isCuid(splittedPathname[3]) : false)
   ) {
     return null
   }
