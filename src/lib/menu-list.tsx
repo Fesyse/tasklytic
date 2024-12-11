@@ -43,6 +43,8 @@ export type SidebarNav = {
           name: string
           href: string
           emoji: LogoComponent
+          private: boolean
+          isPinned: boolean
           isActive: boolean
         }[]
       | undefined
@@ -122,6 +124,8 @@ export function useSidebarNav(): SidebarNav {
           name: note.title,
           emoji: () => <FileIcon size={18} />,
           href,
+          private: note.private,
+          isPinned: note.isPinned,
           isActive: pathname.startsWith(href)
         }
       })
@@ -135,6 +139,8 @@ export function useSidebarNav(): SidebarNav {
           name: note.title,
           emoji: () => <FileIcon size={18} />,
           href,
+          private: note.private,
+          isPinned: note.isPinned,
           isActive: pathname.startsWith(href)
         }
       })

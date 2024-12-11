@@ -23,11 +23,12 @@ import { FileUp, Plus } from "lucide-react"
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import { toast } from "sonner"
+import { NoteActions } from "./note-actions"
 
 export function NavNotes({ notes }: { notes: SidebarNav["notes"] }) {
-  const utils = api.useUtils()
   const { projectId } = useParams<{ projectId: string }>()
   const router = useRouter()
+  const utils = api.useUtils()
 
   const { mutate: createNote, isPending: isNoteCreating } =
     api.notes.create.useMutation({
@@ -36,8 +37,7 @@ export function NavNotes({ notes }: { notes: SidebarNav["notes"] }) {
         toast.success(`Successfully created note!`)
         router.push(`/projects/${projectId}/note/${note.id}`)
       },
-      onError: error =>
-        toast.error("An error occurred creating note! Try again.")
+      onError: () => toast.error("An error occurred creating note! Try again.")
     })
 
   return (
@@ -47,7 +47,7 @@ export function NavNotes({ notes }: { notes: SidebarNav["notes"] }) {
         <Tooltip>
           <TooltipTrigger asChild>
             <SidebarGroupAction onClick={async () => createNote({ projectId })}>
-              {isNoteCreating ? <LoadingSpinner /> : <Plus />}{" "}
+              {isNoteCreating ? <LoadingSpinner /> : <Plus />}
               <span className="sr-only">Add Note</span>
             </SidebarGroupAction>
           </TooltipTrigger>
@@ -72,6 +72,7 @@ export function NavNotes({ notes }: { notes: SidebarNav["notes"] }) {
                     <span>{note.name ?? "Untitled"}</span>
                   </Link>
                 </SidebarMenuButton>
+                <NoteActions note={note} />
               </SidebarMenuItem>
             ))
           ) : notes.isLoading ? (

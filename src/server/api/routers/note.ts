@@ -169,16 +169,14 @@ export const notesRouter = createTRPCRouter({
       z.object({
         id: z.string(),
         title: z.string().max(20).optional(),
-        private: z.boolean().optional()
+        private: z.boolean().optional(),
+        isPinned: z.boolean().optional()
       })
     )
     .mutation(async ({ ctx, input }) => {
       const result = await ctx.db
         .update(notes)
-        .set({
-          title: input.title,
-          private: input.private
-        })
+        .set(input)
         .where(eq(notes.id, input.id))
         .returning()
         .then(r => r[0]!)
@@ -188,6 +186,24 @@ export const notesRouter = createTRPCRouter({
       kv.del(`${cacheKeys.all}:${result.projectId}`)
       kv.set(key, result)
       kv.expire(key, 3200)
+
+      return result
+    }),
+  delete: protectedProcedure
+    .input(
+      z.object({
+        id: z.string()
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const result = await ctx.db
+        .delete(notes)
+        .where(eq(notes.id, input.id))
+        .returning()
+        .then(r => r[0]!)
+
+      kv.del(`${cacheKeys.all}:${result.projectId}`)
+      kv.del(`${cacheKeys.one}:${result.id}`)
 
       return result
     })

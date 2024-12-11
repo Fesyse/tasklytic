@@ -1,0 +1,177 @@
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu"
+import { LoadingSpinner } from "@/components/ui/loading-spinner"
+import { SidebarMenuAction } from "@/components/ui/sidebar"
+import { useIsMobile } from "@/hooks/use-mobile"
+import { SidebarNav } from "@/lib/menu-list"
+import { api } from "@/trpc/react"
+import {
+  Eye,
+  EyeOff,
+  FilePlus2,
+  LinkIcon,
+  MoreHorizontal,
+  Pin,
+  PinOff,
+  Trash2
+} from "lucide-react"
+import { useParams, useRouter } from "next/navigation"
+import { useCallback, type FC } from "react"
+import { toast } from "sonner"
+
+type NoteActionsProps = {
+  note: NonNullable<SidebarNav["notes"]["items"]>[number]
+}
+
+export const NoteActions: FC<NoteActionsProps> = ({ note }) => {
+  const utils = api.useUtils()
+  const isMobile = useIsMobile()
+  const router = useRouter()
+  const { projectId } = useParams<{ projectId: string }>()
+
+  const { mutate: deleteNote, isPending: isNoteDeleting } =
+    api.notes.delete.useMutation({
+      onSuccess: async note => {
+        utils.notes.getAll.invalidate()
+        toast.success(`Successfully deleted note!`)
+      },
+      onError: () => toast.error("An error occurred deleting note! Try again.")
+    })
+  const { mutate: updateNote, isPending: isNoteUpdating } =
+    api.notes.update.useMutation({
+      onSuccess: async note => {
+        utils.notes.getAll.invalidate()
+        router.push(`/projects/${projectId}/note/${note.id}`)
+      },
+      onError: () => toast.error("An error occurred updating note! Try again.")
+    })
+
+  const togglePinned = useCallback(() => {
+    updateNote(
+      { id: note.id, isPinned: !note.isPinned },
+      {
+        onSuccess: () => {
+          toast.success(`Successfully ${note.private ? "" : "un"}pinned note!`)
+        }
+      }
+    )
+  }, [])
+  const togglePrivate = useCallback(() => {
+    updateNote(
+      { id: note.id, private: !note.private },
+      {
+        onSuccess: () => {
+          toast.success(
+            `Successfully ${note.private ? "" : "un"}made note private!`
+          )
+        }
+      }
+    )
+  }, [])
+
+  const copyLink = useCallback(() => {
+    navigator.clipboard.writeText(note.href)
+    toast.success("Note link copied to clipboard!")
+  }, [])
+  const openInNewTab = useCallback(() => {
+    window.open(note.href, "_blank")
+    toast.success("Note opened in new tab!")
+  }, [])
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <SidebarMenuAction showOnHover>
+          <MoreHorizontal />
+          <span className="sr-only">More</span>
+        </SidebarMenuAction>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        className="w-44 rounded-lg"
+        side={isMobile ? "bottom" : "right"}
+        align={isMobile ? "end" : "start"}
+      >
+        <DropdownMenuItem className="gap-2" onClick={openInNewTab}>
+          <FilePlus2 size={16} />
+          <span>Open in New Tab</span>
+        </DropdownMenuItem>
+
+        <DropdownMenuItem className="gap-2" onClick={copyLink}>
+          <LinkIcon size={16} />
+          <span>Copy Link</span>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem className="gap-2" onClick={togglePrivate}>
+          {isNoteUpdating ? (
+            <LoadingSpinner size={16} />
+          ) : note.private ? (
+            <Eye size={16} />
+          ) : (
+            <EyeOff size={16} />
+          )}
+          <span>{note.private ? "Make Public" : "Make Private"}</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem className="gap-2" onClick={togglePinned}>
+          {isNoteUpdating ? (
+            <LoadingSpinner size={16} />
+          ) : note.isPinned ? (
+            <Pin className="text-muted-foreground" size={16} />
+          ) : (
+            <PinOff className="text-muted-foreground" size={16} />
+          )}
+          <span>{note.isPinned ? "Unpin" : "Pin"}</span>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                className="w-full justify-start gap-2 px-2 py-1.5"
+                variant="destructive"
+              >
+                {isNoteDeleting ? (
+                  <LoadingSpinner size={16} />
+                ) : (
+                  <Trash2 size={16} />
+                )}
+                <span>Delete</span>
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete
+                  your note and remove it from our servers.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={() => deleteNote({ id: note.id })}>
+                  Continue
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
