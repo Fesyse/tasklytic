@@ -18,7 +18,6 @@ import {
 } from "@/components/ui/tooltip"
 import { SidebarNav } from "@/lib/menu-list"
 import { api } from "@/trpc/react"
-import { DotsHorizontalIcon } from "@radix-ui/react-icons"
 import { FileUp, Plus } from "lucide-react"
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
@@ -88,12 +87,6 @@ export function NavNotes({ notes }: { notes: SidebarNav["notes"] }) {
               </span>
             </SidebarMenuItem>
           )}
-          <SidebarMenuItem>
-            <SidebarMenuButton className="text-sidebar-foreground/70">
-              <DotsHorizontalIcon />
-              <span>More</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>

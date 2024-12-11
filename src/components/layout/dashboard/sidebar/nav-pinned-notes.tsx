@@ -12,7 +12,6 @@ import {
   useSidebar
 } from "@/components/ui/sidebar"
 import { SidebarNav } from "@/lib/menu-list"
-import { DotsHorizontalIcon } from "@radix-ui/react-icons"
 import Link from "next/link"
 import { NoteActions } from "./note-actions"
 
@@ -60,12 +59,6 @@ export function NavPinnedNotes({
             </span>
           </SidebarMenuItem>
         )}
-        <SidebarMenuItem>
-          <SidebarMenuButton className="text-sidebar-foreground/70">
-            <DotsHorizontalIcon />
-            <span>More</span>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
       </SidebarMenu>
     </SidebarGroup>
   )
