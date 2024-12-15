@@ -122,7 +122,12 @@ export function useSidebarNav(): SidebarNav {
         return {
           id: note.id,
           name: note.title,
-          emoji: () => <FileIcon size={18} />,
+          emoji: () =>
+            note.emoji ? (
+              <span className="text-lg">{note.emoji}</span>
+            ) : (
+              <FileIcon size={18} />
+            ),
           href,
           private: note.private,
           isPinned: note.isPinned,
@@ -137,7 +142,12 @@ export function useSidebarNav(): SidebarNav {
         return {
           id: note.id,
           name: note.title,
-          emoji: () => <FileIcon size={18} />,
+          emoji: () =>
+            note.emoji ? (
+              <span className="text-lg">{note.emoji}</span>
+            ) : (
+              <FileIcon size={18} />
+            ),
           href,
           private: note.private,
           isPinned: note.isPinned,
