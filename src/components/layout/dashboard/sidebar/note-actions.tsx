@@ -33,7 +33,7 @@ import {
   Trash2
 } from "lucide-react"
 import { useParams, useRouter } from "next/navigation"
-import { useCallback, type FC } from "react"
+import { type FC } from "react"
 import { toast } from "sonner"
 
 type NoteActionsProps = {
@@ -63,7 +63,7 @@ export const NoteActions: FC<NoteActionsProps> = ({ note }) => {
       onError: () => toast.error("An error occurred updating note! Try again.")
     })
 
-  const togglePinned = useCallback(() => {
+  const togglePinned = () => {
     updateNote(
       { id: note.id, isPinned: !note.isPinned },
       {
@@ -72,8 +72,8 @@ export const NoteActions: FC<NoteActionsProps> = ({ note }) => {
         }
       }
     )
-  }, [])
-  const togglePrivate = useCallback(() => {
+  }
+  const togglePrivate = () => {
     updateNote(
       { id: note.id, private: !note.private },
       {
@@ -84,16 +84,16 @@ export const NoteActions: FC<NoteActionsProps> = ({ note }) => {
         }
       }
     )
-  }, [])
+  }
 
-  const copyLink = useCallback(() => {
+  const copyLink = () => {
     navigator.clipboard.writeText(note.href)
     toast.success("Note link copied to clipboard!")
-  }, [])
-  const openInNewTab = useCallback(() => {
+  }
+  const openInNewTab = () => {
     window.open(note.href, "_blank")
     toast.success("Note opened in new tab!")
-  }, [])
+  }
 
   return (
     <DropdownMenu>

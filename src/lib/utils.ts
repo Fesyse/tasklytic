@@ -32,14 +32,18 @@ function isCuid(string: string) {
 
 type ClipboardOptions = {
   toast?: boolean
+  toastText?: string
+  toastErrorText?: string
 }
 
 async function copyToClipboard(text: string, options?: ClipboardOptions) {
   try {
     await navigator.clipboard.writeText(text)
-    if (options?.toast) toast.success("Copied to clipboard")
+    if (options?.toast)
+      toast.success(options?.toastText ?? "Copied to clipboard")
   } catch {
-    if (options?.toast) toast.error("Failed to copy to clipboard")
+    if (options?.toast)
+      toast.error(options?.toastErrorText ?? "Failed to copy to clipboard")
   }
 }
 
@@ -47,10 +51,22 @@ function openInNewTab(url: string) {
   window.open(url, "_blank")
 }
 
+function exportFile(text: string | Blob, fileName: string) {
+  const element = document.createElement("a")
+  const file = new Blob([text], { type: "text/plain" })
+  element.href = URL.createObjectURL(file)
+  element.download = fileName
+  document.body.appendChild(element) // Required for this to work in FireFox
+  element.click()
+
+  element.remove()
+}
+
 export {
   checkIsSubscriptionExpired,
   cn,
   copyToClipboard,
+  exportFile,
   isCuid,
   openInNewTab,
   random,
