@@ -17,6 +17,7 @@ import {
   TooltipTrigger
 } from "@/components/ui/tooltip"
 import { SidebarNav } from "@/lib/menu-list"
+import { importFile } from "@/lib/utils"
 import { api } from "@/trpc/react"
 import { FileUp, Plus } from "lucide-react"
 import Link from "next/link"
@@ -39,6 +40,18 @@ export function NavNotes({ notes }: { notes: SidebarNav["notes"] }) {
       onError: () => toast.error("An error occurred creating note! Try again.")
     })
 
+  const importNote = () => {
+    importFile(async reader => {
+      try {
+        const content = JSON.parse(reader.result as string)
+
+        createNote({ projectId, content })
+      } catch {
+        toast.error("Failed to import note! File is probably corrupted.")
+      }
+    })
+  }
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Notes</SidebarGroupLabel>
@@ -51,9 +64,9 @@ export function NavNotes({ notes }: { notes: SidebarNav["notes"] }) {
             </SidebarGroupAction>
           </TooltipTrigger>
           <TooltipContent className="px-2 py-1" side="right" asChild>
-            <Button className="gap-1.5">
+            <Button onClick={importNote} className="gap-1.5">
               <FileUp size={16} /> Import from{" "}
-              <span className="italic">.taly</span> file
+              <span className="italic">.json.taly</span> file
             </Button>
           </TooltipContent>
         </Tooltip>

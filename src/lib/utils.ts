@@ -51,6 +51,22 @@ function openInNewTab(url: string) {
   window.open(url, "_blank")
 }
 
+function importFile(onLoad: (reader: FileReader) => void) {
+  const input = document.createElement("input")
+  input.type = "file"
+  input.accept = ".taly"
+
+  input.onchange = async () => {
+    const file = input.files?.[0]
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = () => onLoad(reader)
+    reader.readAsText(file)
+  }
+  input.click()
+}
+
 function exportFile(text: string | Blob, fileName: string) {
   const element = document.createElement("a")
   const file = new Blob([text], { type: "text/plain" })
@@ -67,6 +83,7 @@ export {
   cn,
   copyToClipboard,
   exportFile,
+  importFile,
   isCuid,
   openInNewTab,
   random,

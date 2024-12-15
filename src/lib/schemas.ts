@@ -42,7 +42,16 @@ const updateProjectSchema = z.object({
 })
 type UpdateProjectSchema = z.infer<typeof updateProjectSchema>
 
+const blockContent = z.array(
+  z.object({
+    id: z.string(),
+    children: z.array(z.any()),
+    type: z.string()
+  })
+)
+
 export {
+  blockContent,
   createProjectSchema,
   settingsSchema,
   updateProjectSchema,

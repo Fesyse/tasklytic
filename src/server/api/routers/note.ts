@@ -1,6 +1,7 @@
+import { blockContent } from "@/lib/schemas"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { kv } from "@/server/cache"
-import { notes, type Note } from "@/server/db/schema"
+import { blocks, createCuid, notes, type Note } from "@/server/db/schema"
 import { eq, or } from "drizzle-orm"
 import { z } from "zod"
 
@@ -145,7 +146,8 @@ export const notesRouter = createTRPCRouter({
   create: protectedProcedure
     .input(
       z.object({
-        projectId: z.string()
+        projectId: z.string(),
+        content: blockContent.optional()
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -159,6 +161,28 @@ export const notesRouter = createTRPCRouter({
         })
         .returning()
         .then(r => r[0]!)
+
+      if (input.content) {
+        ctx.db.transaction(async trx => {
+          for (let i = 0; i < input.content!.length; i++) {
+            const block = input.content![i]!
+
+            console.log(block)
+
+            await trx
+              .insert(blocks)
+              .values({
+                id: createCuid(),
+                content: block,
+                noteId: result.id,
+                projectId: input.projectId,
+                order: i
+              })
+              .returning()
+              .then(r => r[0]!)
+          }
+        })
+      }
 
       kv.del(`${cacheKeys.all}:${input.projectId}`)
 

@@ -35,7 +35,12 @@ import {
   SidebarMenuItem
 } from "@/components/ui/sidebar"
 import { Skeleton } from "@/components/ui/skeleton"
-import { copyToClipboard, exportFile, openInNewTab } from "@/lib/utils"
+import {
+  copyToClipboard,
+  exportFile,
+  importFile,
+  openInNewTab
+} from "@/lib/utils"
 import { api } from "@/trpc/react"
 import { DotsHorizontalIcon } from "@radix-ui/react-icons"
 import { useEditorRef } from "@udecode/plate-common/react"
@@ -60,6 +65,18 @@ export function NavActions() {
 
     exportFile(JSON.stringify(content), fileName)
     toast.success(`Note successfully exported as ${fileName}!`)
+  }
+  const importContent = () => {
+    importFile(async reader => {
+      try {
+        const content = JSON.parse(reader.result as string)
+        editor.insertNodes(content)
+
+        toast.success("Note successfully imported!")
+      } catch {
+        toast.error("Failed to import note! File is probably corrupted.")
+      }
+    })
   }
 
   const data = useMemo(() => {
@@ -127,7 +144,8 @@ export function NavActions() {
       [
         {
           label: "Import",
-          icon: ArrowUp
+          icon: ArrowUp,
+          action: importContent
         },
         {
           label: "Export",
