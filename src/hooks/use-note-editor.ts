@@ -1,4 +1,5 @@
 import { useCreateEditor } from "@/components/editor/use-create-editor"
+import { useNoteEditorState } from "@/components/providers/note-editor-state-provider"
 import { type Block } from "@/server/db/schema"
 import { api } from "@/trpc/react"
 import type { ArgumentTypes } from "@/types/utils"
@@ -54,20 +55,32 @@ const getIdFromOperation = (
 }
 
 export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
+  const { setState } = useNoteEditorState(s => s)
+
   const { projectId, noteId } = useParams<{
     projectId: string
     noteId: string
   }>()
+
+  const setSavedOnSuccess = useCallback(() => setState({ saved: true }), [])
+
   const { mutate: updateOrCreateBlock } =
-    api.blocks.updateOrCreateBlock.useMutation()
-  const { mutate: updateBlockOrder } = api.blocks.updateOrder.useMutation()
-  const { mutate: deleteBlocks } = api.blocks.deleteMany.useMutation()
+    api.blocks.updateOrCreateBlock.useMutation({
+      onSuccess: setSavedOnSuccess
+    })
+  const { mutate: updateBlockOrder } = api.blocks.updateOrder.useMutation({
+    onSuccess: setSavedOnSuccess
+  })
+  const { mutate: deleteBlocks } = api.blocks.deleteMany.useMutation({
+    onSuccess: setSavedOnSuccess
+  })
 
   const editor = useCreateEditor(blocks.map(b => b.content!))
   /* Dont use currentBlock outside of a operation handlers! */
   const [currentBlock, setCurrentBlock] = useState<TElement | undefined>(
     editor.children[0]
   )
+
   const [deletingBlockIds, setDeletingBlockIds] = useState<string[]>([])
   const [_updatingBlockIds, setUpdatingBlockIds] = useState<string[]>([])
 
@@ -134,6 +147,7 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
           operation,
           updatingBlockIds: newUpdatingBlockIds
         })
+
         return newUpdatingBlockIds
       })
     },
@@ -223,7 +237,7 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
       editor,
       value
     }: Omit<HandleChangeOptions, "operation" | "currentBlock">) => {
-      console.log(value)
+      setState({ saved: false })
       for (const operation of editor.operations) {
         const handler = handlers[operation.type]
 

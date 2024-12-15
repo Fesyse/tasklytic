@@ -4,6 +4,7 @@ import {
   ArrowDown,
   ArrowUp,
   Bell,
+  Check,
   Copy,
   CornerUpLeft,
   CornerUpRight,
@@ -11,11 +12,13 @@ import {
   GalleryVerticalEnd,
   LineChart,
   Link,
+  PenLine,
   Settings2,
   Trash,
   Trash2
 } from "lucide-react"
 
+import { useNoteEditorState } from "@/components/providers/note-editor-state-provider"
 import { Button } from "@/components/ui/button"
 import {
   Popover,
@@ -102,19 +105,31 @@ const data = [
 ]
 
 export function NavActions() {
+  const { saved } = useNoteEditorState(s => s)
   const { noteId } = useParams<{ id: string; noteId: string }>()
   const { data: note, isLoading } = api.notes.getById.useQuery({ id: noteId })
   const [isOpen, setIsOpen] = useState(false)
 
   return (
     <div className="flex items-center gap-2 text-sm">
-      <div className="hidden font-medium text-muted-foreground md:inline-flex md:items-center md:gap-2">
-        Edited{" "}
-        {isLoading || !note ? (
-          <Skeleton className="h-5 w-14" />
-        ) : (
-          format(note.updatedAt ?? new Date(), "HH:mm do MMM")
-        )}
+      <div className="hidden select-none font-medium text-muted-foreground md:inline-flex md:items-center md:gap-2">
+        <span className="flex items-center gap-1">
+          {saved ? "Saved" : "Not saved"}
+          {saved ? (
+            <Check size={14} className="text-muted-foreground" />
+          ) : (
+            <PenLine size={14} className="text-muted-foreground" />
+          )}
+        </span>
+        |
+        <span className="flex items-center gap-1">
+          Edited{" "}
+          {isLoading || !note ? (
+            <Skeleton className="h-5 w-14" />
+          ) : (
+            format(note.updatedAt ?? new Date(), "HH:mm do MMM")
+          )}
+        </span>
       </div>
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
