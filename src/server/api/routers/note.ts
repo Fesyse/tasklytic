@@ -170,7 +170,8 @@ export const notesRouter = createTRPCRouter({
         id: z.string(),
         title: z.string().max(20).optional(),
         private: z.boolean().optional(),
-        isPinned: z.boolean().optional()
+        isPinned: z.boolean().optional(),
+        emoji: z.string().optional()
       })
     )
     .mutation(async ({ ctx, input }) => {

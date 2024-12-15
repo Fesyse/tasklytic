@@ -1,12 +1,7 @@
 "use client"
 
-import { LayoutGrid, LogIn, LogOut, Settings } from "lucide-react"
-import { signIn, signOut, useSession } from "next-auth/react"
-import Image from "next/image"
-import Link from "next/link"
-import { toast } from "sonner"
 import { ThemeToggle } from "@/components/theme-toggle"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -25,6 +20,10 @@ import {
   TooltipTrigger
 } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
+import { LayoutGrid, LogIn, LogOut, Settings } from "lucide-react"
+import { signIn, signOut, useSession } from "next-auth/react"
+import Link from "next/link"
+import { toast } from "sonner"
 
 type UserNavProps = {
   className?: string
@@ -51,7 +50,7 @@ export function UserNav({ className }: UserNavProps) {
                 className={cn("relative h-8 w-8 rounded-full", className)}
               >
                 <Avatar className="h-8 w-8">
-                  <Image
+                  <AvatarImage
                     className={cn("h-full w-full", {
                       "dark:invert": !user?.image
                     })}

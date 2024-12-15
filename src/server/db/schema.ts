@@ -144,6 +144,7 @@ export const notes = createTable("notes", {
   title: varchar("title", { length: 255 })
     .notNull()
     .$defaultFn(() => "Untitled"),
+  emoji: varchar("emoji", { length: 255 }),
   private: boolean("private")
     .notNull()
     .$defaultFn(() => false),
