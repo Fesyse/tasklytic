@@ -1,5 +1,5 @@
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/components/app-sidebar"
+import { AppSidebar } from "@/components/layout/dashboard/sidebar"
 
 type DashboardLayoutProps = React.PropsWithChildren<{
   params: Promise<{ id: string; noteId?: string }>
