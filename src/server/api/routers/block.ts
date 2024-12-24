@@ -2,7 +2,7 @@ import { and, eq, inArray } from "drizzle-orm"
 import { z } from "zod"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { kv } from "@/server/cache"
-import { blocks } from "@/server/db/schema"
+import { type Block, blocks } from "@/server/db/schema"
 
 const cacheKeys = {
   all: `projects:notes:blocks:all`,
@@ -17,8 +17,8 @@ export const blocksRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      // const cached = await kv.get(`${cacheKeys.all}:${input.noteId}`)
-      // if (cached) return cached as Block[]
+      const cached = await kv.get(`${cacheKeys.all}:${input.noteId}`)
+      if (cached) return cached as Block[]
 
       const blocks = await ctx.db.query.blocks.findMany({
         where: (blocksTable, { and, eq }) =>
@@ -70,7 +70,7 @@ export const blocksRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      ctx.db.transaction(async trx => {
+      await ctx.db.transaction(async trx => {
         for (const updatingBlock of input.blocks) {
           const block = await ctx.db.query.blocks.findFirst({
             where: (blocksTable, { eq }) => eq(blocksTable.id, updatingBlock.id)

@@ -1,11 +1,12 @@
+import { NextConfig } from "next"
+import "./src/env"
+
 /**
  * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful
  * for Docker builds.
  */
-await import("./src/env.js")
 
-/** @type {import("next").NextConfig} */
-const config = {
+const config: NextConfig = {
   transpilePackages: ["lucide-react"],
   // redirects: async () => [
   // {
@@ -14,6 +15,7 @@ const config = {
   //   permanent: true
   // }
   // ],
+
   images: {
     remotePatterns: [
       {
@@ -35,7 +37,8 @@ const config = {
     ]
   },
   experimental: {
-    reactCompiler: false
+    ppr: true,
+    dynamicIO: true
   }
 }
 
