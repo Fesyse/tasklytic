@@ -35,10 +35,6 @@ const config: NextConfig = {
         pathname: "/f/*"
       }
     ]
-  },
-  experimental: {
-    ppr: true,
-    dynamicIO: true
   }
 }
 

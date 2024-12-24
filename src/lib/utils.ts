@@ -87,7 +87,10 @@ function isNotePage(pathname: string) {
   const noteId = splittedPathname[3]
 
   return (
-    projectPath === "projects" && projectId && notePath === "note" && noteId
+    projectPath === "projects" &&
+    isCuid(projectId ?? "") &&
+    notePath === "note" &&
+    isCuid(noteId ?? "")
   )
 }
 

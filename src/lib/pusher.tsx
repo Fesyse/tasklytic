@@ -73,13 +73,10 @@ export const PusherContext = createContext<PusherStore | null>(null)
  * This provider is the thing you mount in the app to "give access to Pusher"
  *
  */
-type PusherProviderProps = React.PropsWithChildren<PusherProps>
+type PusherProviderProps = React.PropsWithChildren<Omit<PusherProps, "session">>
 
-export const PusherProvider = ({
-  slug,
-  session,
-  children
-}: PusherProviderProps) => {
+export const PusherProvider = ({ slug, children }: PusherProviderProps) => {
+  const session = useSession()
   const [store, setStore] = useState<PusherStore>()
 
   useEffect(() => {

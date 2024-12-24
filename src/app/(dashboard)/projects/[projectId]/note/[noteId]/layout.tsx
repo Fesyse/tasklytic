@@ -9,8 +9,6 @@ type LayoutProps = React.PropsWithChildren<{
 }>
 
 export default async function Layout({ params, children }: LayoutProps) {
-  "use cache"
-
   const { noteId } = await params
   const blocks = (await api.blocks.getAll({ noteId })).sort(
     (a, b) => a.order - b.order
