@@ -1,4 +1,3 @@
-import { PROJECT_PLANS, TASK_STATUS } from "@/lib/constants"
 import { init } from "@paralleldrive/cuid2"
 import { TElement } from "@udecode/plate-common"
 import { relations, sql } from "drizzle-orm"
@@ -14,6 +13,7 @@ import {
   varchar
 } from "drizzle-orm/pg-core"
 import { type AdapterAccount } from "next-auth/adapters"
+import { PROJECT_PLANS, TASK_STATUS } from "@/lib/constants"
 
 export const createCuid = init({
   fingerprint: "tasklytic",

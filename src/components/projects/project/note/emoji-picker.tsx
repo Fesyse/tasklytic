@@ -1,13 +1,13 @@
 "use client"
 
-import { Skeleton } from "@/components/ui/skeleton"
-import { usePrevious } from "@/hooks/use-previous"
-import { api } from "@/trpc/react"
 import { Emoji } from "@udecode/plate-emoji"
 import { SmilePlus, SquarePen } from "lucide-react"
 import dynamic from "next/dynamic"
 import { Suspense, useCallback, useEffect, useState, type FC } from "react"
 import { toast } from "sonner"
+import { Skeleton } from "@/components/ui/skeleton"
+import { usePrevious } from "@/hooks/use-previous"
+import { api } from "@/trpc/react"
 
 type NoteEmojiPickerProps = { noteId: string }
 

@@ -2,11 +2,10 @@
 
 import { type ReactNode, createContext, useContext, useRef } from "react"
 import { useStore } from "zustand"
-
 import {
   type NoteEditorStore,
   createNoteEditorStateStore
-} from "@/stores/note-editor-state.store"
+} from "@/lib/stores/note-editor-state.store"
 
 export type NoteEditorStateApi = ReturnType<typeof createNoteEditorStateStore>
 

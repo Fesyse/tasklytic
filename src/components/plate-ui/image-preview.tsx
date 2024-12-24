@@ -1,37 +1,37 @@
-'use client';
+"use client"
 
-import { cn, createPrimitiveComponent } from '@udecode/cn';
+import { cn, createPrimitiveComponent } from "@udecode/cn"
 import {
   PreviewImage,
   useImagePreview,
   useImagePreviewState,
   useScaleInput,
-  useScaleInputState,
-} from '@udecode/plate-media/react';
-import { cva } from 'class-variance-authority';
-import { ArrowLeft, ArrowRight, Download, Minus, Plus, X } from 'lucide-react';
+  useScaleInputState
+} from "@udecode/plate-media/react"
+import { cva } from "class-variance-authority"
+import { ArrowLeft, ArrowRight, Download, Minus, Plus, X } from "lucide-react"
 
-const toolButtonVariants = cva('rounded bg-[rgba(0,0,0,0.5)] px-1', {
+const toolButtonVariants = cva("rounded bg-[rgba(0,0,0,0.5)] px-1", {
   defaultVariants: {
-    variant: 'default',
+    variant: "default"
   },
   variants: {
     variant: {
-      default: 'text-white',
-      disabled: 'cursor-not-allowed text-gray-400',
-    },
-  },
-});
+      default: "text-white",
+      disabled: "cursor-not-allowed text-gray-400"
+    }
+  }
+})
 
-const ScaleInput = createPrimitiveComponent('input')({
+const ScaleInput = createPrimitiveComponent("input")({
   propsHook: useScaleInput,
-  stateHook: useScaleInputState,
-});
+  stateHook: useScaleInputState
+})
 
-const SCROLL_SPEED = 4;
+const SCROLL_SPEED = 4
 
 export const ImagePreview = () => {
-  const state = useImagePreviewState({ scrollSpeed: SCROLL_SPEED });
+  const state = useImagePreviewState({ scrollSpeed: SCROLL_SPEED })
 
   const {
     closeProps,
@@ -45,16 +45,16 @@ export const ImagePreview = () => {
     zommOutProps,
     zoomInDisabled,
     zoomInProps,
-    zoomOutDisabled,
-  } = useImagePreview(state);
+    zoomOutDisabled
+  } = useImagePreview(state)
 
-  const { isOpen, scale } = state;
+  const { isOpen, scale } = state
 
   return (
     <div
       className={cn(
-        'fixed left-0 top-0 z-50 h-screen w-screen',
-        !isOpen && 'hidden'
+        "fixed left-0 top-0 z-50 h-screen w-screen",
+        !isOpen && "hidden"
       )}
       {...maskLayerProps}
     >
@@ -64,19 +64,19 @@ export const ImagePreview = () => {
         <div className="relative flex max-h-screen w-full items-center">
           <PreviewImage
             className={cn(
-              'mx-auto block max-h-[calc(100vh-4rem)] w-auto object-contain transition-transform'
+              "mx-auto block max-h-[calc(100vh-4rem)] w-auto object-contain transition-transform"
             )}
           />
           <div
             className="absolute bottom-0 left-1/2 z-40 flex w-fit -translate-x-1/2 justify-center gap-4 p-2 text-center text-white"
-            onClick={(e) => e.stopPropagation()}
+            onClick={e => e.stopPropagation()}
           >
             <div className="flex gap-1">
               <button
                 {...prevProps}
                 className={cn(
                   toolButtonVariants({
-                    variant: prevDisabled ? 'disabled' : 'default',
+                    variant: prevDisabled ? "disabled" : "default"
                   })
                 )}
                 type="button"
@@ -88,7 +88,7 @@ export const ImagePreview = () => {
                 {...nextProps}
                 className={cn(
                   toolButtonVariants({
-                    variant: nextDisabled ? 'disabled' : 'default',
+                    variant: nextDisabled ? "disabled" : "default"
                   })
                 )}
                 type="button"
@@ -100,7 +100,7 @@ export const ImagePreview = () => {
               <button
                 className={cn(
                   toolButtonVariants({
-                    variant: zoomOutDisabled ? 'disabled' : 'default',
+                    variant: zoomOutDisabled ? "disabled" : "default"
                   })
                 )}
                 {...zommOutProps}
@@ -111,17 +111,17 @@ export const ImagePreview = () => {
               <div className="mx-px">
                 {state.isEditingScale ? (
                   <>
-                    <ScaleInput className="w-10 rounded px-1 text-slate-500 outline" />{' '}
+                    <ScaleInput className="w-10 rounded px-1 text-slate-500 outline" />{" "}
                     <span>%</span>
                   </>
                 ) : (
-                  <span {...scaleTextProps}>{scale * 100 + '%'}</span>
+                  <span {...scaleTextProps}>{scale * 100 + "%"}</span>
                 )}
               </div>
               <button
                 className={cn(
                   toolButtonVariants({
-                    variant: zoomInDisabled ? 'disabled' : 'default',
+                    variant: zoomInDisabled ? "disabled" : "default"
                   })
                 )}
                 {...zoomInProps}
@@ -145,5 +145,5 @@ export const ImagePreview = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

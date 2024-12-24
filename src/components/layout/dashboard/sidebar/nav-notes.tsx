@@ -1,3 +1,7 @@
+import { FileUp, Plus } from "lucide-react"
+import Link from "next/link"
+import { useParams, useRouter } from "next/navigation"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import {
@@ -16,14 +20,10 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "@/components/ui/tooltip"
-import { SidebarNav } from "@/lib/menu-list"
 import { importFile } from "@/lib/utils"
-import { api } from "@/trpc/react"
-import { FileUp, Plus } from "lucide-react"
-import Link from "next/link"
-import { useParams, useRouter } from "next/navigation"
-import { toast } from "sonner"
 import { NoteActions } from "./note-actions"
+import { SidebarNav } from "@/lib/menu-list"
+import { api } from "@/trpc/react"
 
 export function NavNotes({ notes }: { notes: SidebarNav["notes"] }) {
   const { projectId } = useParams<{ projectId: string }>()

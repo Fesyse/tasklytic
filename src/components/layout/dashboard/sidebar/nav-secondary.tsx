@@ -1,5 +1,5 @@
+import Link from "next/link"
 import React from "react"
-
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -8,7 +8,6 @@ import {
   SidebarMenuItem
 } from "@/components/ui/sidebar"
 import { SidebarNav } from "@/lib/menu-list"
-import Link from "next/link"
 
 export function NavSecondary({
   items,

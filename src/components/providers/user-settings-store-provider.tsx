@@ -1,11 +1,11 @@
 "use client"
 
+import { createContext, useContext, useRef } from "react"
+import { useStore } from "zustand"
 import {
   type UserSettingsStore,
   createUserSettingsStore
-} from "@/stores/user-settings.store"
-import { createContext, useContext, useRef } from "react"
-import { useStore } from "zustand"
+} from "@/lib/stores/user-settings.store"
 
 export type UserSettingsStoreApi = ReturnType<typeof createUserSettingsStore>
 

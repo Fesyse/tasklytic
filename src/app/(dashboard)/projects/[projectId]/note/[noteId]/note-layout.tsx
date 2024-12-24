@@ -1,9 +1,8 @@
 "use client"
 
-import { DashboardBreadcrumbPage } from "@/components/layout/dashboard/breadcrumb-page"
-import { NavActions } from "@/components/layout/dashboard/nav-actions"
-import { FixedToolbar } from "@/components/plate-ui/fixed-toolbar"
-import { FixedToolbarButtons } from "@/components/plate-ui/fixed-toolbar-buttons"
+import { Plate } from "@udecode/plate-common/react"
+import { DndProvider } from "react-dnd"
+import { HTML5Backend } from "react-dnd-html5-backend"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -11,11 +10,12 @@ import {
 } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
+import { DashboardBreadcrumbPage } from "@/components/layout/dashboard/breadcrumb-page"
+import { NavActions } from "@/components/layout/dashboard/nav-actions"
+import { FixedToolbar } from "@/components/plate-ui/fixed-toolbar"
+import { FixedToolbarButtons } from "@/components/plate-ui/fixed-toolbar-buttons"
 import { useNoteEditor } from "@/hooks/use-note-editor"
 import { Block } from "@/server/db/schema"
-import { Plate } from "@udecode/plate-common/react"
-import { DndProvider } from "react-dnd"
-import { HTML5Backend } from "react-dnd-html5-backend"
 
 type NoteLayoutProps = React.PropsWithChildren<{
   blocks: Block[]

@@ -1,16 +1,16 @@
 "use client"
 
-import { NavMain } from "@/components/layout/dashboard/sidebar/nav-main"
-import { NavNotes } from "@/components/layout/dashboard/sidebar/nav-notes"
-import { NavPinnedNotes } from "@/components/layout/dashboard/sidebar/nav-pinned-notes"
-import { NavSecondary } from "@/components/layout/dashboard/sidebar/nav-secondary"
-import { ProjectSwitcher } from "@/components/layout/dashboard/sidebar/project-switcher"
 import {
   Sidebar,
   SidebarContent,
   SidebarHeader,
   SidebarRail
 } from "@/components/ui/sidebar"
+import { NavMain } from "@/components/layout/dashboard/sidebar/nav-main"
+import { NavNotes } from "@/components/layout/dashboard/sidebar/nav-notes"
+import { NavPinnedNotes } from "@/components/layout/dashboard/sidebar/nav-pinned-notes"
+import { NavSecondary } from "@/components/layout/dashboard/sidebar/nav-secondary"
+import { ProjectSwitcher } from "@/components/layout/dashboard/sidebar/project-switcher"
 import { useSidebarNav } from "@/lib/menu-list"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {

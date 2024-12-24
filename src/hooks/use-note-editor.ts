@@ -1,8 +1,3 @@
-import { useCreateEditor } from "@/components/editor/use-create-editor"
-import { useNoteEditorState } from "@/components/providers/note-editor-state-provider"
-import { type Block } from "@/server/db/schema"
-import { api } from "@/trpc/react"
-import type { ArgumentTypes } from "@/types/utils"
 import type {
   TElement,
   TOperation,
@@ -12,6 +7,11 @@ import type { PlateStoreState } from "@udecode/plate-common/react"
 import debounce from "lodash.debounce"
 import { useParams } from "next/navigation"
 import { useCallback, useMemo, useState } from "react"
+import { useCreateEditor } from "@/components/editor/use-create-editor"
+import { useNoteEditorState } from "@/components/providers/note-editor-state-provider"
+import type { ArgumentTypes } from "@/types/utils"
+import { type Block } from "@/server/db/schema"
+import { api } from "@/trpc/react"
 
 type UseNoteEditorProps = {
   blocks: Block[]

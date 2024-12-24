@@ -1,9 +1,9 @@
+import { eq, or } from "drizzle-orm"
+import { z } from "zod"
 import { blockContent } from "@/lib/schemas"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { kv } from "@/server/cache"
 import { blocks, createCuid, notes, type Note } from "@/server/db/schema"
-import { eq, or } from "drizzle-orm"
-import { z } from "zod"
 
 const cacheKeys = {
   all: `projects:notes:all`,

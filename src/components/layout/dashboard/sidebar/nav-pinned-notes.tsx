@@ -1,7 +1,7 @@
 "use client"
 
 import { Pin } from "lucide-react"
-
+import Link from "next/link"
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -11,9 +11,8 @@ import {
   SidebarMenuSkeleton,
   useSidebar
 } from "@/components/ui/sidebar"
-import { SidebarNav } from "@/lib/menu-list"
-import Link from "next/link"
 import { NoteActions } from "./note-actions"
+import { SidebarNav } from "@/lib/menu-list"
 
 export function NavPinnedNotes({
   pinnedNotes

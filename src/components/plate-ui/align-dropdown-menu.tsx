@@ -1,7 +1,6 @@
 "use client"
 
 import type { DropdownMenuProps } from "@radix-ui/react-dropdown-menu"
-
 import {
   useAlignDropdownMenu,
   useAlignDropdownMenuState
@@ -12,7 +11,6 @@ import {
   AlignLeftIcon,
   AlignRightIcon
 } from "lucide-react"
-
 import {
   DropdownMenu,
   DropdownMenuContent,

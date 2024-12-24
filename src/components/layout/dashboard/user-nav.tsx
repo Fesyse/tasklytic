@@ -1,6 +1,9 @@
 "use client"
 
-import { ThemeToggle } from "@/components/theme-toggle"
+import { LayoutGrid, LogIn, LogOut, Settings } from "lucide-react"
+import { signIn, signOut, useSession } from "next-auth/react"
+import Link from "next/link"
+import { toast } from "sonner"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -19,11 +22,8 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "@/components/ui/tooltip"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { cn } from "@/lib/utils"
-import { LayoutGrid, LogIn, LogOut, Settings } from "lucide-react"
-import { signIn, signOut, useSession } from "next-auth/react"
-import Link from "next/link"
-import { toast } from "sonner"
 
 type UserNavProps = {
   className?: string

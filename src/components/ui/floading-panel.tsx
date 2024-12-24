@@ -15,8 +15,8 @@ import React, {
   useRef,
   useState
 } from "react"
-import { buttonVariants } from "./button"
 import { cn } from "@/lib/utils"
+import { buttonVariants } from "./button"
 
 const TRANSITION = {
   type: "spring",

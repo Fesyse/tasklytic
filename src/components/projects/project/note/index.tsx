@@ -1,6 +1,6 @@
+import { type FC } from "react"
 import { Editor, EditorContainer } from "@/components/plate-ui/editor"
 import { cn } from "@/lib/utils"
-import { type FC } from "react"
 
 type NoteProps = {
   className?: string

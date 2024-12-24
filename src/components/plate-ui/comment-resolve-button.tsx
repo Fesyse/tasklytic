@@ -1,24 +1,22 @@
-'use client';
+"use client"
 
-import React from 'react';
-
-import { cn } from '@udecode/cn';
+import { cn } from "@udecode/cn"
 import {
   CommentResolveButton as CommentResolveButtonPrimitive,
-  useComment,
-} from '@udecode/plate-comments/react';
-import { Check, RotateCcw } from 'lucide-react';
-
-import { buttonVariants } from './button';
+  useComment
+} from "@udecode/plate-comments/react"
+import { Check, RotateCcw } from "lucide-react"
+import React from "react"
+import { buttonVariants } from "./button"
 
 export function CommentResolveButton() {
-  const comment = useComment()!;
+  const comment = useComment()!
 
   return (
     <CommentResolveButtonPrimitive
       className={cn(
-        buttonVariants({ variant: 'ghost' }),
-        'h-6 p-1 text-muted-foreground'
+        buttonVariants({ variant: "ghost" }),
+        "h-6 p-1 text-muted-foreground"
       )}
     >
       {comment.isResolved ? (
@@ -27,5 +25,5 @@ export function CommentResolveButton() {
         <Check className="size-4" />
       )}
     </CommentResolveButtonPrimitive>
-  );
+  )
 }

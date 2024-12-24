@@ -1,4 +1,3 @@
-import { CreateProject } from "@/components/projects/create-project"
 import {
   Card,
   CardContent,
@@ -6,6 +5,7 @@ import {
   CardHeader,
   CardTitle
 } from "@/components/ui/card"
+import { CreateProject } from "@/components/projects/create-project"
 
 export default function CreateProjectPage() {
   return (

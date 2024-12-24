@@ -1,7 +1,7 @@
-import { env } from "@/env"
 import { createOpenAI } from "@ai-sdk/openai"
 import { generateText } from "ai"
 import { NextResponse, type NextRequest } from "next/server"
+import { env } from "@/env"
 
 export async function POST(req: NextRequest) {
   const { prompt, system } = await req.json()

@@ -1,34 +1,31 @@
-'use client';
+"use client"
 
-import React from 'react';
-
-import type { DropdownMenuItemProps } from '@radix-ui/react-dropdown-menu';
-
-import { cn } from '@udecode/cn';
-import { Check } from 'lucide-react';
-
-import { buttonVariants } from './button';
-import { DropdownMenuItem } from './dropdown-menu';
+import type { DropdownMenuItemProps } from "@radix-ui/react-dropdown-menu"
+import { cn } from "@udecode/cn"
+import { Check } from "lucide-react"
+import React from "react"
+import { buttonVariants } from "./button"
+import { DropdownMenuItem } from "./dropdown-menu"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
-  TooltipTrigger,
-} from './tooltip';
+  TooltipTrigger
+} from "./tooltip"
 
 export type TColor = {
-  isBrightColor: boolean;
-  name: string;
-  value: string;
-};
+  isBrightColor: boolean
+  name: string
+  value: string
+}
 
 type ColorDropdownMenuItemProps = {
-  isBrightColor: boolean;
-  isSelected: boolean;
-  updateColor: (color: string) => void;
-  value: string;
-  name?: string;
-} & DropdownMenuItemProps;
+  isBrightColor: boolean
+  isSelected: boolean
+  updateColor: (color: string) => void
+  value: string
+  name?: string
+} & DropdownMenuItemProps
 
 export function ColorDropdownMenuItem({
   className,
@@ -44,23 +41,23 @@ export function ColorDropdownMenuItem({
       className={cn(
         buttonVariants({
           isMenu: true,
-          size: 'icon',
-          variant: 'outline',
+          size: "icon",
+          variant: "outline"
         }),
-        'my-1 flex size-6 items-center justify-center rounded-full border border-solid border-muted p-0 transition-all hover:scale-125',
-        !isBrightColor && 'border-transparent text-white hover:!text-white',
+        "my-1 flex size-6 items-center justify-center rounded-full border border-solid border-muted p-0 transition-all hover:scale-125",
+        !isBrightColor && "border-transparent text-white hover:!text-white",
         className
       )}
       style={{ backgroundColor: value }}
-      onSelect={(e) => {
-        e.preventDefault();
-        updateColor(value);
+      onSelect={e => {
+        e.preventDefault()
+        updateColor(value)
       }}
       {...props}
     >
       {isSelected ? <Check className="!size-3" /> : null}
     </DropdownMenuItem>
-  );
+  )
 
   return name ? (
     <Tooltip>
@@ -69,14 +66,14 @@ export function ColorDropdownMenuItem({
     </Tooltip>
   ) : (
     content
-  );
+  )
 }
 
 type ColorDropdownMenuItemsProps = {
-  colors: TColor[];
-  updateColor: (color: string) => void;
-  color?: string;
-} & React.HTMLAttributes<HTMLDivElement>;
+  colors: TColor[]
+  updateColor: (color: string) => void
+  color?: string
+} & React.HTMLAttributes<HTMLDivElement>
 
 export function ColorDropdownMenuItems({
   className,
@@ -88,7 +85,7 @@ export function ColorDropdownMenuItems({
   return (
     <div
       className={cn(
-        'grid grid-cols-[repeat(10,1fr)] place-items-center',
+        "grid grid-cols-[repeat(10,1fr)] place-items-center",
         className
       )}
       {...props}
@@ -107,5 +104,5 @@ export function ColorDropdownMenuItems({
         {props.children}
       </TooltipProvider>
     </div>
-  );
+  )
 }

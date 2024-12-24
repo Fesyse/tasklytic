@@ -1,8 +1,8 @@
+import { and, eq, inArray } from "drizzle-orm"
+import { z } from "zod"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { kv } from "@/server/cache"
 import { blocks } from "@/server/db/schema"
-import { and, eq, inArray } from "drizzle-orm"
-import { z } from "zod"
 
 const cacheKeys = {
   all: `projects:notes:blocks:all`,

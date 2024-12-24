@@ -11,8 +11,8 @@ import {
   SheetHeader,
   SheetTrigger
 } from "@/components/ui/sheet"
-import { navigation } from "@/lib/nav-list"
 import { cn } from "@/lib/utils"
+import { navigation } from "@/lib/nav-list"
 
 export const MobileNav = () => {
   const pathname = usePathname()

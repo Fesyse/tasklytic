@@ -1,7 +1,8 @@
 "use client"
 
+import { CaretSortIcon, ComponentPlaceholderIcon } from "@radix-ui/react-icons"
 import { BadgeCheck, Bell, LogOut, Sparkles } from "lucide-react"
-
+import { type User } from "next-auth"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
@@ -18,8 +19,6 @@ import {
   SidebarMenuItem,
   useSidebar
 } from "@/components/ui/sidebar"
-import { CaretSortIcon, ComponentPlaceholderIcon } from "@radix-ui/react-icons"
-import { type User } from "next-auth"
 
 export function NavUser({ user }: { user: User }) {
   const { isMobile } = useSidebar()

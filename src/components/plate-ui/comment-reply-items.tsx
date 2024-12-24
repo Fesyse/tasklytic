@@ -1,22 +1,20 @@
-'use client';
-
-import React from 'react';
+"use client"
 
 import {
   SCOPE_ACTIVE_COMMENT,
-  useCommentReplies,
-} from '@udecode/plate-comments/react';
-
-import { CommentItem } from './comment-item';
+  useCommentReplies
+} from "@udecode/plate-comments/react"
+import React from "react"
+import { CommentItem } from "./comment-item"
 
 export function CommentReplyItems() {
-  const commentReplies = useCommentReplies(SCOPE_ACTIVE_COMMENT);
+  const commentReplies = useCommentReplies(SCOPE_ACTIVE_COMMENT)
 
   return (
     <>
-      {Object.keys(commentReplies).map((id) => (
+      {Object.keys(commentReplies).map(id => (
         <CommentItem key={id} commentId={id} />
       ))}
     </>
-  );
+  )
 }

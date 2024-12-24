@@ -1,8 +1,8 @@
 import Link from "next/link"
+import { Icons } from "@/components/ui/icons"
 import { UserNav } from "@/components/layout/dashboard/user-nav"
 import { Navigation } from "@/components/layout/home/header/navigation"
 import { MobileNav } from "@/components/layout/home/mobile-nav"
-import { Icons } from "@/components/ui/icons"
 
 export function Header() {
   return (

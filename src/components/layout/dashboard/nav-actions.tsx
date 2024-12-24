@@ -1,5 +1,8 @@
 "use client"
 
+import { DotsHorizontalIcon } from "@radix-ui/react-icons"
+import { useEditorRef } from "@udecode/plate-common/react"
+import { format } from "date-fns"
 import {
   ArrowDown,
   ArrowUp,
@@ -17,8 +20,9 @@ import {
   Settings2,
   Trash
 } from "lucide-react"
-
-import { useNoteEditorState } from "@/components/providers/note-editor-state-provider"
+import { useParams } from "next/navigation"
+import { useMemo, useState } from "react"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   Popover,
@@ -35,6 +39,7 @@ import {
   SidebarMenuItem
 } from "@/components/ui/sidebar"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useNoteEditorState } from "@/components/providers/note-editor-state-provider"
 import {
   copyToClipboard,
   exportFile,
@@ -42,12 +47,6 @@ import {
   openInNewTab
 } from "@/lib/utils"
 import { api } from "@/trpc/react"
-import { DotsHorizontalIcon } from "@radix-ui/react-icons"
-import { useEditorRef } from "@udecode/plate-common/react"
-import { format } from "date-fns"
-import { useParams } from "next/navigation"
-import { useMemo, useState } from "react"
-import { toast } from "sonner"
 
 export function NavActions() {
   const editor = useEditorRef()

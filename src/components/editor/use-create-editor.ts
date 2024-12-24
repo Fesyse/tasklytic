@@ -16,6 +16,7 @@ import {
   CodeSyntaxPlugin
 } from "@udecode/plate-code-block/react"
 import { CommentsPlugin } from "@udecode/plate-comments/react"
+import { type TElement } from "@udecode/plate-common"
 import {
   ParagraphPlugin,
   PlateLeaf,
@@ -48,7 +49,6 @@ import {
   TableRowPlugin
 } from "@udecode/plate-table/react"
 import { TogglePlugin } from "@udecode/plate-toggle/react"
-
 import { copilotPlugins } from "@/components/editor/plugins/copilot-plugins"
 import { editorPlugins } from "@/components/editor/plugins/editor-plugins"
 import { FixedToolbarPlugin } from "@/components/editor/plugins/fixed-toolbar-plugin"
@@ -90,7 +90,6 @@ import { TableRowElement } from "@/components/plate-ui/table-row-element"
 import { TocElement } from "@/components/plate-ui/toc-element"
 import { ToggleElement } from "@/components/plate-ui/toggle-element"
 import { withDraggables } from "@/components/plate-ui/with-draggables"
-import { type TElement } from "@udecode/plate-common"
 
 export const useCreateEditor = (value?: TElement[]) => {
   return usePlateEditor({

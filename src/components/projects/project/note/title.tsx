@@ -1,9 +1,9 @@
 "use client"
 
-import { Skeleton } from "@/components/ui/skeleton"
-import { api } from "@/trpc/react"
 import debounce from "lodash.debounce"
 import { useCallback, type FC } from "react"
+import { Skeleton } from "@/components/ui/skeleton"
+import { api } from "@/trpc/react"
 
 type NoteTitleProps = {
   noteId: string

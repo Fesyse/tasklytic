@@ -1,22 +1,21 @@
-import React from 'react';
+import { cn } from "@udecode/cn"
+import { type VariantProps, cva } from "class-variance-authority"
+import { type LucideProps, Loader2Icon } from "lucide-react"
+import React from "react"
 
-import { cn } from '@udecode/cn';
-import { type VariantProps, cva } from 'class-variance-authority';
-import { type LucideProps, Loader2Icon } from 'lucide-react';
-
-const spinnerVariants = cva('animate-spin text-muted-foreground', {
+const spinnerVariants = cva("animate-spin text-muted-foreground", {
   defaultVariants: {
-    size: 'default',
+    size: "default"
   },
   variants: {
     size: {
-      default: 'size-4',
-      icon: 'size-10',
-      lg: 'size-6',
-      sm: 'size-2',
-    },
-  },
-});
+      default: "size-4",
+      icon: "size-10",
+      lg: "size-6",
+      sm: "size-2"
+    }
+  }
+})
 
 export const Spinner = ({
   className,
@@ -27,4 +26,4 @@ export const Spinner = ({
     className={cn(spinnerVariants({ size }), className)}
     {...props}
   />
-);
+)

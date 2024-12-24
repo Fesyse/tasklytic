@@ -5,7 +5,25 @@
   "useTabs": false,
   "singleQuote": false,
   "arrowParens": "avoid",
+  "importOrder": [
+    "<THIRD_PARTY_MODULES>",
+    "^@/components/ui/(.*)$",
+    "^@/components/layout/(.*)$",
+    "^@/components/(.*)$",
+    "^@/components/providers/(.*)$",
+    "^@/hooks/(.*)$",
+    "^@/stores/(.*)$",
+    "^@/config/(.*)$",
+    "^@/types/(.*)$",
+    "^@/lib/constants",
+    "^@/lib/utils",
+    "^@/assets/(.*)$",
+    "(.scss)$",
+    "^../(.*)",
+    "^./(.*)"
+  ],
   "plugins": [
-    "prettier-plugin-tailwindcss"
+    "prettier-plugin-tailwindcss",
+    "@trivago/prettier-plugin-sort-imports"
   ]
 }

@@ -1,10 +1,10 @@
 "use client"
 
+import { useParams } from "next/navigation"
 import { BreadcrumbPage } from "@/components/ui/breadcrumb"
 import { Skeleton } from "@/components/ui/skeleton"
 import { title } from "@/lib/utils"
 import { api } from "@/trpc/react"
-import { useParams } from "next/navigation"
 
 export const DashboardBreadcrumbPage = () => {
   const { projectId, noteId } = useParams<{

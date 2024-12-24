@@ -2,8 +2,8 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { navigation } from "@/lib/nav-list"
 import { cn } from "@/lib/utils"
+import { navigation } from "@/lib/nav-list"
 
 export const Navigation = () => {
   const pathname = usePathname()

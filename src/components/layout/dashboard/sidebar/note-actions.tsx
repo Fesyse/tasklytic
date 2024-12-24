@@ -1,4 +1,17 @@
 import {
+  Eye,
+  EyeOff,
+  FilePlus2,
+  LinkIcon,
+  MoreHorizontal,
+  Pin,
+  PinOff,
+  Trash2
+} from "lucide-react"
+import { useParams, useRouter } from "next/navigation"
+import { type FC } from "react"
+import { toast } from "sonner"
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -22,19 +35,6 @@ import { SidebarMenuAction } from "@/components/ui/sidebar"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { SidebarNav } from "@/lib/menu-list"
 import { api } from "@/trpc/react"
-import {
-  Eye,
-  EyeOff,
-  FilePlus2,
-  LinkIcon,
-  MoreHorizontal,
-  Pin,
-  PinOff,
-  Trash2
-} from "lucide-react"
-import { useParams, useRouter } from "next/navigation"
-import { type FC } from "react"
-import { toast } from "sonner"
 
 type NoteActionsProps = {
   note: NonNullable<SidebarNav["notes"]["items"]>[number]

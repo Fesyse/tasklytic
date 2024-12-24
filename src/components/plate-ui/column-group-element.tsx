@@ -1,61 +1,58 @@
-'use client';
+"use client"
 
-import React from 'react';
-
-import type { TColumnElement } from '@udecode/plate-layout';
-
-import { cn, withRef } from '@udecode/cn';
-import { useElement, useRemoveNodeButton } from '@udecode/plate-common/react';
+import { cn, withRef } from "@udecode/cn"
+import { useElement, useRemoveNodeButton } from "@udecode/plate-common/react"
+import type { TColumnElement } from "@udecode/plate-layout"
 import {
   ColumnItemPlugin,
   useColumnState,
-  useDebouncePopoverOpen,
-} from '@udecode/plate-layout/react';
-import { type LucideProps, Trash2Icon } from 'lucide-react';
-import { useReadOnly } from 'slate-react';
-
-import { Button } from './button';
-import { PlateElement } from './plate-element';
-import { Popover, PopoverAnchor, PopoverContent } from './popover';
-import { Separator } from './separator';
+  useDebouncePopoverOpen
+} from "@udecode/plate-layout/react"
+import { type LucideProps, Trash2Icon } from "lucide-react"
+import React from "react"
+import { useReadOnly } from "slate-react"
+import { Button } from "./button"
+import { PlateElement } from "./plate-element"
+import { Popover, PopoverAnchor, PopoverContent } from "./popover"
+import { Separator } from "./separator"
 
 export const ColumnGroupElement = withRef<typeof PlateElement>(
   ({ children, className, ...props }, ref) => {
     return (
-      <PlateElement ref={ref} className={cn(className, 'my-2')} {...props}>
+      <PlateElement ref={ref} className={cn(className, "my-2")} {...props}>
         <ColumnFloatingToolbar>
-          <div className={cn('flex size-full gap-4 rounded')}>{children}</div>
+          <div className={cn("flex size-full gap-4 rounded")}>{children}</div>
         </ColumnFloatingToolbar>
       </PlateElement>
-    );
+    )
   }
-);
+)
 
 export function ColumnFloatingToolbar({ children }: React.PropsWithChildren) {
-  const readOnly = useReadOnly();
+  const readOnly = useReadOnly()
 
   const {
     setDoubleColumn,
     setDoubleSideDoubleColumn,
     setLeftSideDoubleColumn,
     setRightSideDoubleColumn,
-    setThreeColumn,
-  } = useColumnState();
+    setThreeColumn
+  } = useColumnState()
 
-  const element = useElement<TColumnElement>(ColumnItemPlugin.key);
+  const element = useElement<TColumnElement>(ColumnItemPlugin.key)
 
-  const { props: buttonProps } = useRemoveNodeButton({ element });
+  const { props: buttonProps } = useRemoveNodeButton({ element })
 
-  const isOpen = useDebouncePopoverOpen();
+  const isOpen = useDebouncePopoverOpen()
 
-  if (readOnly) return <>{children}</>;
+  if (readOnly) return <>{children}</>
 
   return (
     <Popover open={isOpen} modal={false}>
       <PopoverAnchor>{children}</PopoverAnchor>
       <PopoverContent
         className="w-auto p-1"
-        onOpenAutoFocus={(e) => e.preventDefault()}
+        onOpenAutoFocus={e => e.preventDefault()}
         align="center"
         side="top"
         sideOffset={10}
@@ -92,7 +89,7 @@ export function ColumnFloatingToolbar({ children }: React.PropsWithChildren) {
         </div>
       </PopoverContent>
     </Popover>
-  );
+  )
 }
 
 const DoubleColumnOutlined = (props: LucideProps) => (
@@ -111,7 +108,7 @@ const DoubleColumnOutlined = (props: LucideProps) => (
       fillRule="evenodd"
     />
   </svg>
-);
+)
 
 const ThreeColumnOutlined = (props: LucideProps) => (
   <svg
@@ -129,7 +126,7 @@ const ThreeColumnOutlined = (props: LucideProps) => (
       fillRule="evenodd"
     />
   </svg>
-);
+)
 
 const RightSideDoubleColumnOutlined = (props: LucideProps) => (
   <svg
@@ -147,7 +144,7 @@ const RightSideDoubleColumnOutlined = (props: LucideProps) => (
       fillRule="evenodd"
     />
   </svg>
-);
+)
 
 const LeftSideDoubleColumnOutlined = (props: LucideProps) => (
   <svg
@@ -165,7 +162,7 @@ const LeftSideDoubleColumnOutlined = (props: LucideProps) => (
       fillRule="evenodd"
     />
   </svg>
-);
+)
 
 const DoubleSideDoubleColumnOutlined = (props: LucideProps) => (
   <svg
@@ -183,4 +180,4 @@ const DoubleSideDoubleColumnOutlined = (props: LucideProps) => (
       fillRule="evenodd"
     />
   </svg>
-);
+)

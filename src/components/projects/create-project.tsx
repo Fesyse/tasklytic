@@ -1,6 +1,9 @@
 "use client"
 
-import { type FileUploadResponse } from "@/app/api/file-upload/route"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useRouter } from "next/navigation"
+import { useForm } from "react-hook-form"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { FileUpload } from "@/components/ui/file-upload"
@@ -14,12 +17,9 @@ import {
   FormMessage
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { type FileUploadResponse } from "@/app/api/file-upload/route"
 import { type CreateProjectSchema, createProjectSchema } from "@/lib/schemas"
 import { api } from "@/trpc/react"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useRouter } from "next/navigation"
-import { useForm } from "react-hook-form"
-import { toast } from "sonner"
 
 export const CreateProject = () => {
   const utils = api.useUtils()

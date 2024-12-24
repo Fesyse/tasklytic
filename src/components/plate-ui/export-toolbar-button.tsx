@@ -1,74 +1,71 @@
-'use client';
+"use client"
 
-import React from 'react';
-
-import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu';
-
-import { toDOMNode, useEditorRef } from '@udecode/plate-common/react';
-import { ArrowDownToLineIcon } from 'lucide-react';
-
+import type { DropdownMenuProps } from "@radix-ui/react-dropdown-menu"
+import { toDOMNode, useEditorRef } from "@udecode/plate-common/react"
+import { ArrowDownToLineIcon } from "lucide-react"
+import React from "react"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  useOpenState,
-} from './dropdown-menu';
-import { ToolbarButton } from './toolbar';
+  useOpenState
+} from "./dropdown-menu"
+import { ToolbarButton } from "./toolbar"
 
 export function ExportToolbarButton({ children, ...props }: DropdownMenuProps) {
-  const editor = useEditorRef();
-  const openState = useOpenState();
+  const editor = useEditorRef()
+  const openState = useOpenState()
 
   const getCanvas = async () => {
-    const { default: html2canvas } = await import('html2canvas');
+    const { default: html2canvas } = await import("html2canvas")
 
-    const style = document.createElement('style');
-    document.head.append(style);
+    const style = document.createElement("style")
+    document.head.append(style)
     style.sheet?.insertRule(
-      'body > div:last-child img { display: inline-block !important; }'
-    );
+      "body > div:last-child img { display: inline-block !important; }"
+    )
 
-    const canvas = await html2canvas(toDOMNode(editor, editor)!);
-    style.remove();
+    const canvas = await html2canvas(toDOMNode(editor, editor)!)
+    style.remove()
 
-    return canvas;
-  };
+    return canvas
+  }
 
   const downloadFile = (href: string, filename: string) => {
-    const element = document.createElement('a');
-    element.setAttribute('href', href);
-    element.setAttribute('download', filename);
-    element.style.display = 'none';
-    document.body.append(element);
-    element.click();
-    element.remove();
-  };
+    const element = document.createElement("a")
+    element.setAttribute("href", href)
+    element.setAttribute("download", filename)
+    element.style.display = "none"
+    document.body.append(element)
+    element.click()
+    element.remove()
+  }
 
   const exportToPdf = async () => {
-    const canvas = await getCanvas();
+    const canvas = await getCanvas()
 
-    const PDFLib = await import('pdf-lib');
-    const pdfDoc = await PDFLib.PDFDocument.create();
-    const page = pdfDoc.addPage([canvas.width, canvas.height]);
-    const imageEmbed = await pdfDoc.embedPng(canvas.toDataURL('PNG'));
-    const { height, width } = imageEmbed.scale(1);
+    const PDFLib = await import("pdf-lib")
+    const pdfDoc = await PDFLib.PDFDocument.create()
+    const page = pdfDoc.addPage([canvas.width, canvas.height])
+    const imageEmbed = await pdfDoc.embedPng(canvas.toDataURL("PNG"))
+    const { height, width } = imageEmbed.scale(1)
     page.drawImage(imageEmbed, {
       height,
       width,
       x: 0,
-      y: 0,
-    });
-    const pdfBase64 = await pdfDoc.saveAsBase64({ dataUri: true });
+      y: 0
+    })
+    const pdfBase64 = await pdfDoc.saveAsBase64({ dataUri: true })
 
-    downloadFile(pdfBase64, 'plate.pdf');
-  };
+    downloadFile(pdfBase64, "plate.pdf")
+  }
 
   const exportToImage = async () => {
-    const canvas = await getCanvas();
-    downloadFile(canvas.toDataURL('image/png'), 'plate.png');
-  };
+    const canvas = await getCanvas()
+    downloadFile(canvas.toDataURL("image/png"), "plate.png")
+  }
 
   return (
     <DropdownMenu modal={false} {...openState} {...props}>
@@ -89,5 +86,5 @@ export function ExportToolbarButton({ children, ...props }: DropdownMenuProps) {
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
 }

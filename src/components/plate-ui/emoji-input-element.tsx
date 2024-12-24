@@ -1,12 +1,9 @@
 "use client"
 
-import { useMemo, useState } from "react"
-
 import { withRef } from "@udecode/cn"
 import { EmojiInlineIndexSearch, insertEmoji } from "@udecode/plate-emoji"
-
+import { useMemo, useState } from "react"
 import { useDebounce } from "@/hooks/use-debounce"
-
 import {
   InlineCombobox,
   InlineComboboxContent,

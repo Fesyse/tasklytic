@@ -1,6 +1,6 @@
 import Balancer from "react-wrap-balancer"
-import { Projects } from "@/components/projects"
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect"
+import { Projects } from "@/components/projects"
 import { api } from "@/trpc/server"
 
 export default async function ProjectsPage() {

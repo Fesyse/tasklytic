@@ -1,5 +1,5 @@
-import { api } from "@/trpc/server"
 import { NoteLayout } from "./note-layout"
+import { api } from "@/trpc/server"
 
 type LayoutProps = React.PropsWithChildren<{
   params: Promise<{

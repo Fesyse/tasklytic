@@ -1,5 +1,9 @@
 "use client"
 
+import { ChevronDownIcon, PlusIcon } from "@radix-ui/react-icons"
+import Link from "next/link"
+import { useParams } from "next/navigation"
+import { useEffect, useState } from "react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,10 +21,6 @@ import {
 } from "@/components/ui/sidebar"
 import { Skeleton } from "@/components/ui/skeleton"
 import { SidebarNav } from "@/lib/menu-list"
-import { ChevronDownIcon, PlusIcon } from "@radix-ui/react-icons"
-import Link from "next/link"
-import { useParams } from "next/navigation"
-import { useEffect, useState } from "react"
 
 export function ProjectSwitcher({
   projects

@@ -1,7 +1,4 @@
-import type React from 'react';
-
-import type { EmojiCategoryList } from '@udecode/plate-emoji';
-
+import type { EmojiCategoryList } from "@udecode/plate-emoji"
 import {
   AppleIcon,
   ClockIcon,
@@ -13,14 +10,15 @@ import {
   SearchIcon,
   SmileIcon,
   StarIcon,
-  XIcon,
-} from 'lucide-react';
+  XIcon
+} from "lucide-react"
+import type React from "react"
 
 export const emojiCategoryIcons: Record<
   EmojiCategoryList,
   {
-    outline: React.ReactElement;
-    solid: React.ReactElement; // Needed to add another solid variant - outline will be used for now
+    outline: React.ReactElement
+    solid: React.ReactElement // Needed to add another solid variant - outline will be used for now
   }
 > = {
   activity: {
@@ -57,56 +55,56 @@ export const emojiCategoryIcons: Record<
         <path d="m5 4.9 14 14.2" />
         <path d="M21.9 10.6a10.1 10.1 0 0 0-11.3 11.3" />
       </svg>
-    ),
+    )
   },
 
   custom: {
     outline: <StarIcon className="size-full" />,
-    solid: <StarIcon className="size-full" />,
+    solid: <StarIcon className="size-full" />
   },
 
   flags: {
     outline: <FlagIcon className="size-full" />,
-    solid: <FlagIcon className="size-full" />,
+    solid: <FlagIcon className="size-full" />
   },
 
   foods: {
     outline: <AppleIcon className="size-full" />,
-    solid: <AppleIcon className="size-full" />,
+    solid: <AppleIcon className="size-full" />
   },
 
   frequent: {
     outline: <ClockIcon className="size-full" />,
-    solid: <ClockIcon className="size-full" />,
+    solid: <ClockIcon className="size-full" />
   },
 
   nature: {
     outline: <LeafIcon className="size-full" />,
-    solid: <LeafIcon className="size-full" />,
+    solid: <LeafIcon className="size-full" />
   },
 
   objects: {
     outline: <LightbulbIcon className="size-full" />,
-    solid: <LightbulbIcon className="size-full" />,
+    solid: <LightbulbIcon className="size-full" />
   },
 
   people: {
     outline: <SmileIcon className="size-full" />,
-    solid: <SmileIcon className="size-full" />,
+    solid: <SmileIcon className="size-full" />
   },
 
   places: {
     outline: <CompassIcon className="size-full" />,
-    solid: <CompassIcon className="size-full" />,
+    solid: <CompassIcon className="size-full" />
   },
 
   symbols: {
     outline: <MusicIcon className="size-full" />,
-    solid: <MusicIcon className="size-full" />,
-  },
-};
+    solid: <MusicIcon className="size-full" />
+  }
+}
 
 export const emojiSearchIcons = {
   delete: <XIcon className="size-4 text-current" />,
-  loupe: <SearchIcon className="size-4 text-current" />,
-};
+  loupe: <SearchIcon className="size-4 text-current" />
+}

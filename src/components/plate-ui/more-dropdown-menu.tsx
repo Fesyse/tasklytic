@@ -1,35 +1,33 @@
-'use client';
-import React from 'react';
+"use client"
 
-import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu';
-
+import type { DropdownMenuProps } from "@radix-ui/react-dropdown-menu"
 import {
   SubscriptPlugin,
-  SuperscriptPlugin,
-} from '@udecode/plate-basic-marks/react';
-import { collapseSelection } from '@udecode/plate-common';
-import { focusEditor, useEditorRef } from '@udecode/plate-common/react';
-import { KbdPlugin } from '@udecode/plate-kbd/react';
+  SuperscriptPlugin
+} from "@udecode/plate-basic-marks/react"
+import { collapseSelection } from "@udecode/plate-common"
+import { focusEditor, useEditorRef } from "@udecode/plate-common/react"
+import { KbdPlugin } from "@udecode/plate-kbd/react"
 import {
   KeyboardIcon,
   MoreHorizontalIcon,
   SubscriptIcon,
-  SuperscriptIcon,
-} from 'lucide-react';
-
+  SuperscriptIcon
+} from "lucide-react"
+import React from "react"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  useOpenState,
-} from './dropdown-menu';
-import { ToolbarButton } from './toolbar';
+  useOpenState
+} from "./dropdown-menu"
+import { ToolbarButton } from "./toolbar"
 
 export function MoreDropdownMenu(props: DropdownMenuProps) {
-  const editor = useEditorRef();
-  const openState = useOpenState();
+  const editor = useEditorRef()
+  const openState = useOpenState()
 
   return (
     <DropdownMenu modal={false} {...openState} {...props}>
@@ -46,9 +44,9 @@ export function MoreDropdownMenu(props: DropdownMenuProps) {
         <DropdownMenuGroup>
           <DropdownMenuItem
             onSelect={() => {
-              editor.tf.toggle.mark({ key: KbdPlugin.key });
-              collapseSelection(editor, { edge: 'end' });
-              focusEditor(editor);
+              editor.tf.toggle.mark({ key: KbdPlugin.key })
+              collapseSelection(editor, { edge: "end" })
+              focusEditor(editor)
             }}
           >
             <KeyboardIcon />
@@ -59,9 +57,9 @@ export function MoreDropdownMenu(props: DropdownMenuProps) {
             onSelect={() => {
               editor.tf.toggle.mark({
                 key: SuperscriptPlugin.key,
-                clear: [SubscriptPlugin.key, SuperscriptPlugin.key],
-              });
-              focusEditor(editor);
+                clear: [SubscriptPlugin.key, SuperscriptPlugin.key]
+              })
+              focusEditor(editor)
             }}
           >
             <SuperscriptIcon />
@@ -72,9 +70,9 @@ export function MoreDropdownMenu(props: DropdownMenuProps) {
             onSelect={() => {
               editor.tf.toggle.mark({
                 key: SubscriptPlugin.key,
-                clear: [SuperscriptPlugin.key, SubscriptPlugin.key],
-              });
-              focusEditor(editor);
+                clear: [SuperscriptPlugin.key, SubscriptPlugin.key]
+              })
+              focusEditor(editor)
             }}
           >
             <SubscriptIcon />
@@ -84,5 +82,5 @@ export function MoreDropdownMenu(props: DropdownMenuProps) {
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
 }

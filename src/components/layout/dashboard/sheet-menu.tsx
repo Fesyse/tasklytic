@@ -2,8 +2,6 @@
 
 import { MenuIcon } from "lucide-react"
 import Link from "next/link"
-import { Menu } from "@/components/layout/dashboard/menu"
-import { useUserSettingsStore } from "@/components/providers/user-settings-store-provider"
 import { Button } from "@/components/ui/button"
 import { Icons } from "@/components/ui/icons"
 import {
@@ -12,6 +10,8 @@ import {
   SheetHeader,
   SheetTrigger
 } from "@/components/ui/sheet"
+import { Menu } from "@/components/layout/dashboard/menu"
+import { useUserSettingsStore } from "@/components/providers/user-settings-store-provider"
 
 export function SheetMenu() {
   const navigationMenu = useUserSettingsStore(s => s.navigationMenu)

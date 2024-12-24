@@ -1,4 +1,3 @@
-import { api } from "@/trpc/react"
 import {
   Blocks,
   Calendar,
@@ -14,6 +13,7 @@ import Image from "next/image"
 import { useParams, usePathname } from "next/navigation"
 import { type FC } from "react"
 import { type PROJECT_PLANS } from "./constants"
+import { api } from "@/trpc/react"
 
 type LogoComponent = FC<{ className?: string }>
 

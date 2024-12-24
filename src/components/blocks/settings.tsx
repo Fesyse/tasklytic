@@ -1,11 +1,11 @@
 "use client"
 
-import { useUserSettingsStore } from "@/components/providers/user-settings-store-provider"
-import { Button } from "@/components/ui/button"
-import { Form } from "@/components/ui/form"
-import { type SettingsSchema, settingsSchema } from "@/lib/schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
+import { Button } from "@/components/ui/button"
+import { Form } from "@/components/ui/form"
+import { useUserSettingsStore } from "@/components/providers/user-settings-store-provider"
+import { type SettingsSchema, settingsSchema } from "@/lib/schemas"
 
 export const Settings = () => {
   const { updateUserSettingsStore, ...settingsStore } = useUserSettingsStore(

@@ -1,9 +1,6 @@
 "use client"
 
-import React, { useCallback, useState } from "react"
-
 import type { DropdownMenuProps } from "@radix-ui/react-dropdown-menu"
-
 import { insertNodes, isUrl } from "@udecode/plate-common"
 import { useEditorRef } from "@udecode/plate-common/react"
 import {
@@ -19,9 +16,9 @@ import {
   ImageIcon,
   LinkIcon
 } from "lucide-react"
+import React, { useCallback, useState } from "react"
 import { toast } from "sonner"
 import { useFilePicker } from "use-file-picker"
-
 import {
   AlertDialog,
   AlertDialogAction,

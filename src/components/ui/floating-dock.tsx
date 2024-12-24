@@ -16,7 +16,7 @@ import { type LucideIcon } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { type Menu, type Submenu } from "@/lib/menu-list"
+import { useMediaQuery } from "@/hooks/use-media-query"
 import { cn } from "@/lib/utils"
 import {
   Tooltip,
@@ -24,7 +24,7 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "./tooltip"
-import { useMediaQuery } from "@/hooks/use-media-query"
+import { type Menu, type Submenu } from "@/lib/menu-list"
 
 const DEFAULT_MAGNIFICATION = 60
 const DEFAULT_DISTANCE = 140

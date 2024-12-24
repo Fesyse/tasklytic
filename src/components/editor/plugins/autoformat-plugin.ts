@@ -1,8 +1,6 @@
 "use client"
 
 import type { AutoformatRule } from "@udecode/plate-autoformat"
-import type { SlateEditor } from "@udecode/plate-common"
-
 import {
   autoformatArrow,
   autoformatLegal,
@@ -27,6 +25,7 @@ import {
   CodeBlockPlugin,
   CodeLinePlugin
 } from "@udecode/plate-code-block/react"
+import type { SlateEditor } from "@udecode/plate-common"
 import {
   getParentNode,
   insertNodes,

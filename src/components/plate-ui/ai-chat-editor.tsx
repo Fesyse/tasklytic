@@ -1,7 +1,5 @@
 "use client"
 
-import React, { memo } from "react"
-
 import { AIChatPlugin, useLastAssistantMessage } from "@udecode/plate-ai/react"
 import {
   type PlateEditor,
@@ -9,7 +7,7 @@ import {
   useEditorPlugin
 } from "@udecode/plate-common/react"
 import { deserializeMd } from "@udecode/plate-markdown"
-
+import React, { memo } from "react"
 import { Editor } from "./editor"
 
 export const AIChatEditor = memo(

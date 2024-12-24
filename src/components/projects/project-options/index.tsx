@@ -32,9 +32,9 @@ import {
   FloatingPanelRoot,
   FloatingPanelTrigger
 } from "@/components/ui/floading-panel"
+import { cn } from "@/lib/utils"
 import { UpdateProjectButton } from "./update-project-button"
 import { UpdateProjectForm } from "./update-project-form"
-import { cn } from "@/lib/utils"
 import { type Project } from "@/server/db/schema"
 import { api } from "@/trpc/react"
 

@@ -1,17 +1,17 @@
-'use client';
+"use client"
 
-import type { UseEmojiPickerType } from '@udecode/plate-emoji/react';
+import type { UseEmojiPickerType } from "@udecode/plate-emoji/react"
 
 export type EmojiPickerPreviewProps = Pick<
   UseEmojiPickerType,
-  'emoji' | 'hasFound' | 'i18n' | 'isSearching'
->;
+  "emoji" | "hasFound" | "i18n" | "isSearching"
+>
 
-export type EmojiPreviewProps = Pick<UseEmojiPickerType, 'emoji'>;
+export type EmojiPreviewProps = Pick<UseEmojiPickerType, "emoji">
 
-export type NoEmojiPreviewProps = Pick<UseEmojiPickerType, 'i18n'>;
+export type NoEmojiPreviewProps = Pick<UseEmojiPickerType, "i18n">
 
-export type PickAnEmojiPreviewProps = NoEmojiPreviewProps;
+export type PickAnEmojiPreviewProps = NoEmojiPreviewProps
 
 function EmojiPreview({ emoji }: EmojiPreviewProps) {
   return (
@@ -24,7 +24,7 @@ function EmojiPreview({ emoji }: EmojiPreviewProps) {
         <div className="truncate text-sm">{`:${emoji?.id}:`}</div>
       </div>
     </div>
-  );
+  )
 }
 
 function NoEmoji({ i18n }: NoEmojiPreviewProps) {
@@ -38,7 +38,7 @@ function NoEmoji({ i18n }: NoEmojiPreviewProps) {
         <div className="truncate text-sm">{i18n.searchNoResultsSubtitle}</div>
       </div>
     </div>
-  );
+  )
 }
 
 function PickAnEmoji({ i18n }: PickAnEmojiPreviewProps) {
@@ -49,7 +49,7 @@ function PickAnEmoji({ i18n }: PickAnEmojiPreviewProps) {
         <div className="truncate text-sm font-semibold">{i18n.pick}</div>
       </div>
     </div>
-  );
+  )
 }
 
 export function EmojiPickerPreview({
@@ -59,9 +59,9 @@ export function EmojiPickerPreview({
   isSearching = false,
   ...props
 }: EmojiPickerPreviewProps) {
-  const showPickEmoji = !emoji && (!isSearching || hasFound);
-  const showNoEmoji = isSearching && !hasFound;
-  const showPreview = emoji && !showNoEmoji && !showNoEmoji;
+  const showPickEmoji = !emoji && (!isSearching || hasFound)
+  const showNoEmoji = isSearching && !hasFound
+  const showPreview = emoji && !showNoEmoji && !showNoEmoji
 
   return (
     <>
@@ -69,5 +69,5 @@ export function EmojiPickerPreview({
       {showPickEmoji && <PickAnEmoji i18n={i18n} {...props} />}
       {showNoEmoji && <NoEmoji i18n={i18n} {...props} />}
     </>
-  );
+  )
 }

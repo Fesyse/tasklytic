@@ -1,7 +1,7 @@
 import Link from "next/link"
-import { HomeLayout } from "@/components/layout/home"
 import { buttonVariants } from "@/components/ui/button"
 import { Icons } from "@/components/ui/icons"
+import { HomeLayout } from "@/components/layout/home"
 
 export default function NotFoundPage() {
   return (

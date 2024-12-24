@@ -1,4 +1,3 @@
-import { Settings } from "@/components/blocks/settings"
 import {
   Card,
   CardContent,
@@ -6,6 +5,7 @@ import {
   CardHeader,
   CardTitle
 } from "@/components/ui/card"
+import { Settings } from "@/components/blocks/settings"
 
 export default function SettingsPage() {
   return (

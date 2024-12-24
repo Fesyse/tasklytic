@@ -1,12 +1,12 @@
 import Link from "next/link"
 import Balance from "react-wrap-balancer"
-import { CTAWithGithub } from "@/components/blocks/cta"
-import { FeaturesSection } from "@/components/blocks/features-section"
 import { Button } from "@/components/ui/button"
 import { Beam } from "@/components/ui/grid-beam"
 import { Icons } from "@/components/ui/icons"
 import { Spotlight } from "@/components/ui/spotlight"
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect"
+import { CTAWithGithub } from "@/components/blocks/cta"
+import { FeaturesSection } from "@/components/blocks/features-section"
 import { cn } from "@/lib/utils"
 
 export default function Home() {

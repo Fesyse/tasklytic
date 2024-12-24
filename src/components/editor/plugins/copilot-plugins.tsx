@@ -1,13 +1,11 @@
 "use client"
 
-import type { TElement } from "@udecode/plate-common"
-
 import { CopilotPlugin } from "@udecode/plate-ai/react"
+import type { TElement } from "@udecode/plate-common"
 import { getAncestorNode } from "@udecode/plate-common"
 import { serializeMdNodes, stripMarkdown } from "@udecode/plate-markdown"
-
-import { GhostText } from "@/components/plate-ui/ghost-text"
 import { toast } from "sonner"
+import { GhostText } from "@/components/plate-ui/ghost-text"
 
 export const copilotPlugins = [
   CopilotPlugin.configure(({ api }) => ({

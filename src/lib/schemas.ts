@@ -1,5 +1,5 @@
-import { ACCEPTED_IMAGE_TYPES, MAX_FILE_SIZE } from "@/lib/constants"
 import { z } from "zod"
+import { ACCEPTED_IMAGE_TYPES, MAX_FILE_SIZE } from "@/lib/constants"
 
 const settingsSchema = z.object({
   sidebar: z.object({
