@@ -1,4 +1,3 @@
-import { useSession } from "next-auth/react"
 import type { Channel, PresenceChannel } from "pusher-js"
 import Pusher from "pusher-js"
 import { createContext, useContext, useEffect, useRef, useState } from "react"
@@ -7,7 +6,6 @@ import { env } from "@/env"
 
 type PusherProps = {
   slug: string
-  session: ReturnType<typeof useSession>
 }
 
 type PusherState = {
@@ -17,7 +15,7 @@ type PusherState = {
   members: Map<string, unknown>
 }
 
-const createPusherStore = ({ slug, session }: PusherProps) => {
+const createPusherStore = ({ slug }: PusherProps) => {
   let pusherClient: Pusher
   if (Pusher.instances.length) {
     pusherClient = Pusher.instances[0] as Pusher
@@ -25,10 +23,7 @@ const createPusherStore = ({ slug, session }: PusherProps) => {
   } else {
     pusherClient = new Pusher(env.NEXT_PUBLIC_PUSHER_KEY, {
       cluster: env.NEXT_PUBLIC_PUSHER_CLUSTER,
-      authEndpoint: "/api/pusher/auth-channel",
-      auth: {
-        headers: { user_id: session.data?.user.id }
-      }
+      authEndpoint: "/api/pusher/auth-channel"
     })
   }
 
@@ -71,23 +66,14 @@ export const PusherContext = createContext<PusherStore | null>(null)
 
 /**
  * This provider is the thing you mount in the app to "give access to Pusher"
- *
  */
-type PusherProviderProps = React.PropsWithChildren<Omit<PusherProps, "session">>
+type PusherProviderProps = React.PropsWithChildren<PusherProps>
 
 export const PusherProvider = ({ slug, children }: PusherProviderProps) => {
-  const session = useSession()
   const [store, setStore] = useState<PusherStore>()
 
   useEffect(() => {
-    if (
-      session.status === "unauthenticated" ||
-      session.status === "loading" ||
-      !session.data
-    )
-      return
-
-    const newStore = createPusherStore({ slug, session })
+    const newStore = createPusherStore({ slug })
     setStore(newStore)
 
     return () => {
