@@ -112,6 +112,8 @@
     "pdf-lib": "^1.17.1",
     "postgres": "^3.4.5",
     "prismjs": "^1.29.0",
+    "pusher": "^5.2.0",
+    "pusher-js": "8.4.0-rc2",
     "react": "19.0.0",
     "react-day-picker": "8.10.1",
     "react-dnd": "^16.0.1",
