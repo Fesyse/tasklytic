@@ -20,7 +20,7 @@ import {
   SidebarMenuSkeleton
 } from "@/components/ui/sidebar"
 import { Skeleton } from "@/components/ui/skeleton"
-import { SidebarNav } from "@/lib/menu-list"
+import { SidebarNav } from "@/lib/sidebar"
 
 export function ProjectSwitcher({
   projects

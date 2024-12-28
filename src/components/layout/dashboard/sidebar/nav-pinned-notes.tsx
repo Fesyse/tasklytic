@@ -8,20 +8,17 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSkeleton,
-  useSidebar
+  SidebarMenuSkeleton
 } from "@/components/ui/sidebar"
 import { TextMorph } from "@/components/ui/text-morph"
 import { NoteActions } from "./note-actions"
-import { SidebarNav } from "@/lib/menu-list"
+import { SidebarNav } from "@/lib/sidebar"
 
 export function NavPinnedNotes({
   pinnedNotes
 }: {
   pinnedNotes: SidebarNav["pinnedNotes"]
 }) {
-  const { isMobile } = useSidebar()
-
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel className="flex items-center gap-1.5">

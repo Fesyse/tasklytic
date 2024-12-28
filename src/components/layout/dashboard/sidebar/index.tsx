@@ -11,7 +11,7 @@ import { NavNotes } from "@/components/layout/dashboard/sidebar/nav-notes"
 import { NavPinnedNotes } from "@/components/layout/dashboard/sidebar/nav-pinned-notes"
 import { NavSecondary } from "@/components/layout/dashboard/sidebar/nav-secondary"
 import { ProjectSwitcher } from "@/components/layout/dashboard/sidebar/project-switcher"
-import { useSidebarNav } from "@/lib/menu-list"
+import { useSidebarNav } from "@/lib/sidebar"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const data = useSidebarNav()

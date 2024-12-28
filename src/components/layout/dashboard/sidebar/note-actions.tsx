@@ -8,7 +8,7 @@ import {
   PinOff,
   Trash2
 } from "lucide-react"
-import { useParams, useRouter } from "next/navigation"
+import { useParams, usePathname, useRouter } from "next/navigation"
 import { type FC } from "react"
 import { toast } from "sonner"
 import {
@@ -33,7 +33,7 @@ import {
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { SidebarMenuAction } from "@/components/ui/sidebar"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { SidebarNav } from "@/lib/menu-list"
+import { SidebarNav } from "@/lib/sidebar"
 import { api } from "@/trpc/react"
 
 type NoteActionsProps = {
@@ -44,6 +44,7 @@ export const NoteActions: FC<NoteActionsProps> = ({ note }) => {
   const utils = api.useUtils()
   const isMobile = useIsMobile()
   const router = useRouter()
+  const pathname = usePathname()
   const { projectId } = useParams<{ projectId: string }>()
 
   const { mutate: deleteNote, isPending: isNoteDeleting } =
@@ -51,6 +52,10 @@ export const NoteActions: FC<NoteActionsProps> = ({ note }) => {
       onSuccess: async note => {
         utils.notes.getAll.invalidate()
         toast.success(`Successfully deleted note!`)
+
+        if (pathname.startsWith(`/projects/${projectId}/note/${note.id}`)) {
+          router.push(`/projects/${projectId}`)
+        }
       },
       onError: () => toast.error("An error occurred deleting note! Try again.")
     })

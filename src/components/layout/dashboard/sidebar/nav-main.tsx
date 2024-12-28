@@ -6,7 +6,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from "@/components/ui/sidebar"
-import { type SidebarNav } from "@/lib/menu-list"
+import { type SidebarNav } from "@/lib/sidebar"
 
 export function NavMain({ navigation }: { navigation: SidebarNav["navMain"] }) {
   return (

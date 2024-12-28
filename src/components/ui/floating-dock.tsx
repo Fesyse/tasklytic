@@ -24,7 +24,7 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "./tooltip"
-import { type Menu, type Submenu } from "@/lib/menu-list"
+import { type Menu, type Submenu } from "@/lib/sidebar"
 
 const DEFAULT_MAGNIFICATION = 60
 const DEFAULT_DISTANCE = 140

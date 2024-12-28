@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/tooltip"
 import { importFile } from "@/lib/utils"
 import { NoteActions } from "./note-actions"
-import { SidebarNav } from "@/lib/menu-list"
+import { SidebarNav } from "@/lib/sidebar"
 import { api } from "@/trpc/react"
 
 export function NavNotes({ notes }: { notes: SidebarNav["notes"] }) {

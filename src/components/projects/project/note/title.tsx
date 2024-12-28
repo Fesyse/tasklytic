@@ -18,10 +18,8 @@ export const NoteTitle: FC<NoteTitleProps> = ({ noteId }) => {
     debounce(async (e: React.ChangeEvent<HTMLInputElement>) => {
       if (!note) return
       if (e.target.value === note.title) return
-      const title = e.target.value.length === 0 ? "Untitled" : e.target.value
-      console.log(title)
 
-      await updateNoteTitle({ id: note.id, title })
+      await updateNoteTitle({ id: note.id, title: e.target.value })
 
       await Promise.all([
         utils.notes.getById.invalidate({ id: note.id }),
