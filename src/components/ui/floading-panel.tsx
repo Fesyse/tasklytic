@@ -1,12 +1,12 @@
 "use client"
 
+import { ArrowLeftIcon } from "lucide-react"
 import {
   AnimatePresence,
   MotionConfig,
   type Variants,
   motion
-} from "framer-motion"
-import { ArrowLeftIcon } from "lucide-react"
+} from "motion/react"
 import React, {
   createContext,
   useContext,

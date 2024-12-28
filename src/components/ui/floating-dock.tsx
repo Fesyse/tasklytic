@@ -4,6 +4,7 @@
  * Mobile navbar is better positioned at bottom right.
  **/
 import { IconLayoutNavbarCollapse } from "@tabler/icons-react"
+import { type LucideIcon } from "lucide-react"
 import {
   AnimatePresence,
   type MotionValue,
@@ -11,10 +12,9 @@ import {
   useMotionValue,
   useSpring,
   useTransform
-} from "framer-motion"
-import { type LucideIcon } from "lucide-react"
+} from "motion/react"
 import Link from "next/link"
-import { useEffect, useRef, useState } from "react"
+import { useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { cn } from "@/lib/utils"

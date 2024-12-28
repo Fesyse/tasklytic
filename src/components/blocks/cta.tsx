@@ -1,6 +1,6 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { motion } from "motion/react"
 import Image from "next/image"
 import Balancer from "react-wrap-balancer"
 import { OssChip } from "@/components/ui/oss-chips"

@@ -1,7 +1,7 @@
 "use client"
 
-import { AnimatePresence, MotionConfig, motion } from "framer-motion"
 import { X } from "lucide-react"
+import { AnimatePresence, MotionConfig, motion } from "motion/react"
 import {
   createContext,
   useContext,

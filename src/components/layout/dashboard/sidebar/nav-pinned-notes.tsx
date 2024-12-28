@@ -11,6 +11,7 @@ import {
   SidebarMenuSkeleton,
   useSidebar
 } from "@/components/ui/sidebar"
+import { TextMorph } from "@/components/ui/text-morph"
 import { NoteActions } from "./note-actions"
 import { SidebarNav } from "@/lib/menu-list"
 
@@ -39,7 +40,7 @@ export function NavPinnedNotes({
                   <span>
                     <note.emoji />
                   </span>
-                  <span>{note.name ?? "Untitled"}</span>
+                  <TextMorph>{note.name ?? "Untitled"}</TextMorph>
                 </Link>
               </SidebarMenuButton>
               <NoteActions note={note} />

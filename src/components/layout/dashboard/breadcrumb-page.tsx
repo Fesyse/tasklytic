@@ -3,6 +3,7 @@
 import { useParams } from "next/navigation"
 import { BreadcrumbPage } from "@/components/ui/breadcrumb"
 import { Skeleton } from "@/components/ui/skeleton"
+import { TextMorph } from "@/components/ui/text-morph"
 import { title } from "@/lib/utils"
 import { api } from "@/trpc/react"
 
@@ -31,7 +32,7 @@ export const DashboardBreadcrumbPage = () => {
       {isLoadingNote || isLoadingProject ? (
         <Skeleton className="h-7 w-36" />
       ) : (
-        title(note?.title ?? project?.name ?? "")
+        <TextMorph>{title(note?.title ?? project?.name ?? "")}</TextMorph>
       )}
     </BreadcrumbPage>
   )

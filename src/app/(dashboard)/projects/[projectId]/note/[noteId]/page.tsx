@@ -27,7 +27,7 @@ export default async function NotePage(props: NotePageProps) {
 
   return (
     <div className="mx-auto w-full max-w-[900px] py-28 font-comfortaa">
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 px-4">
         <NoteEmojiPicker noteId={noteId} />
         <NoteTitle noteId={noteId} />
       </div>
