@@ -17,12 +17,16 @@ export const NoteTitle: FC<NoteTitleProps> = ({ noteId }) => {
   const updateTitleDebounced = useCallback(
     debounce(async (e: React.ChangeEvent<HTMLInputElement>) => {
       if (!note) return
-      if (e.target.value === "" || e.target.value === note.title) return
+      if (e.target.value === note.title) return
+      const title = e.target.value.length === 0 ? "Untitled" : e.target.value
+      console.log(title)
 
-      await updateNoteTitle({ id: note.id, title: e.target.value })
+      await updateNoteTitle({ id: note.id, title })
 
-      await utils.notes.getById.invalidate({ id: note.id })
-      await utils.notes.getAll.invalidate()
+      await Promise.all([
+        utils.notes.getById.invalidate({ id: note.id }),
+        utils.notes.getAll.invalidate()
+      ])
     }, 750),
     [note?.id]
   )
