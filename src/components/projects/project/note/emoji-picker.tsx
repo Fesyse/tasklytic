@@ -57,9 +57,9 @@ export const NoteEmojiPicker: FC<NoteEmojiPickerProps> = ({ noteId }) => {
         onSelectEmoji={handleSelectEmoji}
         isWithEditor={false}
         icon={
-          note.emoji ? (
+          !!note.emoji || !!emoji ? (
             <span className="group relative cursor-pointer select-none text-5xl">
-              {emoji ?? note.emoji}
+              {note.emoji ?? emoji}
               <SquarePen
                 className="absolute bottom-[calc(100%-0.3rem)] left-[calc(100%-0.3rem)] text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100"
                 size={12}
