@@ -53,13 +53,13 @@ export const blocksRouter = createTRPCRouter({
         .returning()
         .then(r => r[0]!)
 
-      kv.del(`${cacheKeys.all}:${result.noteId}`)
+      kv.del(`${cacheKeys.all}:${block.noteId}`)
       kv.set(`${cacheKeys.one}:${result.id}`, result)
       kv.expire(`${cacheKeys.one}:${result.id}`, 1800)
 
       return result
     }),
-  updateOrCreateBlock: protectedProcedure
+  updateOrCreateBlocks: protectedProcedure
     .input(
       z.object({
         blocks: z.array(
@@ -77,31 +77,21 @@ export const blocksRouter = createTRPCRouter({
           })
 
           if (!block) {
-            await trx
-              .insert(blocks)
-              .values({
-                id: updatingBlock.id,
-                order: updatingBlock.order,
-                content: { ...updatingBlock.content, id: updatingBlock.id },
-                noteId: input.noteId,
-                projectId: input.projectId
-              })
-              .returning()
-              .then(r => r[0]!)
-
-            kv.del(`${cacheKeys.all}:${input.noteId}`)
+            await trx.insert(blocks).values({
+              id: updatingBlock.id,
+              order: updatingBlock.order,
+              content: { ...updatingBlock.content, id: updatingBlock.id },
+              noteId: input.noteId,
+              projectId: input.projectId
+            })
           } else {
             await trx
               .update(blocks)
               .set({ content: { ...updatingBlock.content, id: block.id } })
               .where(eq(blocks.id, block.id))
-              .returning()
-              .then(r => r[0]!)
           }
         }
       })
-      kv.del(`${cacheKeys.all}:${input.noteId}`)
-
       return true
     }),
   updateOrder: protectedProcedure
@@ -111,20 +101,20 @@ export const blocksRouter = createTRPCRouter({
         ids: z.array(z.string())
       })
     )
-    .mutation(async ({ ctx, input: { noteId, ids } }) => {
+    .mutation(async ({ ctx, input }) => {
       await ctx.db.transaction(async trx => {
-        for (let order = 0; order < ids.length; order++) {
-          const blockId = ids[order]!
+        for (let order = 0; order < input.ids.length; order++) {
+          const blockId = input.ids[order]!
 
           // Update the order of the block
           await trx
             .update(blocks)
             .set({ order })
-            .where(and(eq(blocks.id, blockId), eq(blocks.noteId, noteId)))
+            .where(and(eq(blocks.id, blockId), eq(blocks.noteId, input.noteId)))
         }
       })
 
-      kv.del(`${cacheKeys.all}:${noteId}`)
+      kv.del(`${cacheKeys.all}:${input.noteId}`)
     }),
   delete: protectedProcedure
     .input(

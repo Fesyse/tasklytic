@@ -15,7 +15,7 @@ const config: NextConfig = {
   //   permanent: true
   // }
   // ],
-
+  experimental: { dynamicIO: true },
   images: {
     remotePatterns: [
       {

@@ -64,8 +64,8 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
 
   const setSavedOnSuccess = useCallback(() => setState({ saved: true }), [])
 
-  const { mutate: updateOrCreateBlock } =
-    api.blocks.updateOrCreateBlock.useMutation({
+  const { mutate: updateOrCreateBlocks } =
+    api.blocks.updateOrCreateBlocks.useMutation({
       onSuccess: setSavedOnSuccess
     })
   const { mutate: updateBlockOrder } = api.blocks.updateOrder.useMutation({
@@ -110,7 +110,7 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
       }: HandleChangeOptions & { updatingBlockIds: string[] }) => {
         if (!updatingBlockIds.length) return
 
-        updateOrCreateBlock({
+        updateOrCreateBlocks({
           blocks: updatingBlockIds
             .filter(id => value.findIndex(b => (b.id as string) === id) !== -1)
             .map(id => ({
