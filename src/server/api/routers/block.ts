@@ -1,8 +1,10 @@
 import { and, eq, inArray } from "drizzle-orm"
 import { z } from "zod"
+import { getNoteSlug } from "@/lib/pusher"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { kv } from "@/server/cache"
 import { type Block, blocks } from "@/server/db/schema"
+import { pusherServer } from "@/server/pusher"
 
 const cacheKeys = {
   all: `projects:notes:blocks:all`,
@@ -70,49 +72,68 @@ export const blocksRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.transaction(async trx => {
-        for (const updatingBlock of input.blocks) {
-          const block = await ctx.db.query.blocks.findFirst({
-            where: (blocksTable, { eq }) => eq(blocksTable.id, updatingBlock.id)
-          })
-
-          if (!block) {
-            await trx.insert(blocks).values({
-              id: updatingBlock.id,
-              order: updatingBlock.order,
-              content: { ...updatingBlock.content, id: updatingBlock.id },
-              noteId: input.noteId,
-              projectId: input.projectId
+      await Promise.all([
+        ctx.db.transaction(async trx => {
+          for (const updatingBlock of input.blocks) {
+            const block = await ctx.db.query.blocks.findFirst({
+              where: (blocksTable, { eq }) =>
+                eq(blocksTable.id, updatingBlock.id)
             })
-          } else {
-            await trx
-              .update(blocks)
-              .set({ content: { ...updatingBlock.content, id: block.id } })
-              .where(eq(blocks.id, block.id))
+
+            if (!block) {
+              await trx.insert(blocks).values({
+                id: updatingBlock.id,
+                order: updatingBlock.order,
+                content: { ...updatingBlock.content, id: updatingBlock.id },
+                noteId: input.noteId,
+                projectId: input.projectId
+              })
+            } else {
+              await trx
+                .update(blocks)
+                .set({ content: { ...updatingBlock.content, id: block.id } })
+                .where(eq(blocks.id, block.id))
+            }
           }
-        }
-      })
+        }),
+        pusherServer.trigger(
+          getNoteSlug(input.projectId, input.noteId),
+          "update",
+          {}
+        )
+      ])
+
       return true
     }),
   updateOrder: protectedProcedure
     .input(
       z.object({
+        projectId: z.string(),
         noteId: z.string(),
         ids: z.array(z.string())
       })
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.transaction(async trx => {
-        for (let order = 0; order < input.ids.length; order++) {
-          const blockId = input.ids[order]!
+      await Promise.all([
+        ctx.db.transaction(async trx => {
+          for (let order = 0; order < input.ids.length; order++) {
+            const blockId = input.ids[order]!
 
-          // Update the order of the block
-          await trx
-            .update(blocks)
-            .set({ order })
-            .where(and(eq(blocks.id, blockId), eq(blocks.noteId, input.noteId)))
-        }
-      })
+            // Update the order of the block
+            await trx
+              .update(blocks)
+              .set({ order })
+              .where(
+                and(eq(blocks.id, blockId), eq(blocks.noteId, input.noteId))
+              )
+          }
+        }),
+        pusherServer.trigger(
+          getNoteSlug(input.projectId, input.noteId),
+          "update",
+          {}
+        )
+      ])
 
       kv.del(`${cacheKeys.all}:${input.noteId}`)
     }),
@@ -125,7 +146,14 @@ export const blocksRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.delete(blocks).where(eq(blocks.id, input.id))
+      await Promise.all([
+        ctx.db.delete(blocks).where(eq(blocks.id, input.id)),
+        pusherServer.trigger(
+          getNoteSlug(input.projectId, input.noteId),
+          "update",
+          {}
+        )
+      ])
 
       kv.del(`${cacheKeys.all}:${input.noteId}`)
       kv.del(`${cacheKeys.one}:${input.id}`)
@@ -139,7 +167,14 @@ export const blocksRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.delete(blocks).where(inArray(blocks.id, input.ids))
+      await Promise.all([
+        ctx.db.delete(blocks).where(inArray(blocks.id, input.ids)),
+        pusherServer.trigger(
+          getNoteSlug(input.projectId, input.noteId),
+          "update",
+          {}
+        )
+      ])
 
       kv.del(`${cacheKeys.all}:${input.noteId}`)
     })

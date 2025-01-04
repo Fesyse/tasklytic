@@ -1,3 +1,4 @@
+import { useParams } from "next/navigation"
 import type { Channel, PresenceChannel } from "pusher-js"
 import Pusher from "pusher-js"
 import { createContext, useContext, useEffect, useRef, useState } from "react"
@@ -135,3 +136,17 @@ export function useSubscribeToEvent<MessageType>(
 }
 
 export const useCurrentMemberCount = () => usePusherStore(s => s.members.size)
+
+// Slugs
+
+export const useNoteSlug = () => {
+  const { projectId, noteId } = useParams<{
+    projectId: string
+    noteId: string
+  }>()
+  return `project:${projectId}:note:${noteId}`
+}
+
+export const getNoteSlug = (projectId: string, noteId: string) => {
+  return `project:${projectId}:note:${noteId}`
+}

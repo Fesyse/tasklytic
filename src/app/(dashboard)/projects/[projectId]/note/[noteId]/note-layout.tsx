@@ -1,7 +1,6 @@
 "use client"
 
 import { Plate } from "@udecode/plate-common/react"
-import { useParams } from "next/navigation"
 import { DndProvider } from "react-dnd"
 import { HTML5Backend } from "react-dnd-html5-backend"
 import {
@@ -16,7 +15,7 @@ import { NavActions } from "@/components/layout/dashboard/nav-actions"
 import { FixedToolbar } from "@/components/plate-ui/fixed-toolbar"
 import { FixedToolbarButtons } from "@/components/plate-ui/fixed-toolbar-buttons"
 import { useNoteEditor } from "@/hooks/use-note-editor"
-import { PusherProvider } from "@/lib/pusher"
+import { PusherProvider, useNoteSlug } from "@/lib/pusher"
 import { Block } from "@/server/db/schema"
 
 type NoteLayoutProps = React.PropsWithChildren<{
@@ -25,11 +24,7 @@ type NoteLayoutProps = React.PropsWithChildren<{
 
 export function NoteLayout({ blocks, children }: NoteLayoutProps) {
   const { editor, handleChange } = useNoteEditor({ blocks })
-  const { projectId, noteId } = useParams<{
-    projectId: string
-    noteId: string
-  }>()
-  const slug = `project:${projectId}:note:${noteId}`
+  const slug = useNoteSlug()
 
   return (
     <PusherProvider slug={slug}>

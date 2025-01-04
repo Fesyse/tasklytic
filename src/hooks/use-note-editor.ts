@@ -55,15 +55,16 @@ const getIdFromOperation = (
 }
 
 export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
-  const { setState } = useNoteEditorState(s => s)
+  const { setState: setNoteEditorState } = useNoteEditorState(s => s)
 
   const { projectId, noteId } = useParams<{
     projectId: string
     noteId: string
   }>()
 
-  const setSavedOnSuccess = useCallback(() => setState({ saved: true }), [])
+  const setSavedOnSuccess = () => setNoteEditorState({ saved: true })
 
+  // Mutations for blocks
   const { mutate: updateOrCreateBlocks } =
     api.blocks.updateOrCreateBlocks.useMutation({
       onSuccess: setSavedOnSuccess
@@ -96,6 +97,7 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
       const ids = value.map(b => b.id as string)
 
       updateBlockOrder({
+        projectId,
         noteId,
         ids
       })
@@ -237,11 +239,13 @@ export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
       editor,
       value
     }: Omit<HandleChangeOptions, "operation" | "currentBlock">) => {
-      setState({ saved: false })
+      setNoteEditorState({ saved: false })
+
       for (const operation of editor.operations) {
+        // in order to get and process all blocks we need to use the operation from plate.js, so we use handlers for that
         const handler = handlers[operation.type]
 
-        if (handler) handler({ editor, value, operation, currentBlock })
+        handler({ editor, value, operation, currentBlock })
       }
     },
     []
