@@ -1,7 +1,8 @@
 import { type Metadata } from "next"
+import { Suspense } from "react"
+import { Skeleton } from "@/components/ui/skeleton"
 import { Note } from "@/components/projects/project/note"
-import { NoteEmojiPicker } from "@/components/projects/project/note/emoji-picker"
-import { NoteTitle } from "@/components/projects/project/note/title"
+import { NoteInfo } from "@/components/projects/project/note/note-info"
 import { api } from "@/trpc/server"
 
 type NotePageProps = {
@@ -28,8 +29,16 @@ export default async function NotePage(props: NotePageProps) {
   return (
     <div className="mx-auto w-full max-w-[900px] py-28 font-comfortaa">
       <div className="flex items-center gap-4 px-4">
-        <NoteEmojiPicker noteId={noteId} />
-        <NoteTitle noteId={noteId} />
+        <Suspense
+          fallback={
+            <>
+              <Skeleton className="h-10 w-10" />
+              <Skeleton className="h-10 w-44" />
+            </>
+          }
+        >
+          <NoteInfo noteId={noteId} />
+        </Suspense>
       </div>
       <Note />
     </div>

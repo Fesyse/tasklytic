@@ -1,5 +1,4 @@
 import { cn } from "@/lib/utils"
-import { BLOCK_TYPE } from "@/server/db/schema"
 
 export const Md = {
   h1: ({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
@@ -138,4 +137,4 @@ export const Md = {
       {...props}
     />
   )
-} as const satisfies Record<(typeof BLOCK_TYPE)[number], React.FC>
+} as const satisfies Record<string, React.FC>

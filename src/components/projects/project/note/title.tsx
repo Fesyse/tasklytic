@@ -2,16 +2,15 @@
 
 import debounce from "lodash.debounce"
 import { useCallback, type FC } from "react"
-import { Skeleton } from "@/components/ui/skeleton"
+import { type Note } from "@/server/db/schema"
 import { api } from "@/trpc/react"
 
 type NoteTitleProps = {
-  noteId: string
+  note: Note
 }
 
-export const NoteTitle: FC<NoteTitleProps> = ({ noteId }) => {
+export const NoteTitle: FC<NoteTitleProps> = ({ note }) => {
   const utils = api.useUtils()
-  const { data: note, isLoading } = api.notes.getById.useQuery({ id: noteId })
   const { mutateAsync: updateNoteTitle } = api.notes.update.useMutation()
 
   const updateTitleDebounced = useCallback(
@@ -29,9 +28,7 @@ export const NoteTitle: FC<NoteTitleProps> = ({ noteId }) => {
     [note?.id]
   )
 
-  return isLoading ? (
-    <Skeleton className="h-10 w-44" />
-  ) : (
+  return (
     <input
       className="w-full border-b bg-transparent pb-2 text-4xl outline-none"
       defaultValue={note?.title === "Untitled" ? "" : (note?.title ?? "")}

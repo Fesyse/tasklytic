@@ -5,15 +5,21 @@ import { useEffect, useRef, useState } from "react"
 import { cn } from "@/lib/utils"
 
 type GlowingStarsBackgroundCardProps = {
+  stars?: number
+  columns?: number
   className?: string
   children?: React.ReactNode
   glowingStarsOnHover?: number[]
+  illustrationClassName?: string
 }
 
 export const GlowingStarsBackgroundCard = ({
   className,
   children,
-  glowingStarsOnHover
+  glowingStarsOnHover,
+  stars,
+  columns,
+  illustrationClassName
 }: GlowingStarsBackgroundCardProps) => {
   const [mouseEnter, setMouseEnter] = useState(false)
 
@@ -32,8 +38,11 @@ export const GlowingStarsBackgroundCard = ({
     >
       <div className="flex items-center justify-center">
         <Illustration
+          stars={stars}
+          columns={columns}
           mouseEnter={mouseEnter}
           glowingStarsOnHover={glowingStarsOnHover}
+          illustrationClassName={illustrationClassName}
         />
       </div>
       <div className="px-2 pb-6">{children}</div>
@@ -71,14 +80,17 @@ export const GlowingStarsTitle = ({
 
 export const Illustration = ({
   mouseEnter,
-  glowingStarsOnHover
+  stars = 114,
+  columns = 17,
+  glowingStarsOnHover,
+  illustrationClassName
 }: {
+  illustrationClassName?: string
+  stars?: number
+  columns?: number
   mouseEnter: boolean
   glowingStarsOnHover: GlowingStarsBackgroundCardProps["glowingStarsOnHover"]
 }) => {
-  const stars = 114
-  const columns = 17
-
   const [glowingStars, setGlowingStars] = useState<number[]>([])
 
   const highlightedStars = useRef<number[]>([])
@@ -96,7 +108,7 @@ export const Illustration = ({
 
   return (
     <div
-      className="h-48 w-full p-1"
+      className={cn("h-48 w-full p-1", illustrationClassName)}
       style={{
         display: "grid",
         gridTemplateColumns: `repeat(${columns}, 1fr)`,

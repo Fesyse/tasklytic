@@ -17,14 +17,5 @@
     "css": "src/styles/globals.css",
     "cssVariables": true,
     "prefix": ""
-  },
-  "registries": {
-    "plate": {
-      "style": "default",
-      "aliases": {
-        "ui": "@/components/plate-ui"
-      },
-      "url": "https://platejs.org/r"
-    }
   }
 }
