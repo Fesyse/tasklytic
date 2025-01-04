@@ -321,7 +321,7 @@ export const subTasksRelations = relations(subTasks, ({ one }) => ({
   task: one(tasks, { fields: [subTasks.taskId], references: [tasks.id] })
 }))
 
-export const projectsRelations = relations(projects, ({ many, one }) => ({
+export const projectsRelations = relations(projects, ({ many }) => ({
   notes: many(notes),
   projectMemberships: many(projectMemberships)
 }))
