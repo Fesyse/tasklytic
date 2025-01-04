@@ -10,6 +10,7 @@ import { useCallback, useMemo, useState } from "react"
 import { useCreateEditor } from "@/components/editor/use-create-editor"
 import { useNoteEditorState } from "@/components/providers/note-editor-state-provider"
 import type { ArgumentTypes } from "@/types/utils"
+import { useSubscribeToEvent } from "@/lib/pusher"
 import { type Block } from "@/server/db/schema"
 import { api } from "@/trpc/react"
 
@@ -55,6 +56,9 @@ const getIdFromOperation = (
 }
 
 export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
+  useSubscribeToEvent("update", data => {
+    console.log("update", data)
+  })
   const { setState: setNoteEditorState } = useNoteEditorState(s => s)
 
   const { projectId, noteId } = useParams<{

@@ -14,6 +14,7 @@ export async function POST(req: Request) {
   if (!session) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
   }
+
   const pusherAuth = pusherServer.authenticateUser(socket_id, session.user)
   return NextResponse.json(pusherAuth, { status: 201 })
 }

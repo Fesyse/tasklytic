@@ -1,9 +1,9 @@
 import { and, eq, inArray } from "drizzle-orm"
 import { z } from "zod"
-import { getNoteSlug } from "@/lib/pusher"
+import { getNoteSlug } from "@/lib/pusher-slugs"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { kv } from "@/server/cache"
-import { type Block, blocks } from "@/server/db/schema"
+import { Block, blocks } from "@/server/db/schema"
 import { pusherServer } from "@/server/pusher"
 
 const cacheKeys = {
@@ -19,7 +19,9 @@ export const blocksRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      const cached = await kv.get(`${cacheKeys.all}:${input.noteId}`)
+      const cacheKey = `${cacheKeys.all}:${input.noteId}`
+      const cached = await kv.get(cacheKey)
+
       if (cached) return cached as Block[]
 
       const blocks = await ctx.db.query.blocks.findMany({
@@ -27,8 +29,8 @@ export const blocksRouter = createTRPCRouter({
           and(eq(blocksTable.noteId, input.noteId))
       })
 
-      kv.set(`${cacheKeys.all}:${input.noteId}`, blocks)
-      kv.expire(`${cacheKeys.all}:${input.noteId}`, 1800)
+      kv.set(cacheKey, blocks)
+      kv.expire(cacheKey, 1800)
 
       return blocks
     }),
@@ -102,6 +104,9 @@ export const blocksRouter = createTRPCRouter({
           {}
         )
       ])
+
+      kv.del(`${cacheKeys.all}:${input.noteId}`)
+      console.log(kv.get(`${cacheKeys.all}:${input.noteId}`))
 
       return true
     }),

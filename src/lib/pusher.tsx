@@ -85,7 +85,7 @@ export const PusherProvider = ({ slug, children }: PusherProviderProps) => {
       )
       pusher.disconnect()
     }
-  }, [slug])
+  }, [])
 
   if (!store) return children
 
@@ -98,15 +98,18 @@ export const PusherProvider = ({ slug, children }: PusherProviderProps) => {
  * Section 3: "The Hooks"
  *
  * The exported hooks you use to interact with this store (in this case just an event sub)
- *
- * (I really want useEvent tbh)
  */
 function usePusherStore<T>(
   selector: (state: PusherState) => T,
+  throwOnUndefined: boolean = true,
   equalityFn?: (left: T, right: T) => boolean
-): T {
+): typeof throwOnUndefined extends true ? T : T | undefined {
   const store = useContext(PusherContext)
-  if (!store) throw new Error("Missing PusherContext.Provider in the tree")
+  if (!store) {
+    if (throwOnUndefined)
+      throw new Error("Missing PusherContext.Provider in the tree")
+    else return
+  }
 
   return useStore(store, selector, equalityFn)
 }
@@ -115,7 +118,7 @@ export function useSubscribeToEvent<MessageType>(
   eventName: string,
   callback: (data: MessageType) => void
 ) {
-  const channel = usePusherStore(state => state.channel)
+  const channel = usePusherStore(state => state.channel, false)
 
   const stableCallback = useRef(callback)
 
@@ -128,7 +131,9 @@ export function useSubscribeToEvent<MessageType>(
     const reference = (data: MessageType) => {
       stableCallback.current(data)
     }
-    channel.bind(eventName, reference)
+    if (!channel) return
+
+    channel.bind(eventName, reference as any)
     return () => {
       channel.unbind(eventName, reference)
     }
@@ -144,9 +149,5 @@ export const useNoteSlug = () => {
     projectId: string
     noteId: string
   }>()
-  return `project:${projectId}:note:${noteId}`
-}
-
-export const getNoteSlug = (projectId: string, noteId: string) => {
   return `project:${projectId}:note:${noteId}`
 }
