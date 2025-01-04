@@ -167,8 +167,6 @@ export const notesRouter = createTRPCRouter({
           for (let i = 0; i < input.content!.length; i++) {
             const block = input.content![i]!
 
-            console.log(block)
-
             await trx
               .insert(blocks)
               .values({

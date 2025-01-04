@@ -5,8 +5,8 @@ import { pusherServer } from "@/server/pusher"
 
 export async function POST(req: Request) {
   const formData = await req.formData()
-  const { socket_id } = z
-    .object({ socket_id: z.string() })
+  const { socket_id, channel_name } = z
+    .object({ socket_id: z.string(), channel_name: z.string() })
     .parse(Object.fromEntries(formData.entries()))
 
   const session = await auth()
@@ -15,6 +15,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
   }
 
-  const pusherAuth = pusherServer.authenticateUser(socket_id, session.user)
+  const pusherAuth = pusherServer.authorizeChannel(socket_id, channel_name, {
+    user_id: session.user.id,
+    user_info: session.user
+  })
   return NextResponse.json(pusherAuth, { status: 201 })
 }

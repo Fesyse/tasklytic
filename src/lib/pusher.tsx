@@ -3,6 +3,7 @@ import type { Channel, PresenceChannel } from "pusher-js"
 import Pusher from "pusher-js"
 import { createContext, useContext, useEffect, useRef, useState } from "react"
 import { createStore, useStore } from "zustand"
+import { getNoteSlug } from "./pusher-slugs"
 import { env } from "@/env"
 
 type PusherProps = {
@@ -149,5 +150,5 @@ export const useNoteSlug = () => {
     projectId: string
     noteId: string
   }>()
-  return `project:${projectId}:note:${noteId}`
+  return getNoteSlug(projectId, noteId)
 }

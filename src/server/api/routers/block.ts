@@ -106,7 +106,6 @@ export const blocksRouter = createTRPCRouter({
       ])
 
       kv.del(`${cacheKeys.all}:${input.noteId}`)
-      console.log(kv.get(`${cacheKeys.all}:${input.noteId}`))
 
       return true
     }),

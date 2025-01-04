@@ -56,9 +56,7 @@ const getIdFromOperation = (
 }
 
 export const useNoteEditor = ({ blocks }: UseNoteEditorProps) => {
-  useSubscribeToEvent("update", data => {
-    console.log("update", data)
-  })
+  useSubscribeToEvent("update", console.log)
   const { setState: setNoteEditorState } = useNoteEditorState(s => s)
 
   const { projectId, noteId } = useParams<{
