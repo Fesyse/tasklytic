@@ -2,11 +2,16 @@
 
 import { useParams, useRouter } from "next/navigation"
 import { toast } from "sonner"
+import { cn } from "@/lib/utils"
 import { api } from "@/trpc/react"
 
-export const CreateNoteButtonWrapper: React.FC<React.PropsWithChildren> = ({
-  children
-}) => {
+type CreateNoteButtonWrapperProps = React.PropsWithChildren<{
+  className?: string
+}>
+
+export const CreateNoteButtonWrapper: React.FC<
+  CreateNoteButtonWrapperProps
+> = ({ className, children }) => {
   const { projectId } = useParams<{ projectId: string }>()
   const router = useRouter()
 
@@ -21,7 +26,10 @@ export const CreateNoteButtonWrapper: React.FC<React.PropsWithChildren> = ({
   })
 
   return (
-    <button className="text-left" onClick={() => createNote({ projectId })}>
+    <button
+      className={cn("text-left", className)}
+      onClick={() => createNote({ projectId })}
+    >
       {children}
     </button>
   )

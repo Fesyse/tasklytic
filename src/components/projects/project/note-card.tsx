@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle
 } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 import { type Note } from "@/server/db/schema"
 
 export function NoteCard({ note }: { note: Note }) {
@@ -42,6 +43,24 @@ export function NoteCard({ note }: { note: Note }) {
           <Calendar className="h-4 w-4 mr-2" />
           {note.createdAt?.toLocaleDateString() || "N/A"}
         </Button>
+      </CardFooter>
+    </Card>
+  )
+}
+
+export function NoteCardSkeleton() {
+  return (
+    <Card className="hover:shadow-lg transition-shadow">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <Skeleton className="h-4 w-3/4" />
+        <Skeleton className="h-4 w-4" />
+      </CardHeader>
+      <CardContent>
+        <Skeleton className="h-3 w-1/2" />
+      </CardContent>
+      <CardFooter className="flex justify-between">
+        <Skeleton className="h-4 w-1/3" />
+        <Skeleton className="h-4 w-1/4" />
       </CardFooter>
     </Card>
   )
