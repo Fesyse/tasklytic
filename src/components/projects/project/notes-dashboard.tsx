@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/glowing-stars"
 import { CreateNoteButtonWrapper } from "./create-note-button-wrapper"
 import { NoteCard } from "./note-card"
+import { NotesDashboardHeader } from "./notes-dashboard-header"
 import { ProjectsProps } from "@/app/(dashboard)/projects/[projectId]/page"
 import { glowingStarsOnHover_PLUS_SMALL } from "@/lib/glowing-stars"
 import { api } from "@/trpc/server"
@@ -18,7 +19,8 @@ export const NotesDashboard: React.FC<ProjectsProps> = async ({ params }) => {
   const unpinnedNotes = notes.filter(note => !note.isPinned)
 
   return (
-    <>
+    <div className="container mx-auto p-6">
+      <NotesDashboardHeader />
       <div className="mt-8">
         <h2 className="text-2xl font-bold mb-4">Pinned Notes</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -55,6 +57,6 @@ export const NotesDashboard: React.FC<ProjectsProps> = async ({ params }) => {
           </CreateNoteButtonWrapper>
         </div>
       </div>
-    </>
+    </div>
   )
 }
