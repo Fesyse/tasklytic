@@ -72,8 +72,8 @@ export const projectsRouter = createTRPCRouter({
       return projectMembership?.project
     }),
   getAll: protectedProcedure.query(async ({ ctx }) => {
-    const cached = await kv.get(`projects:all`)
-    if (cached) return cached as Project[]
+    // const cached = await kv.get(`projects:all`)
+    // if (cached) return cached as Project[]
 
     const response = await ctx.db
       .select()

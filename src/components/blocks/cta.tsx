@@ -1,6 +1,3 @@
-"use client"
-
-import { motion } from "motion/react"
 import Image from "next/image"
 import Balancer from "react-wrap-balancer"
 import { OssChip } from "@/components/ui/oss-chips"
@@ -27,23 +24,16 @@ export const CTAWithGithub = () => {
       </div>
 
       <div className="relative flex items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true, amount: 0.5 }}
-          transition={{ duration: 1, ease: "easeInOut" }}
-        >
-          <Image
-            alt="Github logo"
-            src="/github.svg"
-            className="mt-24 hidden dark:block"
-            width={640}
-            height={520}
-          />
-          <div className="absolute left-[-50px] top-[150px] -z-50 lg:left-[150px] lg:top-[400px] lg:h-[400px] lg:w-[1000px]">
-            <OssChip className="flex" />
-          </div>
-        </motion.div>
+        <Image
+          alt="Github logo"
+          src="/github.svg"
+          className="mt-24 hidden dark:block"
+          width={640}
+          height={520}
+        />
+        <div className="absolute left-[-50px] top-[150px] -z-50 lg:left-[150px] lg:top-[400px] lg:h-[400px] lg:w-[1000px]">
+          <OssChip className="flex" />
+        </div>
       </div>
     </div>
   )

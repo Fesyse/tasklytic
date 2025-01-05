@@ -49,8 +49,8 @@ export const notesRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       const key = `${cacheKeys.all}:${input.projectId}`
-      const cached = await kv.get(key)
-      if (cached) return cached as Note[]
+      // const cached = await kv.get(key)
+      // if (cached) return cached as Note[]
 
       const result: Note[] = await ctx.db.query.notes.findMany({
         where: (notesTable, { and, not, eq }) =>

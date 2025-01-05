@@ -3,7 +3,7 @@ import { z } from "zod"
 import { getNoteSlug } from "@/lib/pusher-slugs"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { kv } from "@/server/cache"
-import { Block, blocks } from "@/server/db/schema"
+import { blocks } from "@/server/db/schema"
 import { pusherServer } from "@/server/pusher"
 
 const cacheKeys = {
@@ -20,9 +20,9 @@ export const blocksRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       const cacheKey = `${cacheKeys.all}:${input.noteId}`
-      const cached = await kv.get(cacheKey)
+      // const cached = await kv.get(cacheKey)
 
-      if (cached) return cached as Block[]
+      // if (cached) return cached as Block[]
 
       const blocks = await ctx.db.query.blocks.findMany({
         where: (blocksTable, { and, eq }) =>

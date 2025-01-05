@@ -2,6 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation"
 import { toast } from "sonner"
+import { BorderTrail } from "@/components/ui/border-trail"
 import { cn } from "@/lib/utils"
 import { api } from "@/trpc/react"
 
@@ -16,7 +17,7 @@ export const CreateNoteButtonWrapper: React.FC<
   const router = useRouter()
 
   const utils = api.useUtils()
-  const { mutate: createNote } = api.notes.create.useMutation({
+  const { mutate: createNote, isPending } = api.notes.create.useMutation({
     onSuccess: async note => {
       utils.notes.getAll.invalidate()
       toast.success(`Successfully created note!`)
@@ -30,6 +31,18 @@ export const CreateNoteButtonWrapper: React.FC<
       className={cn("text-left", className)}
       onClick={() => createNote({ projectId })}
     >
+      <BorderTrail
+        className={cn(
+          "bg-gradient-to-l from-green-300 via-green-500 to-green-300 transition-opacity duration-300 dark:from-green-700/30 dark:via-green-500 dark:to-green-700/30",
+          isPending ? "opacity-100" : "opacity-0"
+        )}
+        size={120}
+        transition={{
+          ease: [0, 0.5, 0.8, 0.5],
+          duration: 4,
+          repeat: 2
+        }}
+      />
       {children}
     </button>
   )

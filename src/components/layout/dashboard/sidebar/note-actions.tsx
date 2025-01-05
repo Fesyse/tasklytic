@@ -58,12 +58,12 @@ export const NoteActions: FC<NoteActionsProps> = ({
   const { mutate: deleteNote, isPending: isNoteDeleting } =
     api.notes.delete.useMutation({
       onSuccess: async note => {
-        utils.notes.getAll.invalidate()
         toast.success(`Successfully deleted note!`)
 
         if (pathname.startsWith(`/projects/${projectId}/note/${note.id}`)) {
           router.push(`/projects/${projectId}`)
         }
+        await utils.notes.getAll.invalidate()
       },
       onError: () => toast.error("An error occurred deleting note! Try again.")
     })

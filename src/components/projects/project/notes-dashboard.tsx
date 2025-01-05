@@ -25,17 +25,21 @@ async function NotesList({ projectId }: { projectId: string }) {
           <Pin className="-rotate-45" /> Pinned Notes
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {pinnedNotes.map(note => (
-            <NoteCard key={note.id} note={note} />
-          ))}
+          {pinnedNotes.length ? (
+            pinnedNotes.map(note => <NoteCard key={note.id} note={note} />)
+          ) : (
+            <p className="text-muted-foreground">No pinned notes</p>
+          )}
         </div>
       </div>
       <div className="mt-12">
         <h2 className="text-2xl font-bold mb-4">All Notes</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {unpinnedNotes.map(note => (
-            <NoteCard key={note.id} note={note} />
-          ))}
+          {unpinnedNotes.length ? (
+            unpinnedNotes.map(note => <NoteCard key={note.id} note={note} />)
+          ) : (
+            <p className="text-muted-foreground">No notes</p>
+          )}
         </div>
         <CreateNoteButtonWrapper className="mt-6">
           <GlowingStarsBackgroundCard
