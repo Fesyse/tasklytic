@@ -1,6 +1,6 @@
 "use client"
 
-import { MoreVertical } from "lucide-react"
+import { FileIcon, MoreVertical } from "lucide-react"
 import React from "react"
 import { NoteActions } from "@/components/layout/dashboard/sidebar/note-actions"
 import { type Note } from "@/server/db/schema"
@@ -17,7 +17,12 @@ export const NoteCardActions: React.FC<NoteCardActionsProps> = ({ note }) => {
         href: `/projects/${note.projectId}/note/${note.id}`,
         isActive: false,
         name: note.title,
-        emoji: () => <span className="text-xl">{note.emoji}</span>,
+        emoji: () =>
+          note.emoji ? (
+            <span className="text-xl">{note.emoji}</span>
+          ) : (
+            <FileIcon size={20} />
+          ),
         isPinned: note.isPinned,
         private: note.private
       }}
