@@ -1,3 +1,5 @@
+"use client"
+
 import {
   Eye,
   EyeOff,
@@ -9,7 +11,7 @@ import {
   Trash2
 } from "lucide-react"
 import { useParams, usePathname, useRouter } from "next/navigation"
-import { type FC } from "react"
+import React, { type FC } from "react"
 import { toast } from "sonner"
 import {
   AlertDialog,
@@ -38,9 +40,15 @@ import { api } from "@/trpc/react"
 
 type NoteActionsProps = {
   note: NonNullable<SidebarNav["notes"]["items"]>[number]
+  icon?: React.ReactNode
+  small?: boolean
 }
 
-export const NoteActions: FC<NoteActionsProps> = ({ note }) => {
+export const NoteActions: FC<NoteActionsProps> = ({
+  note,
+  small,
+  icon = <MoreHorizontal />
+}) => {
   const utils = api.useUtils()
   const isMobile = useIsMobile()
   const router = useRouter()
@@ -103,10 +111,14 @@ export const NoteActions: FC<NoteActionsProps> = ({ note }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <SidebarMenuAction showOnHover>
-          <MoreHorizontal />
-          <span className="sr-only">More</span>
-        </SidebarMenuAction>
+        {small ? (
+          icon
+        ) : (
+          <SidebarMenuAction showOnHover>
+            {icon}
+            <span className="sr-only">More</span>
+          </SidebarMenuAction>
+        )}
       </DropdownMenuTrigger>
       <DropdownMenuContent
         className="w-44 rounded-lg"

@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react"
+import { Pin, Plus } from "lucide-react"
 import { Suspense } from "react"
 import {
   GlowingStarsBackgroundCard,
@@ -21,7 +21,9 @@ async function NotesList({ projectId }: { projectId: string }) {
   return (
     <>
       <div className="mt-8">
-        <h2 className="text-2xl font-bold mb-4">Pinned Notes</h2>
+        <h2 className="text-2xl font-bold mb-4 flex gap-2 items-center">
+          <Pin className="-rotate-45" /> Pinned Notes
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {pinnedNotes.map(note => (
             <NoteCard key={note.id} note={note} />
