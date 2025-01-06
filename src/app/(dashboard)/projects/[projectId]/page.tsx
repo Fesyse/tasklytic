@@ -1,8 +1,12 @@
-import { NotesDashboard } from "@/components/projects/project/notes-dashboard"
-import { api } from "@/trpc/server"
 import { Metadata } from "next"
+import { NotesDashboard } from "@/components/projects/project/notes-dashboard"
+import { NoteDashboardFilterSchema } from "@/lib/schemas"
+import { api } from "@/trpc/server"
 
-export type ProjectsProps = { params: Promise<{ projectId: string }> }
+export type ProjectsProps = {
+  params: Promise<{ projectId: string }>
+  searchParams: Promise<NoteDashboardFilterSchema>
+}
 
 export async function generateMetadata({
   params
@@ -15,8 +19,11 @@ export async function generateMetadata({
   }
 }
 
-export default async function ProjectPage({ params }: ProjectsProps) {
-  const { projectId } = await params
-  
-  return <NotesDashboard projectId={projectId} />
+export default async function ProjectPage({
+  params,
+  searchParams
+}: ProjectsProps) {
+  const [{ projectId }, filters] = await Promise.all([params, searchParams])
+
+  return <NotesDashboard projectId={projectId} filters={filters} />
 }

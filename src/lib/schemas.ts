@@ -1,5 +1,5 @@
-import { ACCEPTED_IMAGE_TYPES, MAX_FILE_SIZE } from "@/lib/constants"
 import { z } from "zod"
+import { ACCEPTED_IMAGE_TYPES, MAX_FILE_SIZE } from "@/lib/constants"
 
 const settingsSchema = z.object({
   sidebar: z.object({
@@ -50,8 +50,12 @@ const blockContent = z.array(
   })
 )
 
-const sortBy = ["updated", "created", "alphabetical"] as const
-const sortByWithLabel = [{ value: "updated", label: "Last Updated" }, { value: "created", label: "Created Date" }, { value: "alphabetical", label: "Alphabetical" }] as const
+const sortBy = ["updatedAt", "createdAt", "alphabetical"] as const
+const sortByWithLabel = [
+  { value: "updatedAt", label: "Last Updated" },
+  { value: "createdAt", label: "Created Date" },
+  { value: "alphabetical", label: "Alphabetical" }
+] as const
 const order = ["asc", "desc"] as const
 
 const noteDashboardFilterSchema = z.object({
@@ -63,8 +67,15 @@ type NoteDashboardFilterSchema = z.infer<typeof noteDashboardFilterSchema>
 
 export {
   blockContent,
-  createProjectSchema, noteDashboardFilterSchema, settingsSchema, sortByWithLabel, updateProjectSchema,
-  type CreateProjectSchema, type NoteDashboardFilterSchema, type SettingsSchema,
+  createProjectSchema,
+  noteDashboardFilterSchema,
+  order,
+  settingsSchema,
+  sortBy,
+  sortByWithLabel,
+  updateProjectSchema,
+  type CreateProjectSchema,
+  type NoteDashboardFilterSchema,
+  type SettingsSchema,
   type UpdateProjectSchema
 }
-

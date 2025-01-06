@@ -1,18 +1,24 @@
+import { Pin, Plus } from "lucide-react"
+import { Suspense } from "react"
 import {
   GlowingStarsBackgroundCard,
   GlowingStarsDescription,
   GlowingStarsTitle
 } from "@/components/ui/glowing-stars"
-import { glowingStarsOnHover_PLUS_SMALL } from "@/lib/glowing-stars"
-import { api } from "@/trpc/server"
-import { Pin, Plus } from "lucide-react"
-import { Suspense } from "react"
 import { CreateNoteButtonWrapper } from "./create-note-button-wrapper"
 import { NoteCard, NoteCardSkeleton } from "./note-card"
 import { NotesDashboardHeader } from "./notes-dashboard-header"
+import { glowingStarsOnHover_PLUS_SMALL } from "@/lib/glowing-stars"
+import { NoteDashboardFilterSchema } from "@/lib/schemas"
+import { api } from "@/trpc/server"
 
-async function NotesList({ projectId }: { projectId: string }) {
-  const notes = await api.notes.getAll({ projectId })
+type NotesDashboardProps = {
+  projectId: string
+  filters: NoteDashboardFilterSchema
+}
+
+async function NotesList({ projectId, filters }: NotesDashboardProps) {
+  const notes = await api.notes.getAll({ projectId, filters })
 
   const pinnedNotes = notes.filter(note => note.isPinned)
   const unpinnedNotes = notes.filter(note => !note.isPinned)
@@ -65,16 +71,12 @@ async function NotesList({ projectId }: { projectId: string }) {
   )
 }
 
-type NotesDashboardProps = {
-  projectId: string
-}
-
-export const NotesDashboard: React.FC<NotesDashboardProps> = async ({ projectId }) => {
+export const NotesDashboard: React.FC<NotesDashboardProps> = async props => {
   return (
     <div className="container mx-auto p-6">
       <NotesDashboardHeader />
       <Suspense fallback={<NotesListSkeleton />}>
-        <NotesList projectId={projectId} />
+        <NotesList {...props} />
       </Suspense>
     </div>
   )

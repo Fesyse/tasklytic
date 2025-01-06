@@ -1,6 +1,6 @@
-import { eq, or } from "drizzle-orm"
+import { asc, desc, eq, or } from "drizzle-orm"
 import { z } from "zod"
-import { blockContent } from "@/lib/schemas"
+import { blockContent, order, sortBy } from "@/lib/schemas"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { kv } from "@/server/cache"
 import { blocks, createCuid, notes, type Note } from "@/server/db/schema"
@@ -44,7 +44,13 @@ export const notesRouter = createTRPCRouter({
   getAll: protectedProcedure
     .input(
       z.object({
-        projectId: z.string()
+        projectId: z.string(),
+        filters: z
+          .object({
+            sortBy: z.enum(sortBy).optional(),
+            order: z.enum(order).optional()
+          })
+          .optional()
       })
     )
     .query(async ({ ctx, input }) => {
@@ -52,7 +58,20 @@ export const notesRouter = createTRPCRouter({
       // const cached = await kv.get(key)
       // if (cached) return cached as Note[]
 
+      const columnSortBy = input.filters
+        ? input.filters.sortBy !== "alphabetical"
+          ? input.filters.sortBy
+          : "title"
+        : undefined
+
       const result: Note[] = await ctx.db.query.notes.findMany({
+        orderBy: input.filters
+          ? [
+              input.filters.order === "desc"
+                ? desc(notes[columnSortBy ?? "title"])
+                : asc(notes[columnSortBy ?? "title"])
+            ]
+          : undefined,
         where: (notesTable, { and, not, eq }) =>
           or(
             // if user is owner of the note, then we showing private note
