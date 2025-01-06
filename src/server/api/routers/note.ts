@@ -48,7 +48,8 @@ export const notesRouter = createTRPCRouter({
         filters: z
           .object({
             sortBy: z.enum(sortBy).optional(),
-            order: z.enum(order).optional()
+            order: z.enum(order).optional(),
+            search: z.string().optional()
           })
           .optional()
       })

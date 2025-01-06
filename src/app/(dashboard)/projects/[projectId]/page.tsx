@@ -3,9 +3,13 @@ import { NotesDashboard } from "@/components/projects/project/notes-dashboard"
 import { NoteDashboardFilterSchema } from "@/lib/schemas"
 import { api } from "@/trpc/server"
 
-export type ProjectsProps = {
+export type Filters = Partial<NoteDashboardFilterSchema> & {
+  search?: string
+}
+
+type ProjectsProps = {
   params: Promise<{ projectId: string }>
-  searchParams: Promise<NoteDashboardFilterSchema>
+  searchParams: Promise<Filters>
 }
 
 export async function generateMetadata({

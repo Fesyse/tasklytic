@@ -45,7 +45,6 @@ export const NotesFilterForm = () => {
     const baseUrl = `/projects/${projectId}`
 
     router.push(`${baseUrl}?${new URLSearchParams(data)}`)
-    router.refresh()
   }
 
   const resetFilters = () => {

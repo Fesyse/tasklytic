@@ -8,13 +8,13 @@ import {
 import { CreateNoteButtonWrapper } from "./create-note-button-wrapper"
 import { NoteCard, NoteCardSkeleton } from "./note-card"
 import { NotesDashboardHeader } from "./notes-dashboard-header"
+import { Filters } from "@/app/(dashboard)/projects/[projectId]/page"
 import { glowingStarsOnHover_PLUS_SMALL } from "@/lib/glowing-stars"
-import { NoteDashboardFilterSchema } from "@/lib/schemas"
 import { api } from "@/trpc/server"
 
 type NotesDashboardProps = {
   projectId: string
-  filters: NoteDashboardFilterSchema
+  filters: Filters
 }
 
 async function NotesList({ projectId, filters }: NotesDashboardProps) {
