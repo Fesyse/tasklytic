@@ -25,7 +25,7 @@ import {
   sortByWithLabel
 } from "@/lib/schemas"
 
-export const NotesFitlerForm = () => {
+export const NotesFilterForm = () => {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { projectId } = useParams<{ projectId: string }>()

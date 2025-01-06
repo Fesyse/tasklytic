@@ -1,7 +1,7 @@
 import { Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { NotesFitlerForm } from "./notes-filter-form"
+import { NotesFilterForm } from "./notes-filter-form"
 
 export function NotesDashboardHeader() {
   return (
@@ -12,7 +12,7 @@ export function NotesDashboardHeader() {
           <Search className="h-4 w-4" />
         </Button>
       </div>
-      <NotesFitlerForm />
+      <NotesFilterForm />
     </div>
   )
 }
