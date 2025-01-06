@@ -1,7 +1,5 @@
 "use client"
 
-import { Grid, List, Search, SortAsc } from "lucide-react"
-import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -11,10 +9,9 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
+import { Search, SortAsc } from "lucide-react"
 
 export function NotesDashboardHeader() {
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
-
   return (
     <div className="flex flex-col space-y-4 md:flex-row md:justify-between md:space-y-0">
       <div className="flex w-full md:w-1/3">
@@ -34,17 +31,6 @@ export function NotesDashboardHeader() {
             <SelectItem value="alphabetical">Alphabetical</SelectItem>
           </SelectContent>
         </Select>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
-        >
-          {viewMode === "grid" ? (
-            <Grid className="h-4 w-4" />
-          ) : (
-            <List className="h-4 w-4" />
-          )}
-        </Button>
         <Button>
           <SortAsc className="h-4 w-4 mr-2" />
           Sort

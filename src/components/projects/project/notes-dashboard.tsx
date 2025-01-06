@@ -1,16 +1,15 @@
-import { Pin, Plus } from "lucide-react"
-import { Suspense } from "react"
 import {
   GlowingStarsBackgroundCard,
   GlowingStarsDescription,
   GlowingStarsTitle
 } from "@/components/ui/glowing-stars"
+import { glowingStarsOnHover_PLUS_SMALL } from "@/lib/glowing-stars"
+import { api } from "@/trpc/server"
+import { Pin, Plus } from "lucide-react"
+import { Suspense } from "react"
 import { CreateNoteButtonWrapper } from "./create-note-button-wrapper"
 import { NoteCard, NoteCardSkeleton } from "./note-card"
 import { NotesDashboardHeader } from "./notes-dashboard-header"
-import { ProjectsProps } from "@/app/(dashboard)/projects/[projectId]/page"
-import { glowingStarsOnHover_PLUS_SMALL } from "@/lib/glowing-stars"
-import { api } from "@/trpc/server"
 
 async function NotesList({ projectId }: { projectId: string }) {
   const notes = await api.notes.getAll({ projectId })
@@ -66,9 +65,11 @@ async function NotesList({ projectId }: { projectId: string }) {
   )
 }
 
-export const NotesDashboard: React.FC<ProjectsProps> = async ({ params }) => {
-  const { projectId } = await params
+type NotesDashboardProps = {
+  projectId: string
+}
 
+export const NotesDashboard: React.FC<NotesDashboardProps> = async ({ projectId }) => {
   return (
     <div className="container mx-auto p-6">
       <NotesDashboardHeader />

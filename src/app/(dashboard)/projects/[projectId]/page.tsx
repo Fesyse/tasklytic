@@ -1,6 +1,6 @@
-import { Metadata } from "next"
 import { NotesDashboard } from "@/components/projects/project/notes-dashboard"
 import { api } from "@/trpc/server"
+import { Metadata } from "next"
 
 export type ProjectsProps = { params: Promise<{ projectId: string }> }
 
@@ -16,5 +16,7 @@ export async function generateMetadata({
 }
 
 export default async function ProjectPage({ params }: ProjectsProps) {
-  return <NotesDashboard params={params} />
+  const { projectId } = await params
+  
+  return <NotesDashboard projectId={projectId} />
 }
