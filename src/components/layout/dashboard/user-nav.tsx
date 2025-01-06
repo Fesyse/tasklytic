@@ -37,7 +37,7 @@ export function UserNav({ className }: UserNavProps) {
     if (type === "out") {
       await signOut()
       toast.success(`Successfully signed out.`)
-    } else return signIn()
+    } else signIn()
   }
   return ((user && status !== "loading") ?? status === "unauthenticated") ? (
     <DropdownMenu>
