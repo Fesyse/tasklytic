@@ -14,7 +14,6 @@ import {
   CommandItem,
   CommandList
 } from "@/components/ui/command"
-import { Skeleton } from "@/components/ui/skeleton"
 import { api } from "@/trpc/react"
 
 export const NotesSearch = () => {
@@ -44,11 +43,6 @@ export const NotesSearch = () => {
     []
   )
 
-  const runCommand = useCallback((command: () => unknown) => {
-    setOpen(false)
-    command()
-  }, [])
-
   useEffect(() => {
     if (!value.length) return
 
@@ -77,29 +71,30 @@ export const NotesSearch = () => {
         />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup
-            heading="Similar notes"
-            className={cn({ "gap-1": !(notes?.length && !isRefetching) })}
-          >
+          <CommandGroup heading="Similar notes">
             {notes?.length && !isRefetching
               ? notes?.map(note => (
                   <CommandItem
                     key={note.id}
                     value={note.title}
-                    onSelect={() =>
-                      runCommand(() =>
-                        router.push(`/projects/${projectId}/note/${note.id}`)
-                      )
-                    }
+                    onSelect={() => {
+                      setOpen(false)
+                      router.push(`/projects/${projectId}/note/${note.id}`)
+                    }}
                   >
-                    <FileIcon className="mr-2 h-4 w-4" />
+                    {note.emoji ? (
+                      <span className="text-xl">{note.emoji}</span>
+                    ) : (
+                      <FileIcon />
+                    )}
                     {note.title}
                   </CommandItem>
                 ))
               : Array.from({ length: 4 }).map((_, i) => (
-                  <CommandItem key={i} asChild>
-                    <Skeleton className="h-7" />
-                  </CommandItem>
+                  <CommandItem
+                    key={i}
+                    className="h-11 animate-pulse rounded bg-primary/10 mb-2"
+                  />
                 ))}
           </CommandGroup>
         </CommandList>
