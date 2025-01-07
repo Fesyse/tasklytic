@@ -4,7 +4,7 @@ import { cn } from "@udecode/cn"
 import debounce from "lodash.debounce"
 import { FileIcon } from "lucide-react"
 import { useParams, useRouter } from "next/navigation"
-import { useCallback, useEffect, useState } from "react"
+import React, { useCallback, useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
   CommandDialog,
@@ -20,34 +20,23 @@ export const NotesSearch = () => {
   const router = useRouter()
   const { projectId } = useParams<{ projectId: string }>()
 
+  const [isTyped, setIsTyped] = useState(false)
   const [open, setOpen] = useState(false)
   const [value, setValue] = useState("")
 
-  const {
-    data: notes,
-    refetch,
-    isRefetching
-  } = api.notes.getAll.useQuery(
-    { projectId },
+  const { data: notes, isRefetching } = api.notes.getAll.useQuery(
+    { projectId, filters: { search: value ?? undefined } },
     {
-      enabled: !!value.length
+      enabled: true
     }
   )
 
   const search = useCallback(
-    debounce<React.ChangeEventHandler<HTMLInputElement>>(e => {
-      if (!e.target.value) return
-
+    debounce((e: React.ChangeEvent<HTMLInputElement>) => {
       setValue(e.target.value)
-    }, 300),
+    }, 444),
     []
   )
-
-  useEffect(() => {
-    if (!value.length) return
-
-    refetch()
-  }, [value])
 
   return (
     <>
@@ -67,36 +56,51 @@ export const NotesSearch = () => {
       <CommandDialog open={open} onOpenChange={setOpen}>
         <CommandInput
           placeholder="Type a command or search..."
-          onInput={search}
+          onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
+            if (!isTyped) setIsTyped(true)
+            search(e)
+          }}
         />
         <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup heading="Similar notes">
-            {notes?.length && !isRefetching
-              ? notes?.map(note => (
-                  <CommandItem
-                    key={note.id}
-                    value={note.title}
-                    onSelect={() => {
-                      setOpen(false)
-                      router.push(`/projects/${projectId}/note/${note.id}`)
-                    }}
-                  >
-                    {note.emoji ? (
-                      <span className="text-xl">{note.emoji}</span>
-                    ) : (
-                      <FileIcon />
-                    )}
-                    {note.title}
-                  </CommandItem>
-                ))
-              : Array.from({ length: 4 }).map((_, i) => (
-                  <CommandItem
-                    key={i}
-                    className="h-11 animate-pulse rounded bg-primary/10 mb-2"
-                  />
-                ))}
-          </CommandGroup>
+          {isTyped ? (
+            <>
+              <CommandEmpty>No results found.</CommandEmpty>
+              <CommandGroup heading="Similar notes">
+                {isRefetching
+                  ? Array.from({ length: 4 }).map((_, i) => (
+                      <CommandItem
+                        key={i}
+                        className="h-11 animate-pulse rounded bg-primary/10 mb-2"
+                      />
+                    ))
+                  : notes?.length
+                    ? notes?.map(note => (
+                        <CommandItem
+                          key={note.id}
+                          value={note.title}
+                          onSelect={() => {
+                            setOpen(false)
+                            router.push(
+                              `/projects/${projectId}/note/${note.id}`
+                            )
+                          }}
+                        >
+                          {note.emoji ? (
+                            <span className="text-xl">{note.emoji}</span>
+                          ) : (
+                            <FileIcon />
+                          )}
+                          {note.title}
+                        </CommandItem>
+                      ))
+                    : null}
+              </CommandGroup>
+            </>
+          ) : (
+            <p className="py-6 text-center text-sm">
+              Start typing to search...
+            </p>
+          )}
         </CommandList>
       </CommandDialog>
     </>
