@@ -1,7 +1,6 @@
 "use client"
 
 import { cn } from "@udecode/cn"
-import { CommandItem } from "cmdk"
 import debounce from "lodash.debounce"
 import { FileIcon } from "lucide-react"
 import { useParams, useRouter } from "next/navigation"
@@ -12,6 +11,7 @@ import {
   CommandEmpty,
   CommandGroup,
   CommandInput,
+  CommandItem,
   CommandList
 } from "@/components/ui/command"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -44,6 +44,11 @@ export const NotesSearch = () => {
     []
   )
 
+  const runCommand = useCallback((command: () => unknown) => {
+    setOpen(false)
+    command()
+  }, [])
+
   useEffect(() => {
     if (!value.length) return
 
@@ -66,19 +71,26 @@ export const NotesSearch = () => {
         </kbd>
       </Button>
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder="Type a command or search..." />
+        <CommandInput
+          placeholder="Type a command or search..."
+          onInput={search}
+        />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup heading="Similar notes">
+          <CommandGroup
+            heading="Similar notes"
+            className={cn({ "gap-1": !(notes?.length && !isRefetching) })}
+          >
             {notes?.length && !isRefetching
               ? notes?.map(note => (
                   <CommandItem
                     key={note.id}
                     value={note.title}
                     onSelect={() =>
-                      router.push(`/projects/${projectId}/note/${note.id}`)
+                      runCommand(() =>
+                        router.push(`/projects/${projectId}/note/${note.id}`)
+                      )
                     }
-                    className="flex items-center "
                   >
                     <FileIcon className="mr-2 h-4 w-4" />
                     {note.title}
@@ -86,7 +98,7 @@ export const NotesSearch = () => {
                 ))
               : Array.from({ length: 4 }).map((_, i) => (
                   <CommandItem key={i} asChild>
-                    <Skeleton />
+                    <Skeleton className="h-7" />
                   </CommandItem>
                 ))}
           </CommandGroup>
