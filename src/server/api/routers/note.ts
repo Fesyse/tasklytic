@@ -1,5 +1,6 @@
-import { asc, desc, eq, or } from "drizzle-orm"
+import { asc, desc, eq, like, or } from "drizzle-orm"
 import { z } from "zod"
+import { searchQueryFormat } from "@/lib/utils"
 import { blockContent, order, sortBy } from "@/lib/schemas"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { kv } from "@/server/cache"
@@ -74,16 +75,21 @@ export const notesRouter = createTRPCRouter({
             ]
           : undefined,
         where: (notesTable, { and, not, eq }) =>
-          or(
-            // if user is owner of the note, then we showing private note
-            and(
-              eq(notesTable.projectId, input.projectId),
-              not(eq(notesTable.userId, ctx.session.user.id))
-            ),
-            // otherwise we only showing public note
-            and(
-              eq(notesTable.projectId, input.projectId),
-              eq(notesTable.private, false)
+          and(
+            input.filters?.search
+              ? like(notesTable.title, searchQueryFormat(input.filters.search))
+              : undefined,
+            or(
+              // if user is owner of the note, then we showing private note
+              and(
+                eq(notesTable.projectId, input.projectId),
+                not(eq(notesTable.userId, ctx.session.user.id))
+              ),
+              // otherwise we only showing public note
+              and(
+                eq(notesTable.projectId, input.projectId),
+                eq(notesTable.private, false)
+              )
             )
           )
       })

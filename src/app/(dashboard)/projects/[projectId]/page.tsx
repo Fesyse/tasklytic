@@ -1,11 +1,12 @@
 import { Metadata } from "next"
 import { NotesDashboard } from "@/components/projects/project/notes-dashboard"
-import { NoteDashboardFilterSchema } from "@/lib/schemas"
+import {
+  noteDashboardFilterSchema,
+  NoteDashboardFilterSchema
+} from "@/lib/schemas"
 import { api } from "@/trpc/server"
 
-export type Filters = Partial<NoteDashboardFilterSchema> & {
-  search?: string
-}
+export type Filters = Partial<NoteDashboardFilterSchema>
 
 type ProjectsProps = {
   params: Promise<{ projectId: string }>
@@ -27,7 +28,14 @@ export default async function ProjectPage({
   params,
   searchParams
 }: ProjectsProps) {
-  const [{ projectId }, filters] = await Promise.all([params, searchParams])
+  const [{ projectId }, filters] = await Promise.all([
+    params,
+    searchParams.then(data => {
+      const result = noteDashboardFilterSchema.safeParse(data)
+
+      return result.success ? result.data : undefined
+    })
+  ])
 
   return <NotesDashboard projectId={projectId} filters={filters} />
 }

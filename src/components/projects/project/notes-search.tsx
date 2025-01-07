@@ -1,21 +1,12 @@
 "use client"
 
 import debounce from "lodash.debounce"
-import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { useCallback } from "react"
 import { Input } from "@/components/ui/input"
 
 export const NotesSearch = () => {
-  const searchParams = useSearchParams()
-  const router = useRouter()
-  const { projectId } = useParams<{ projectId: string }>()
-
   const search = useCallback(
-    debounce<React.ChangeEventHandler<HTMLInputElement>>(e => {
-      router.push(
-        `/projects/${projectId}?${searchParams}&search=${e.target.value}`
-      )
-    }, 300),
+    debounce<React.ChangeEventHandler<HTMLInputElement>>(e => {}, 300),
     []
   )
 

@@ -14,7 +14,7 @@ import { api } from "@/trpc/server"
 
 type NotesDashboardProps = {
   projectId: string
-  filters: Filters
+  filters: Filters | undefined
 }
 
 async function NotesList({ projectId, filters }: NotesDashboardProps) {

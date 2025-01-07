@@ -94,6 +94,10 @@ function isNotePage(pathname: string) {
   )
 }
 
+function searchQueryFormat(str: string) {
+  return "%" + str.split("").join("%") + "%"
+}
+
 export {
   checkIsSubscriptionExpired,
   cn,
@@ -104,6 +108,7 @@ export {
   isNotePage,
   openInNewTab,
   random,
+  searchQueryFormat,
   sleep,
   title
 }
