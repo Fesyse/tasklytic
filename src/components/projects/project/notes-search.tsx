@@ -14,6 +14,7 @@ import {
   CommandItem,
   CommandList
 } from "@/components/ui/command"
+import { Skeleton } from "@/components/ui/skeleton"
 import { api } from "@/trpc/react"
 
 export const NotesSearch = () => {
@@ -37,6 +38,8 @@ export const NotesSearch = () => {
     }, 444),
     []
   )
+
+  console.log(isRefetching || !notes)
 
   return (
     <>
@@ -66,14 +69,13 @@ export const NotesSearch = () => {
             <>
               <CommandEmpty>No results found.</CommandEmpty>
               <CommandGroup heading="Similar notes">
-                {isRefetching
+                {isRefetching || !notes
                   ? Array.from({ length: 4 }).map((_, i) => (
-                      <CommandItem
-                        key={i}
-                        className="h-11 animate-pulse rounded bg-primary/10 mb-2"
-                      />
+                      <CommandItem key={i} asChild>
+                        <Skeleton className="h-11 animate-pulse rounded bg-primary/10 mb-2" />
+                      </CommandItem>
                     ))
-                  : notes?.length
+                  : notes.length
                     ? notes?.map(note => (
                         <CommandItem
                           key={note.id}
