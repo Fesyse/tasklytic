@@ -33,8 +33,13 @@ export function NoteCard({ note }: { note: Note }) {
             Last updated: {note.updatedAt?.toLocaleDateString() || "N/A"}
           </p>
         </CardContent>
-        <CardFooter className="flex justify-between">
-          <Badge variant="secondary">Project: {note.projectId}</Badge>
+        <CardFooter className="flex sm:justify-between sm:flex-row flex-col">
+          <Badge variant="secondary">
+            Project:
+            <span className="ml-1 truncate max-w-16 whitespace-nowrap">
+              {note.projectId}
+            </span>
+          </Badge>
           <Button variant="ghost" size="sm">
             <Calendar className="h-4 w-4 mr-2" />
             {note.createdAt?.toLocaleDateString() || "N/A"}

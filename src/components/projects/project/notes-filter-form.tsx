@@ -55,7 +55,10 @@ export const NotesFilterForm = () => {
 
   return (
     <Form {...form}>
-      <form className="flex space-x-2" onSubmit={form.handleSubmit(onSubmit)}>
+      <form
+        className="flex space-x-2 justify-between"
+        onSubmit={form.handleSubmit(onSubmit)}
+      >
         <TooltipProvider>
           <FormField
             name="sortBy"
@@ -80,41 +83,43 @@ export const NotesFilterForm = () => {
               </FormItem>
             )}
           />
-          <FormField
-            name="order"
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      type="button"
-                      size="icon"
-                      onClick={() =>
-                        field.onChange(field.value === "asc" ? "desc" : "asc")
-                      }
-                    >
-                      {field.value === "asc" ? (
-                        <SortAsc className="h-4 w-4" />
-                      ) : (
-                        <SortAsc className="h-4 w-4 rotate-180" />
-                      )}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    {field.value === "asc"
-                      ? "Sort Ascending"
-                      : "Sort Descending"}
-                  </TooltipContent>
-                </Tooltip>
-              </FormItem>
-            )}
-          />
+          <div className="flex space-x-2">
+            <FormField
+              name="order"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        type="button"
+                        size="icon"
+                        onClick={() =>
+                          field.onChange(field.value === "asc" ? "desc" : "asc")
+                        }
+                      >
+                        {field.value === "asc" ? (
+                          <SortAsc className="h-4 w-4" />
+                        ) : (
+                          <SortAsc className="h-4 w-4 rotate-180" />
+                        )}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {field.value === "asc"
+                        ? "Sort Ascending"
+                        : "Sort Descending"}
+                    </TooltipContent>
+                  </Tooltip>
+                </FormItem>
+              )}
+            />
 
-          <Button>
-            <SortAsc className="h-4 w-4 mr-2" />
-            Sort
-          </Button>
+            <Button>
+              <SortAsc className="h-4 w-4 mr-2" />
+              Sort
+            </Button>
+          </div>
           {isSubmitted ? (
             <Tooltip>
               <TooltipTrigger asChild>
