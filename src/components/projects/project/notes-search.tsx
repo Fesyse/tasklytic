@@ -34,12 +34,19 @@ export const NotesSearch = () => {
 
   const search = useCallback(
     debounce((e: React.ChangeEvent<HTMLInputElement>) => {
-      setValue(e.target.value)
+      const { value } = e.target
+
+      if (
+        value &&
+        notes &&
+        notes.map(note => note.title).some(title => title.includes(value))
+      ) {
+        console.log(notes, value)
+        return
+      } else setValue(e.target.value)
     }, 444),
     []
   )
-
-  console.log(isRefetching || !notes)
 
   return (
     <>
