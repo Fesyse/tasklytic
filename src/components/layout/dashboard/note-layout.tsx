@@ -4,7 +4,6 @@ import {
   BreadcrumbItem,
   BreadcrumbList
 } from "@/components/ui/breadcrumb"
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { FixedToolbar } from "@/components/plate-ui/fixed-toolbar"
@@ -19,7 +18,7 @@ type NoteLayoutProps = React.PropsWithChildren<{
 
 export function NoteLayout({ children, note }: NoteLayoutProps) {
   return (
-    <div className="flex flex-col items-between w-full">
+    <div className="flex flex-col items-between w-full sticky top-0 left-0">
       <header className="flex h-14 shrink-0 items-center gap-2">
         <div className="flex flex-1 items-center gap-2 px-3">
           <SidebarTrigger />
@@ -37,16 +36,10 @@ export function NoteLayout({ children, note }: NoteLayoutProps) {
         </div>
       </header>
 
-      <FixedToolbar className="relative w-full">
-        <ScrollArea
-          aria-orientation="horizontal"
-          className="w-full overflow-x-auto"
-        >
-          <div className="flex w-max max-w-full px-3">
-            <FixedToolbarButtons />
-          </div>
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
+      <FixedToolbar className="w-full justify-center">
+        <div className="w-max max-w-full px-3">
+          <FixedToolbarButtons />
+        </div>
       </FixedToolbar>
       {children}
     </div>

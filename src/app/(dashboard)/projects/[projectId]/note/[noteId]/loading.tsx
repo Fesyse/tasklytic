@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Skeleton } from "@/components/ui/skeleton"
+import { cn } from "@/lib/utils"
 
 export default function NoteLoading() {
   return (
@@ -48,17 +49,27 @@ export default function NoteLoading() {
         </div>
       </header>
 
-      {/* <FixedToolbar className="relative w-full">
-        <ScrollArea
-          aria-orientation="horizontal"
-          className="w-full overflow-x-auto"
-        >
-          <div className="flex w-max max-w-full px-3">
-            <FixedToolbarButtons />
-          </div>
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
-      </FixedToolbar> */}
+      <div className="flex px-3 gap-2 justify-center py-1">
+        {Array.from({ length: 10 }).map((_, index) => (
+          <ToolbarGroup key={index}>
+            {Array.from({ length: 4 }).map((_, index) => (
+              <Skeleton key={index} className="rounded-sm h-7 aspect-square" />
+            ))}
+          </ToolbarGroup>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function ToolbarGroup({ children }: { children: React.ReactNode }) {
+  return (
+    <div className={cn("group/toolbar-group", "relative")}>
+      <div className="flex items-center gap-1">{children}</div>
+
+      <div className="mx-1.5 py-0.5">
+        <Separator orientation="vertical" />
+      </div>
     </div>
   )
 }
