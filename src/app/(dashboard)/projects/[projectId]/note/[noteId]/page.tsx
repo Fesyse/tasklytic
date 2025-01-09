@@ -3,6 +3,7 @@ import { redirect } from "next/navigation"
 import { Note } from "@/components/projects/project/note"
 import { NoteEmojiPicker } from "@/components/projects/project/note/emoji-picker"
 import { NoteTitle } from "@/components/projects/project/note/title"
+import { sleep } from "@/lib/utils"
 import { NoteLayout } from "./note-layout"
 import { api } from "@/trpc/server"
 
@@ -33,6 +34,8 @@ export default async function NotePage(props: NotePageProps) {
       .getAll({ noteId })
       .then(blocks => blocks.toSorted((a, b) => a.order - b.order))
   ])
+
+  await sleep(10000)
 
   if (!note) redirect("/not_found")
 

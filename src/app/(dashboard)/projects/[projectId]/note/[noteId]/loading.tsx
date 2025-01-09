@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Skeleton } from "@/components/ui/skeleton"
-import { cn } from "@/lib/utils"
+import { cn, random } from "@/lib/utils"
 
 export default function NoteLoading() {
   return (
@@ -62,6 +62,18 @@ export default function NoteLoading() {
         <div className="flex items-center gap-4 px-4">
           <Skeleton className="h-10 w-10" />
           <Skeleton className="h-10 w-44" />
+        </div>
+        <div className="flex flex-wrap gap-1 mt-4 px-4">
+          {Array.from({ length: 100 }).map((_, index) => (
+            <Skeleton
+              key={index}
+              className="h-[1.125rem]"
+              style={{
+                width: random(50, 250),
+                marginRight: random(5, 10)
+              }}
+            />
+          ))}
         </div>
       </div>
     </div>
