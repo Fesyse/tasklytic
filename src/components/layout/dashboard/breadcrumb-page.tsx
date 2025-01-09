@@ -7,7 +7,13 @@ import { TextMorph } from "@/components/ui/text-morph"
 import { title } from "@/lib/utils"
 import { api } from "@/trpc/react"
 
-export const DashboardBreadcrumbPage = () => {
+type DashboardBreadcrumbPageProps = {
+  defaultTitle?: string
+}
+
+export const DashboardBreadcrumbPage: React.FC<
+  DashboardBreadcrumbPageProps
+> = ({ defaultTitle }) => {
   const { projectId, noteId } = useParams<{
     projectId: string
     noteId?: string
@@ -29,10 +35,12 @@ export const DashboardBreadcrumbPage = () => {
 
   return (
     <BreadcrumbPage className="line-clamp-1">
-      {isLoadingNote || isLoadingProject ? (
+      {(isLoadingNote || isLoadingProject) && !defaultTitle ? (
         <Skeleton className="h-7 w-36" />
       ) : (
-        <TextMorph>{title(note?.title ?? project?.name ?? "")}</TextMorph>
+        <TextMorph>
+          {title(note?.title ?? project?.name ?? defaultTitle ?? "")}
+        </TextMorph>
       )}
     </BreadcrumbPage>
   )

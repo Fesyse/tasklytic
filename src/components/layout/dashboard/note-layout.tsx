@@ -26,7 +26,7 @@ export function NoteLayout({ children, note }: NoteLayoutProps) {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <DashboardBreadcrumbPage />
+                <DashboardBreadcrumbPage defaultTitle={note.title} />
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
