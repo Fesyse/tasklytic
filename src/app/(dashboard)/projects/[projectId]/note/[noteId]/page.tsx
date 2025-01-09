@@ -1,10 +1,8 @@
 import { type Metadata } from "next"
 import { redirect } from "next/navigation"
-import { Suspense } from "react"
-import { Skeleton } from "@/components/ui/skeleton"
 import { Note } from "@/components/projects/project/note"
-import { NoteInfo } from "@/components/projects/project/note/note-info"
-import { sleep } from "@/lib/utils"
+import { NoteEmojiPicker } from "@/components/projects/project/note/emoji-picker"
+import { NoteTitle } from "@/components/projects/project/note/title"
 import { NoteLayout } from "./note-layout"
 import { api } from "@/trpc/server"
 
@@ -36,24 +34,14 @@ export default async function NotePage(props: NotePageProps) {
       .then(blocks => blocks.toSorted((a, b) => a.order - b.order))
   ])
 
-  await sleep(10000)
-
   if (!note) redirect("/not_found")
 
   return (
     <NoteLayout blocks={blocks} note={note}>
       <div className="mx-auto w-full max-w-[900px] py-28 font-comfortaa">
         <div className="flex items-center gap-4 px-4">
-          <Suspense
-            fallback={
-              <>
-                <Skeleton className="h-10 w-10" />
-                <Skeleton className="h-10 w-44" />
-              </>
-            }
-          >
-            <NoteInfo noteId={noteId} />
-          </Suspense>
+          <NoteEmojiPicker note={note} />
+          <NoteTitle note={note} />
         </div>
         <Note />
       </div>

@@ -58,6 +58,12 @@ export default function NoteLoading() {
           </ToolbarGroup>
         ))}
       </div>
+      <div className="mx-auto w-full max-w-[900px] py-28 font-comfortaa">
+        <div className="flex items-center gap-4 px-4">
+          <Skeleton className="h-10 w-10" />
+          <Skeleton className="h-10 w-44" />
+        </div>
+      </div>
     </div>
   )
 }
