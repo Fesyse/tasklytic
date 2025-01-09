@@ -47,7 +47,7 @@ export default function Home() {
                   "dark:bg-gradient-to-tr dark:from-zinc-50 dark:to-zinc-100 dark:text-zinc-900 dark:hover:shadow-zinc-700/30"
                 )}
               >
-                <Link href="/auth/sign-in">
+                <Link href="/auth/sign-in" prefetch>
                   Get Started
                   {/* gives shiny effect on hover */}
                   <span className="absolute inset-0 flex size-full justify-center [transform:skew(-14deg)_translateX(-100%)] group-hover:duration-1000 group-hover:[transform:skew(-14deg)_translateX(100%)]">

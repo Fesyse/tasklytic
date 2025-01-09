@@ -33,7 +33,7 @@ export function NavPinnedNotes({
                 isActive={note.isActive}
                 title={note.name}
               >
-                <Link href={note.href}>
+                <Link href={note.href} prefetch>
                   <span>
                     <note.emoji />
                   </span>

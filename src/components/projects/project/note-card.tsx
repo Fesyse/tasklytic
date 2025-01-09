@@ -15,7 +15,7 @@ import { type Note } from "@/server/db/schema"
 
 export function NoteCard({ note }: { note: Note }) {
   return (
-    <Link href={`/projects/${note.projectId}/note/${note.id}`}>
+    <Link href={`/projects/${note.projectId}/note/${note.id}`} prefetch>
       <Card className="hover:shadow-lg transition-shadow">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative">
           <CardTitle className="text-sm font-medium flex items-center gap-1">

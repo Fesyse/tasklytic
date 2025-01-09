@@ -23,7 +23,7 @@ export default function NotFoundPage() {
               size: "default",
               variant: "default"
             })}
-            prefetch={false}
+            prefetch
           >
             Go to Projects
           </Link>

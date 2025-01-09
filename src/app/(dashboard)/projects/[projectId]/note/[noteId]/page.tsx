@@ -1,8 +1,10 @@
 import { type Metadata } from "next"
+import { redirect } from "next/navigation"
 import { Suspense } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Note } from "@/components/projects/project/note"
 import { NoteInfo } from "@/components/projects/project/note/note-info"
+import { NoteLayout } from "./note-layout"
 import { api } from "@/trpc/server"
 
 type NotePageProps = {
@@ -26,21 +28,32 @@ export async function generateMetadata({
 export default async function NotePage(props: NotePageProps) {
   const { noteId } = await props.params
 
+  const [note, blocks] = await Promise.all([
+    api.notes.getById({ id: noteId }),
+    api.blocks
+      .getAll({ noteId })
+      .then(blocks => blocks.toSorted((a, b) => a.order - b.order))
+  ])
+
+  if (!note) redirect("/not_found")
+
   return (
-    <div className="mx-auto w-full max-w-[900px] py-28 font-comfortaa">
-      <div className="flex items-center gap-4 px-4">
-        <Suspense
-          fallback={
-            <>
-              <Skeleton className="h-10 w-10" />
-              <Skeleton className="h-10 w-44" />
-            </>
-          }
-        >
-          <NoteInfo noteId={noteId} />
-        </Suspense>
+    <NoteLayout blocks={blocks} note={note}>
+      <div className="mx-auto w-full max-w-[900px] py-28 font-comfortaa">
+        <div className="flex items-center gap-4 px-4">
+          <Suspense
+            fallback={
+              <>
+                <Skeleton className="h-10 w-10" />
+                <Skeleton className="h-10 w-44" />
+              </>
+            }
+          >
+            <NoteInfo noteId={noteId} />
+          </Suspense>
+        </div>
+        <Note />
       </div>
-      <Note />
-    </div>
+    </NoteLayout>
   )
 }

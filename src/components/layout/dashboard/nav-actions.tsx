@@ -20,7 +20,6 @@ import {
   Settings2,
   Trash
 } from "lucide-react"
-import { useParams } from "next/navigation"
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -38,7 +37,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from "@/components/ui/sidebar"
-import { Skeleton } from "@/components/ui/skeleton"
 import { useNoteEditorState } from "@/components/providers/note-editor-state-provider"
 import {
   copyToClipboard,
@@ -46,19 +44,19 @@ import {
   importFile,
   openInNewTab
 } from "@/lib/utils"
-import { api } from "@/trpc/react"
+import { type Note } from "@/server/db/schema"
 
-export function NavActions() {
+type NavActionsProps = {
+  note: Note
+}
+
+export function NavActions({ note }: NavActionsProps) {
   const editor = useEditorRef()
   const { saved } = useNoteEditorState(s => s)
 
-  const { noteId } = useParams<{ id: string; noteId: string }>()
-
-  const { data: note, isLoading } = api.notes.getById.useQuery({ id: noteId })
   const [isOpen, setIsOpen] = useState(false)
 
   const exportContent = () => {
-    if (!note) return
     const content = editor.children
     const fileName = `${note.title}.json.taly`
 
@@ -79,7 +77,7 @@ export function NavActions() {
   }
 
   const data = useMemo(() => {
-    const data = [
+    return [
       [
         {
           label: "Customize Page",
@@ -153,7 +151,6 @@ export function NavActions() {
         }
       ]
     ]
-    return data
   }, [editor])
 
   return (
@@ -169,12 +166,7 @@ export function NavActions() {
         </span>
         |
         <span className="flex items-center gap-1">
-          Edited{" "}
-          {isLoading || !note ? (
-            <Skeleton className="h-5 w-14" />
-          ) : (
-            format(note.updatedAt ?? new Date(), "HH:mm do MMM")
-          )}
+          Edited {format(note.updatedAt ?? new Date(), "HH:mm do MMM")}
         </span>
       </div>
       <Popover open={isOpen} onOpenChange={setIsOpen}>

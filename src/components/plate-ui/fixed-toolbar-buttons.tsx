@@ -32,8 +32,8 @@ import {
   UnderlineIcon,
   WandSparklesIcon
 } from "lucide-react"
-import React from "react"
 import { MoreDropdownMenu } from "@/components/plate-ui/more-dropdown-menu"
+import { cn } from "@/lib/utils"
 import { AIToolbarButton } from "./ai-toolbar-button"
 import { AlignDropdownMenu } from "./align-dropdown-menu"
 import { ColorDropdownMenu } from "./color-dropdown-menu"
@@ -56,11 +56,15 @@ import { ToggleToolbarButton } from "./toggle-toolbar-button"
 import { ToolbarGroup } from "./toolbar"
 import { TurnIntoDropdownMenu } from "./turn-into-dropdown-menu"
 
-export function FixedToolbarButtons() {
+type FixedToolbarButtonsProps = {
+  className?: string
+}
+
+export function FixedToolbarButtons({ className }: FixedToolbarButtonsProps) {
   const readOnly = useEditorReadOnly()
 
   return (
-    <div className="flex w-full">
+    <div className={cn("flex w-full", className)}>
       {!readOnly && (
         <>
           <ToolbarGroup>

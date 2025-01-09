@@ -78,7 +78,7 @@ export function NavNotes({ notes }: { notes: SidebarNav["notes"] }) {
             notes.items.map(note => (
               <SidebarMenuItem key={note.id}>
                 <SidebarMenuButton asChild>
-                  <Link href={note.href}>
+                  <Link href={note.href} prefetch>
                     <span>
                       <note.emoji />
                     </span>
