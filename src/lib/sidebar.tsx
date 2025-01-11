@@ -99,7 +99,7 @@ export function useSidebarNav(): SidebarNav {
         title: "Dashboard",
         href: `/projects/${projectId}`,
         icon: LayoutDashboard,
-        isActive: pathname.startsWith(`/projects/${projectId}`)
+        isActive: pathname === `/projects/${projectId}`
       },
       {
         title: "Ask AI",
