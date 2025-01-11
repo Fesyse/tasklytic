@@ -87,9 +87,13 @@ import {
 } from "@/components/plate-ui/table-cell-element"
 import { TableElement } from "@/components/plate-ui/table-element"
 import { TableRowElement } from "@/components/plate-ui/table-row-element"
+import { TasksListElement } from "@/components/plate-ui/tasks-list"
+import { TasksTableElement } from "@/components/plate-ui/tasks-table"
 import { TocElement } from "@/components/plate-ui/toc-element"
 import { ToggleElement } from "@/components/plate-ui/toggle-element"
 import { withDraggables } from "@/components/plate-ui/with-draggables"
+import { TasksListPlugin } from "./plugins/tasks-list-plugin"
+import { TasksTablePlugin } from "./plugins/tasks-table-plugin"
 
 export const useCreateEditor = (value?: TElement[]) => {
   return usePlateEditor({
@@ -139,7 +143,9 @@ export const useCreateEditor = (value?: TElement[]) => {
           [TocPlugin.key]: TocElement,
           [TogglePlugin.key]: ToggleElement,
           [UnderlinePlugin.key]: withProps(PlateLeaf, { as: "u" }),
-          [VideoPlugin.key]: MediaVideoElement
+          [VideoPlugin.key]: MediaVideoElement,
+          [TasksListPlugin.key]: TasksListElement,
+          [TasksTablePlugin.key]: TasksTableElement
         })
       )
     },
