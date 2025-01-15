@@ -14,8 +14,7 @@ import Image from "next/image"
 import { useParams, usePathname } from "next/navigation"
 import { type FC } from "react"
 import { type PROJECT_PLANS } from "./constants"
-import { GetAllFoldersResponse } from "@/server/api/router/folder"
-import { Folder, Note } from "@/server/db/schema"
+import type { FolderWithNotes, Note } from "@/server/db/schema"
 import { api } from "@/trpc/react"
 
 type LogoComponent = FC<{ className?: string }>
@@ -34,6 +33,7 @@ export type SidebarFolder = {
   id: string
   name: string
   emoji: React.ReactNode
+  notes: SidebarNote[]
 } & { type: "folder" }
 
 export type SidebarNav = {
@@ -90,11 +90,13 @@ export function useSidebarNav(): SidebarNav {
       initialData: undefined
     }
   )
-
-  const folders = workspace ? extractFolders(workspace) : undefined
-  const notes = workspace
-    ? workspace.flatMap(folder => folder.notes)
-    : undefined
+  const { data: notes } = api.notes.getAllRoot.useQuery(
+    { projectId },
+    {
+      enabled: isNotePage,
+      initialData: undefined
+    }
+  )
 
   return {
     projects: {
@@ -147,9 +149,9 @@ export function useSidebarNav(): SidebarNav {
     },
     workspace: {
       items:
-        folders && notes
+        workspace && notes
           ? [
-              ...transformFolders(folders, projectId, pathname),
+              ...transformFolders(workspace, projectId, pathname),
               ...transformNotes(notes, projectId, pathname)
             ]
           : undefined,
@@ -200,27 +202,6 @@ function Emoji({
   )
 }
 
-function extractFolders(folders: GetAllFoldersResponse) {
-  const allFolders: Folder[] = []
-  const nestedFolders: Folder[] = folders.flatMap(folder => folder.folders)
-
-  nestedFolders.forEach(folder => allFolders.push(folder))
-
-  for (const folder of folders) {
-    allFolders.push({
-      id: folder.id,
-      name: folder.name,
-      emoji: folder.emoji,
-      projectId: folder.projectId,
-      folderId: folder.folderId,
-      createdAt: folder.createdAt,
-      updatedAt: folder.updatedAt
-    })
-  }
-
-  return allFolders
-}
-
 function transformNotes(
   notes: Note[],
   projectId: string,
@@ -242,7 +223,7 @@ function transformNotes(
 }
 
 function transformFolders(
-  folders: Folder[],
+  folders: FolderWithNotes[],
   projectId: string,
   pathname: string
 ): SidebarFolder[] {
@@ -254,6 +235,7 @@ function transformFolders(
       emoji: <Emoji emoji={folder.emoji} type="folder" />,
       href,
       isActive: pathname.startsWith(href),
+      notes: transformNotes(folder.notes, projectId, pathname),
       type: "folder"
     }
   })

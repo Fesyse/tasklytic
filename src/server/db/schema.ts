@@ -2,6 +2,7 @@ import { init } from "@paralleldrive/cuid2"
 import { TElement } from "@udecode/plate-common"
 import { relations, sql } from "drizzle-orm"
 import {
+  AnyPgColumn,
   boolean,
   index,
   integer,
@@ -145,7 +146,9 @@ export const folders = createTable("folder", {
   name: varchar("name", { length: 255 }).notNull(),
   emoji: varchar("emoji", { length: 255 }),
 
-  folderId: varchar("folder_id", { length: 255 }),
+  parentFolderId: varchar("folder_id", { length: 255 }).references(
+    (): AnyPgColumn => folders.id
+  ),
   projectId: varchar("project_id", { length: 255 })
     .notNull()
     .references(() => projects.id),
@@ -318,10 +321,13 @@ export const sessionsRelations = relations(sessions, ({ one }) => ({
 
 export const foldersRelations = relations(folders, ({ one, many }) => ({
   parentFolder: one(folders, {
-    fields: [folders.folderId],
-    references: [folders.id]
+    fields: [folders.parentFolderId],
+    references: [folders.id],
+    relationName: "parentFolder"
   }),
-  folders: many(folders),
+  subFolders: many(folders, {
+    relationName: "subFolders"
+  }),
   notes: many(notes)
 }))
 
@@ -389,5 +395,8 @@ export type ProjectWithNotes = Project & {
 }
 export type Task = typeof tasks.$inferSelect
 export type Folder = typeof folders.$inferSelect
+export type FolderWithNotes = Folder & {
+  notes: Note[]
+}
 export type Note = typeof notes.$inferSelect
 export type Block = typeof blocks.$inferSelect

@@ -168,6 +168,24 @@ export const notesRouter = createTRPCRouter({
 
       return result
     }),
+  getAllRoot: protectedProcedure
+    .input(
+      z.object({
+        projectId: z.string()
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const notes = await ctx.db.query.notes.findMany({
+        where: (notesTable, { and, eq, isNull }) =>
+          and(
+            eq(notesTable.projectId, input.projectId),
+            // that way we get notes without a folder
+            isNull(notesTable.folderId)
+          )
+      })
+
+      return notes
+    }),
 
   create: protectedProcedure
     .input(

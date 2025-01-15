@@ -5,32 +5,31 @@ import { folders } from "@/server/db/schema"
 export type GetAllFoldersResponse = {
   id: string
   name: string
-  emoji: string | null
-  projectId: string
-  folderId: string | null
   createdAt: Date | null
   updatedAt: Date | null
-
-  folders: {
-    projectId: string
-    id: string
-    name: string
-    createdAt: Date | null
-    updatedAt: Date | null
-    emoji: string | null
-    folderId: string | null
-  }[]
+  emoji: string | null
+  parentFolderId: string | null
+  projectId: string
   notes: {
-    projectId: string
     id: string
     createdAt: Date | null
     updatedAt: Date | null
     userId: string
     emoji: string | null
-    folderId: string | null
+    projectId: string
     title: string
     private: boolean
     isPinned: boolean
+    folderId: string | null
+  }[]
+  subFolders: {
+    id: string
+    name: string
+    createdAt: Date | null
+    updatedAt: Date | null
+    emoji: string | null
+    parentFolderId: string | null
+    projectId: string
   }[]
 }[]
 
@@ -40,14 +39,14 @@ export const foldersRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const folders = (await ctx.db.query.folders.findMany({
         with: {
-          folders: true,
+          subFolders: true,
           notes: true
         },
         where: (foldersTable, { eq, and, isNull }) =>
           and(
             eq(foldersTable.projectId, input.projectId),
             // make sure we only getting the root folders
-            isNull(foldersTable.folderId)
+            isNull(foldersTable.parentFolderId)
           )
       })) satisfies GetAllFoldersResponse
 

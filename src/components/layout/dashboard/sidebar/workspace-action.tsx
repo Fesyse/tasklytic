@@ -16,12 +16,10 @@ import {
   PopoverTrigger
 } from "@/components/ui/popover"
 import { SidebarGroupAction } from "@/components/ui/sidebar"
-import { useIsMobile } from "@/hooks/use-mobile"
 import { importFile } from "@/lib/utils"
 import { api } from "@/trpc/react"
 
 export const WorkspaceAction = () => {
-  const isMobile = useIsMobile()
   const utils = api.useUtils()
   const router = useRouter()
 
@@ -39,12 +37,9 @@ export const WorkspaceAction = () => {
 
   const { mutate: createFolder, isPending: isFolderCreating } =
     api.folders.create.useMutation({
-      onSuccess: async folder => {
+      onSuccess: async () => {
         utils.folders.getAll.invalidate()
         toast.success(`Successfully created folder!`)
-
-        if (!folder) return
-        router.push(`/projects/${projectId}/folder/${folder.id}`)
       },
       onError: () =>
         toast.error("An error occurred creating folder! Try again.")
