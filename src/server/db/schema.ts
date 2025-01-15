@@ -137,6 +137,25 @@ export const projects = createTable("project", {
   }).$onUpdate(() => new Date())
 })
 
+export const folders = createTable("folder", {
+  id: varchar("id", { length: 255 })
+    .primaryKey()
+    .$defaultFn(() => createCuid()),
+  name: varchar("name", { length: 255 }).notNull(),
+  emoji: varchar("emoji", { length: 255 }),
+  projectId: varchar("project_id", { length: 255 })
+    .notNull()
+    .references(() => projects.id),
+  createdAt: timestamp("created_at", {
+    mode: "date",
+    withTimezone: true
+  }).default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: timestamp("updated_at", {
+    mode: "date",
+    withTimezone: true
+  }).$onUpdate(() => new Date())
+})
+
 export const notes = createTable("notes", {
   id: varchar("id", { length: 255 })
     .primaryKey()
@@ -148,6 +167,9 @@ export const notes = createTable("notes", {
   private: boolean("private")
     .notNull()
     .$defaultFn(() => false),
+  folderId: varchar("folder_id", { length: 255 })
+    .notNull()
+    .references(() => folders.id),
   projectId: varchar("project_id", { length: 255 })
     .notNull()
     .references(() => projects.id),
@@ -290,10 +312,19 @@ export const sessionsRelations = relations(sessions, ({ one }) => ({
   user: one(users, { fields: [sessions.userId], references: [users.id] })
 }))
 
+export const foldersRelations = relations(folders, ({ many }) => ({
+  folders: many(folders),
+  notes: many(notes)
+}))
+
 export const notesRelations = relations(notes, ({ many, one }) => ({
   project: one(projects, {
     fields: [notes.projectId],
     references: [projects.id]
+  }),
+  folder: one(folders, {
+    fields: [notes.folderId],
+    references: [folders.id]
   }),
   blocks: many(blocks)
 }))
