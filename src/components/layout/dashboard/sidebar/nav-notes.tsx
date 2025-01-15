@@ -1,3 +1,5 @@
+"use client"
+
 import { FileUp, Plus } from "lucide-react"
 import { useParams, useRouter } from "next/navigation"
 import { toast } from "sonner"
@@ -39,7 +41,7 @@ export function NavNotes({ notes }: { notes: SidebarNav["notes"] }) {
     })
 
   const importNote = () => {
-    importFile(async reader => {
+    importFile(reader => {
       try {
         const content = JSON.parse(reader.result as string)
 
@@ -56,7 +58,7 @@ export function NavNotes({ notes }: { notes: SidebarNav["notes"] }) {
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <SidebarGroupAction onClick={async () => createNote({ projectId })}>
+            <SidebarGroupAction onClick={() => createNote({ projectId })}>
               {isNoteCreating ? <LoadingSpinner /> : <Plus />}
               <span className="sr-only">Add Note</span>
             </SidebarGroupAction>
