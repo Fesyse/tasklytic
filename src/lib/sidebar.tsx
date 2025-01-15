@@ -158,9 +158,9 @@ export function useSidebarNav(): SidebarNav {
     navSecondary: [
       {
         title: "Calendar",
-        href: `/${projectId}/calendar`,
+        href: `/projects/${projectId}/calendar`,
         icon: Calendar,
-        isActive: pathname.startsWith(`/${projectId}/calendar`)
+        isActive: pathname.startsWith(`/projects/${projectId}/calendar`)
       },
       {
         title: "Settings",

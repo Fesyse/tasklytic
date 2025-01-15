@@ -78,22 +78,6 @@ function exportFile(text: string | Blob, fileName: string) {
   element.remove()
 }
 
-function isNotePage(pathname: string) {
-  const splittedPathname = pathname.split("/").slice(1)
-
-  const projectPath = splittedPathname[0]
-  const projectId = splittedPathname[1]
-  const notePath = splittedPathname[2]
-  const noteId = splittedPathname[3]
-
-  return (
-    projectPath === "projects" &&
-    isCuid(projectId ?? "") &&
-    notePath === "note" &&
-    isCuid(noteId ?? "")
-  )
-}
-
 function searchQueryFormat(str: string) {
   return "%" + str.split("").join("%") + "%"
 }
@@ -105,7 +89,6 @@ export {
   exportFile,
   importFile,
   isCuid,
-  isNotePage,
   openInNewTab,
   random,
   searchQueryFormat,
