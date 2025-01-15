@@ -1,10 +1,9 @@
 "use client"
 
-import { FileUp, Plus } from "lucide-react"
+import { FileUp } from "lucide-react"
 import { useParams, useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
-import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import {
   SidebarGroup,
   SidebarGroupAction,
@@ -22,14 +21,14 @@ import {
 } from "@/components/ui/tooltip"
 import { importFile } from "@/lib/utils"
 import { NoteButton } from "./note-button"
-import { SidebarNote } from "@/lib/sidebar"
+import { SidebarNav } from "@/lib/sidebar"
 import { api } from "@/trpc/react"
 
-export function NavNotes({
-  notes
-}: {
-  notes: { items: SidebarNote[]; isLoading: boolean }
-}) {
+type NavWorkspaceProps = {
+  workspace: SidebarNav["workspace"]
+}
+
+export const NavWorkspace: React.FC<NavWorkspaceProps> = ({ workspace }) => {
   const { projectId } = useParams<{ projectId: string }>()
   const router = useRouter()
   const utils = api.useUtils()
@@ -58,13 +57,15 @@ export function NavNotes({
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Notes</SidebarGroupLabel>
+      <SidebarGroupLabel>Workspace</SidebarGroupLabel>
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <SidebarGroupAction onClick={() => createNote({ projectId })}>
-              {isNoteCreating ? <LoadingSpinner /> : <Plus />}
-              <span className="sr-only">Add Note</span>
+            <SidebarGroupAction
+            // onClick={() => createFolder({ projectId })}
+            >
+              {/* {isFolderCreating ? <LoadingSpinner /> : <Plus />} */}
+              <span className="sr-only">Add Folder or Note</span>
             </SidebarGroupAction>
           </TooltipTrigger>
           <TooltipContent className="px-2 py-1" side="right" asChild>
@@ -77,9 +78,15 @@ export function NavNotes({
       </TooltipProvider>
       <SidebarGroupContent>
         <SidebarMenu>
-          {notes.items?.length && !notes.isLoading ? (
-            notes.items.map(note => <NoteButton key={note.id} note={note} />)
-          ) : notes.isLoading ? (
+          {workspace.items?.length && !workspace.isLoading ? (
+            workspace.items.map(item =>
+              item.type === "note" ? (
+                <NoteButton key={item.id} note={item} />
+              ) : (
+                <FolderButton key={item.id} folder={item} />
+              )
+            )
+          ) : workspace.isLoading ? (
             Array.from({ length: 2 }).map((_, index) => (
               <SidebarMenuItem key={index}>
                 <SidebarMenuSkeleton />
@@ -88,7 +95,7 @@ export function NavNotes({
           ) : (
             <SidebarMenuItem>
               <span className="ml-2 text-xs text-muted-foreground">
-                No notes
+                No results
               </span>
             </SidebarMenuItem>
           )}

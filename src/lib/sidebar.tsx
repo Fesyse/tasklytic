@@ -17,6 +17,24 @@ import { api } from "@/trpc/react"
 
 type LogoComponent = FC<{ className?: string }>
 
+export type SidebarNote = {
+  id: string
+  name: string
+  href: string
+  emoji: LogoComponent
+  private: boolean
+  isPinned: boolean
+  isActive: boolean
+}
+
+export type SidebarFolder = {
+  id: string
+  name: string
+  emoji: LogoComponent
+  href: string
+  isActive: boolean
+}
+
 export type SidebarNav = {
   projects: {
     isLoading: boolean
@@ -34,22 +52,17 @@ export type SidebarNav = {
     icon: LogoComponent
     isActive: boolean
   } & ({ href: string } | { action: () => void }))[]
-  pinnedNotes: SidebarNav["notes"]
-  notes: {
+  pinnedNotes: {
     isLoading: boolean
-    items:
-      | {
-          id: string
-          name: string
-          href: string
-          emoji: LogoComponent
-          private: boolean
-          isPinned: boolean
-          isActive: boolean
-        }[]
-      | undefined
+    items: SidebarNote[] | undefined
   }
-
+  workspace: {
+    items: (
+      | (SidebarFolder & { type: "folder" })
+      | (SidebarNote & { type: "note" })
+    )[]
+    isLoading: boolean
+  }
   navSecondary: SidebarNav["navMain"]
 }
 export function useSidebarNav(): SidebarNav {
@@ -61,16 +74,14 @@ export function useSidebarNav(): SidebarNav {
       initialData: undefined
     })
 
-  const { data: notes, isLoading: isNotesLoading } = api.notes.getAll.useQuery(
-    { projectId },
-    {
-      enabled: !!projectId,
-      initialData: undefined
-    }
-  )
-
-  const pinnedNotes = notes?.filter(note => note.isPinned) ?? []
-  const unpinnedNotes = notes?.filter(note => !note.isPinned) ?? []
+  const { data: pinnedNotes, isLoading: isNotesLoading } =
+    api.notes.getAllPinned.useQuery(
+      { projectId },
+      {
+        enabled: !!projectId,
+        initialData: undefined
+      }
+    )
 
   return {
     projects: {
@@ -135,26 +146,7 @@ export function useSidebarNav(): SidebarNav {
         }
       })
     },
-    notes: {
-      isLoading: isNotesLoading,
-      items: unpinnedNotes?.map(note => {
-        const href = `/projects/${projectId}/note/${note.id}`
-        return {
-          id: note.id,
-          name: note.title,
-          emoji: () =>
-            note.emoji ? (
-              <span className="text-lg">{note.emoji}</span>
-            ) : (
-              <FileIcon size={18} />
-            ),
-          href,
-          private: note.private,
-          isPinned: note.isPinned,
-          isActive: pathname.startsWith(href)
-        }
-      })
-    },
+    workspace: { items: [], isLoading: false },
     navSecondary: [
       {
         title: "Calendar",

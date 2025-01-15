@@ -127,6 +127,7 @@ export const projects = createTable("project", {
   plan: varchar("plan", { length: 255, enum: PROJECT_PLANS })
     .notNull()
     .default("Free"),
+
   createdAt: timestamp("created_at", {
     mode: "date",
     withTimezone: true
@@ -143,9 +144,12 @@ export const folders = createTable("folder", {
     .$defaultFn(() => createCuid()),
   name: varchar("name", { length: 255 }).notNull(),
   emoji: varchar("emoji", { length: 255 }),
+
+  folderId: varchar("folder_id", { length: 255 }),
   projectId: varchar("project_id", { length: 255 })
     .notNull()
     .references(() => projects.id),
+
   createdAt: timestamp("created_at", {
     mode: "date",
     withTimezone: true
@@ -167,16 +171,15 @@ export const notes = createTable("notes", {
   private: boolean("private")
     .notNull()
     .$defaultFn(() => false),
-  folderId: varchar("folder_id", { length: 255 })
-    .notNull()
-    .references(() => folders.id),
+  isPinned: boolean("is_pinned").notNull().default(false),
+
+  folderId: varchar("folder_id", { length: 255 }).references(() => folders.id),
   projectId: varchar("project_id", { length: 255 })
     .notNull()
     .references(() => projects.id),
   userId: varchar("user_id", { length: 255 })
     .notNull()
     .references(() => users.id),
-  isPinned: boolean("is_pinned").notNull().default(false),
 
   createdAt: timestamp("created_at", {
     mode: "date",
@@ -209,7 +212,6 @@ export const blocks = createTable("block", {
   noteId: varchar("note_id", { length: 255 })
     .notNull()
     .references(() => notes.id),
-
   databaseId: varchar("database_id", { length: 255 }).references(
     () => databases.id
   ),
@@ -279,16 +281,18 @@ export const projectMemberships = createTable("project_membership", {
   id: varchar("id", { length: 255 })
     .primaryKey()
     .$defaultFn(() => createCuid()),
+  role: varchar("role", {
+    length: 255,
+    enum: ["participant", "admin", "owner"]
+  }).notNull(),
+
   userId: varchar("user_id", { length: 255 })
     .notNull()
     .references(() => users.id),
   projectId: varchar("project_id", { length: 255 })
     .notNull()
     .references(() => projects.id),
-  role: varchar("role", {
-    length: 255,
-    enum: ["participant", "admin", "owner"]
-  }).notNull(),
+
   createdAt: timestamp("created_at", {
     mode: "date",
     withTimezone: true
@@ -312,7 +316,11 @@ export const sessionsRelations = relations(sessions, ({ one }) => ({
   user: one(users, { fields: [sessions.userId], references: [users.id] })
 }))
 
-export const foldersRelations = relations(folders, ({ many }) => ({
+export const foldersRelations = relations(folders, ({ one, many }) => ({
+  parentFolder: one(folders, {
+    fields: [folders.folderId],
+    references: [folders.id]
+  }),
   folders: many(folders),
   notes: many(notes)
 }))

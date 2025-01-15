@@ -6,8 +6,15 @@ export const foldersRouter = createTRPCRouter({
     .input(z.object({ projectId: z.string() }))
     .query(({ ctx, input }) => {
       return ctx.db.query.folders.findMany({
-        where: (foldersTable, { eq }) =>
-          eq(foldersTable.projectId, input.projectId)
+        with: {
+          folders: true,
+          notes: true
+        },
+        where: (foldersTable, { eq, and, isNull }) =>
+          and(
+            eq(foldersTable.projectId, input.projectId),
+            isNull(foldersTable.folderId)
+          )
       })
     })
 })
