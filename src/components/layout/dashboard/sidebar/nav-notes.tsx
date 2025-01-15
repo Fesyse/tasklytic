@@ -1,5 +1,4 @@
 import { FileUp, Plus } from "lucide-react"
-import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -10,11 +9,9 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSkeleton
 } from "@/components/ui/sidebar"
-import { TextMorph } from "@/components/ui/text-morph"
 import {
   Tooltip,
   TooltipContent,
@@ -22,7 +19,7 @@ import {
   TooltipTrigger
 } from "@/components/ui/tooltip"
 import { importFile } from "@/lib/utils"
-import { NoteActions } from "./note-actions"
+import { NoteButton } from "./note-button"
 import { SidebarNav } from "@/lib/sidebar"
 import { api } from "@/trpc/react"
 
@@ -75,23 +72,7 @@ export function NavNotes({ notes }: { notes: SidebarNav["notes"] }) {
       <SidebarGroupContent>
         <SidebarMenu>
           {notes.items?.length && !notes.isLoading ? (
-            notes.items.map(note => (
-              <SidebarMenuItem key={note.id}>
-                <SidebarMenuButton
-                  isActive={note.isActive}
-                  title={note.name}
-                  asChild
-                >
-                  <Link href={note.href} prefetch>
-                    <span>
-                      <note.emoji />
-                    </span>
-                    <TextMorph>{note.name ?? "Untitled"}</TextMorph>
-                  </Link>
-                </SidebarMenuButton>
-                <NoteActions note={note} />
-              </SidebarMenuItem>
-            ))
+            notes.items.map(note => <NoteButton key={note.id} note={note} />)
           ) : notes.isLoading ? (
             Array.from({ length: 2 }).map((_, index) => (
               <SidebarMenuItem key={index}>

@@ -1,17 +1,14 @@
 "use client"
 
 import { Pin } from "lucide-react"
-import Link from "next/link"
 import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSkeleton
 } from "@/components/ui/sidebar"
-import { TextMorph } from "@/components/ui/text-morph"
-import { NoteActions } from "./note-actions"
+import { NoteButton } from "./note-button"
 import { SidebarNav } from "@/lib/sidebar"
 
 export function NavPinnedNotes({
@@ -27,21 +24,7 @@ export function NavPinnedNotes({
       <SidebarMenu>
         {!pinnedNotes.isLoading && pinnedNotes.items?.length ? (
           pinnedNotes.items.map(note => (
-            <SidebarMenuItem key={note.name}>
-              <SidebarMenuButton
-                asChild
-                isActive={note.isActive}
-                title={note.name}
-              >
-                <Link href={note.href} prefetch>
-                  <span>
-                    <note.emoji />
-                  </span>
-                  <TextMorph>{note.name ?? "Untitled"}</TextMorph>
-                </Link>
-              </SidebarMenuButton>
-              <NoteActions note={note} />
-            </SidebarMenuItem>
+            <NoteButton key={note.id} note={note} />
           ))
         ) : pinnedNotes.isLoading ? (
           Array.from({ length: 2 }).map((_, index) => (
