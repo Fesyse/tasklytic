@@ -388,5 +388,6 @@ export type ProjectWithNotes = Project & {
   notes: Note[]
 }
 export type Task = typeof tasks.$inferSelect
+export type Folder = typeof folders.$inferSelect
 export type Note = typeof notes.$inferSelect
 export type Block = typeof blocks.$inferSelect

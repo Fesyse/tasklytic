@@ -20,6 +20,7 @@ import {
   TooltipTrigger
 } from "@/components/ui/tooltip"
 import { importFile } from "@/lib/utils"
+import { FolderButton } from "./folder-button"
 import { NoteButton } from "./note-button"
 import { SidebarNav } from "@/lib/sidebar"
 import { api } from "@/trpc/react"
@@ -41,6 +42,19 @@ export const NavWorkspace: React.FC<NavWorkspaceProps> = ({ workspace }) => {
         router.push(`/projects/${projectId}/note/${note.id}`)
       },
       onError: () => toast.error("An error occurred creating note! Try again.")
+    })
+
+  const { mutate: createFolder, isPending: isFolderCreating } =
+    api.folders.create.useMutation({
+      onSuccess: async folder => {
+        utils.folders.getAll.invalidate()
+        toast.success(`Successfully created folder!`)
+
+        if (!folder) return
+        router.push(`/projects/${projectId}/folder/${folder.id}`)
+      },
+      onError: () =>
+        toast.error("An error occurred creating folder! Try again.")
     })
 
   const importNote = () => {
