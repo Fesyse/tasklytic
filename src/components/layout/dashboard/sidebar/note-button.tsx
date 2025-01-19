@@ -14,9 +14,7 @@ export const NoteButton: React.FC<NoteButtonProps> = ({ note }) => {
     <SidebarMenuItem>
       <SidebarMenuButton isActive={note.isActive} title={note.name} asChild>
         <Link href={note.href} prefetch>
-          <span>
-            <note.emoji />
-          </span>
+          <span>{note.emoji}</span>
           <TextMorph>{note.name ?? "Untitled"}</TextMorph>
         </Link>
       </SidebarMenuButton>
