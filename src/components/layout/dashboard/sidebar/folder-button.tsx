@@ -3,6 +3,7 @@ import { AccordionTrigger } from "@radix-ui/react-accordion"
 import React from "react"
 import { AccordionContent, AccordionItem } from "@/components/ui/accordion"
 import { SidebarMenuButton } from "@/components/ui/sidebar"
+import { SidebarAction } from "./sidebar-action"
 import { SidebarFolder } from "@/lib/sidebar"
 
 type FolderButtonProps = {
@@ -18,12 +19,16 @@ export const FolderButton: React.FC<FolderButtonProps> = ({ folder }) => {
     >
       <li>
         <AccordionTrigger
-          className="flex flex-1 items-center py-4 text-sm font-medium transition-all hover:underline text-left [&[data-state=open]>svg]:rotate-180"
+          className="flex flex-1 items-center py-4 text-sm font-medium transition-all hover:underline text-left [&[data-state=open]>svg]:rotate-180 relative group/folder-button"
           asChild
         >
           <SidebarMenuButton title={folder.name}>
             <span>{folder.emoji}</span>
             <span>{folder.name}</span>
+            <SidebarAction
+              className="opacity-0 group-hover/folder-button:opacity-100 top-1/2 -translate-y-1/2 transition-opacity duration-200"
+              folderId={folder.id}
+            />
           </SidebarMenuButton>
         </AccordionTrigger>
         <AccordionContent className="p-0 m-0">

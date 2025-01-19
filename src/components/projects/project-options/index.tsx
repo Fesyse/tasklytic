@@ -55,9 +55,13 @@ type Action =
     }
 
 export const ProjectOptions: FC<ProjectOptionsProps> = ({ project }) => {
+  const utils = api.useUtils()
   const [isUpdateFormOpen, setIsUpdateFormOpen] = useState(false)
   const { mutate: deleteProject } = api.projects.delete.useMutation({
-    onSuccess: () => toast.success("Project deleted successfully."),
+    onSuccess: () => {
+      utils.projects.getAll.invalidate()
+      toast.success("Project deleted successfully.")
+    },
     onError: error => toast.error(error.message)
   })
   const actions: Action[] = [

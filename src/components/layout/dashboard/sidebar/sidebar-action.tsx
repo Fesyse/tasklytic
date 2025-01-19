@@ -8,6 +8,7 @@ import {
   Presentation
 } from "lucide-react"
 import { useParams, useRouter } from "next/navigation"
+import React, { useCallback } from "react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
@@ -19,38 +20,49 @@ import { SidebarGroupAction } from "@/components/ui/sidebar"
 import { importFile } from "@/lib/utils"
 import { api } from "@/trpc/react"
 
-export const WorkspaceAction = () => {
+type WorkspaceActionProps = {
+  folderId?: string
+  className?: string
+}
+
+export const SidebarAction: React.FC<WorkspaceActionProps> = ({
+  folderId,
+  className
+}) => {
   const utils = api.useUtils()
   const router = useRouter()
 
   const { projectId } = useParams<{ projectId: string }>()
 
-  const { mutate: createNote, isPending: isNoteCreating } =
-    api.notes.create.useMutation({
-      onSuccess: async note => {
-        utils.notes.getAll.invalidate()
-        toast.success(`Successfully created note!`)
-        router.push(`/projects/${projectId}/note/${note.id}`)
-      },
-      onError: () => toast.error("An error occurred creating note! Try again.")
-    })
+  const invalidate = useCallback(() => {
+    return Promise.all([
+      utils.folders.getWorkspace.invalidate({ projectId }),
+      utils.notes.getAll.invalidate()
+    ])
+  }, [utils])
 
-  const { mutate: createFolder, isPending: isFolderCreating } =
-    api.folders.create.useMutation({
-      onSuccess: async () => {
-        utils.folders.getAll.invalidate()
-        toast.success(`Successfully created folder!`)
-      },
-      onError: () =>
-        toast.error("An error occurred creating folder! Try again.")
-    })
+  const { mutate: createNote } = api.notes.create.useMutation({
+    onSuccess: async note => {
+      await invalidate()
+      toast.success(`Successfully created note!`)
+      router.push(`/projects/${projectId}/note/${note.id}`)
+    },
+    onError: () => toast.error("An error occurred creating note! Try again.")
+  })
+
+  const { mutate: createFolder } = api.folders.create.useMutation({
+    onSuccess: async () => {
+      await invalidate()
+      toast.success(`Successfully created folder!`)
+    },
+    onError: () => toast.error("An error occurred creating folder! Try again.")
+  })
 
   const importNote = () => {
     importFile(reader => {
       try {
         const content = JSON.parse(reader.result as string)
-
-        createNote({ projectId, content })
+        createNote({ projectId, content, folderId })
       } catch {
         toast.error("Failed to import note! File is probably corrupted.")
       }
@@ -60,7 +72,7 @@ export const WorkspaceAction = () => {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <SidebarGroupAction>
+        <SidebarGroupAction className={className}>
           <Plus size={18} />
           <span className="sr-only">Add Folder or Note</span>
         </SidebarGroupAction>
@@ -73,7 +85,7 @@ export const WorkspaceAction = () => {
           className="justify-start gap-1"
           size="sm"
           variant="secondary"
-          onClick={() => createFolder({ projectId })}
+          onClick={() => createFolder({ projectId, folderId })}
         >
           <FolderIcon size={16} /> Create Folder
         </Button>

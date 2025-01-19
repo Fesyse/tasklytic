@@ -37,7 +37,10 @@ export function NavNotes({
   const { mutate: createNote, isPending: isNoteCreating } =
     api.notes.create.useMutation({
       onSuccess: async note => {
-        utils.notes.getAll.invalidate()
+        await Promise.all([
+          utils.folders.getWorkspace.invalidate({ projectId }),
+          utils.notes.getAll.invalidate()
+        ])
         toast.success(`Successfully created note!`)
         router.push(`/projects/${projectId}/note/${note.id}`)
       },

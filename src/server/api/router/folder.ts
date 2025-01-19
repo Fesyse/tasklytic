@@ -34,7 +34,7 @@ export type GetAllFoldersResponse = {
 }[]
 
 export const foldersRouter = createTRPCRouter({
-  getAll: protectedProcedure
+  getWorkspace: protectedProcedure
     .input(z.object({ projectId: z.string() }))
     .query(async ({ ctx, input }) => {
       const folders = (await ctx.db.query.folders.findMany({

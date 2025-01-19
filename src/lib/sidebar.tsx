@@ -65,11 +65,10 @@ export type SidebarNav = {
 }
 export function useSidebarNav(): SidebarNav {
   const pathname = usePathname()
-  const { projectId, noteId } = useParams<{
+  const { projectId } = useParams<{
     projectId: string
-    noteId?: string
   }>()
-  const isNotePage = noteId !== undefined
+  const isProjectPage = projectId !== undefined
 
   const { data: projects, isLoading: isProjectsLoading } =
     api.projects.getAll.useQuery(undefined, {
@@ -79,21 +78,21 @@ export function useSidebarNav(): SidebarNav {
     api.notes.getAllPinned.useQuery(
       { projectId },
       {
-        enabled: isNotePage,
+        enabled: isProjectPage,
         initialData: undefined
       }
     )
-  const { data: workspace } = api.folders.getAll.useQuery(
+  const { data: workspace } = api.folders.getWorkspace.useQuery(
     { projectId },
     {
-      enabled: isNotePage,
+      enabled: isProjectPage,
       initialData: undefined
     }
   )
   const { data: notes } = api.notes.getAllRoot.useQuery(
     { projectId },
     {
-      enabled: isNotePage,
+      enabled: isProjectPage,
       initialData: undefined
     }
   )

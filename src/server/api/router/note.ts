@@ -191,6 +191,7 @@ export const notesRouter = createTRPCRouter({
     .input(
       z.object({
         projectId: z.string(),
+        folderId: z.string().optional(),
         content: blockContent.optional()
       })
     )
@@ -199,6 +200,7 @@ export const notesRouter = createTRPCRouter({
         .insert(notes)
         .values({
           projectId: input.projectId,
+          folderId: input.folderId,
           userId: ctx.session.user.id,
           private: false,
           isPinned: false
@@ -207,7 +209,7 @@ export const notesRouter = createTRPCRouter({
         .then(r => r[0]!)
 
       if (input.content) {
-        ctx.db.transaction(async trx => {
+        await ctx.db.transaction(async trx => {
           for (let i = 0; i < input.content!.length; i++) {
             const block = input.content![i]!
 

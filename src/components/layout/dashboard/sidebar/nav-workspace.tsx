@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/sidebar"
 import { FolderButton } from "./folder-button"
 import { NoteButton } from "./note-button"
-import { WorkspaceAction } from "./workspace-action"
+import { SidebarAction } from "./sidebar-action"
 import { SidebarNav } from "@/lib/sidebar"
 
 type NavWorkspaceProps = {
@@ -20,7 +20,7 @@ export const NavWorkspace: React.FC<NavWorkspaceProps> = ({ workspace }) => {
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Workspace</SidebarGroupLabel>
-      <WorkspaceAction />
+      <SidebarAction className="mr-2" />
       <SidebarGroupContent>
         <Accordion type="multiple" asChild>
           <SidebarMenu>

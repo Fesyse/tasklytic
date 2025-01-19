@@ -1,6 +1,7 @@
 "use client"
 
 import debounce from "lodash.debounce"
+import { useParams } from "next/navigation"
 import { useCallback, type FC } from "react"
 import { type Note } from "@/server/db/schema"
 import { api } from "@/trpc/react"
@@ -10,6 +11,7 @@ type NoteTitleProps = {
 }
 
 export const NoteTitle: FC<NoteTitleProps> = ({ note }) => {
+  const { projectId } = useParams<{ projectId: string }>()
   const utils = api.useUtils()
   const { mutateAsync: updateNoteTitle } = api.notes.update.useMutation()
 
@@ -21,6 +23,7 @@ export const NoteTitle: FC<NoteTitleProps> = ({ note }) => {
 
       await updateNoteTitle({ id: note.id, title })
       await Promise.all([
+        utils.folders.getWorkspace.invalidate({ projectId }),
         utils.notes.getById.invalidate({ id: note.id }),
         utils.notes.getAll.invalidate()
       ])

@@ -19,7 +19,10 @@ export const CreateNoteButtonWrapper: React.FC<
   const utils = api.useUtils()
   const { mutate: createNote, isPending } = api.notes.create.useMutation({
     onSuccess: async note => {
-      utils.notes.getAll.invalidate()
+      await Promise.all([
+        utils.folders.getWorkspace.invalidate({ projectId }),
+        utils.notes.getAll.invalidate()
+      ])
       toast.success(`Successfully created note!`)
       router.push(`/projects/${projectId}/note/${note.id}`)
     },
