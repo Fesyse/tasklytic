@@ -3,10 +3,10 @@ import React from "react"
 import { SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
 import { TextMorph } from "@/components/ui/text-morph"
 import { NoteActions } from "./note-actions"
-import { type SidebarNav } from "@/lib/sidebar"
+import { type SidebarNote } from "@/lib/sidebar"
 
 type NoteButtonProps = {
-  note: NonNullable<SidebarNav["notes"]["items"]>[number]
+  note: SidebarNote
 }
 
 export const NoteButton: React.FC<NoteButtonProps> = ({ note }) => {

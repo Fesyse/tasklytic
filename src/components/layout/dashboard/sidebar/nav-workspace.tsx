@@ -1,3 +1,4 @@
+import { Accordion } from "@/components/ui/accordion"
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -21,29 +22,31 @@ export const NavWorkspace: React.FC<NavWorkspaceProps> = ({ workspace }) => {
       <SidebarGroupLabel>Workspace</SidebarGroupLabel>
       <WorkspaceAction />
       <SidebarGroupContent>
-        <SidebarMenu>
-          {workspace.items?.length && !workspace.isLoading ? (
-            workspace.items.map(item =>
-              item.type === "note" ? (
-                <NoteButton key={item.id} note={item} />
-              ) : (
-                <FolderButton key={item.id} folder={item} />
+        <Accordion type="multiple" asChild>
+          <SidebarMenu>
+            {workspace.items?.length && !workspace.isLoading ? (
+              workspace.items.map(item =>
+                item.type === "note" ? (
+                  <NoteButton key={item.id} note={item} />
+                ) : (
+                  <FolderButton key={item.id} folder={item} />
+                )
               )
-            )
-          ) : workspace.isLoading ? (
-            Array.from({ length: 2 }).map((_, index) => (
-              <SidebarMenuItem key={index}>
-                <SidebarMenuSkeleton />
+            ) : workspace.isLoading ? (
+              Array.from({ length: 2 }).map((_, index) => (
+                <SidebarMenuItem key={index}>
+                  <SidebarMenuSkeleton />
+                </SidebarMenuItem>
+              ))
+            ) : (
+              <SidebarMenuItem>
+                <span className="ml-2 text-xs text-muted-foreground">
+                  No results
+                </span>
               </SidebarMenuItem>
-            ))
-          ) : (
-            <SidebarMenuItem>
-              <span className="ml-2 text-xs text-muted-foreground">
-                No results
-              </span>
-            </SidebarMenuItem>
-          )}
-        </SidebarMenu>
+            )}
+          </SidebarMenu>
+        </Accordion>
       </SidebarGroupContent>
     </SidebarGroup>
   )
