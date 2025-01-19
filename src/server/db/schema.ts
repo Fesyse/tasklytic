@@ -323,7 +323,7 @@ export const foldersRelations = relations(folders, ({ one, many }) => ({
   parentFolder: one(folders, {
     fields: [folders.parentFolderId],
     references: [folders.id],
-    relationName: "parentFolder"
+    relationName: "subFolders"
   }),
   subFolders: many(folders, {
     relationName: "subFolders"
