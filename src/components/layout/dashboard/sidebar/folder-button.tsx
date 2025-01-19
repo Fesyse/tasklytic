@@ -60,9 +60,9 @@ export const FolderButton: React.FC<FolderButtonProps> = ({ folder }) => {
             />
           </SidebarMenuButton>
         </AccordionTrigger>
-        <AccordionContent className="p-0 m-0 ml-1 first:opacity-0" asChild>
+        <AccordionContent className="p-0 m-0 ml-1" asChild>
           <Accordion type="multiple" asChild>
-            <ul>
+            <ul className="first:mt-1">
               {!!transformedSubFolders && !isLoading
                 ? transformedSubFolders.map(folder => (
                     <FolderButton key={folder.id} folder={folder} />
