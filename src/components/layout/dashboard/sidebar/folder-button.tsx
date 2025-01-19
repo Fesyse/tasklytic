@@ -14,6 +14,7 @@ import {
   SidebarMenuSkeleton,
   SidebarMenuSubItem
 } from "@/components/ui/sidebar"
+import { NoteButton } from "./note-button"
 import { SidebarAction } from "./sidebar-action"
 import { SidebarFolder, transformFolders } from "@/lib/sidebar"
 import { api } from "@/trpc/react"
@@ -59,40 +60,43 @@ export const FolderButton: React.FC<FolderButtonProps> = ({ folder }) => {
             />
           </SidebarMenuButton>
         </AccordionTrigger>
-        <AccordionContent className="p-0 m-0 ml-1" asChild>
-          <Accordion type="multiple">
-            {!!transformedSubFolders && !isLoading
-              ? transformedSubFolders.map(folder => (
-                  <FolderButton key={folder.id} folder={folder} />
-                ))
-              : Array.from({ length: 2 }).map((_, index) => (
-                  <AccordionItem key={index} value={`folder-${index}`} asChild>
-                    <li>
-                      <AccordionTrigger
-                        className="flex flex-1 items-center py-4 text-sm font-medium transition-all hover:underline text-left [&[data-state=open]>svg]:rotate-180 relative group/folder-button"
-                        asChild
-                      >
-                        <SidebarMenuButton title="Loading..." />
-                      </AccordionTrigger>
-                      <AccordionContent className="p-0 m-0" asChild>
-                        <SidebarMenuSkeleton />
-                      </AccordionContent>
-                    </li>
-                  </AccordionItem>
-                ))}
-            {folder.folders
-              ? folder.folders.map(folder => (
-                  <FolderButton key={folder.id} folder={folder} />
-                ))
-              : null}
-            {folder.notes
-              ? folder.notes.map(note => (
-                  <SidebarMenuButton key={note.id} title={note.name}>
-                    <span>{note.emoji}</span>
-                    <span>{note.name}</span>
-                  </SidebarMenuButton>
-                ))
-              : null}
+        <AccordionContent className="p-0 m-0 ml-1 first:opacity-0" asChild>
+          <Accordion type="multiple" asChild>
+            <ul>
+              {!!transformedSubFolders && !isLoading
+                ? transformedSubFolders.map(folder => (
+                    <FolderButton key={folder.id} folder={folder} />
+                  ))
+                : Array.from({ length: 2 }).map((_, index) => (
+                    <AccordionItem
+                      key={index}
+                      value={`folder-${index}`}
+                      asChild
+                    >
+                      <li>
+                        <AccordionTrigger
+                          className="flex flex-1 items-center py-4 text-sm font-medium transition-all hover:underline text-left [&[data-state=open]>svg]:rotate-180 relative group/folder-button"
+                          asChild
+                        >
+                          <SidebarMenuButton title="Loading..." />
+                        </AccordionTrigger>
+                        <AccordionContent className="p-0 m-0" asChild>
+                          <SidebarMenuSkeleton />
+                        </AccordionContent>
+                      </li>
+                    </AccordionItem>
+                  ))}
+              {folder.folders
+                ? folder.folders.map(folder => (
+                    <FolderButton key={folder.id} folder={folder} />
+                  ))
+                : null}
+              {folder.notes
+                ? folder.notes.map(note => (
+                    <NoteButton key={note.id} note={note} />
+                  ))
+                : null}
+            </ul>
           </Accordion>
         </AccordionContent>
       </SidebarMenuSubItem>
