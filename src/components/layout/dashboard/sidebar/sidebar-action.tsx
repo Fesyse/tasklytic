@@ -103,7 +103,7 @@ export const SidebarAction: React.FC<WorkspaceActionProps> = ({
             <Button
               className="justify-start gap-1"
               size="sm"
-              onClick={() => createNote({ projectId })}
+              onClick={() => createNote({ projectId, folderId })}
             >
               <Presentation size={16} /> Blank
             </Button>
