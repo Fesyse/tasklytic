@@ -395,6 +395,9 @@ export type ProjectWithNotes = Project & {
 }
 export type Task = typeof tasks.$inferSelect
 export type Folder = typeof folders.$inferSelect
+export type FolderWithSubFolders = Folder & {
+  subFolders: Folder[]
+}
 export type FolderWithNotes = Folder & {
   notes: Note[]
 }

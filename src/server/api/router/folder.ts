@@ -52,6 +52,23 @@ export const foldersRouter = createTRPCRouter({
 
       return folders
     }),
+  getSubChildren: protectedProcedure
+    .input(z.object({ folderId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const folders = (await ctx.db.query.folders.findMany({
+        with: {
+          subFolders: true,
+          notes: true
+        },
+        where: (foldersTable, { eq, and }) =>
+          and(
+            eq(foldersTable.parentFolderId, input.folderId),
+            // make sure we only getting the root folders
+            eq(foldersTable.parentFolderId, input.folderId)
+          )
+      })) satisfies GetAllFoldersResponse
+      return folders
+    }),
 
   create: protectedProcedure
     .input(

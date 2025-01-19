@@ -14,7 +14,12 @@ import Image from "next/image"
 import { useParams, usePathname } from "next/navigation"
 import { type FC } from "react"
 import { type PROJECT_PLANS } from "./constants"
-import type { FolderWithNotes, Note } from "@/server/db/schema"
+import type {
+  Folder,
+  FolderWithNotes,
+  FolderWithSubFolders,
+  Note
+} from "@/server/db/schema"
 import { api } from "@/trpc/react"
 
 type LogoComponent = FC<{ className?: string }>
@@ -33,7 +38,8 @@ export type SidebarFolder = {
   id: string
   name: string
   emoji: React.ReactNode
-  notes: SidebarNote[]
+  folders?: SidebarFolder[]
+  notes?: SidebarNote[]
 } & { type: "folder" }
 
 export type SidebarNav = {
@@ -201,7 +207,7 @@ function Emoji({
   )
 }
 
-function transformNotes(
+export function transformNotes(
   notes: Note[],
   projectId: string,
   pathname: string
@@ -221,8 +227,13 @@ function transformNotes(
   })
 }
 
-function transformFolders(
-  folders: FolderWithNotes[],
+export function transformFolders(
+  folders: (
+    | Folder
+    | FolderWithNotes
+    | FolderWithSubFolders
+    | (FolderWithNotes & FolderWithSubFolders)
+  )[],
   projectId: string,
   pathname: string
 ): SidebarFolder[] {
@@ -234,7 +245,14 @@ function transformFolders(
       emoji: <Emoji emoji={folder.emoji} type="folder" />,
       href,
       isActive: pathname.startsWith(href),
-      notes: transformNotes(folder.notes, projectId, pathname),
+      folders:
+        "subFolders" in folder
+          ? transformFolders(folder.subFolders, projectId, pathname)
+          : undefined,
+      notes:
+        "notes" in folder
+          ? transformNotes(folder.notes, projectId, pathname)
+          : undefined,
       type: "folder"
     }
   })
