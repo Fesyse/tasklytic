@@ -20,11 +20,12 @@ export default function Home() {
         <section className="mt-4 min-h-[calc(100vh-20rem)] flex flex-col justify-center">
           <div className="md:container">
             <div className="grid items-center gap-8 lg:grid-cols-2">
-              <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
+              <div className="flex flex-col items-center text-center lg:items-start lg:text-left relative">
                 <Badge variant="outline">
                   {siteConfig.announcement.title}
                   <ArrowUpRight className="ml-2 size-4" />
                 </Badge>
+                <Beam className="-mt-12 -ml-2 hidden xl:block" />
                 <h1 className="my-6 text-pretty text-4xl font-bold lg:text-6xl">
                   {siteConfig.title}
                 </h1>
@@ -69,7 +70,6 @@ export default function Home() {
         </section>
 
         <section className="relative flex w-full flex-col justify-center">
-          <Beam className="-mt-[5rem] hidden xl:ml-28 xl:block" />
           <h2 className="mb-4 text-center text-2xl font-bold md:mb-6 md:text-4xl">
             Our features
           </h2>
