@@ -1,3 +1,4 @@
+import { siteConfig } from "@/config"
 import "@/styles/documents.css"
 
 export default function PrivacyPolicyPage() {
@@ -46,7 +47,7 @@ export default function PrivacyPolicyPage() {
           <p>
             <strong>Company</strong> (referred to as either &quot;the
             Company&quot;, &quot;We&quot;, &quot;Us&quot; or &quot;Our&quot; in
-            this Agreement) refers to Tasklytic.
+            this Agreement) refers to {siteConfig.title}.
           </p>
         </li>
         <li>
@@ -105,7 +106,8 @@ export default function PrivacyPolicyPage() {
         </li>
         <li>
           <p>
-            <strong>Website</strong> refers to Tasklytic, accessible from{" "}
+            <strong>Website</strong> refers to {siteConfig.title}, accessible
+            from{" "}
             <a
               href="https://task-lytic.vercel.app"
               target="_blank"

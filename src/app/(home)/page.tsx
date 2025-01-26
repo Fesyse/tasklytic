@@ -1,5 +1,7 @@
+import { ArrowDownRight } from "lucide-react"
 import Link from "next/link"
 import Balance from "react-wrap-balancer"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Beam } from "@/components/ui/grid-beam"
 import { Icons } from "@/components/ui/icons"
@@ -8,24 +10,53 @@ import { TextGenerateEffect } from "@/components/ui/text-generate-effect"
 import { CTAWithGithub } from "@/components/blocks/cta"
 import { FeaturesSection } from "@/components/blocks/features-section"
 import { cn } from "@/lib/utils"
+import { siteConfig } from "@/config"
 
 export default function Home() {
   return (
     <div className="min-h-[calc(100vh-var(--dashboard-header-size))]) container relative rounded dark:bg-grid-white/[0.02]">
       <Spotlight className="hidden dark:block" fill="rgba(255,255,255,0.2)" />
       <div className="px-4 py-20">
+        <section className="py-32">
+          <div className="container">
+            <div className="grid items-center gap-8 lg:grid-cols-2">
+              <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
+                <Badge variant="outline">
+                  New Release
+                  <ArrowDownRight className="ml-2 size-4" />
+                </Badge>
+                <h1 className="my-6 text-pretty text-4xl font-bold lg:text-6xl">
+                  {siteConfig.title}
+                </h1>
+                <Balance>
+                  <TextGenerateEffect
+                    words={siteConfig.description}
+                    duration={0.25}
+                    className="!text-sm sm:!text-base md:!text-lg mb-8 max-w-xl text-muted-foreground lg:text-xl"
+                  />
+                </Balance>
+                <div className="flex w-full flex-col justify-center gap-2 sm:flex-row lg:justify-start">
+                  <Button className="w-full sm:w-auto">Primary Button</Button>
+                  <Button variant="outline" className="w-full sm:w-auto">
+                    Secondary Button
+                    <ArrowDownRight className="ml-2 size-4" />
+                  </Button>
+                </div>
+              </div>
+              <img
+                src="https://shadcnblocks.com/images/block/placeholder-1.svg"
+                alt="placeholder hero"
+                className="max-h-96 w-full rounded-md object-cover"
+              />
+            </div>
+          </div>
+        </section>
+
         <div className="mb-52 flex w-full flex-col">
           <section className="py-6 text-center md:py-10">
             <h1 className="bg-gradient-to-b from-foreground/25 to-foreground bg-clip-text text-5xl font-bold text-transparent dark:from-neutral-200 dark:to-neutral-600 lg:text-7xl">
               Tasklytic
             </h1>
-            <Balance>
-              <TextGenerateEffect
-                words="Streamline your workflow with smart task management. Organize, prioritize, and track your tasks with ease, all in one powerful tool."
-                duration={0.5}
-                className="max-w-[40rem] !text-sm sm:!text-base md:!text-lg"
-              />
-            </Balance>
           </section>
 
           <section className="relative pt-8 text-center md:pt-12">

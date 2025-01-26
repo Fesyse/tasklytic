@@ -4,15 +4,15 @@ import { Comfortaa, Recursive } from "next/font/google"
 import { type PropsWithChildren } from "react"
 import { Providers } from "@/components/providers"
 import { cn } from "@/lib/utils"
+import { siteConfig } from "@/config"
 import "@/styles/globals.css"
 
 export const metadata: Metadata = {
   title: {
-    default: "Tasklytic",
-    template: "%s | Tasklytic"
+    default: siteConfig.title,
+    template: `%s | ${siteConfig.title}`
   },
-  description:
-    "Streamline your workflow with smart task management. Organize, prioritize, and track your tasks with ease, all in one powerful tool."
+  description: siteConfig.description
 }
 const comfortaa = Comfortaa({
   subsets: ["latin"],

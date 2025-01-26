@@ -12,6 +12,7 @@ import {
   SheetTrigger
 } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
+import { siteConfig } from "@/config"
 import { navigation } from "@/lib/nav-list"
 
 export const MobileNav = () => {
@@ -32,7 +33,7 @@ export const MobileNav = () => {
               className="items-center !justify-start gap-2 px-0 pb-2 pt-1"
             >
               <Icons.icon className="h-8 w-8" />
-              <h1 className="text-lg font-bold">Tasklytic</h1>
+              <h1 className="text-lg font-bold">{siteConfig.title}</h1>
             </Link>
           </Button>
         </SheetHeader>

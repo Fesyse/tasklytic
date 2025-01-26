@@ -3,6 +3,7 @@ import { Icons } from "@/components/ui/icons"
 import { UserNav } from "@/components/layout/dashboard/user-nav"
 import { Navigation } from "@/components/layout/home/header/navigation"
 import { MobileNav } from "@/components/layout/home/mobile-nav"
+import { siteConfig } from "@/config"
 
 export function Header() {
   return (
@@ -13,7 +14,7 @@ export function Header() {
             href="/"
             className="flex items-center gap-2 text-base max-md:hidden lg:text-lg"
           >
-            <Icons.icon size={36} /> <span>Tasklytic</span>
+            <Icons.icon size={36} /> <span>{siteConfig.title}</span>
           </Link>
           <MobileNav />
         </div>

@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { siteConfig } from "@/config"
 import "@/styles/documents.css"
 
 export default function TermsOfServicePage() {
@@ -8,11 +9,11 @@ export default function TermsOfServicePage() {
       <p>Last updated August 31, 2024</p>
       <h2>AGREEMENT TO OUR LEGAL TERMS</h2>
       <p>
-        We are Tasklytic (&quot;Company,&quot; &quot;we,&quot; &quot;us,&quot;
-        &quot;our&quot;). Our VAT number is 384801615130.
+        We are {siteConfig.title} (&quot;Company,&quot; &quot;we,&quot;
+        &quot;us,&quot; &quot;our&quot;). Our VAT number is 384801615130.
       </p>
       <p>
-        We operate the website https://task-lytic.vercel.app (the
+        We operate the website {siteConfig.productionUrl} (the
         &quot;Site&quot;), as well as any other related products and services
         that refer or link to these legal terms (the &quot;Legal Terms&quot;)
         (collectively, the &quot;Services&quot;).
@@ -21,15 +22,15 @@ export default function TermsOfServicePage() {
         Streamline your workflow with smart task management. Organize,
         prioritize, and track your tasks with ease, all in one powerful tool.
       </p>
-      <p>You can contact us by email at tasklytic@inbox.ru.</p>
+      <p>You can contact us by email at {siteConfig.workEmail}.</p>
       <p>
         These Legal Terms constitute a legally binding agreement made between
         you, whether personally or on behalf of an entity (&quot;you&quot;), and
-        Tasklytic, concerning your access to and use of the Services. You agree
-        that by accessing the Services, you have read, understood, and agreed to
-        be bound by all of these Legal Terms. IF YOU DO NOT AGREE WITH ALL OF
-        THESE LEGAL TERMS, THEN YOU ARE EXPRESSLY PROHIBITED FROM USING THE
-        SERVICES AND YOU MUST DISCONTINUE USE IMMEDIATELY.
+        {siteConfig.title}, concerning your access to and use of the Services.
+        You agree that by accessing the Services, you have read, understood, and
+        agreed to be bound by all of these Legal Terms. IF YOU DO NOT AGREE WITH
+        ALL OF THESE LEGAL TERMS, THEN YOU ARE EXPRESSLY PROHIBITED FROM USING
+        THE SERVICES AND YOU MUST DISCONTINUE USE IMMEDIATELY.
       </p>
       <p>
         Supplemental terms and conditions or documents that may be posted on the
@@ -884,9 +885,9 @@ export default function TermsOfServicePage() {
       <h2 id="govering-law">18. GOVERNING LAW</h2>
       <p>
         These Legal Terms shall be governed by and defined following the laws of
-        Russia. Tasklytic and yourself irrevocably consent that the courts of
-        Russia shall have exclusive jurisdiction to resolve any dispute which
-        may arise in connection with these Legal Terms.
+        Russia. {siteConfig.title} and yourself irrevocably consent that the
+        courts of Russia shall have exclusive jurisdiction to resolve any
+        dispute which may arise in connection with these Legal Terms.
       </p>
       <h2 id="dispute-resolution">19. DISPUTE RESOLUTION</h2>
       <h3>Informal Negotiations</h3>
@@ -1067,8 +1068,8 @@ export default function TermsOfServicePage() {
         In order to resolve a complaint regarding the Services or to receive
         further information regarding use of the Services, please contact us at:
       </p>
-      <strong className="my-4 block">Tasklytic</strong>
-      <strong className="my-4 block">tasklytic@inbox.ru</strong>
+      <strong className="my-4 block">{siteConfig.title}</strong>
+      <strong className="my-4 block">{siteConfig.workEmail}</strong>
     </div>
   )
 }
