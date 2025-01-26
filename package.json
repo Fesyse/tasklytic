@@ -4,15 +4,15 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "pnpm db:generate && pnpm db:push && next build",
+    "build": "bun db:generate && bun db:push && bun next build",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "dev": "next dev --turbopack",
-    "lint": "pnpm oxlint",
+    "lint": "oxlint",
     "start": "next start",
-    "ui": "pnpm dlx shadcn@latest"
+    "ui": "bunx shadcn@latest"
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.1.0",
@@ -108,7 +108,7 @@
     "lucide-react": "^0.427.0",
     "mini-svg-data-uri": "^1.4.4",
     "motion": "^11.18.1",
-    "next": "15.2.0-canary.16",
+    "next": "15.2.0-canary.26",
     "next-auth": "5.0.0-beta.25",
     "next-themes": "^0.3.0",
     "pdf-lib": "^1.17.1",
