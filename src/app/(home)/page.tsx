@@ -1,4 +1,5 @@
-import { ArrowDownRight } from "lucide-react"
+import { ArrowUpRight } from "lucide-react"
+import Image from "next/image"
 import Link from "next/link"
 import Balance from "react-wrap-balancer"
 import { Badge } from "@/components/ui/badge"
@@ -9,21 +10,20 @@ import { Spotlight } from "@/components/ui/spotlight"
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect"
 import { CTAWithGithub } from "@/components/blocks/cta"
 import { FeaturesSection } from "@/components/blocks/features-section"
-import { cn } from "@/lib/utils"
 import { siteConfig } from "@/config"
 
 export default function Home() {
   return (
     <div className="min-h-[calc(100vh-var(--dashboard-header-size))]) container relative rounded dark:bg-grid-white/[0.02]">
       <Spotlight className="hidden dark:block" fill="rgba(255,255,255,0.2)" />
-      <div className="px-4 py-20">
-        <section className="py-32">
-          <div className="container">
+      <div className="px-4">
+        <section className="mt-4 min-h-[calc(100vh-20rem)] flex flex-col justify-center">
+          <div className="md:container">
             <div className="grid items-center gap-8 lg:grid-cols-2">
               <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
                 <Badge variant="outline">
-                  New Release
-                  <ArrowDownRight className="ml-2 size-4" />
+                  {siteConfig.announcement.title}
+                  <ArrowUpRight className="ml-2 size-4" />
                 </Badge>
                 <h1 className="my-6 text-pretty text-4xl font-bold lg:text-6xl">
                   {siteConfig.title}
@@ -36,15 +36,27 @@ export default function Home() {
                   />
                 </Balance>
                 <div className="flex w-full flex-col justify-center gap-2 sm:flex-row lg:justify-start">
-                  <Button className="w-full sm:w-auto">Primary Button</Button>
-                  <Button variant="outline" className="w-full sm:w-auto">
-                    Secondary Button
-                    <ArrowDownRight className="ml-2 size-4" />
+                  <Button className="w-full sm:w-auto">
+                    <Link href="/auth/sign-in" prefetch={true}>
+                      Start for Free 🎉
+                    </Link>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full sm:w-auto"
+                    asChild
+                  >
+                    <Link href="/pricing">
+                      Pricing Plans
+                      <ArrowUpRight className="ml-2 size-4" />
+                    </Link>
                   </Button>
                 </div>
               </div>
-              <img
+              <Image
                 src="https://shadcnblocks.com/images/block/placeholder-1.svg"
+                width={1280}
+                height={720}
                 alt="placeholder hero"
                 className="max-h-96 w-full rounded-md object-cover"
               />
@@ -52,47 +64,9 @@ export default function Home() {
           </div>
         </section>
 
-        <div className="mb-52 flex w-full flex-col">
-          <section className="py-6 text-center md:py-10">
-            <h1 className="bg-gradient-to-b from-foreground/25 to-foreground bg-clip-text text-5xl font-bold text-transparent dark:from-neutral-200 dark:to-neutral-600 lg:text-7xl">
-              Tasklytic
-            </h1>
-          </section>
-
-          <section className="relative pt-8 text-center md:pt-12">
-            <div className="relative z-10">
-              <h2 className="mb-2 text-xl font-bold md:mb-4 md:text-2xl">
-                Ready to boost your productivity?
-              </h2>
-              <p className="mb-4 text-base md:mb-6 md:text-lg">
-                Join Tasklytic today and streamline your task management
-              </p>
-              <Button
-                size="lg"
-                asChild
-                className={cn(
-                  "group relative overflow-hidden transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-lg",
-                  // light mode
-                  "bg-gradient-to-tr from-zinc-900 to-zinc-700 text-zinc-50 hover:shadow-zinc-500/30",
-                  // dark mode
-                  "dark:bg-gradient-to-tr dark:from-zinc-50 dark:to-zinc-100 dark:text-zinc-900 dark:hover:shadow-zinc-700/30"
-                )}
-              >
-                <Link href="/auth/sign-in" prefetch>
-                  Get Started
-                  {/* gives shiny effect on hover */}
-                  <span className="absolute inset-0 flex size-full justify-center [transform:skew(-14deg)_translateX(-100%)] group-hover:duration-1000 group-hover:[transform:skew(-14deg)_translateX(100%)]">
-                    <span className="relative h-full w-8 bg-white/20 dark:bg-black/10" />
-                  </span>
-                </Link>
-              </Button>
-            </div>
-          </section>
-
-          <section className="relative my-10 min-h-[800px] rounded-lg border-2 bg-muted/50 p-2 md:my-20">
-            <Icons.placeholder className="absolute left-1/2 top-1/2 h-1/2 w-1/2 -translate-x-1/2 -translate-y-1/2 text-muted-foreground/25 grayscale" />
-          </section>
-        </div>
+        <section className="relative my-10 min-h-[800px] rounded-lg border-2 bg-muted/50 p-2 md:my-20">
+          <Icons.placeholder className="absolute left-1/2 top-1/2 h-1/2 w-1/2 -translate-x-1/2 -translate-y-1/2 text-muted-foreground/25 grayscale" />
+        </section>
 
         <section className="relative flex w-full flex-col justify-center">
           <Beam className="-mt-[5rem] hidden xl:ml-28 xl:block" />
