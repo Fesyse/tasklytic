@@ -20,10 +20,12 @@ export default function Home() {
       <section className="container mt-4 min-h-[calc(100vh-20rem)] flex flex-col justify-center">
         <div className="grid items-center gap-8 lg:grid-cols-2">
           <div className="flex flex-col items-center text-center lg:items-start lg:text-left relative">
-            <Badge variant="outline">
-              {siteConfig.announcement.title}
-              <ArrowUpRight className="ml-2 size-4" />
-            </Badge>
+            <Link href={siteConfig.announcement.href}>
+              <Badge variant="outline">
+                {siteConfig.announcement.title}
+                <ArrowUpRight className="ml-2 size-4" />
+              </Badge>
+            </Link>
             <Beam className="-mt-12 -ml-2 hidden xl:block" />
             <h1 className="my-6 text-pretty text-4xl font-bold lg:text-6xl">
               {siteConfig.title}
