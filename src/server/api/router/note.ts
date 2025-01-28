@@ -17,7 +17,8 @@ export const notesRouter = createTRPCRouter({
   getById: protectedProcedure
     .input(
       z.object({
-        id: z.string()
+        id: z.string(),
+        projectId: z.string()
       })
     )
     .query(async ({ ctx, input }) => {
@@ -30,11 +31,15 @@ export const notesRouter = createTRPCRouter({
           or(
             // if user is owner of the note, then we showing private note
             and(
-              eq(notesTable.id, input.id),
-              not(eq(notesTable.userId, ctx.session.user.id))
+              eq(notesTable.projectId, input.projectId),
+              not(eq(notesTable.userId, ctx.session.user.id)),
+              eq(notesTable.private, true)
             ),
             // otherwise we only showing public note
-            and(eq(notesTable.id, input.id), eq(notesTable.private, false))
+            and(
+              eq(notesTable.projectId, input.projectId),
+              eq(notesTable.private, false)
+            )
           )
       })
       kv.set(key, result)
@@ -83,7 +88,8 @@ export const notesRouter = createTRPCRouter({
               // if user is owner of the note, then we showing private note
               and(
                 eq(notesTable.projectId, input.projectId),
-                not(eq(notesTable.userId, ctx.session.user.id))
+                not(eq(notesTable.userId, ctx.session.user.id)),
+                eq(notesTable.private, true)
               ),
               // otherwise we only showing public note
               and(
@@ -117,7 +123,8 @@ export const notesRouter = createTRPCRouter({
               // if user is owner of the note, then we showing private note
               and(
                 eq(notesTable.projectId, input.projectId),
-                not(eq(notesTable.userId, ctx.session.user.id))
+                not(eq(notesTable.userId, ctx.session.user.id)),
+                eq(notesTable.private, true)
               ),
               // otherwise we only showing public note
               and(
@@ -176,9 +183,21 @@ export const notesRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       const notes = await ctx.db.query.notes.findMany({
-        where: (notesTable, { and, eq, isNull }) =>
+        where: (notesTable, { and, eq, isNull, not }) =>
           and(
             eq(notesTable.projectId, input.projectId),
+            or(
+              // if user is owner of the note, then we showing private note
+              and(
+                eq(notesTable.projectId, input.projectId),
+                not(eq(notesTable.userId, ctx.session.user.id))
+              ),
+              // otherwise we only showing public note
+              and(
+                eq(notesTable.projectId, input.projectId),
+                eq(notesTable.private, false)
+              )
+            ),
             // that way we get notes without a folder
             isNull(notesTable.folderId)
           )

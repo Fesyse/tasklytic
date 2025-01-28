@@ -8,7 +8,7 @@ import { api } from "@/trpc/server"
 
 type NotePageProps = {
   params: Promise<{
-    id: string
+    projectId: string
     noteId: string
   }>
 }
@@ -16,8 +16,8 @@ type NotePageProps = {
 export async function generateMetadata({
   params
 }: NotePageProps): Promise<Metadata> {
-  const { noteId } = await params
-  const note = await api.notes.getById({ id: noteId })
+  const { noteId, projectId } = await params
+  const note = await api.notes.getById({ id: noteId, projectId })
 
   return {
     title: (note?.emoji ? note.emoji + " " : "") + (note?.title ?? "Untitled")
@@ -25,10 +25,10 @@ export async function generateMetadata({
 }
 
 export default async function NotePage(props: NotePageProps) {
-  const { noteId } = await props.params
+  const { noteId, projectId } = await props.params
 
   const [note, blocks] = await Promise.all([
-    api.notes.getById({ id: noteId }),
+    api.notes.getById({ id: noteId, projectId }),
     api.blocks
       .getAll({ noteId })
       .then(blocks => blocks.toSorted((a, b) => a.order - b.order))

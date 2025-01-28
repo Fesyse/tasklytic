@@ -20,7 +20,7 @@ export const DashboardBreadcrumbPage: React.FC<
   }>()
 
   const { data: note, isLoading: isLoadingNote } = api.notes.getById.useQuery(
-    { id: noteId ?? "" },
+    { id: noteId!, projectId },
     {
       enabled: !!noteId
     }
