@@ -26,13 +26,14 @@ declare module "next-auth" {
     }
   }
 }
+const adapter = DrizzleAdapter(db, {
+  usersTable: users,
+  accountsTable: accounts,
+  sessionsTable: sessions,
+  verificationTokensTable: verificationTokens
+} as unknown as DefaultPostgresSchema)
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
   ...config,
-  adapter: DrizzleAdapter(db, {
-    usersTable: users,
-    accountsTable: accounts,
-    sessionsTable: sessions,
-    verificationTokensTable: verificationTokens
-  } as unknown as DefaultPostgresSchema)
+  adapter
 })
