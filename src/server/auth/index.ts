@@ -1,7 +1,7 @@
 import { DrizzleAdapter } from "@auth/drizzle-adapter"
 import NextAuth, { type DefaultSession } from "next-auth"
 import { type DefaultPostgresSchema } from "node_modules/@auth/drizzle-adapter/lib/pg"
-import { config } from "@/server/auth/config"
+import { authConfig } from "@/server/auth/config"
 import { db } from "@/server/db"
 import {
   accounts,
@@ -34,6 +34,6 @@ const adapter = DrizzleAdapter(db, {
 } as unknown as DefaultPostgresSchema)
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
-  ...config,
+  ...authConfig,
   adapter
 })

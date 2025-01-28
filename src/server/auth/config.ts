@@ -4,8 +4,11 @@ import { env } from "@/env"
 
 const unprotectedRoutes = ["/auth", "/pricing"]
 
-export const config: NextAuthConfig = {
+export const authConfig: NextAuthConfig = {
   providers,
+  session: {
+    strategy: "database"
+  },
   callbacks: {
     session: ({ session, user }) => ({
       ...session,
@@ -19,6 +22,7 @@ export const config: NextAuthConfig = {
       const isUnprotectedRoute = unprotectedRoutes.some(route =>
         pathname === "/" ? true : pathname.startsWith(route)
       )
+
       return isUnprotectedRoute || !!auth
     }
   },
