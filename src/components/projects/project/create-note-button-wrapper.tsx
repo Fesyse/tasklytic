@@ -21,7 +21,8 @@ export const CreateNoteButtonWrapper: React.FC<
     onSuccess: async note => {
       await Promise.all([
         utils.folders.getWorkspace.invalidate({ projectId }),
-        utils.notes.getAll.invalidate()
+        utils.notes.getAll.invalidate({ projectId }),
+        utils.notes.getAllRoot.invalidate({ projectId })
       ])
       toast.success(`Successfully created note!`)
       router.push(`/projects/${projectId}/note/${note.id}`)

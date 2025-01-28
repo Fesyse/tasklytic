@@ -23,9 +23,10 @@ export const NoteTitle: FC<NoteTitleProps> = ({ note }) => {
 
       await updateNoteTitle({ id: note.id, title })
       await Promise.all([
-        utils.folders.getWorkspace.invalidate({ projectId }),
         utils.notes.getById.invalidate({ id: note.id }),
-        utils.notes.getAll.invalidate()
+        utils.folders.getWorkspace.invalidate({ projectId }),
+        utils.notes.getAll.invalidate({ projectId }),
+        utils.notes.getAllRoot.invalidate({ projectId })
       ])
     }, 750),
     [note?.id]

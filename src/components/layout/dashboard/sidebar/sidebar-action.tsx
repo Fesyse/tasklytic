@@ -37,7 +37,8 @@ export const SidebarAction: React.FC<WorkspaceActionProps> = ({
   const invalidate = useCallback(() => {
     return Promise.all([
       utils.folders.getWorkspace.invalidate({ projectId }),
-      utils.notes.getAll.invalidate()
+      utils.notes.getAll.invalidate({ projectId }),
+      utils.notes.getAllRoot.invalidate({ projectId })
     ])
   }, [utils])
 
