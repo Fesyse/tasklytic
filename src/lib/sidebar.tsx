@@ -44,6 +44,7 @@ export type SidebarFolder = {
 
 export type SidebarNav = {
   projects: {
+    isProjectPage: boolean
     isLoading: boolean
     items:
       | {
@@ -105,6 +106,7 @@ export function useSidebarNav(): SidebarNav {
 
   return {
     projects: {
+      isProjectPage,
       isLoading: isProjectsLoading,
       items: projects?.map<
         NonNullable<SidebarNav["projects"]["items"]>[number]
@@ -128,9 +130,10 @@ export function useSidebarNav(): SidebarNav {
     navMain: [
       {
         title: "Dashboard",
-        href: `/projects/${projectId}`,
+        href: isProjectPage ? `/projects/${projectId}` : "/projects",
         icon: LayoutDashboard,
-        isActive: pathname === `/projects/${projectId}`
+        isActive:
+          pathname === (isProjectPage ? `/projects/${projectId}` : "/projects")
       },
       {
         title: "Ask AI",
@@ -140,9 +143,15 @@ export function useSidebarNav(): SidebarNav {
       },
       {
         title: "Inbox",
-        href: `/projects/${projectId}/inbox`,
+        href: isProjectPage
+          ? `/projects/${projectId}/inbox`
+          : "/projects/dashboard/inbox",
         icon: Inbox,
-        isActive: pathname.startsWith(`/projects/${projectId}/inbox`)
+        isActive: pathname.startsWith(
+          isProjectPage
+            ? `/projects/${projectId}/inbox`
+            : "/projects/dashboard/inbox"
+        )
       }
     ],
 

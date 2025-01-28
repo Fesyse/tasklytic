@@ -42,23 +42,30 @@ export function ProjectSwitcher({
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <SidebarMenuButton className="w-fit px-1.5">
-              <div className="flex aspect-square size-5 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
-                {activeProject && !projects.isLoading ? (
-                  <activeProject.logo className="size-3" />
-                ) : (
-                  <Skeleton className="size-3 rounded" />
-                )}
-              </div>
-              <span className="truncate font-semibold">
-                {activeProject && !projects.isLoading ? (
-                  activeProject.name
-                ) : (
-                  <Skeleton className="h-4 w-16" />
-                )}
-              </span>
-              <ChevronDownIcon className="opacity-50" />
-            </SidebarMenuButton>
+            {projects.isProjectPage ? (
+              <SidebarMenuButton className="w-fit px-1.5">
+                <div className="flex aspect-square size-5 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
+                  {activeProject && !projects.isLoading ? (
+                    <activeProject.logo className="size-3" />
+                  ) : (
+                    <Skeleton className="size-3 rounded" />
+                  )}
+                </div>
+                <span className="truncate font-semibold">
+                  {activeProject && !projects.isLoading ? (
+                    activeProject.name
+                  ) : (
+                    <Skeleton className="h-4 w-16" />
+                  )}
+                </span>
+                <ChevronDownIcon className="opacity-50" />
+              </SidebarMenuButton>
+            ) : (
+              <SidebarMenuButton className="w-fit px-1.5">
+                <ChevronDownIcon className="opacity-50" />
+                <span className="truncate font-semibold">Select project</span>
+              </SidebarMenuButton>
+            )}
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="w-64 rounded-lg"
