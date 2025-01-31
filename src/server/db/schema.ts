@@ -41,6 +41,10 @@ export const users = createTable("user", {
     mode: "date",
     withTimezone: true
   }).default(sql`CURRENT_TIMESTAMP`),
+  plan: varchar("plan", { length: 255, enum: PROJECT_PLANS })
+    .notNull()
+    .default("Free"),
+
   subscriptionEndDate: timestamp("subscription_end_date", {
     mode: "date",
     withTimezone: true
@@ -125,9 +129,6 @@ export const projects = createTable("project", {
     .$defaultFn(() => createCuid()),
   name: varchar("name", { length: 255 }).notNull(),
   icon: varchar("icon", { length: 255 }),
-  plan: varchar("plan", { length: 255, enum: PROJECT_PLANS })
-    .notNull()
-    .default("Free"),
 
   createdAt: timestamp("created_at", {
     mode: "date",

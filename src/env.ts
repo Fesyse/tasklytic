@@ -32,7 +32,11 @@ export const env = createEnv({
     OPENAI_API_KEY: z.string(),
     // Pusher
     PUSHER_APP_ID: z.string(),
-    PUSHER_SECRET: z.string()
+    PUSHER_SECRET: z.string(),
+
+    POLAR_ORGANIZATION_ID: z.string(),
+    POLAR_ACCESS_TOKEN: z.string(),
+    POLAR_WEBHOOK_SECRET: z.string()
   },
 
   /**
@@ -69,7 +73,11 @@ export const env = createEnv({
     PUSHER_APP_ID: process.env.PUSHER_APP_ID,
     PUSHER_SECRET: process.env.PUSHER_SECRET,
     NEXT_PUBLIC_PUSHER_CLUSTER: process.env.NEXT_PUBLIC_PUSHER_CLUSTER,
-    NEXT_PUBLIC_PUSHER_KEY: process.env.NEXT_PUBLIC_PUSHER_KEY
+    NEXT_PUBLIC_PUSHER_KEY: process.env.NEXT_PUBLIC_PUSHER_KEY,
+    // Polar.sh
+    POLAR_ORGANIZATION_ID: process.env.POLAR_ORGANIZATION_ID,
+    POLAR_ACCESS_TOKEN: process.env.POLAR_ACCESS_TOKEN,
+    POLAR_WEBHOOK_SECRET: process.env.POLAR_WEBHOOK_SECRET
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

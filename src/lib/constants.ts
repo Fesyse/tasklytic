@@ -10,7 +10,7 @@ const ACCEPTED_IMAGE_TYPES = [
   "image/webp"
 ]
 
-const PROJECT_PLANS = ["Free", "Startup", "Enterprise"] as const
+const PROJECT_PLANS = ["Free", "Pro", "Enterprise"] as const
 const MAX_PROJECTS = 3
 const MAX_PROJECTS_WITH_SUBSCRIPTION = 10
 

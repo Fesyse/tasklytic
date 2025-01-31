@@ -13,7 +13,6 @@ import {
 import Image from "next/image"
 import { useParams, usePathname } from "next/navigation"
 import { type FC } from "react"
-import { type PROJECT_PLANS } from "./constants"
 import type {
   Folder,
   FolderWithNotes,
@@ -51,7 +50,6 @@ export type SidebarNav = {
           id: string
           name: string
           logo: LogoComponent
-          plan: (typeof PROJECT_PLANS)[number]
         }[]
       | undefined
   }
@@ -123,8 +121,7 @@ export function useSidebarNav(): SidebarNav {
               />
             )
           : Presentation,
-        name: project.name,
-        plan: project.plan
+        name: project.name
       }))
     },
     navMain: [
