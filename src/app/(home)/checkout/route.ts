@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { polar } from "../../server/polar"
+import { polar } from "../../../server/polar"
 import { auth } from "@/server/auth"
 
 export async function GET(req: NextRequest) {
@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
 
   if (!session) {
     return NextResponse.redirect(
-      new URL(`/auth/sign-in?callbackUrl=${req.nextUrl.pathname}`, req.url)
+      new URL(`/auth/sign-in?callbackUrl=${req.nextUrl.href}`, req.url)
     )
   }
 
@@ -24,6 +24,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(result.url)
   } catch (error) {
     console.error(error)
-    return NextResponse.error()
+    return NextResponse.redirect(new URL(`/checkout/error`, req.url))
   }
 }

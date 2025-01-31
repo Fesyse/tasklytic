@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { LoadingSpinner } from "./loading-spinner"
+import { polar } from "@/server/polar"
 
 type BenefitProps = {
   text: string
@@ -53,12 +54,17 @@ export const PricingCard = ({
 }: PricingCardProps) => {
   const { data: product, isLoading } = useQuery({
     queryKey: ["product", tier],
-    queryFn: () => fetch(`/api/polar/get-products`).then(res => res.json()),
+    queryFn: () =>
+      fetch(`/api/polar/get-products`).then(
+        res => res.json() as ReturnType<typeof polar.products.list>
+      ),
     select: data => data.result.items[0],
     enabled: href === undefined
   })
 
-  const productHref = product ? `/checkout?priceId=${product.id}` : "#"
+  const productHref = product
+    ? `/checkout?priceId=${product.prices[0]!.id}`
+    : "#"
 
   return (
     <motion.div

@@ -10,7 +10,6 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "dev": "next dev --turbopack",
-    "dev:https": "bun dev --experimental-https",
     "lint": "oxlint",
     "start": "next start",
     "ui": "bunx shadcn@latest"
