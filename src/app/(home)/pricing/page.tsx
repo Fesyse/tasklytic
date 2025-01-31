@@ -1,70 +1,69 @@
-import type { Product } from "@polar-sh/sdk/models/components/product"
-import Link from "next/link"
-import { useMemo } from "react"
-import { polar } from "../../../polar"
-import { env } from "@/env"
-
-type ProductCardProps = {
-  product: Product
-}
-
-export const ProductCard = ({ product }: ProductCardProps) => {
-  // Handling just a single price for now
-  // Remember to handle multiple prices for products if you support monthly & yearly pricing plans
-  const firstPrice = product.prices[0]!
-
-  const price = useMemo(() => {
-    switch (firstPrice.amountType) {
-      case "fixed":
-        // The Polar API returns prices in cents - Convert to dollars for display
-        return `$${firstPrice.priceAmount / 100}`
-      case "free":
-        return "Free"
-      default:
-        return "Pay what you want"
-    }
-  }, [firstPrice])
-
-  return (
-    <div className="flex flex-col gap-y-24 justify-between p-12 rounded-3xl bg-neutral-950 h-full border border-neutral-900">
-      <div className="flex flex-col gap-y-8">
-        <h1 className="text-3xl">{product.name}</h1>
-        <p className="text-neutral-400">{product.description}</p>
-        <ul>
-          {product.benefits.map(benefit => (
-            <li key={benefit.id} className="flex flex-row gap-x-2 items-center">
-              {benefit.description}
-            </li>
-          ))}
-        </ul>
-      </div>
-      <div className="flex flex-row gap-x-4 justify-between items-center">
-        <Link
-          className="h-8 flex flex-row items-center justify-center rounded-full bg-white text-black font-medium px-4"
-          href={`/checkout?priceId=${firstPrice.id}`}
-        >
-          Buy
-        </Link>
-        <span className="text-neutral-500">{price}</span>
-      </div>
-    </div>
-  )
-}
+import { PricingCard } from "@/components/ui/dark-gradient-pricing"
+import { Spotlight } from "@/components/ui/spotlight"
 
 export default async function Page() {
-  const { result } = await polar.products.list({
-    organizationId: env.POLAR_ORGANIZATION_ID,
-    isArchived: false // Only fetch products which are published
-  })
-
   return (
-    <div className="flex flex-col gap-y-32">
-      <h1 className="text-5xl">Products</h1>
-      <div className="grid grid-cols-4 gap-12">
-        {result.items.map(product => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </div>
+    <div className="min-h-[calc(100vh-var(--dashboard-header-size))]) relative dark:bg-grid-white/[0.02]">
+      <Spotlight />
+      <section className="relative overflow-hidden bg-background text-foreground">
+        <div className="relative z-10 mx-auto max-w-5xl px-4 py-20 md:px-8">
+          <div className="mb-12 space-y-3">
+            <h2 className="text-center text-3xl font-semibold leading-tight sm:text-4xl sm:leading-tight md:text-5xl md:leading-tight">
+              Pricing
+            </h2>
+            <p className="text-center text-base text-muted-foreground md:text-lg">
+              Use it for free for yourself, upgrade when your team needs
+              advanced control.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            <PricingCard
+              tier="Free"
+              price="$0/mo"
+              bestFor="Best for individuals"
+              CTA="Get started for free"
+              benefits={[
+                { text: "One project", checked: true },
+                { text: "Email support", checked: true },
+                { text: "100 blocks for notes", checked: true },
+                { text: "AI copilot", checked: false },
+                { text: "File uploads in notes", checked: false },
+                { text: "Priority support", checked: false }
+              ]}
+              href={`/auth/sign-in`}
+            />
+            <PricingCard
+              tier="Pro"
+              price="$79/mo"
+              bestFor="Best individuals"
+              CTA="Get started"
+              benefits={[
+                { text: "AI copilot", checked: true },
+                { text: "Five projects", checked: true },
+                { text: "Email support", checked: true },
+                { text: "Unlimited blocks", checked: true },
+                { text: "Unlimited file uploads", checked: true },
+                { text: "Priority support", checked: false }
+              ]}
+            />
+            <PricingCard
+              tier="Enterprise"
+              price="Contact us"
+              bestFor="Best for startups/companies"
+              CTA="Contact us"
+              benefits={[
+                { text: "AI copilot", checked: true },
+                { text: "Email support", checked: true },
+                { text: "Unlimited projects", checked: true },
+                { text: "Unlimited blocks", checked: true },
+                { text: "Unlimited file uploads", checked: true },
+                { text: "Priority support", checked: true }
+              ]}
+              href={`https://book.tasklytic.com/pricing`}
+            />
+          </div>
+        </div>
+      </section>
     </div>
   )
 }

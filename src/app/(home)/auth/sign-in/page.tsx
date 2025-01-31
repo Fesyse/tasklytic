@@ -4,6 +4,7 @@ import { DiscordLogoIcon, GitHubLogoIcon } from "@radix-ui/react-icons"
 import { type BuiltInProviderType } from "next-auth/providers/index"
 import { type LiteralUnion, signIn } from "next-auth/react"
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 import Balancer from "react-wrap-balancer"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -18,9 +19,15 @@ import {
 import { Icons } from "@/components/ui/icons"
 import { Separator } from "@/components/ui/separator"
 
-export default function SignInPage() {
+export default async function SignInPage() {
+  const searchParams = useSearchParams()
+
   const signInWith = async (provider: LiteralUnion<BuiltInProviderType>) => {
-    await signIn(provider, { callbackUrl: "/projects" })
+    await signIn(provider, {
+      callbackUrl: searchParams.get("callbackUrl")
+        ? decodeURIComponent(searchParams.get("callbackUrl")!)
+        : "/projects"
+    })
     toast.success(`Successfully signed in with ${provider}.`)
   }
 
