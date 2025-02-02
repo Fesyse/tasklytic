@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
 
   const url = new URL(req.url)
   const productPriceId = url.searchParams.get("priceId") ?? ""
-  const successUrl = `${req.nextUrl.protocol}//${req.nextUrl.host}/confirmation?checkout_id={CHECKOUT_ID}`
+  const successUrl = `${req.nextUrl.protocol}//${req.nextUrl.host}/checkout/confirmation?checkout_id={CHECKOUT_ID}`
 
   try {
     const customer = await polar.customers

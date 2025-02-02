@@ -41,12 +41,15 @@ export const users = createTable("user", {
     mode: "date",
     withTimezone: true
   }).default(sql`CURRENT_TIMESTAMP`),
+  image: varchar("image", { length: 255 }),
+
+  // Payments
+  customerId: varchar("customer_id", { length: 255 }).unique(),
+  subscriptionId: varchar("subscription_id", { length: 255 }).unique(),
   plan: varchar("plan", { length: 255, enum: PROJECT_PLANS })
     .notNull()
     .default("Free"),
-  customerId: varchar("customer_id", { length: 255 }),
 
-  image: varchar("image", { length: 255 }),
   createdAt: timestamp("created_at", {
     mode: "date",
     withTimezone: true
