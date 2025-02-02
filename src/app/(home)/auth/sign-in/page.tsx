@@ -6,7 +6,6 @@ import { type LiteralUnion, signIn } from "next-auth/react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import Balancer from "react-wrap-balancer"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -23,12 +22,15 @@ export default async function SignInPage() {
   const searchParams = useSearchParams()
 
   const signInWith = async (provider: LiteralUnion<BuiltInProviderType>) => {
+    const callbackUrl = searchParams.get("callbackUrl")
+      ? decodeURIComponent(searchParams.get("callbackUrl")!)
+      : "/projects"
+    const callbackUrlSearchParams = new URLSearchParams({ callbackUrl })
+    callbackUrlSearchParams.set("fromSignIn", "true")
+
     await signIn(provider, {
-      callbackUrl: searchParams.get("callbackUrl")
-        ? decodeURIComponent(searchParams.get("callbackUrl")!)
-        : "/projects"
+      callbackUrl: callbackUrl + `?${callbackUrlSearchParams.toString()}`
     })
-    toast.success(`Successfully signed in with ${provider}.`)
   }
 
   return (
