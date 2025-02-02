@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm"
 import { type NextRequest, NextResponse } from "next/server"
 import { polar } from "../../../server/polar"
+import { env } from "@/env"
 import { auth } from "@/server/auth"
 import { db } from "@/server/db"
 import { users } from "@/server/db/schema"
@@ -20,12 +21,15 @@ export async function GET(req: NextRequest) {
 
   try {
     const customer = await polar.customers
-      .get({ id: session.user.id })
+      .get({ id: session.user.customerId! })
       .catch(async () => {
         try {
+          console.info("[CHECKOUT] Creating customer for user", session.user)
+
           const customer = await polar.customers.create({
             email: session.user.email,
-            name: session.user.name
+            name: session.user.name,
+            organizationId: env.POLAR_ORGANIZATION_ID
           })
           await db
             .update(users)
@@ -43,7 +47,8 @@ export async function GET(req: NextRequest) {
     const result = await polar.checkouts.custom.create({
       productPriceId,
       successUrl,
-      customerId: customer.id
+      customerId: customer.id,
+      customerEmail: customer.email
     })
 
     return NextResponse.redirect(result.url)

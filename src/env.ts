@@ -33,10 +33,14 @@ export const env = createEnv({
     // Pusher
     PUSHER_APP_ID: z.string(),
     PUSHER_SECRET: z.string(),
-
+    // Polar.sh
     POLAR_ORGANIZATION_ID: z.string(),
     POLAR_ACCESS_TOKEN: z.string(),
-    POLAR_WEBHOOK_SECRET: z.string()
+    POLAR_WEBHOOK_SECRET: z.string(),
+    // Subscriptions
+    MAX_PROJECTS_WITH_PRO_PLAN: z.coerce.number().default(5),
+    MAX_PROJECTS_WITH_ENTERPRISE_PLAN: z.coerce.number().default(-1),
+    MAX_PROJECTS_WITH_FREE_PLAN: z.coerce.number().default(1)
   },
 
   /**
@@ -77,7 +81,12 @@ export const env = createEnv({
     // Polar.sh
     POLAR_ORGANIZATION_ID: process.env.POLAR_ORGANIZATION_ID,
     POLAR_ACCESS_TOKEN: process.env.POLAR_ACCESS_TOKEN,
-    POLAR_WEBHOOK_SECRET: process.env.POLAR_WEBHOOK_SECRET
+    POLAR_WEBHOOK_SECRET: process.env.POLAR_WEBHOOK_SECRET,
+    // Subscriptions
+    MAX_PROJECTS_WITH_PRO_PLAN: process.env.MAX_PROJECTS_WITH_PRO_PLAN,
+    MAX_PROJECTS_WITH_ENTERPRISE_PLAN:
+      process.env.MAX_PROJECTS_WITH_SUBSCRIPTION_PLAN,
+    MAX_PROJECTS_WITH_FREE_PLAN: process.env.MAX_PROJECTS_WITH_FREE_PLAN
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

@@ -6,6 +6,7 @@ import { db } from "@/server/db"
 import {
   accounts,
   sessions,
+  type User,
   users,
   verificationTokens
 } from "@/server/db/schema"
@@ -18,12 +19,7 @@ import {
  */
 declare module "next-auth" {
   interface Session extends DefaultSession {
-    user: {
-      id: string
-      name: string
-      email: string
-      image: string | null
-    }
+    user: User
   }
 }
 const adapter = DrizzleAdapter(db, {

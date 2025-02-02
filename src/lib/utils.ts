@@ -1,6 +1,5 @@
 import { isCuid as isCuid2 } from "@paralleldrive/cuid2"
 import { type ClassValue, clsx } from "clsx"
-import { addMonths, isAfter } from "date-fns"
 import { toast } from "sonner"
 import { twMerge } from "tailwind-merge"
 
@@ -18,10 +17,6 @@ function random(min: number, max: number) {
 
 function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms))
-}
-
-function checkIsSubscriptionExpired(subscriptionEndDate: Date): boolean {
-  return isAfter(subscriptionEndDate, addMonths(new Date(), 1))
 }
 
 function isCuid(string: string) {
@@ -83,7 +78,6 @@ function searchQueryFormat(str: string) {
 }
 
 export {
-  checkIsSubscriptionExpired,
   cn,
   copyToClipboard,
   exportFile,

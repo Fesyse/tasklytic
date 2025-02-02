@@ -46,10 +46,6 @@ export const users = createTable("user", {
     .default("Free"),
   customerId: varchar("customer_id", { length: 255 }),
 
-  subscriptionEndDate: timestamp("subscription_end_date", {
-    mode: "date",
-    withTimezone: true
-  }).default(sql`CURRENT_TIMESTAMP`),
   image: varchar("image", { length: 255 }),
   createdAt: timestamp("created_at", {
     mode: "date",
@@ -387,6 +383,7 @@ export const projectMembershipsRelations = relations(
   })
 )
 
+export type User = typeof users.$inferSelect
 export type Project = typeof projects.$inferSelect
 export type ProjectMembership = typeof projectMemberships.$inferSelect
 export type ProjectWithMemberShip = Project & {

@@ -1,7 +1,7 @@
 import { and, count, eq } from "drizzle-orm"
 import { z } from "zod"
-import { MAX_PROJECTS, MAX_PROJECTS_WITH_SUBSCRIPTION } from "@/lib/constants"
-import { checkIsSubscriptionExpired, isCuid } from "@/lib/utils"
+import { isCuid } from "@/lib/utils"
+import { env } from "@/env"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { kv } from "@/server/cache"
 import {
@@ -11,6 +11,7 @@ import {
   type ProjectWithMemberShip
 } from "@/server/db/schema"
 import { utapi } from "@/server/file-upload"
+import { polar } from "@/server/polar"
 
 const deleteIcon = async (fileKey: string) => {
   const response = await utapi.deleteFiles(fileKey)
@@ -99,10 +100,7 @@ export const projectsRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input: project, ctx }) => {
-      const [user, [projectsCount]] = await Promise.all([
-        ctx.db.query.users.findFirst({
-          where: (usersTable, { eq }) => eq(usersTable.id, ctx.session.user.id)
-        }),
+      const [[projectsCount], subscription] = await Promise.all([
         ctx.db
           .select({
             count: count()
@@ -113,31 +111,52 @@ export const projectsRouter = createTRPCRouter({
               eq(projectMemberships.role, "owner"),
               eq(projectMemberships.userId, ctx.session.user.id)
             )
-          )
+          ),
+        ctx.session.user.customerId
+          ? polar.subscriptions.get({ id: ctx.session.user.customerId })
+          : null
       ])
-      const isSubscriptionExpired = checkIsSubscriptionExpired(
-        user?.subscriptionEndDate ?? new Date()
-      )
 
-      if (isSubscriptionExpired && (projectsCount?.count ?? 0) >= MAX_PROJECTS)
+      if (
+        subscription?.product.name === "Pro" &&
+        // If MAX_PROJECTS_WITH_PRO_PLAN is -1, then it is unlimited
+        env.MAX_PROJECTS_WITH_PRO_PLAN !== -1 &&
+        (projectsCount?.count ?? 0) >= env.MAX_PROJECTS_WITH_PRO_PLAN
+      ) {
         throw new Error(
-          `Max limit of ${MAX_PROJECTS} reached without subscription.`
+          `Max limit of ${env.MAX_PROJECTS_WITH_PRO_PLAN} reached.`
         )
-      if ((projectsCount?.count ?? 0) >= MAX_PROJECTS_WITH_SUBSCRIPTION)
+      } else if (
+        !subscription &&
+        // If MAX_PROJECTS_WITH_FREE_PLAN is -1, then it is unlimited
+        env.MAX_PROJECTS_WITH_FREE_PLAN !== -1 &&
+        (projectsCount?.count ?? 0) >= env.MAX_PROJECTS_WITH_FREE_PLAN
+      ) {
         throw new Error(
-          `Max limit of ${MAX_PROJECTS_WITH_SUBSCRIPTION} reached.`
+          `Max limit of ${env.MAX_PROJECTS_WITH_FREE_PLAN} reached.`
         )
+      } else if (
+        subscription?.product.name === "Enterprise" &&
+        // If MAX_PROJECTS_WITH_ENTERPRISE_PLAN is -1, then it is unlimited
+        env.MAX_PROJECTS_WITH_ENTERPRISE_PLAN !== -1 &&
+        (projectsCount?.count ?? 0) >= env.MAX_PROJECTS_WITH_ENTERPRISE_PLAN
+      ) {
+        throw new Error(
+          `Max limit of ${env.MAX_PROJECTS_WITH_ENTERPRISE_PLAN} reached.`
+        )
+      }
 
-      const [createdProject] = await ctx.db
+      const createdProject = await ctx.db
         .insert(projects)
         .values({
           ...project,
           icon: project.icon
         })
         .returning()
+        .then(r => r[0]!)
 
       await ctx.db.insert(projectMemberships).values({
-        projectId: createdProject!.id,
+        projectId: createdProject.id,
         userId: ctx.session.user.id,
         role: "owner"
       })

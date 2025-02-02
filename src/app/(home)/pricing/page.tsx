@@ -34,7 +34,7 @@ export default async function Page() {
             />
             <PricingCard
               tier="Pro"
-              price="$79/mo"
+              price="$4.99/mo"
               bestFor="Best individuals"
               CTA="Get started"
               benefits={[

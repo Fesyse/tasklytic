@@ -7,7 +7,7 @@ export const POST = Webhooks({
     switch (payload.type) {
       case "checkout.created":
         // Handle the checkout created event
-        // supabase.from('checkouts').insert(webhookPayload.data)
+        console.log("checkout.created: ", payload)
         break
       case "checkout.updated":
         // Handle the checkout updated event
@@ -15,7 +15,7 @@ export const POST = Webhooks({
         break
       case "subscription.created":
         // Handle the subscription created event
-        break
+        console.log("checkout.subscription: ", payload)
       case "subscription.updated":
         // Handle the subscription updated event
         break
