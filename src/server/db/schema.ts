@@ -44,6 +44,7 @@ export const users = createTable("user", {
   plan: varchar("plan", { length: 255, enum: PROJECT_PLANS })
     .notNull()
     .default("Free"),
+  customerId: varchar("customer_id", { length: 255 }),
 
   subscriptionEndDate: timestamp("subscription_end_date", {
     mode: "date",
