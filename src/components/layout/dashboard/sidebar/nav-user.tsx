@@ -8,7 +8,6 @@ import {
   LogOut,
   Sparkles
 } from "lucide-react"
-import { signOut, useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -28,6 +27,7 @@ import {
   useSidebar
 } from "@/components/ui/sidebar"
 import { Skeleton } from "@/components/ui/skeleton"
+import { signOut, useSession } from "@/lib/auth"
 
 export function NavUser() {
   const { isMobile } = useSidebar()
@@ -88,11 +88,11 @@ export function NavUser() {
 }
 
 function UserInfo() {
-  const { data: session, status } = useSession()
+  const { data: session } = useSession()
 
   return (
     <>
-      {session && status === "authenticated" ? (
+      {session ? (
         <Avatar className="h-8 w-8 rounded-lg">
           <AvatarImage src={session.user.image!} alt={session.user.name} />
           <AvatarFallback className="rounded-lg">

@@ -1,13 +1,15 @@
 import { eq } from "drizzle-orm"
 import { type NextRequest, NextResponse } from "next/server"
-import { polar } from "../../../server/polar"
 import { env } from "@/env"
-import { auth } from "@/server/auth/auth"
+import { auth } from "@/server/auth"
 import { db } from "@/server/db"
 import { users } from "@/server/db/schema"
+import { polar } from "@/server/polar"
 
 export async function GET(req: NextRequest) {
-  const session = await auth()
+  const session = await auth.api.getSession({
+    headers: req.headers
+  })
 
   if (!session) {
     return NextResponse.redirect(

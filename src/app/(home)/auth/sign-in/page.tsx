@@ -1,8 +1,6 @@
 "use client"
 
 import { DiscordLogoIcon, GitHubLogoIcon } from "@radix-ui/react-icons"
-import { type BuiltInProviderType } from "next-auth/providers/index"
-import { type LiteralUnion, signIn } from "next-auth/react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import Balancer from "react-wrap-balancer"
@@ -17,19 +15,22 @@ import {
 } from "@/components/ui/card"
 import { Icons } from "@/components/ui/icons"
 import { Separator } from "@/components/ui/separator"
+import { signIn } from "@/lib/auth"
 
 export default async function SignInPage() {
   const searchParams = useSearchParams()
 
-  const signInWith = async (provider: LiteralUnion<BuiltInProviderType>) => {
+  const signInWith = async (provider: "discord" | "google" | "github") => {
     const callbackUrl = searchParams.get("callbackUrl")
       ? decodeURIComponent(searchParams.get("callbackUrl")!)
       : "/projects"
     const callbackUrlSearchParams = new URLSearchParams({ callbackUrl })
     callbackUrlSearchParams.set("fromSignIn", "true")
 
-    await signIn(provider, {
-      callbackUrl: callbackUrl + `?${callbackUrlSearchParams.toString()}`
+    await signIn.social({
+      provider,
+      newUserCallbackURL: "/create-project",
+      callbackURL: callbackUrl + `?${callbackUrlSearchParams.toString()}`
     })
   }
 

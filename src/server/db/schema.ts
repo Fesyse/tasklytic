@@ -25,7 +25,6 @@ export const createCuid = init({
  * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
  */
 export const createTable = pgTableCreator(name => `tasklytic_${name}`)
-
 export const users = createTable("user", {
   id: varchar("id", { length: 255 })
     .notNull()
@@ -39,7 +38,6 @@ export const users = createTable("user", {
     withTimezone: true
   }).default(sql`CURRENT_TIMESTAMP`),
   image: varchar("image", { length: 255 }),
-
   // Payments
   customerId: varchar("customer_id", { length: 255 }).unique(),
   subscriptionId: varchar("subscription_id", { length: 255 }).unique(),
@@ -54,31 +52,40 @@ export const users = createTable("user", {
   updatedAt: timestamp("updated_at", {
     mode: "date",
     withTimezone: true
-  }).$onUpdate(() => new Date())
+  }).$onUpdateFn(() => new Date())
 })
 
 export const accounts = createTable("account", {
-  id: varchar("id", { length: 255 }).primaryKey(),
+  id: varchar("id", { length: 255 })
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => createCuid()),
   accountId: varchar("account_id", { length: 255 }).notNull(),
   providerId: varchar("provider_id", { length: 255 }).notNull(),
   userId: varchar("user_id", { length: 255 })
     .notNull()
     .references(() => users.id),
-  accessToken: varchar("access_token", { length: 255 }),
-  refreshToken: varchar("refresh_token", { length: 255 }),
-  idToken: varchar("id_token", { length: 255 }),
+  accessToken: text("access_token"),
+  refreshToken: text("refresh_token"),
+  idToken: text("id_token"),
   accessTokenExpiresAt: timestamp("access_token_expires_at"),
   refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
   scope: varchar("scope", { length: 255 }),
   password: varchar("password", { length: 255 }),
-  createdAt: timestamp("created_at").notNull(),
-  updatedAt: timestamp("updated_at").notNull()
+  createdAt: timestamp("created_at", {
+    mode: "date",
+    withTimezone: true
+  }).default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: timestamp("updated_at", {
+    mode: "date",
+    withTimezone: true
+  }).$onUpdateFn(() => new Date())
 })
 
 export const sessions = createTable("session", {
   id: varchar("id", { length: 255 }).primaryKey(),
   expiresAt: timestamp("expires_at").notNull(),
-  token: varchar("token", { length: 255 }).notNull().unique(),
+  token: text("token").notNull().unique(),
   createdAt: timestamp("created_at").notNull(),
   updatedAt: timestamp("updated_at").notNull(),
   ipAddress: varchar("ip_address", { length: 255 }),
@@ -89,14 +96,23 @@ export const sessions = createTable("session", {
 })
 
 export const verification = createTable("verification", {
-  id: varchar("id", { length: 255 }).primaryKey(),
+  id: varchar("id", { length: 255 }).notNull().primaryKey(),
   identifier: varchar("identifier", { length: 255 }).notNull(),
-  value: varchar("value", { length: 255 }).notNull(),
-  expiresAt: timestamp("expires_at").notNull(),
-  createdAt: timestamp("created_at"),
-  updatedAt: timestamp("updated_at")
-})
+  value: text("value").notNull(),
 
+  expiresAt: timestamp("expires_at", {
+    mode: "date",
+    withTimezone: true
+  }).notNull(),
+  createdAt: timestamp("created_at", {
+    mode: "date",
+    withTimezone: true
+  }).default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: timestamp("updated_at", {
+    mode: "date",
+    withTimezone: true
+  }).$onUpdateFn(() => new Date())
+})
 export const projects = createTable("project", {
   id: varchar("id", { length: 255 })
     .primaryKey()
@@ -111,7 +127,7 @@ export const projects = createTable("project", {
   updatedAt: timestamp("updated_at", {
     mode: "date",
     withTimezone: true
-  }).$onUpdate(() => new Date())
+  }).$onUpdateFn(() => new Date())
 })
 
 export const folders = createTable("folder", {
@@ -135,7 +151,7 @@ export const folders = createTable("folder", {
   updatedAt: timestamp("updated_at", {
     mode: "date",
     withTimezone: true
-  }).$onUpdate(() => new Date())
+  }).$onUpdateFn(() => new Date())
 })
 
 export const notes = createTable("notes", {
@@ -166,7 +182,7 @@ export const notes = createTable("notes", {
   updatedAt: timestamp("updated_at", {
     mode: "date",
     withTimezone: true
-  }).$onUpdate(() => new Date())
+  }).$onUpdateFn(() => new Date())
 })
 
 export const databases = createTable("database", {
@@ -201,7 +217,7 @@ export const blocks = createTable("block", {
   updatedAt: timestamp("updated_at", {
     mode: "date",
     withTimezone: true
-  }).$onUpdate(() => new Date())
+  }).$onUpdateFn(() => new Date())
 })
 
 export const tasks = createTable("task", {
@@ -226,7 +242,7 @@ export const tasks = createTable("task", {
   updatedAt: timestamp("updated_at", {
     mode: "date",
     withTimezone: true
-  }).$onUpdate(() => new Date())
+  }).$onUpdateFn(() => new Date())
 })
 
 export const subTasks = createTable("sub_task", {
@@ -252,7 +268,7 @@ export const subTasks = createTable("sub_task", {
   updatedAt: timestamp("updated_at", {
     mode: "date",
     withTimezone: true
-  }).$onUpdate(() => new Date())
+  }).$onUpdateFn(() => new Date())
 })
 
 export const projectMemberships = createTable("project_membership", {
@@ -278,7 +294,7 @@ export const projectMemberships = createTable("project_membership", {
   updatedAt: timestamp("updated_at", {
     mode: "date",
     withTimezone: true
-  }).$onUpdate(() => new Date())
+  }).$onUpdateFn(() => new Date())
 })
 
 export const usersRelations = relations(users, ({ many }) => ({

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { auth } from "@/server/auth/auth"
+import { auth } from "@/server/auth"
 import { pusherServer } from "@/server/pusher"
 
 export async function POST(req: Request) {
@@ -9,7 +9,9 @@ export async function POST(req: Request) {
     .object({ socket_id: z.string(), channel_name: z.string() })
     .parse(Object.fromEntries(formData.entries()))
 
-  const session = await auth()
+  const session = await auth.api.getSession({
+    headers: req.headers
+  })
 
   if (!session) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 })

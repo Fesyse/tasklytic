@@ -15,7 +15,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
-import { Skeleton } from "@/components/ui/skeleton"
 import {
   Tooltip,
   TooltipContent,
@@ -42,7 +41,7 @@ export function UserNav({ className }: UserNavProps) {
     } else router.push("/auth/sign-in")
   }
 
-  return ((user && status !== "loading") ?? status === "unauthenticated") ? (
+  return (
     <DropdownMenu>
       <TooltipProvider disableHoverableContent>
         <Tooltip delayDuration={100}>
@@ -128,7 +127,5 @@ export function UserNav({ className }: UserNavProps) {
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
-  ) : (
-    <Skeleton className="h-8 w-8 rounded-full bg-primary/10" />
   )
 }
