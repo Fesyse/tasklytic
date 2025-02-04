@@ -33,11 +33,9 @@ export const users = createTable("user", {
   name: varchar("name", { length: 255 }).notNull(),
   description: varchar("description", { length: 255 }),
   email: varchar("email", { length: 255 }).notNull(),
-  emailVerified: timestamp("email_verified", {
-    mode: "date",
-    withTimezone: true
-  }).default(sql`CURRENT_TIMESTAMP`),
+  emailVerified: boolean("email_verified").default(false),
   image: varchar("image", { length: 255 }),
+
   // Payments
   customerId: varchar("customer_id", { length: 255 }).unique(),
   subscriptionId: varchar("subscription_id", { length: 255 }).unique(),
@@ -54,6 +52,8 @@ export const users = createTable("user", {
     withTimezone: true
   }).$onUpdateFn(() => new Date())
 })
+
+// Auth
 
 export const accounts = createTable("account", {
   id: varchar("id", { length: 255 })
@@ -72,27 +72,30 @@ export const accounts = createTable("account", {
   refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
   scope: varchar("scope", { length: 255 }),
   password: varchar("password", { length: 255 }),
-  createdAt: timestamp("created_at", {
-    mode: "date",
-    withTimezone: true
-  }).default(sql`CURRENT_TIMESTAMP`),
-  updatedAt: timestamp("updated_at", {
-    mode: "date",
-    withTimezone: true
-  }).$onUpdateFn(() => new Date())
+  createdAt: timestamp("created_at")
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: timestamp("updated_at")
+    .$onUpdateFn(() => new Date())
+    .notNull()
 })
 
 export const sessions = createTable("session", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  expiresAt: timestamp("expires_at").notNull(),
   token: text("token").notNull().unique(),
-  createdAt: timestamp("created_at").notNull(),
-  updatedAt: timestamp("updated_at").notNull(),
   ipAddress: varchar("ip_address", { length: 255 }),
   userAgent: varchar("user_agent", { length: 255 }),
+
   userId: varchar("user_id", { length: 255 })
     .notNull()
-    .references(() => users.id)
+    .references(() => users.id),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at")
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: timestamp("updated_at")
+    .$onUpdateFn(() => new Date())
+    .notNull()
 })
 
 export const verification = createTable("verification", {
@@ -104,15 +107,12 @@ export const verification = createTable("verification", {
     mode: "date",
     withTimezone: true
   }).notNull(),
-  createdAt: timestamp("created_at", {
-    mode: "date",
-    withTimezone: true
-  }).default(sql`CURRENT_TIMESTAMP`),
-  updatedAt: timestamp("updated_at", {
-    mode: "date",
-    withTimezone: true
-  }).$onUpdateFn(() => new Date())
+  createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: timestamp("updated_at").$onUpdateFn(() => new Date())
 })
+
+// Projects
+
 export const projects = createTable("project", {
   id: varchar("id", { length: 255 })
     .primaryKey()
