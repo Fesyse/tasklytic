@@ -3,7 +3,7 @@ import { Spotlight } from "@/components/ui/spotlight"
 
 export default async function Page() {
   return (
-    <div className="min-h-[calc(100vh-var(--dashboard-header-size))]) relative dark:bg-grid-white/[0.02]">
+    <div className="min-h-[calc(100vh-var(--dashboard-header-size))]) relative dark:bg-grid-white/[0.02] overflow-x-hidden">
       <Spotlight />
       <section className="relative overflow-hidden bg-background text-foreground">
         <div className="relative z-10 mx-auto max-w-5xl px-4 py-20 md:px-8">
