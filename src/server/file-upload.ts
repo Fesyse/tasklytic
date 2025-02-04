@@ -3,7 +3,7 @@ import {
   createUploadthing
 } from "uploadthing/next"
 import { UTApi, UploadThingError } from "uploadthing/server"
-import { auth } from "./auth"
+import { auth } from "@/server/auth"
 
 const f = createUploadthing()
 
@@ -12,8 +12,10 @@ export const fileRouter = {
   imageUploader: f({
     image: { maxFileSize: "1MB", maxFileCount: 1, minFileCount: 1 }
   })
-    .middleware(async () => {
-      const session = await auth()
+    .middleware(async ({ req }) => {
+      const session = await auth.api.getSession({
+        headers: req.headers
+      })
 
       if (!session) throw new UploadThingError("Unauthorized")
       else return { session }

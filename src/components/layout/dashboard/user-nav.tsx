@@ -1,8 +1,8 @@
 "use client"
 
 import { LayoutGrid, LogIn, LogOut, Settings } from "lucide-react"
-import { signIn, signOut, useSession } from "next-auth/react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -24,20 +24,22 @@ import {
 } from "@/components/ui/tooltip"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { cn } from "@/lib/utils"
+import { signOut, useSession } from "@/lib/auth"
 
 type UserNavProps = {
   className?: string
 }
 
 export function UserNav({ className }: UserNavProps) {
-  const { data, status } = useSession()
+  const { data } = useSession()
+  const router = useRouter()
   const user = data?.user
 
   const sign = async (type: "out" | "in") => {
     if (type === "out") {
       await signOut()
       toast.success(`Successfully signed out.`)
-    } else signIn()
+    } else router.push("/auth/sign-in")
   }
 
   return ((user && status !== "loading") ?? status === "unauthenticated") ? (

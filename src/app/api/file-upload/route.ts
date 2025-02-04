@@ -1,5 +1,5 @@
 import { env } from "@/env"
-import { auth } from "@/server/auth"
+import { auth } from "@/server/auth/auth"
 import { utapi } from "@/server/file-upload"
 
 export type FileUploadResponse = {

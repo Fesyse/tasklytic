@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm"
 import { type NextRequest, NextResponse } from "next/server"
 import { polar } from "../../../server/polar"
 import { env } from "@/env"
-import { auth } from "@/server/auth"
+import { auth } from "@/server/auth/auth"
 import { db } from "@/server/db"
 import { users } from "@/server/db/schema"
 

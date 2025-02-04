@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { auth } from "@/server/auth"
+import { auth } from "@/server/auth/auth"
 import { pusherServer } from "@/server/pusher"
 
 export async function POST(req: Request) {
