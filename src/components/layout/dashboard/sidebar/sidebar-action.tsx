@@ -1,21 +1,22 @@
 "use client"
 
-import {
-  ChevronRight,
-  FileIcon,
-  FolderIcon,
-  Plus,
-  Presentation
-} from "lucide-react"
+import { FileIcon, FolderIcon, Plus, Presentation } from "lucide-react"
 import { useParams, useRouter } from "next/navigation"
 import React, { useCallback } from "react"
 import { toast } from "sonner"
-import { Button } from "@/components/ui/button"
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger
-} from "@/components/ui/popover"
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu"
 import { SidebarGroupAction } from "@/components/ui/sidebar"
 import { importFile } from "@/lib/utils"
 import { api } from "@/trpc/react"
@@ -71,54 +72,46 @@ export const SidebarAction: React.FC<WorkspaceActionProps> = ({
   }
 
   return (
-    <Popover>
-      <PopoverTrigger asChild>
+    <DropdownMenu>
+      <DropdownMenuTrigger>
         <SidebarGroupAction className={className}>
           <Plus size={18} />
           <span className="sr-only">Add Folder or Note</span>
         </SidebarGroupAction>
-      </PopoverTrigger>
-      <PopoverContent
-        className="flex-col flex gap-1.5 max-w-fit py-2 px-2.5"
-        side="right"
-      >
-        <Button
-          className="justify-start gap-1"
-          size="sm"
-          variant="secondary"
-          onClick={() => createFolder({ projectId, folderId })}
-        >
-          <FolderIcon size={16} /> Create Folder
-        </Button>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button className="justify-start gap-1" size="sm">
-              <FileIcon size={16} /> Create Note{" "}
-              <ChevronRight className="left-1" size={14} />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent
-            className="flex-col flex gap-1.5 max-w-fit py-2 px-2.5 ml-4"
-            side="right"
+      </DropdownMenuTrigger>
+      <DropdownMenuContent side="right">
+        <DropdownMenuLabel>Add new folder/note</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          <DropdownMenuItem
+            className="flex gap-1.5 items-center"
+            onClick={() => createFolder({ projectId, folderId })}
           >
-            <Button
-              className="justify-start gap-1"
-              size="sm"
-              onClick={() => createNote({ projectId, folderId })}
-            >
-              <Presentation size={16} /> Blank
-            </Button>
-            <Button
-              className="justify-start gap-1"
-              size="sm"
-              variant="secondary"
-              onClick={importNote}
-            >
-              <FileIcon size={16} /> Import
-            </Button>
-          </PopoverContent>
-        </Popover>
-      </PopoverContent>
-    </Popover>
+            <FolderIcon size={16} /> Create Folder
+          </DropdownMenuItem>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger className="flex gap-1.5 items-center">
+              <FileIcon size={16} /> Create Note
+            </DropdownMenuSubTrigger>
+            <DropdownMenuPortal>
+              <DropdownMenuSubContent className="max-w-fit">
+                <DropdownMenuItem
+                  className="flex gap-1.5 items-center"
+                  onClick={() => createNote({ projectId, folderId })}
+                >
+                  <Presentation size={16} /> Blank
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="flex gap-1.5 items-center"
+                  onClick={importNote}
+                >
+                  <FileIcon size={16} /> Import
+                </DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuPortal>
+          </DropdownMenuSub>
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }
