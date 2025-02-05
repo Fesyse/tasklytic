@@ -38,6 +38,8 @@ export function UserNav({ className }: UserNavProps) {
     if (type === "out") {
       await signOut()
       toast.success(`Successfully signed out.`)
+
+      router.push("/")
     } else router.push("/auth/sign-in")
   }
 

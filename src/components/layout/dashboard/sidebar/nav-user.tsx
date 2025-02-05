@@ -96,14 +96,14 @@ function UserInfo() {
         <Avatar className="h-8 w-8 rounded-lg">
           <AvatarImage src={session.user.image!} alt={session.user.name} />
           <AvatarFallback className="rounded-lg">
-            {session?.user.name.slice(0, 2).toUpperCase()}
+            {session.user.name.slice(0, 2).toUpperCase()}
           </AvatarFallback>
         </Avatar>
       ) : (
         <Skeleton className="h-8 w-8" />
       )}
       <div className="grid flex-1 text-left text-sm leading-tight">
-        {session && status === "authenticated" ? (
+        {session ? (
           <>
             <span className="truncate font-semibold">{session.user.name}</span>
             <span className="truncate text-xs">{session.user.email}</span>
