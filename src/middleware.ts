@@ -1,23 +1,26 @@
+import { betterFetch } from "@better-fetch/fetch"
 import { NextRequest, NextResponse } from "next/server"
+import { type Session } from "./server/auth"
+
+const protectedRoutes = ["/projects"]
 
 export const middleware = async (request: NextRequest) => {
-  // const { data: session } = await betterFetch<Session>(
-  //   "/api/auth/get-session",
-  //   {
-  //     baseURL: request.nextUrl.origin,
-  //     headers: {
-  //       cookie: request.headers.get("cookie") || "" // Forward the cookies from the request
-  //     }
-  //   }
-  // )
+  const { data: session } = await betterFetch<Session>(
+    "/api/auth/get-session",
+    {
+      baseURL: request.nextUrl.origin,
+      headers: {
+        // Get the cookie from the request
+        cookie: request.headers.get("cookie") || ""
+      }
+    }
+  )
 
-  // if (request.nextUrl.pathname === "/auth/sign-in" && session) {
-  //   return NextResponse.redirect(new URL("/not-found", request.url))
-  // }
+  const pathname = request.nextUrl.pathname
 
-  // if (!session) {
-  //   return NextResponse.redirect(new URL("/auth/sign-in", request.url))
-  // }
+  if (protectedRoutes.some(p => pathname.startsWith(p)) && !session) {
+    return NextResponse.redirect(new URL("/auth/sign-in", request.url))
+  }
 
   return NextResponse.next()
 }

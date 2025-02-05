@@ -34,6 +34,32 @@ export const auth = betterAuth({
     }
   },
 
+  user: {
+    additionalFields: {
+      customerId: {
+        type: "string",
+        required: false,
+        unique: true,
+        input: false
+      },
+      subscriptionId: {
+        type: "string",
+        required: false,
+        unique: true,
+        input: false
+      },
+      plan: {
+        type: "string",
+        required: true,
+        unique: false,
+        input: false,
+        default: "Free"
+      }
+    }
+  },
+
   // Plugins
   plugins: [nextCookies()]
 })
+
+export type Session = typeof auth.$Infer.Session
