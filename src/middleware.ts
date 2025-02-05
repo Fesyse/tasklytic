@@ -18,6 +18,10 @@ export const middleware = async (request: NextRequest) => {
 
   const pathname = request.nextUrl.pathname
 
+  if (pathname === "/auth/sign-in" && session) {
+    return NextResponse.redirect(new URL("/projects", request.url))
+  }
+
   if (protectedRoutes.some(p => pathname.startsWith(p)) && !session) {
     return NextResponse.redirect(new URL("/auth/sign-in", request.url))
   }
