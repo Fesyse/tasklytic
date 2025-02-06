@@ -2,9 +2,13 @@ import { and, count, eq } from "drizzle-orm"
 import { z } from "zod"
 import { isCuid } from "@/lib/utils"
 import { env } from "@/env"
+import { defaultWorkspace } from "@/lib/default-workspace"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { kv } from "@/server/cache"
 import {
+  blocks,
+  createCuid,
+  notes,
   type Project,
   projectMemberships,
   projects,
@@ -155,10 +159,43 @@ export const projectsRouter = createTRPCRouter({
         .returning()
         .then(r => r[0]!)
 
-      await ctx.db.insert(projectMemberships).values({
-        projectId: createdProject.id,
-        userId: ctx.session.user.id,
-        role: "owner"
+      let noteIDs: string[] = []
+
+      await ctx.db.transaction(async trx => {
+        await trx.insert(projectMemberships).values({
+          projectId: createdProject.id,
+          userId: ctx.session.user.id,
+          role: "owner"
+        })
+
+        defaultWorkspace.notes.forEach(async defNote => {
+          const note = await trx
+            .insert(notes)
+            .values({
+              ...defNote,
+              projectId: createdProject.id,
+              userId: ctx.session.user.id,
+              folderId: null
+            })
+            .returning()
+            .then(r => r[0]!)
+
+          noteIDs.push(note.id)
+        })
+      })
+
+      ctx.db.transaction(async trx => {
+        defaultWorkspace.notes.forEach(async (defNote, index) => {
+          defNote.blocks.forEach(async (block, order) => {
+            await trx.insert(blocks).values({
+              id: createCuid(),
+              order,
+              noteId: noteIDs[index]!,
+              projectId: createdProject.id,
+              content: block
+            })
+          })
+        })
       })
 
       return createdProject
@@ -171,7 +208,15 @@ export const projectsRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       if (!isCuid(input.id)) return undefined
-      return ctx.db.delete(projects).where(eq(projects.id, input.id))
+
+      await ctx.db.transaction(async trx => {
+        await trx
+          .delete(projectMemberships)
+          .where(eq(projectMemberships.projectId, input.id))
+        await trx.delete(notes).where(eq(notes.projectId, input.id))
+        await trx.delete(blocks).where(eq(blocks.projectId, input.id))
+      })
+      await ctx.db.delete(projects).where(eq(projects.id, input.id))
     }),
   update: protectedProcedure
     .input(
