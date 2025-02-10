@@ -11,7 +11,7 @@ import {
   Trash2
 } from "lucide-react"
 import { useParams, usePathname, useRouter } from "next/navigation"
-import React, { useCallback, type FC } from "react"
+import React, { type FC } from "react"
 import { toast } from "sonner"
 import {
   AlertDialog,
@@ -35,6 +35,7 @@ import {
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { SidebarMenuAction } from "@/components/ui/sidebar"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { useRevalidateSidebar } from "@/hooks/use-revalidate-sidebar"
 import { type SidebarNote } from "@/lib/sidebar"
 import { api } from "@/trpc/react"
 
@@ -49,26 +50,18 @@ export const NoteActions: FC<NoteActionsProps> = ({
   small,
   icon = <MoreHorizontal />
 }) => {
-  const utils = api.useUtils()
   const isMobile = useIsMobile()
   const router = useRouter()
   const pathname = usePathname()
   const { projectId } = useParams<{ projectId: string }>()
-
-  const invalidate = useCallback(() => {
-    return Promise.all([
-      utils.folders.getWorkspace.invalidate({ projectId }),
-      utils.notes.getAll.invalidate({ projectId }),
-      utils.notes.getAllRoot.invalidate({ projectId })
-    ])
-  }, [utils])
+  const invalidateSidebar = useRevalidateSidebar(projectId)
 
   const { mutate: deleteNote, isPending: isNoteDeleting } =
     api.notes.delete.useMutation({
       onSuccess: async note => {
         toast.success(`Successfully deleted note!`)
 
-        await invalidate()
+        await invalidateSidebar()
         if (pathname.startsWith(`/projects/${projectId}/note/${note.id}`)) {
           router.push(`/projects/${projectId}`)
         }
@@ -78,7 +71,7 @@ export const NoteActions: FC<NoteActionsProps> = ({
   const { mutate: updateNote, isPending: isNoteUpdating } =
     api.notes.update.useMutation({
       onSuccess: async note => {
-        await invalidate()
+        await invalidateSidebar()
         router.push(`/projects/${projectId}/note/${note.id}`)
       },
       onError: () => toast.error("An error occurred updating note! Try again.")
@@ -89,7 +82,7 @@ export const NoteActions: FC<NoteActionsProps> = ({
       { id: note.id, isPinned: !note.isPinned },
       {
         onSuccess: async () => {
-          await invalidate()
+          await invalidateSidebar()
           toast.success(`Successfully ${note.private ? "" : "un"}pinned note!`)
         }
       }
@@ -100,7 +93,7 @@ export const NoteActions: FC<NoteActionsProps> = ({
       { id: note.id, private: !note.private },
       {
         onSuccess: async () => {
-          await invalidate()
+          await invalidateSidebar()
           toast.success(
             `Successfully ${note.private ? "" : "un"}made note private!`
           )

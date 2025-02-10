@@ -20,6 +20,7 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "@/components/ui/tooltip"
+import { useRevalidateSidebar } from "@/hooks/use-revalidate-sidebar"
 import { importFile } from "@/lib/utils"
 import { NoteButton } from "./note-button"
 import { SidebarNote } from "@/lib/sidebar"
@@ -32,16 +33,12 @@ export function NavNotes({
 }) {
   const { projectId } = useParams<{ projectId: string }>()
   const router = useRouter()
-  const utils = api.useUtils()
+  const invalidateSidebar = useRevalidateSidebar(projectId)
 
   const { mutate: createNote, isPending: isNoteCreating } =
     api.notes.create.useMutation({
       onSuccess: async note => {
-        await Promise.all([
-          utils.folders.getWorkspace.invalidate({ projectId }),
-          utils.notes.getAll.invalidate({ projectId }),
-          utils.notes.getAllRoot.invalidate({ projectId })
-        ])
+        await invalidateSidebar()
         toast.success(`Successfully created note!`)
         router.push(`/projects/${projectId}/note/${note.id}`)
       },

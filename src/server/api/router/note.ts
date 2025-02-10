@@ -214,6 +214,16 @@ export const getAllRootNotes = async (
   return result
 }
 
+const revalidateWorkspace = (note: Note) => {
+  if (note.folderId)
+    revalidateTag(`folders:workspace:sub-folders:${note.folderId}`)
+  if (note.isPinned) revalidateTag(`${cacheKeys.all}:${note.projectId}:pinned`)
+  revalidateTag(`folders:workspace:${note.projectId}`)
+  revalidateTag(`${cacheKeys.all}:${note.projectId}`)
+  revalidateTag(`${cacheKeys.all}:${note.projectId}:root`)
+  revalidateTag(`${cacheKeys.one}:${note.projectId}:${note.id}`)
+}
+
 export const notesRouter = createTRPCRouter({
   getById: protectedProcedure
     .input(
@@ -288,7 +298,7 @@ export const notesRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const result = await ctx.db
+      const note = await ctx.db
         .insert(notes)
         .values({
           projectId: input.projectId,
@@ -310,7 +320,7 @@ export const notesRouter = createTRPCRouter({
               .values({
                 id: createCuid(),
                 content: block,
-                noteId: result.id,
+                noteId: note.id,
                 projectId: input.projectId,
                 order: i
               })
@@ -320,9 +330,9 @@ export const notesRouter = createTRPCRouter({
         })
       }
 
-      revalidateTag(`${cacheKeys.all}:${input.projectId}`)
+      revalidateWorkspace(note)
 
-      return result
+      return note
     }),
   update: protectedProcedure
     .input(
@@ -335,16 +345,16 @@ export const notesRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const result = await ctx.db
+      const note = await ctx.db
         .update(notes)
         .set(input)
         .where(eq(notes.id, input.id))
         .returning()
         .then(r => r[0]!)
 
-      revalidateTag(`${cacheKeys.all}:${result.projectId}`)
+      revalidateWorkspace(note)
 
-      return result
+      return note
     }),
   delete: protectedProcedure
     .input(
@@ -353,14 +363,14 @@ export const notesRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const result = await ctx.db
+      const note = await ctx.db
         .delete(notes)
         .where(eq(notes.id, input.id))
         .returning()
         .then(r => r[0]!)
 
-      revalidateTag(`${cacheKeys.all}:${result.projectId}`)
+      revalidateWorkspace(note)
 
-      return result
+      return note
     })
 })

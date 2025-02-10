@@ -2,7 +2,7 @@
 
 import { FileIcon, FolderIcon, Plus, Presentation } from "lucide-react"
 import { useParams, useRouter } from "next/navigation"
-import React, { useCallback } from "react"
+import React from "react"
 import { toast } from "sonner"
 import {
   DropdownMenu,
@@ -18,6 +18,7 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import { SidebarGroupAction } from "@/components/ui/sidebar"
+import { useRevalidateSidebar } from "@/hooks/use-revalidate-sidebar"
 import { importFile } from "@/lib/utils"
 import { api } from "@/trpc/react"
 
@@ -30,22 +31,14 @@ export const SidebarAction: React.FC<WorkspaceActionProps> = ({
   folderId,
   className
 }) => {
-  const utils = api.useUtils()
   const router = useRouter()
 
   const { projectId } = useParams<{ projectId: string }>()
-
-  const invalidate = useCallback(() => {
-    return Promise.all([
-      utils.folders.getWorkspace.invalidate({ projectId }),
-      utils.notes.getAll.invalidate({ projectId }),
-      utils.notes.getAllRoot.invalidate({ projectId })
-    ])
-  }, [utils])
+  const invalidateSidebar = useRevalidateSidebar(projectId)
 
   const { mutate: createNote } = api.notes.create.useMutation({
     onSuccess: async note => {
-      await invalidate()
+      await invalidateSidebar()
       toast.success(`Successfully created note!`)
       router.push(`/projects/${projectId}/note/${note.id}`)
     },
@@ -54,7 +47,7 @@ export const SidebarAction: React.FC<WorkspaceActionProps> = ({
 
   const { mutate: createFolder } = api.folders.create.useMutation({
     onSuccess: async () => {
-      await invalidate()
+      await invalidateSidebar()
       toast.success(`Successfully created folder!`)
     },
     onError: () => toast.error("An error occurred creating folder! Try again.")

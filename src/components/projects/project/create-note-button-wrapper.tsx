@@ -3,6 +3,7 @@
 import { useParams, useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { BorderTrail } from "@/components/ui/border-trail"
+import { useRevalidateSidebar } from "@/hooks/use-revalidate-sidebar"
 import { cn } from "@/lib/utils"
 import { api } from "@/trpc/react"
 
@@ -15,15 +16,11 @@ export const CreateNoteButtonWrapper: React.FC<
 > = ({ className, children }) => {
   const { projectId } = useParams<{ projectId: string }>()
   const router = useRouter()
+  const invalidateSidebar = useRevalidateSidebar(projectId)
 
-  const utils = api.useUtils()
   const { mutate: createNote, isPending } = api.notes.create.useMutation({
     onSuccess: async note => {
-      await Promise.all([
-        utils.folders.getWorkspace.invalidate({ projectId }),
-        utils.notes.getAll.invalidate({ projectId }),
-        utils.notes.getAllRoot.invalidate({ projectId })
-      ])
+      await invalidateSidebar()
       toast.success(`Successfully created note!`)
       router.push(`/projects/${projectId}/note/${note.id}`)
     },
