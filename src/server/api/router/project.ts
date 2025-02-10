@@ -10,6 +10,7 @@ import {
   ProtectedCtx,
   protectedProcedure
 } from "@/server/api/trpc"
+import { db } from "@/server/db"
 import {
   blocks,
   createCuid,
@@ -23,7 +24,7 @@ import { polar } from "@/server/polar"
 
 const getProjectMembership = async (id: string, ctx: ProtectedCtx) => {
   "use cache"
-  const projectMembership = await ctx.db.query.projectMemberships.findFirst({
+  const projectMembership = await db.query.projectMemberships.findFirst({
     where: (projectMembershipsTable, { eq }) =>
       eq(projectMembershipsTable.projectId, id),
     with: {
@@ -38,7 +39,7 @@ const getProjectMembership = async (id: string, ctx: ProtectedCtx) => {
 const getAllProjectMemberships = async (ctx: ProtectedCtx) => {
   "use cache"
 
-  const projectMembershipsResult = await ctx.db
+  const projectMembershipsResult = await db
     .select()
     .from(projects)
     .innerJoin(

@@ -9,6 +9,7 @@ import {
   ProtectedCtx,
   protectedProcedure
 } from "@/server/api/trpc"
+import { db } from "@/server/db"
 import { blocks, createCuid, notes, type Note } from "@/server/db/schema"
 
 const cacheKeys = {
@@ -31,7 +32,7 @@ const getNoteById = async (
   ctx: ProtectedCtx
 ) => {
   "use cache"
-  const note = await ctx.db.query.notes.findFirst({
+  const note = await db.query.notes.findFirst({
     where: (notesTable, { and, not, eq }) =>
       and(
         eq(notesTable.id, data.id),
@@ -70,7 +71,7 @@ const getAllNotes = async (
       : "title"
     : undefined
 
-  const result: Note[] = await ctx.db.query.notes.findMany({
+  const result: Note[] = await db.query.notes.findMany({
     orderBy: data.filters
       ? [
           data.filters.order === "desc"
@@ -113,7 +114,7 @@ const getAllPinnedNotes = async (
   ctx: ProtectedCtx
 ) => {
   "use cache"
-  const result: Note[] = await ctx.db.query.notes.findMany({
+  const result: Note[] = await db.query.notes.findMany({
     where: (notesTable, { and, not, eq }) =>
       and(
         or(
@@ -147,7 +148,7 @@ const getAllUnpinnedNotes = async (
   ctx: ProtectedCtx
 ) => {
   "use cache"
-  const result: Note[] = await ctx.db.query.notes.findMany({
+  const result: Note[] = await db.query.notes.findMany({
     where: (notesTable, { and, not, eq }) =>
       and(
         or(
@@ -184,7 +185,7 @@ const getAllRootNotes = async (
   ctx: ProtectedCtx
 ) => {
   "use cache"
-  const result: Note[] = await ctx.db.query.notes.findMany({
+  const result: Note[] = await db.query.notes.findMany({
     where: (notesTable, { and, eq, isNull, not }) =>
       and(
         eq(notesTable.projectId, data.projectId),

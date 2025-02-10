@@ -3,11 +3,8 @@ import { revalidateTag } from "next/cache"
 import { cacheTag } from "next/dist/server/use-cache/cache-tag"
 import { z } from "zod"
 import { getNoteSlug } from "@/lib/pusher-slugs"
-import {
-  createTRPCRouter,
-  ProtectedCtx,
-  protectedProcedure
-} from "@/server/api/trpc"
+import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
+import { db } from "@/server/db"
 import { blocks } from "@/server/db/schema"
 import { pusherServer } from "@/server/pusher"
 
@@ -15,9 +12,9 @@ const cacheKeys = {
   all: `projects:notes:blocks:all`
 }
 
-const getAllBlocks = async (noteId: string, ctx: ProtectedCtx) => {
+const getAllBlocks = async (noteId: string) => {
   "use cache"
-  const blocks = await ctx.db.query.blocks.findMany({
+  const blocks = await db.query.blocks.findMany({
     where: (blocksTable, { and, eq }) => and(eq(blocksTable.noteId, noteId))
   })
 
@@ -33,8 +30,8 @@ export const blocksRouter = createTRPCRouter({
         noteId: z.string()
       })
     )
-    .query(async ({ ctx, input }) => {
-      const blocks = await getAllBlocks(input.noteId, ctx)
+    .query(async ({ input }) => {
+      const blocks = await getAllBlocks(input.noteId)
 
       return blocks
     }),
