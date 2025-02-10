@@ -112,7 +112,7 @@ const getAllPinnedNotes = async (
   },
   ctx: ProtectedCtx
 ) => {
-  "use  cache"
+  "use cache"
   const result: Note[] = await ctx.db.query.notes.findMany({
     where: (notesTable, { and, not, eq }) =>
       and(
@@ -146,7 +146,7 @@ const getAllUnpinnedNotes = async (
   },
   ctx: ProtectedCtx
 ) => {
-  "use  cache"
+  "use cache"
   const result: Note[] = await ctx.db.query.notes.findMany({
     where: (notesTable, { and, not, eq }) =>
       and(
@@ -183,7 +183,7 @@ const getAllRootNotes = async (
   },
   ctx: ProtectedCtx
 ) => {
-  "use  cache"
+  "use cache"
   const result: Note[] = await ctx.db.query.notes.findMany({
     where: (notesTable, { and, eq, isNull, not }) =>
       and(

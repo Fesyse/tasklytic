@@ -37,6 +37,7 @@ const getProjectMembership = async (id: string, ctx: ProtectedCtx) => {
 
 const getAllProjectMemberships = async (ctx: ProtectedCtx) => {
   "use cache"
+
   const projectMembershipsResult = await ctx.db
     .select()
     .from(projects)
