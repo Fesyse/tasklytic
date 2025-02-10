@@ -2,7 +2,7 @@
 
 import { ChevronDownIcon, PlusIcon } from "@radix-ui/react-icons"
 import Link from "next/link"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import {
   DropdownMenu,
@@ -31,9 +31,14 @@ export function ProjectSwitcher({
   const [activeProject, setActiveProject] = useState(
     projects.items?.find(p => p.id === projectId)
   )
+  const router = useRouter()
 
   useEffect(() => {
+    if (!projects.isProjectPage || projects.isLoading) return
+
     const newActiveProject = projects.items?.find(p => p.id === projectId)
+    if (!newActiveProject) return router.push(`/not-found`)
+
     setActiveProject(newActiveProject)
   }, [projectId, projects])
 

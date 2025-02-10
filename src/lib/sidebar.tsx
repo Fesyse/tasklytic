@@ -73,12 +73,13 @@ export function useSidebarNav(): SidebarNav {
   const { projectId } = useParams<{
     projectId: string
   }>()
+
   const isProjectPage = projectId !== undefined
 
   const {
     data: projects,
     isLoading: isProjectsLoading,
-    isError: isProjectError
+    isError: isProjectsError
   } = api.projects.getAll.useQuery(undefined, {
     initialData: undefined
   })
@@ -93,7 +94,7 @@ export function useSidebarNav(): SidebarNav {
 
   return {
     projects: {
-      isProjectPage,
+      isProjectPage: isProjectsError ? false : isProjectPage,
       isLoading: isProjectsLoading,
       items: projects?.map<
         NonNullable<SidebarNav["projects"]["items"]>[number]
