@@ -9,6 +9,7 @@
 import { TRPCError, initTRPC } from "@trpc/server"
 import superjson from "superjson"
 import { ZodError } from "zod"
+import { ArgumentTypes } from "@/types/utils"
 import { sleep } from "@/lib/utils"
 import { auth } from "@/server/auth"
 import { db } from "@/server/db"
@@ -132,3 +133,7 @@ export const protectedProcedure = t.procedure
       }
     })
   })
+
+export type ProtectedCtx = ArgumentTypes<
+  ArgumentTypes<(typeof protectedProcedure)["mutation"]>["0"]
+>["0"]["ctx"]

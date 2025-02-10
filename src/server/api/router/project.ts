@@ -1,21 +1,55 @@
 import { and, count, eq } from "drizzle-orm"
+import { revalidateTag } from "next/cache"
+import { cacheTag } from "next/dist/server/use-cache/cache-tag"
 import { z } from "zod"
 import { isCuid } from "@/lib/utils"
 import { env } from "@/env"
 import { defaultWorkspace } from "@/lib/default-workspace"
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
-import { kv } from "@/server/cache"
+import {
+  createTRPCRouter,
+  ProtectedCtx,
+  protectedProcedure
+} from "@/server/api/trpc"
 import {
   blocks,
   createCuid,
   notes,
-  type Project,
   projectMemberships,
   projects,
   type ProjectWithMemberShip
 } from "@/server/db/schema"
 import { utapi } from "@/server/file-upload"
 import { polar } from "@/server/polar"
+
+const getProjectMembership = async (id: string, ctx: ProtectedCtx) => {
+  "use cache"
+  const projectMembership = await ctx.db.query.projectMemberships.findFirst({
+    where: (projectMembershipsTable, { eq }) =>
+      eq(projectMembershipsTable.projectId, id),
+    with: {
+      project: true
+    }
+  })
+  cacheTag(`projects:by-id:${id}:user:${ctx.session.user.id}`)
+
+  return projectMembership
+}
+
+const getAllProjectMemberships = async (ctx: ProtectedCtx) => {
+  "use cache"
+  const projectMembershipsResult = await ctx.db
+    .select()
+    .from(projects)
+    .innerJoin(
+      projectMemberships,
+      eq(projectMemberships.projectId, projects.id)
+    )
+    .where(eq(projectMemberships.userId, ctx.session.user.id))
+
+  cacheTag(`projects:all:user:${ctx.session.user.id}`)
+
+  return projectMembershipsResult
+}
 
 const deleteIcon = async (fileKey: string) => {
   const response = await utapi.deleteFiles(fileKey)
@@ -52,42 +86,15 @@ export const projectsRouter = createTRPCRouter({
         id: z.string()
       })
     )
-    .query(async ({ input, ctx }) => {
+    .query(async ({ ctx, input }) => {
       if (!isCuid(input.id)) return undefined
 
-      const cached = await kv.get(`projects:${input.id}`)
-      if (cached) return cached as Project
-
-      const projectMembership = await ctx.db.query.projectMemberships.findFirst(
-        {
-          where: (projectMembershipsTable, { eq }) =>
-            and(
-              eq(projectMemberships.userId, ctx.session.user.id),
-              eq(projectMembershipsTable.projectId, input.id)
-            ),
-          with: {
-            project: true
-          }
-        }
-      )
-
-      kv.set(`projects:${input.id}`, projectMembership?.project)
-      kv.expire(`projects:${input.id}`, 6400)
+      const projectMembership = await getProjectMembership(input.id, ctx)
 
       return projectMembership?.project
     }),
   getAll: protectedProcedure.query(async ({ ctx }) => {
-    // const cached = await kv.get(`projects:all`)
-    // if (cached) return cached as Project[]
-
-    const response = await ctx.db
-      .select()
-      .from(projects)
-      .innerJoin(
-        projectMemberships,
-        eq(projectMemberships.projectId, projects.id)
-      )
-      .where(eq(projectMemberships.userId, ctx.session.user.id))
+    const response = await getAllProjectMemberships(ctx)
 
     return response.map<ProjectWithMemberShip>(r => ({
       ...r.project,
@@ -198,6 +205,8 @@ export const projectsRouter = createTRPCRouter({
         })
       })
 
+      revalidateTag(`projects:all:user:${ctx.session.user.id}`)
+
       return createdProject
     }),
   delete: protectedProcedure
@@ -217,6 +226,9 @@ export const projectsRouter = createTRPCRouter({
         await trx.delete(blocks).where(eq(blocks.projectId, input.id))
       })
       await ctx.db.delete(projects).where(eq(projects.id, input.id))
+
+      revalidateTag(`projects:all:user:${ctx.session.user.id}`)
+      revalidateTag(`projects:by-id:${input.id}:user:${ctx.session.user.id}`)
     }),
   update: protectedProcedure
     .input(
@@ -239,9 +251,7 @@ export const projectsRouter = createTRPCRouter({
       if (!isCuid(input.id)) return
       if (!input.name && !input.icon) return
 
-      const project = await ctx.db.query.projects.findFirst({
-        where: (projectsTable, { eq }) => eq(projectsTable.id, input.id)
-      })
+      const project = (await getProjectMembership(input.id, ctx))?.project
 
       if (!project) throw new Error("Project not found.")
 
@@ -254,6 +264,9 @@ export const projectsRouter = createTRPCRouter({
           )
         if ("update" in input.icon) icon = input.icon.url
       }
+
+      revalidateTag(`projects:all:user:${ctx.session.user.id}`)
+      revalidateTag(`projects:by-id:${input.id}:user:${ctx.session.user.id}`)
 
       return ctx.db
         .update(projects)

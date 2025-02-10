@@ -2,7 +2,6 @@ import { and, eq, inArray } from "drizzle-orm"
 import { z } from "zod"
 import { getNoteSlug } from "@/lib/pusher-slugs"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
-import { kv } from "@/server/cache"
 import { blocks } from "@/server/db/schema"
 import { pusherServer } from "@/server/pusher"
 
@@ -19,18 +18,10 @@ export const blocksRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      const cacheKey = `${cacheKeys.all}:${input.noteId}`
-      // const cached = await kv.get(cacheKey)
-
-      // if (cached) return cached as Block[]
-
       const blocks = await ctx.db.query.blocks.findMany({
         where: (blocksTable, { and, eq }) =>
           and(eq(blocksTable.noteId, input.noteId))
       })
-
-      kv.set(cacheKey, blocks)
-      kv.expire(cacheKey, 1800)
 
       return blocks
     }),
@@ -56,10 +47,6 @@ export const blocksRouter = createTRPCRouter({
         })
         .returning()
         .then(r => r[0]!)
-
-      kv.del(`${cacheKeys.all}:${block.noteId}`)
-      kv.set(`${cacheKeys.one}:${result.id}`, result)
-      kv.expire(`${cacheKeys.one}:${result.id}`, 1800)
 
       return result
     }),
@@ -105,8 +92,6 @@ export const blocksRouter = createTRPCRouter({
         )
       ])
 
-      kv.del(`${cacheKeys.all}:${input.noteId}`)
-
       return true
     }),
   updateOrder: protectedProcedure
@@ -138,8 +123,6 @@ export const blocksRouter = createTRPCRouter({
           {}
         )
       ])
-
-      kv.del(`${cacheKeys.all}:${input.noteId}`)
     }),
   delete: protectedProcedure
     .input(
@@ -158,9 +141,6 @@ export const blocksRouter = createTRPCRouter({
           {}
         )
       ])
-
-      kv.del(`${cacheKeys.all}:${input.noteId}`)
-      kv.del(`${cacheKeys.one}:${input.id}`)
     }),
   deleteMany: protectedProcedure
     .input(
@@ -179,7 +159,5 @@ export const blocksRouter = createTRPCRouter({
           {}
         )
       ])
-
-      kv.del(`${cacheKeys.all}:${input.noteId}`)
     })
 })
