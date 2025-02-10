@@ -11,14 +11,18 @@ import { type SidebarNav } from "@/lib/sidebar"
 export function NavMain({ navigation }: { navigation: SidebarNav["navMain"] }) {
   return (
     <SidebarMenu>
-      {navigation.map(item => {
-        const children = (
-          <>
-            <item.icon />
-            <span>{item.title}</span>
-          </>
-        )
-        return (
+      {navigation.map((item, index) => {
+        const children =
+          "title" in item ? (
+            <>
+              <item.icon />
+              <span>{item.title}</span>
+            </>
+          ) : null
+
+        return "component" in item ? (
+          <item.component key={index} />
+        ) : (
           <SidebarMenuItem key={item.title}>
             <SidebarMenuButton
               asChild={"href" in item}

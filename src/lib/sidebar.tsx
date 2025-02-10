@@ -7,12 +7,12 @@ import {
   LayoutDashboard,
   MessageCircleQuestion,
   Presentation,
-  Settings2,
-  Sparkles
+  Settings2
 } from "lucide-react"
 import Image from "next/image"
 import { useParams, usePathname } from "next/navigation"
-import { type FC } from "react"
+import React from "react"
+import { AiDialog } from "@/components/layout/dashboard/sidebar/ai-dialog"
 import type {
   Folder,
   FolderWithNotes,
@@ -21,7 +21,7 @@ import type {
 } from "@/server/db/schema"
 import { api } from "@/trpc/react"
 
-type LogoComponent = FC<{ className?: string }>
+type LogoComponent = React.FC<{ className?: string }>
 
 export type SidebarNote = {
   id: string
@@ -53,11 +53,14 @@ export type SidebarNav = {
         }[]
       | undefined
   }
-  navMain: ({
-    title: string
-    icon: LogoComponent
-    isActive: boolean
-  } & ({ href: string } | { action: () => void }))[]
+  navMain: (
+    | ({
+        title: string
+        icon: LogoComponent
+        isActive: boolean
+      } & ({ href: string } | { action: () => void }))
+    | { component: React.FC }
+  )[]
   pinnedNotes: {
     isLoading: boolean
     items: SidebarNote[] | undefined
@@ -123,10 +126,7 @@ export function useSidebarNav(): SidebarNav {
           pathname === (isProjectPage ? `/projects/${projectId}` : "/projects")
       },
       {
-        title: "Ask AI",
-        action: () => {},
-        icon: Sparkles,
-        isActive: false
+        component: AiDialog
       },
       {
         title: "Inbox",
