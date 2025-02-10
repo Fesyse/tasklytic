@@ -11,6 +11,8 @@
   - [x] AI integration
   - [] Collaboration
 - [] Subscriptions
+  - [x] Setup purchase
+  - [] Add restrictions based on plan
 
 ## Tech stack
 
