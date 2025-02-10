@@ -1,13 +1,29 @@
 import { and, eq, inArray } from "drizzle-orm"
+import { revalidateTag } from "next/cache"
+import { cacheTag } from "next/dist/server/use-cache/cache-tag"
 import { z } from "zod"
 import { getNoteSlug } from "@/lib/pusher-slugs"
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
+import {
+  createTRPCRouter,
+  ProtectedCtx,
+  protectedProcedure
+} from "@/server/api/trpc"
 import { blocks } from "@/server/db/schema"
 import { pusherServer } from "@/server/pusher"
 
 const cacheKeys = {
-  all: `projects:notes:blocks:all`,
-  one: `projects:notes:blocks:one`
+  all: `projects:notes:blocks:all`
+}
+
+const getAllBlocks = async (noteId: string, ctx: ProtectedCtx) => {
+  "use cache"
+  const blocks = await ctx.db.query.blocks.findMany({
+    where: (blocksTable, { and, eq }) => and(eq(blocksTable.noteId, noteId))
+  })
+
+  cacheTag(`${cacheKeys.all}:${noteId}`)
+
+  return blocks
 }
 
 export const blocksRouter = createTRPCRouter({
@@ -18,10 +34,7 @@ export const blocksRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      const blocks = await ctx.db.query.blocks.findMany({
-        where: (blocksTable, { and, eq }) =>
-          and(eq(blocksTable.noteId, input.noteId))
-      })
+      const blocks = await getAllBlocks(input.noteId, ctx)
 
       return blocks
     }),
@@ -47,6 +60,8 @@ export const blocksRouter = createTRPCRouter({
         })
         .returning()
         .then(r => r[0]!)
+
+      revalidateTag(`${cacheKeys.all}:${result.noteId}`)
 
       return result
     }),
@@ -92,6 +107,8 @@ export const blocksRouter = createTRPCRouter({
         )
       ])
 
+      revalidateTag(`${cacheKeys.all}:${input.noteId}`)
+
       return true
     }),
   updateOrder: protectedProcedure
@@ -123,6 +140,8 @@ export const blocksRouter = createTRPCRouter({
           {}
         )
       ])
+
+      revalidateTag(`${cacheKeys.all}:${input.noteId}`)
     }),
   delete: protectedProcedure
     .input(
@@ -141,6 +160,8 @@ export const blocksRouter = createTRPCRouter({
           {}
         )
       ])
+
+      revalidateTag(`${cacheKeys.all}:${input.noteId}`)
     }),
   deleteMany: protectedProcedure
     .input(
@@ -159,5 +180,7 @@ export const blocksRouter = createTRPCRouter({
           {}
         )
       ])
+
+      revalidateTag(`${cacheKeys.all}:${input.noteId}`)
     })
 })
