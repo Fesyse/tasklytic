@@ -107,7 +107,7 @@ const getAllNotes = async (
 
 // Pinned/Unpinned
 
-const getAllPinnedNotes = async (
+export const getAllPinnedNotes = async (
   data: {
     projectId: string
   },
@@ -178,7 +178,7 @@ const getAllUnpinnedNotes = async (
 
 // All root notes
 
-const getAllRootNotes = async (
+export const getAllRootNotes = async (
   data: {
     projectId: string
   },

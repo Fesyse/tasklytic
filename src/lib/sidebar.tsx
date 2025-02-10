@@ -75,32 +75,21 @@ export function useSidebarNav(): SidebarNav {
   }>()
   const isProjectPage = projectId !== undefined
 
-  const { data: projects, isLoading: isProjectsLoading } =
-    api.projects.getAll.useQuery(undefined, {
-      initialData: undefined
-    })
-  const { data: pinnedNotes, isLoading: isNotesLoading } =
-    api.notes.getAllPinned.useQuery(
+  const {
+    data: projects,
+    isLoading: isProjectsLoading,
+    isError: isProjectError
+  } = api.projects.getAll.useQuery(undefined, {
+    initialData: undefined
+  })
+  const { data: sidebar, isLoading: isSidebarLoading } =
+    api.navigation.getSidebar.useQuery(
       { projectId },
       {
         enabled: isProjectPage,
         initialData: undefined
       }
     )
-  const { data: workspace } = api.folders.getWorkspace.useQuery(
-    { projectId },
-    {
-      enabled: isProjectPage,
-      initialData: undefined
-    }
-  )
-  const { data: notes } = api.notes.getAllRoot.useQuery(
-    { projectId },
-    {
-      enabled: isProjectPage,
-      initialData: undefined
-    }
-  )
 
   return {
     projects: {
@@ -153,17 +142,17 @@ export function useSidebarNav(): SidebarNav {
     ],
 
     pinnedNotes: {
-      isLoading: isNotesLoading,
-      items: pinnedNotes
-        ? transformNotes(pinnedNotes, projectId, pathname)
+      isLoading: isSidebarLoading,
+      items: sidebar?.pinnedNotes
+        ? transformNotes(sidebar.pinnedNotes, projectId, pathname)
         : undefined
     },
     workspace: {
       items:
-        workspace && notes
+        sidebar?.workspace && sidebar?.rootNotes
           ? [
-              ...transformFolders(workspace, projectId, pathname),
-              ...transformNotes(notes, projectId, pathname)
+              ...transformFolders(sidebar.workspace, projectId, pathname),
+              ...transformNotes(sidebar.rootNotes, projectId, pathname)
             ]
           : undefined,
       isLoading: false

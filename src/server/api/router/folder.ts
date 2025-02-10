@@ -1,5 +1,8 @@
+import { revalidateTag } from "next/cache"
+import { cacheTag } from "next/dist/server/use-cache/cache-tag"
 import { z } from "zod"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
+import { db } from "@/server/db"
 import { folders } from "@/server/db/schema"
 
 export type GetAllFoldersResponse = {
@@ -33,41 +36,62 @@ export type GetAllFoldersResponse = {
   }[]
 }[]
 
+export const getWorkspace = async (data: { projectId: string }) => {
+  "use cache"
+
+  const workspace = (await db.query.folders.findMany({
+    with: {
+      subFolders: true,
+      notes: true
+    },
+    where: (foldersTable, { eq, and, isNull }) =>
+      and(
+        eq(foldersTable.projectId, data.projectId),
+        // make sure we only getting the root folders
+        isNull(foldersTable.parentFolderId)
+      )
+  })) satisfies GetAllFoldersResponse
+
+  cacheTag(`folders:workspace:${data.projectId}`)
+
+  return workspace
+}
+
+export const getSubFolders = async (data: { folderId: string }) => {
+  "use cache"
+
+  const subFolders = (await db.query.folders.findMany({
+    with: {
+      subFolders: true,
+      notes: true
+    },
+    where: (foldersTable, { eq, and }) =>
+      and(
+        eq(foldersTable.parentFolderId, data.folderId),
+        // make sure we only getting the root folders
+        eq(foldersTable.parentFolderId, data.folderId)
+      )
+  })) satisfies GetAllFoldersResponse
+
+  cacheTag(`folders:workspace:sub-folders:${data.folderId}`)
+
+  return subFolders
+}
+
 export const foldersRouter = createTRPCRouter({
   getWorkspace: protectedProcedure
     .input(z.object({ projectId: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const folders = (await ctx.db.query.folders.findMany({
-        with: {
-          subFolders: true,
-          notes: true
-        },
-        where: (foldersTable, { eq, and, isNull }) =>
-          and(
-            eq(foldersTable.projectId, input.projectId),
-            // make sure we only getting the root folders
-            isNull(foldersTable.parentFolderId)
-          )
-      })) satisfies GetAllFoldersResponse
+    .query(async ({ input }) => {
+      const workspace = await getWorkspace(input)
 
-      return folders
+      return workspace
     }),
   getSubChildren: protectedProcedure
     .input(z.object({ folderId: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const folders = (await ctx.db.query.folders.findMany({
-        with: {
-          subFolders: true,
-          notes: true
-        },
-        where: (foldersTable, { eq, and }) =>
-          and(
-            eq(foldersTable.parentFolderId, input.folderId),
-            // make sure we only getting the root folders
-            eq(foldersTable.parentFolderId, input.folderId)
-          )
-      })) satisfies GetAllFoldersResponse
-      return folders
+    .query(async ({ input }) => {
+      const subFolders = await getSubFolders(input)
+
+      return subFolders
     }),
 
   create: protectedProcedure
@@ -87,6 +111,10 @@ export const foldersRouter = createTRPCRouter({
         })
         .returning()
         .then(folder => folder[0])
+
+      revalidateTag(`folders:workspace:${input.projectId}`)
+      if (input.folderId)
+        revalidateTag(`folders:workspace:sub-folders:${input.folderId}`)
 
       return folder
     })
