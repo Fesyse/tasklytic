@@ -10,7 +10,7 @@ const config: NextConfig = {
       permanent: true
     }
   ],
-  experimental: { dynamicIO: true, reactCompiler: true, useCache: true },
+  experimental: { reactCompiler: true, useCache: true },
   images: {
     remotePatterns: [
       {

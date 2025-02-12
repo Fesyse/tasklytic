@@ -8,6 +8,7 @@ export const AuthToastProvider: React.FC<React.PropsWithChildren> = ({
   children
 }) => {
   const searchParams = useSearchParams()
+  const searchParamsAsString = searchParams.toString()
 
   useEffect(() => {
     setTimeout(() => {
@@ -15,7 +16,7 @@ export const AuthToastProvider: React.FC<React.PropsWithChildren> = ({
         toast.success("Successfully signed in.")
       }
     })
-  }, [searchParams.toString()])
+  }, [searchParamsAsString])
 
   return children
 }
