@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { NotesFilterForm } from "./notes-filter-form"
@@ -11,7 +12,9 @@ export function NotesDashboardHeader() {
         <Separator orientation="vertical" />
         <NotesSearch />
       </div>
-      <NotesFilterForm />
+      <Suspense fallback={<div></div>}>
+        <NotesFilterForm />
+      </Suspense>
     </div>
   )
 }
