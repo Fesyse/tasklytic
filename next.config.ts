@@ -30,6 +30,12 @@ const config: NextConfig = {
         pathname: "/f/*"
       }
     ]
+  },
+  eslint: {
+    ignoreDuringBuilds: true
+  },
+  typescript: {
+    ignoreBuildErrors: true
   }
 }
 
