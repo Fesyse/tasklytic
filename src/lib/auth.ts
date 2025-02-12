@@ -1,7 +1,8 @@
 import { createAuthClient } from "better-auth/react"
+import { getBaseUrl } from "@/trpc/react"
 
 const authClient = createAuthClient({
-  baseURL: window.location.origin
+  baseURL: getBaseUrl()
 })
 
 export const { signIn, signOut, useSession } = authClient
