@@ -12,7 +12,7 @@ export function Header() {
         <div className="flex w-full max-w-[130px] items-center gap-x-4">
           <Link
             href="/"
-            className="flex items-center gap-2 text-base max-md:hidden lg:text-lg"
+            className="hidden items-center gap-2 text-base md:flex lg:text-lg"
           >
             <Icons.icon size={36} /> <span>{siteConfig.title}</span>
           </Link>
