@@ -94,7 +94,7 @@
     "@udecode/plate-toggle": "^40.0.0",
     "@udecode/plate-trailing-block": "^40.0.0",
     "@uploadthing/react": "^7.1.5",
-    "@vercel/analytics": "^1.4.1",
+    "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^1.1.0",
     "ai": "^4.1.6",
     "babel-plugin-react-compiler": "^19.0.0-beta-27714ef-20250124",
