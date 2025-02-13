@@ -1,5 +1,5 @@
 import { and, count, eq } from "drizzle-orm"
-import { revalidateTag } from "next/cache"
+import { revalidatePath, revalidateTag } from "next/cache"
 import { cacheTag } from "next/dist/server/use-cache/cache-tag"
 import { z } from "zod"
 import { isCuid } from "@/lib/utils"
@@ -221,14 +221,15 @@ export const projectsRouter = createTRPCRouter({
       if (!isCuid(input.id)) return undefined
 
       await ctx.db.transaction(async trx => {
+        await trx.delete(blocks).where(eq(blocks.projectId, input.id))
+        await trx.delete(notes).where(eq(notes.projectId, input.id))
         await trx
           .delete(projectMemberships)
           .where(eq(projectMemberships.projectId, input.id))
-        await trx.delete(notes).where(eq(notes.projectId, input.id))
-        await trx.delete(blocks).where(eq(blocks.projectId, input.id))
       })
       await ctx.db.delete(projects).where(eq(projects.id, input.id))
 
+      revalidatePath(`/projects/`)
       revalidateTag(`projects:all:user:${ctx.session.user.id}`)
       revalidateTag(`projects:by-id:${input.id}:user:${ctx.session.user.id}`)
     }),

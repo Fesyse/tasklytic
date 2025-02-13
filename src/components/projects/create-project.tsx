@@ -29,9 +29,9 @@ export const CreateProject = () => {
     onSuccess: async data => {
       const project = data!
 
+      await utils.projects.getAll.invalidate()
       router.push(`/projects/${project.id}`)
       toast.success("Successfully created project!")
-      await utils.projects.getAll.invalidate()
     }
   })
 

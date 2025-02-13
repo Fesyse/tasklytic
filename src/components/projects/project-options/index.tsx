@@ -60,6 +60,7 @@ export const ProjectOptions: FC<ProjectOptionsProps> = ({ project }) => {
   const { mutate: deleteProject } = api.projects.delete.useMutation({
     onSuccess: () => {
       utils.projects.getAll.invalidate()
+      utils.projects.getById.invalidate({ id: project.id })
       toast.success("Project deleted successfully.")
     },
     onError: error => toast.error(error.message)

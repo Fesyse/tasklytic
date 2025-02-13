@@ -37,7 +37,7 @@ export function ProjectSwitcher({
     if (!projects.isProjectPage || projects.isLoading) return
 
     const newActiveProject = projects.items?.find(p => p.id === projectId)
-    if (!newActiveProject) return router.push(`/not-found`)
+    if (!newActiveProject) return
 
     setActiveProject(newActiveProject)
   }, [projectId, projects])
