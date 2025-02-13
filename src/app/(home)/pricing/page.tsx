@@ -35,7 +35,7 @@ export default async function Page() {
             <PricingCard
               tier="Pro"
               price="$4.99/mo"
-              bestFor="Best individuals"
+              bestFor="Best for individuals"
               CTA="Get started"
               benefits={[
                 { text: "AI copilot", checked: true },
