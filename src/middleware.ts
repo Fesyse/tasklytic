@@ -2,7 +2,7 @@ import { betterFetch } from "@better-fetch/fetch"
 import { NextRequest, NextResponse } from "next/server"
 import { type Session } from "./server/auth"
 
-const protectedRoutes = ["/projects"]
+const protectedRoutes = ["/projects", "/create-project"]
 
 export const middleware = async (request: NextRequest) => {
   const { data: session } = await betterFetch<Session>(
