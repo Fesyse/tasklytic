@@ -21,7 +21,7 @@
 - Tailwind CSS
 - tRPC
 - PostgreSQL
-- Auth.js (NextAuth.js)
+- Better auth
 - Drizzle ORM
 - Uploadthing
 - Pusher
