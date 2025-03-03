@@ -1,5 +1,7 @@
 # Tasklytic
 
+> Full featured `notion` clone
+
 ## Features
 
 - [x] Projects
