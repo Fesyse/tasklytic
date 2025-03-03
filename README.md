@@ -2,6 +2,8 @@
 
 > Full featured `notion` clone
 
+<img src="/public/tasklytic-preview.png" alt="preview" width="100%" height="100%" />
+
 ## Features
 
 - [x] Projects
