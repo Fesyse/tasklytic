@@ -159,6 +159,9 @@ export const noteContent = createTable("note_content", {
     .$defaultFn(() => createCuid()),
   content: jsonb("content").notNull().$type<TElement[]>(),
 
+  noteId: varchar("note_id", { length: 255 })
+    .notNull()
+    .references(() => notes.id),
   projectId: varchar("project_id", { length: 255 })
     .notNull()
     .references(() => projects.id)
@@ -177,9 +180,6 @@ export const notes = createTable("notes", {
     .$defaultFn(() => false),
   isPinned: boolean("is_pinned").notNull().default(false),
 
-  contentId: varchar("content_id", { length: 255 }).references(
-    () => noteContent.id
-  ),
   folderId: varchar("folder_id", { length: 255 }).references(() => folders.id),
   projectId: varchar("project_id", { length: 255 })
     .notNull()
@@ -316,9 +316,13 @@ export const notesRelations = relations(notes, ({ one }) => ({
     fields: [notes.folderId],
     references: [folders.id]
   }),
-  content: one(noteContent, {
-    fields: [notes.contentId],
-    references: [noteContent.id]
+  content: one(noteContent)
+}))
+
+export const noteContentRelations = relations(noteContent, ({ one }) => ({
+  note: one(notes, {
+    fields: [noteContent.noteId],
+    references: [notes.id]
   })
 }))
 

@@ -41,7 +41,6 @@ export const NotesSearch = () => {
         notes &&
         notes.map(note => note.title).some(title => title.includes(value))
       ) {
-        console.log(notes, value)
         return
       } else setValue(e.target.value)
     }, 444),

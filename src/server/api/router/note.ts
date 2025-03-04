@@ -11,12 +11,7 @@ import {
   protectedProcedure
 } from "@/server/api/trpc"
 import { db } from "@/server/db"
-import {
-  noteContent,
-  notes,
-  type Note,
-  type NoteWithContent
-} from "@/server/db/schema"
+import { noteContent, notes, type Note } from "@/server/db/schema"
 
 const cacheKeys = {
   all: `projects:notes:all`,
@@ -33,14 +28,13 @@ const filtersSchema = z
   })
   .optional()
 
-const getNoteById = async <WithContent extends boolean = false>(
-  data: { projectId: string; id: string; withContent?: WithContent },
+const getNoteById = async (
+  data: { projectId: string; id: string },
   ctx: ProtectedCtx
-): Promise<(WithContent extends true ? NoteWithContent : Note) | null> => {
+) => {
   "use cache"
 
   const note = await db.query.notes.findFirst({
-    with: data.withContent ? { content: true } : undefined,
     where: (notesTable, { and, not, eq }) =>
       and(
         eq(notesTable.id, data.id),
@@ -62,11 +56,26 @@ const getNoteById = async <WithContent extends boolean = false>(
 
   if (!note) return null
 
-  cacheTag(
-    `${cacheKeys.one}:${data.projectId}:${data.id}${data.withContent ? ":content" : ""}`
-  )
+  const key = `${cacheKeys.one}:${data.projectId}:${data.id}`
+  cacheTag(key)
 
   return note as any
+}
+
+const getNoteContent = async (data: { projectId: string; noteId: string }) => {
+  "use cache"
+
+  const noteContent = await db.query.noteContent.findFirst({
+    where: (noteContentTable, { and, eq }) =>
+      and(
+        eq(noteContentTable.noteId, data.noteId),
+        eq(noteContentTable.projectId, data.projectId)
+      )
+  })
+
+  cacheTag(`${cacheKeys.one}:${data.projectId}:${data.noteId}:content`)
+
+  return noteContent
 }
 
 const getAllNotes = async (
@@ -236,6 +245,7 @@ const revalidateWorkspace = (note: Note) => {
   revalidateTag(`${cacheKeys.one}:${note.projectId}:${note.id}`)
 }
 
+// Router
 export const notesRouter = createTRPCRouter({
   getById: protectedProcedure
     .input(
@@ -256,9 +266,12 @@ export const notesRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      const note = await getNoteById({ ...input, withContent: true }, ctx)
+      const [note, content] = await Promise.all([
+        getNoteById(input, ctx),
+        getNoteContent({ ...input, noteId: input.id })
+      ])
 
-      return note
+      return { ...note, content }
     }),
 
   getAll: protectedProcedure
@@ -337,6 +350,7 @@ export const notesRouter = createTRPCRouter({
 
       await ctx.db.insert(noteContent).values({
         content: (input.content ?? []) satisfies TElement[],
+        noteId: note.id,
         projectId: input.projectId
       })
 
@@ -369,17 +383,22 @@ export const notesRouter = createTRPCRouter({
   updateContent: protectedProcedure
     .input(
       z.object({
-        noteId: z.string(),
+        projectId: z.string(),
+        contentId: z.string(),
         content: blockContent.optional()
       })
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.db
+      const data = await ctx.db
         .update(noteContent)
         .set({ content: input.content })
-        .where(eq(notes.id, input.noteId))
+        .where(eq(noteContent.id, input.contentId))
         .returning()
         .then(r => r[0]!)
+
+      revalidateTag(
+        `${cacheKeys.one}:${input.projectId}:${data.noteId}:content`
+      )
 
       return true
     }),

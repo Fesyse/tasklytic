@@ -12,8 +12,7 @@ import {
 } from "@/server/api/trpc"
 import { db } from "@/server/db"
 import {
-  blocks,
-  createCuid,
+  noteContent,
   notes,
   projectMemberships,
   projects,
@@ -189,21 +188,12 @@ export const projectsRouter = createTRPCRouter({
             .returning()
             .then(r => r[0]!)
 
-          noteIDs.push(note.id)
-        })
-      })
-
-      await ctx.db.transaction(async trx => {
-        defaultWorkspace.notes.forEach(async (defNote, index) => {
-          defNote.blocks.forEach(async (block, order) => {
-            await trx.insert(blocks).values({
-              id: createCuid(),
-              order,
-              noteId: noteIDs[index]!,
-              projectId: createdProject.id,
-              content: block
-            })
+          await trx.insert(noteContent).values({
+            content: defNote.blocks,
+            noteId: note.id,
+            projectId: createdProject.id
           })
+          noteIDs.push(note.id)
         })
       })
 
@@ -221,7 +211,7 @@ export const projectsRouter = createTRPCRouter({
       if (!isCuid(input.id)) return undefined
 
       await ctx.db.transaction(async trx => {
-        await trx.delete(blocks).where(eq(blocks.projectId, input.id))
+        await trx.delete(noteContent).where(eq(noteContent.projectId, input.id))
         await trx.delete(notes).where(eq(notes.projectId, input.id))
         await trx
           .delete(projectMemberships)
