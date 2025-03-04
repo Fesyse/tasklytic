@@ -6,15 +6,14 @@ import { HTML5Backend } from "react-dnd-html5-backend"
 import { NoteLayout as NoteLayoutContent } from "@/components/layout/dashboard/note-layout"
 import { useNoteEditor } from "@/hooks/use-note-editor"
 import { PusherProvider, useNoteSlug } from "@/lib/pusher"
-import type { Block, Note } from "@/server/db/schema"
+import type { NoteWithContent } from "@/server/db/schema"
 
 type NoteLayoutProps = React.PropsWithChildren<{
-  note: Note
-  blocks: Block[]
+  note: NoteWithContent
 }>
 
-export function NoteLayout({ blocks, note, children }: NoteLayoutProps) {
-  const { editor, handleChange } = useNoteEditor({ blocks })
+export function NoteLayout({ note, children }: NoteLayoutProps) {
+  const { editor, handleChange } = useNoteEditor({ note })
   const slug = useNoteSlug()
 
   return (

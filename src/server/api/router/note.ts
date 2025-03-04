@@ -1,3 +1,4 @@
+import { TElement } from "@udecode/plate-common"
 import { asc, desc, eq, like, or } from "drizzle-orm"
 import { revalidateTag } from "next/cache"
 import { cacheTag } from "next/dist/server/use-cache/cache-tag"
@@ -10,7 +11,7 @@ import {
   protectedProcedure
 } from "@/server/api/trpc"
 import { db } from "@/server/db"
-import { blocks, createCuid, notes, type Note } from "@/server/db/schema"
+import { noteContent, notes, type Note } from "@/server/db/schema"
 
 const cacheKeys = {
   all: `projects:notes:all`,
@@ -32,6 +33,7 @@ const getNoteById = async (
   ctx: ProtectedCtx
 ) => {
   "use cache"
+
   const note = await db.query.notes.findFirst({
     where: (notesTable, { and, not, eq }) =>
       and(
@@ -52,9 +54,28 @@ const getNoteById = async (
       )
   })
 
-  cacheTag(`${cacheKeys.one}:${data.projectId}:${data.id}`)
+  if (!note) return null
 
-  return note
+  const key = `${cacheKeys.one}:${data.projectId}:${data.id}`
+  cacheTag(key)
+
+  return note as any
+}
+
+const getNoteContent = async (data: { projectId: string; noteId: string }) => {
+  "use cache"
+
+  const noteContent = await db.query.noteContent.findFirst({
+    where: (noteContentTable, { and, eq }) =>
+      and(
+        eq(noteContentTable.noteId, data.noteId),
+        eq(noteContentTable.projectId, data.projectId)
+      )
+  })
+
+  cacheTag(`${cacheKeys.one}:${data.projectId}:${data.noteId}:content`)
+
+  return noteContent
 }
 
 const getAllNotes = async (
@@ -224,6 +245,7 @@ const revalidateWorkspace = (note: Note) => {
   revalidateTag(`${cacheKeys.one}:${note.projectId}:${note.id}`)
 }
 
+// Router
 export const notesRouter = createTRPCRouter({
   getById: protectedProcedure
     .input(
@@ -236,6 +258,22 @@ export const notesRouter = createTRPCRouter({
       const result = getNoteById(input, ctx)
       return result
     }),
+  getByIdWithContent: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        projectId: z.string()
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const [note, content] = await Promise.all([
+        getNoteById(input, ctx),
+        getNoteContent({ ...input, noteId: input.id })
+      ])
+
+      return { ...note, content }
+    }),
+
   getAll: protectedProcedure
     .input(
       z.object({
@@ -310,25 +348,11 @@ export const notesRouter = createTRPCRouter({
         .returning()
         .then(r => r[0]!)
 
-      if (input.content) {
-        await ctx.db.transaction(async trx => {
-          for (let i = 0; i < input.content!.length; i++) {
-            const block = input.content![i]!
-
-            await trx
-              .insert(blocks)
-              .values({
-                id: createCuid(),
-                content: block,
-                noteId: note.id,
-                projectId: input.projectId,
-                order: i
-              })
-              .returning()
-              .then(r => r[0]!)
-          }
-        })
-      }
+      await ctx.db.insert(noteContent).values({
+        content: (input.content ?? []) satisfies TElement[],
+        noteId: note.id,
+        projectId: input.projectId
+      })
 
       revalidateWorkspace(note)
 
@@ -355,6 +379,28 @@ export const notesRouter = createTRPCRouter({
       revalidateWorkspace(note)
 
       return note
+    }),
+  updateContent: protectedProcedure
+    .input(
+      z.object({
+        projectId: z.string(),
+        contentId: z.string(),
+        content: blockContent.optional()
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const data = await ctx.db
+        .update(noteContent)
+        .set({ content: input.content })
+        .where(eq(noteContent.id, input.contentId))
+        .returning()
+        .then(r => r[0]!)
+
+      revalidateTag(
+        `${cacheKeys.one}:${input.projectId}:${data.noteId}:content`
+      )
+
+      return true
     }),
   delete: protectedProcedure
     .input(
