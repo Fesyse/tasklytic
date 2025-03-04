@@ -27,17 +27,12 @@ export async function generateMetadata({
 export default async function NotePage(props: NotePageProps) {
   const { noteId, projectId } = await props.params
 
-  const [note, blocks] = await Promise.all([
-    api.notes.getById({ id: noteId, projectId }),
-    api.blocks
-      .getAll({ noteId })
-      .then(blocks => blocks.toSorted((a, b) => a.order - b.order))
-  ])
+  const note = await api.notes.getByIdWithContent({ id: noteId, projectId })
 
   if (!note) redirect("/not_found")
 
   return (
-    <NoteLayout blocks={blocks} note={note}>
+    <NoteLayout note={note}>
       <div className="mx-auto w-full max-w-[900px] py-28 font-comfortaa">
         <div className="flex items-center gap-4 px-4">
           <NoteEmojiPicker note={note} />

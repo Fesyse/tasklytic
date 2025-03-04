@@ -1,3 +1,4 @@
+import { TElement } from "@udecode/plate-common"
 import { asc, desc, eq, like, or } from "drizzle-orm"
 import { revalidateTag } from "next/cache"
 import { cacheTag } from "next/dist/server/use-cache/cache-tag"
@@ -10,7 +11,12 @@ import {
   protectedProcedure
 } from "@/server/api/trpc"
 import { db } from "@/server/db"
-import { blocks, createCuid, notes, type Note } from "@/server/db/schema"
+import {
+  noteContent,
+  notes,
+  type Note,
+  type NoteWithContent
+} from "@/server/db/schema"
 
 const cacheKeys = {
   all: `projects:notes:all`,
@@ -27,12 +33,14 @@ const filtersSchema = z
   })
   .optional()
 
-const getNoteById = async (
-  data: { projectId: string; id: string },
+const getNoteById = async <WithContent extends boolean = false>(
+  data: { projectId: string; id: string; withContent?: WithContent },
   ctx: ProtectedCtx
-) => {
+): Promise<(WithContent extends true ? NoteWithContent : Note) | null> => {
   "use cache"
+
   const note = await db.query.notes.findFirst({
+    with: data.withContent ? { content: true } : undefined,
     where: (notesTable, { and, not, eq }) =>
       and(
         eq(notesTable.id, data.id),
@@ -52,9 +60,13 @@ const getNoteById = async (
       )
   })
 
-  cacheTag(`${cacheKeys.one}:${data.projectId}:${data.id}`)
+  if (!note) return null
 
-  return note
+  cacheTag(
+    `${cacheKeys.one}:${data.projectId}:${data.id}${data.withContent ? ":content" : ""}`
+  )
+
+  return note as any
 }
 
 const getAllNotes = async (
@@ -236,6 +248,19 @@ export const notesRouter = createTRPCRouter({
       const result = getNoteById(input, ctx)
       return result
     }),
+  getByIdWithContent: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        projectId: z.string()
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const note = await getNoteById({ ...input, withContent: true }, ctx)
+
+      return note
+    }),
+
   getAll: protectedProcedure
     .input(
       z.object({
@@ -310,25 +335,10 @@ export const notesRouter = createTRPCRouter({
         .returning()
         .then(r => r[0]!)
 
-      if (input.content) {
-        await ctx.db.transaction(async trx => {
-          for (let i = 0; i < input.content!.length; i++) {
-            const block = input.content![i]!
-
-            await trx
-              .insert(blocks)
-              .values({
-                id: createCuid(),
-                content: block,
-                noteId: note.id,
-                projectId: input.projectId,
-                order: i
-              })
-              .returning()
-              .then(r => r[0]!)
-          }
-        })
-      }
+      await ctx.db.insert(noteContent).values({
+        content: (input.content ?? []) satisfies TElement[],
+        projectId: input.projectId
+      })
 
       revalidateWorkspace(note)
 
@@ -355,6 +365,23 @@ export const notesRouter = createTRPCRouter({
       revalidateWorkspace(note)
 
       return note
+    }),
+  updateContent: protectedProcedure
+    .input(
+      z.object({
+        noteId: z.string(),
+        content: blockContent.optional()
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(noteContent)
+        .set({ content: input.content })
+        .where(eq(notes.id, input.noteId))
+        .returning()
+        .then(r => r[0]!)
+
+      return true
     }),
   delete: protectedProcedure
     .input(

@@ -154,8 +154,9 @@ export const folders = createTable("folder", {
 })
 
 export const noteContent = createTable("note_content", {
-  id: varchar("id", { length: 255 }).notNull().primaryKey(),
-  type: varchar("type", { length: 255 }).notNull(),
+  id: varchar("id", { length: 255 })
+    .primaryKey()
+    .$defaultFn(() => createCuid()),
   content: jsonb("content").notNull().$type<TElement[]>(),
 
   projectId: varchar("project_id", { length: 255 })
@@ -374,3 +375,5 @@ export type FolderWithNotes = Folder & {
   notes: Note[]
 }
 export type Note = typeof notes.$inferSelect
+export type NoteContent = typeof noteContent.$inferSelect
+export type NoteWithContent = Note & { content: NoteContent }
