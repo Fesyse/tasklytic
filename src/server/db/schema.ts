@@ -322,7 +322,8 @@ export const notesRelations = relations(notes, ({ one }) => ({
 export const noteContentRelations = relations(noteContent, ({ one }) => ({
   note: one(notes, {
     fields: [noteContent.noteId],
-    references: [notes.id]
+    references: [notes.id],
+    relationName: "tasklytic_note"
   })
 }))
 
