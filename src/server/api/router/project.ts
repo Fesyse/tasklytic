@@ -188,12 +188,17 @@ export const projectsRouter = createTRPCRouter({
             .returning()
             .then(r => r[0]!)
 
+          noteIDs.push(note.id)
+        })
+      })
+
+      await ctx.db.transaction(async trx => {
+        defaultWorkspace.notes.forEach(async (defNote, index) => {
           await trx.insert(noteContent).values({
             content: defNote.blocks,
-            noteId: note.id,
+            noteId: noteIDs[index]!,
             projectId: createdProject.id
           })
-          noteIDs.push(note.id)
         })
       })
 
