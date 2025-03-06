@@ -12,7 +12,7 @@ type NoteEditorProps = {
   note: NoteWithContent
 }
 
-const DEBOUNCE_TIME = 1000
+const DEBOUNCE_TIME = 100
 
 export const useNoteEditor = ({ note }: NoteEditorProps) => {
   const editor = useCreateEditor(note.content.content)

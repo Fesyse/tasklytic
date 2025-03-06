@@ -348,13 +348,11 @@ export const notesRouter = createTRPCRouter({
         .returning()
         .then(r => r[0]!)
 
-      const content = await ctx.db.insert(noteContent).values({
+      await ctx.db.insert(noteContent).values({
         content: (input.content ?? []) satisfies TElement[],
         noteId: note.id,
         projectId: input.projectId
       })
-
-      console.log(content)
 
       revalidateWorkspace(note)
 
