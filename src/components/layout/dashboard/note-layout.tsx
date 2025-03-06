@@ -19,7 +19,7 @@ type NoteLayoutProps = React.PropsWithChildren<{
 export function NoteLayout({ children, note }: NoteLayoutProps) {
   return (
     <div className="flex flex-col items-between w-full sticky top-0 left-0">
-      <header className="flex h-14 shrink-0 items-center gap-2">
+      <header className="flex h-14 shrink-0 items-center gap-2 supports-backdrop-blur:bg-background/60 bg-background/60">
         <div className="flex flex-1 items-center gap-2 px-3">
           <SidebarTrigger />
           <Separator orientation="vertical" className="mr-2 h-4" />
