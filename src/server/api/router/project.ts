@@ -169,13 +169,13 @@ export const projectsRouter = createTRPCRouter({
 
       let noteIDs: string[] = []
 
-      await ctx.db.transaction(async trx => {
-        await trx.insert(projectMemberships).values({
-          projectId: createdProject.id,
-          userId: ctx.session.user.id,
-          role: "owner"
-        })
+      await db.insert(projectMemberships).values({
+        projectId: createdProject.id,
+        userId: ctx.session.user.id,
+        role: "owner"
+      })
 
+      await ctx.db.transaction(async trx => {
         defaultWorkspace.notes.forEach(async defNote => {
           const note = await trx
             .insert(notes)

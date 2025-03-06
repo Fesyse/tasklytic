@@ -17,12 +17,12 @@ export const NoteCardActions: React.FC<NoteCardActionsProps> = ({ note }) => {
         href: `/projects/${note.projectId}/note/${note.id}`,
         isActive: false,
         name: note.title,
-        emoji: () =>
-          note.emoji ? (
-            <span className="text-xl">{note.emoji}</span>
-          ) : (
-            <FileIcon size={20} />
-          ),
+        type: "note",
+        emoji: note.emoji ? (
+          <span className="text-xl">{note.emoji}</span>
+        ) : (
+          <FileIcon size={20} />
+        ),
         isPinned: note.isPinned,
         private: note.private
       }}

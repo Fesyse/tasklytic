@@ -12,6 +12,8 @@ type NoteEditorProps = {
   note: NoteWithContent
 }
 
+const DEBOUNCE_TIME = 1000
+
 export const useNoteEditor = ({ note }: NoteEditorProps) => {
   const editor = useCreateEditor(note.content.content)
   const setNoteEditorState = useNoteEditorState(s => s.setState)
@@ -30,7 +32,7 @@ export const useNoteEditor = ({ note }: NoteEditorProps) => {
   const saveToDb = useCallback(
     debounce(({ value }: HandleChangeOptions) => {
       updateContent({ contentId: note.content.id, projectId, content: value })
-    }, 444),
+    }, DEBOUNCE_TIME),
     []
   )
 

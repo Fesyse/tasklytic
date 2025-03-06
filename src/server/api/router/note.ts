@@ -1,5 +1,5 @@
 import { TElement } from "@udecode/plate-common"
-import { asc, desc, eq, like, or } from "drizzle-orm"
+import { and, asc, desc, eq, like, or } from "drizzle-orm"
 import { revalidateTag } from "next/cache"
 import { cacheTag } from "next/dist/server/use-cache/cache-tag"
 import { z } from "zod"
@@ -348,11 +348,13 @@ export const notesRouter = createTRPCRouter({
         .returning()
         .then(r => r[0]!)
 
-      await ctx.db.insert(noteContent).values({
+      const content = await ctx.db.insert(noteContent).values({
         content: (input.content ?? []) satisfies TElement[],
         noteId: note.id,
         projectId: input.projectId
       })
+
+      console.log(content)
 
       revalidateWorkspace(note)
 
@@ -392,7 +394,12 @@ export const notesRouter = createTRPCRouter({
       const data = await ctx.db
         .update(noteContent)
         .set({ content: input.content })
-        .where(eq(noteContent.id, input.contentId))
+        .where(
+          and(
+            eq(noteContent.id, input.contentId),
+            eq(noteContent.projectId, input.projectId)
+          )
+        )
         .returning()
         .then(r => r[0]!)
 
