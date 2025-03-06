@@ -5,7 +5,6 @@ import Balance from "react-wrap-balancer"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Beam } from "@/components/ui/grid-beam"
-import { Icons } from "@/components/ui/icons"
 import { Spotlight } from "@/components/ui/spotlight"
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect"
 import { CTAWithGithub } from "@/components/blocks/cta"
@@ -61,35 +60,16 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="bg-muted relative my-10 min-h-[800px] md:my-20">
-        <svg
-          viewBox="0 0 1440 58"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          width="100%"
-          className="absolute top-0 bg-transparent"
-        >
-          <path
-            d="M-100 58C-100 58 218.416 36.3297 693.5 36.3297C1168.58 36.3297 1487 58 1487 58V-3.8147e-06H-100V58Z"
-            className="fill-background"
-          ></path>
-        </svg>
-        <div className="container rounded-lg overflow-hidden border-2">
-          <Icons.placeholder className=" absolute left-1/2 top-1/2 h-1/2 w-1/2 -translate-x-1/2 -translate-y-1/2 text-muted-foreground/25 grayscale" />
-        </div>
-        <svg
-          viewBox="0 0 1440 58"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          width="100%"
-          className="absolute bottom-0"
-        >
-          <path
-            transform="rotate(180) translate(-1440, -60)"
-            d="M-100 58C-100 58 218.416 36.3297 693.5 36.3297C1168.58 36.3297 1487 58 1487 58V-3.8147e-06H-100V58Z"
-            className="fill-background"
-          ></path>
-        </svg>
+      <section className="container  relative my-10 md:my-20">
+        <Image
+          src="/tasklytic-preview.png"
+          objectFit="cover"
+          width={1280}
+          height={720}
+          className="object-cover rounded-2xl"
+          alt="placeholder hero"
+        />
+        {/* <Icons.placeholder className="absolute left-1/2 top-1/2 h-1/2 w-1/2 -translate-x-1/2 -translate-y-1/2 text-muted-foreground/25 grayscale" /> */}
       </section>
 
       <section className="container relative flex w-full flex-col justify-center">

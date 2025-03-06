@@ -2,7 +2,12 @@
 
 import { Sparkles } from "lucide-react"
 import { useState } from "react"
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger
+} from "@/components/ui/dialog"
 import { SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
 
 export const AiDialog = () => {
@@ -18,7 +23,9 @@ export const AiDialog = () => {
           </SidebarMenuButton>
         </SidebarMenuItem>
       </DialogTrigger>
-      <DialogContent>\</DialogContent>
+      <DialogContent>
+        <DialogTitle>Ask AI</DialogTitle>
+      </DialogContent>
     </Dialog>
   )
 }

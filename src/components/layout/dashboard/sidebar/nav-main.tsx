@@ -12,6 +12,8 @@ export function NavMain({ navigation }: { navigation: SidebarNav["navMain"] }) {
   return (
     <SidebarMenu>
       {navigation.map((item, index) => {
+        if ("component" in item) return <item.component key={index} />
+
         const children =
           "title" in item ? (
             <>
@@ -20,9 +22,7 @@ export function NavMain({ navigation }: { navigation: SidebarNav["navMain"] }) {
             </>
           ) : null
 
-        return "component" in item ? (
-          <item.component key={index} />
-        ) : (
+        return (
           <SidebarMenuItem key={item.title}>
             <SidebarMenuButton
               asChild={"href" in item}

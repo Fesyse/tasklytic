@@ -19,7 +19,9 @@ export function NavSecondary({
     <SidebarGroup {...props}>
       <SidebarGroupContent>
         <SidebarMenu>
-          {items.map(item => {
+          {items.map((item, index) => {
+            if ("component" in item) return <item.component key={index} />
+
             const content = (
               <>
                 <item.icon />

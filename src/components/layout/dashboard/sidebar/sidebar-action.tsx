@@ -66,7 +66,7 @@ export const SidebarAction: React.FC<WorkspaceActionProps> = ({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
+      <DropdownMenuTrigger asChild>
         <SidebarGroupAction className={className}>
           <Plus size={18} />
           <span className="sr-only">Add Folder or Note</span>
