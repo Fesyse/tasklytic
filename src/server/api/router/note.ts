@@ -63,8 +63,6 @@ const getNoteById = async (
 }
 
 const getNoteContent = async (data: { projectId: string; noteId: string }) => {
-  "use cache"
-
   const noteContent = await db.query.noteContent.findFirst({
     where: (noteContentTable, { and, eq }) =>
       and(
@@ -72,8 +70,6 @@ const getNoteContent = async (data: { projectId: string; noteId: string }) => {
         eq(noteContentTable.projectId, data.projectId)
       )
   })
-
-  cacheTag(`${cacheKeys.one}:${data.projectId}:${data.noteId}:content`)
 
   return noteContent
 }
@@ -389,7 +385,7 @@ export const notesRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const data = await ctx.db
+      await ctx.db
         .update(noteContent)
         .set({ content: input.content })
         .where(
@@ -400,10 +396,6 @@ export const notesRouter = createTRPCRouter({
         )
         .returning()
         .then(r => r[0]!)
-
-      revalidateTag(
-        `${cacheKeys.one}:${input.projectId}:${data.noteId}:content`
-      )
 
       return true
     }),
