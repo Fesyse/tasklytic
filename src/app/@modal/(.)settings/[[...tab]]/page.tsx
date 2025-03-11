@@ -1,5 +1,5 @@
-import { Settings } from "@/components/blocks/settings"
 import { DialogModal } from "@/components/dialog-modal"
+import { Settings } from "@/components/settings"
 import { type SettingsPageProps } from "@/app/(home)/settings/[[...tab]]/page"
 
 export default async function SettingsPage({ params }: SettingsPageProps) {
