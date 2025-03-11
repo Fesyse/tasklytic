@@ -11,7 +11,7 @@ import { NavMain } from "@/components/layout/dashboard/sidebar/nav-main"
 import { NavPinnedNotes } from "@/components/layout/dashboard/sidebar/nav-pinned-notes"
 import { NavSecondary } from "@/components/layout/dashboard/sidebar/nav-secondary"
 import { ProjectSwitcher } from "@/components/layout/dashboard/sidebar/project-switcher"
-import { NavUser } from "./nav-user"
+import { DashboardNavUser } from "./nav-user"
 import { NavWorkspace } from "./nav-workspace"
 import { useSidebarNav } from "@/lib/sidebar"
 
@@ -30,7 +30,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={sidebar.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser />
+        <DashboardNavUser />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

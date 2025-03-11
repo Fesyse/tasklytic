@@ -6,8 +6,10 @@ import {
   ChevronsUpDown,
   CreditCard,
   LogOut,
+  Settings,
   Sparkles
 } from "lucide-react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -29,7 +31,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton"
 import { signOut, useSession } from "@/lib/auth"
 
-export function NavUser() {
+export function DashboardNavUser() {
   const { isMobile } = useSidebar()
 
   return (
@@ -57,6 +59,14 @@ export function NavUser() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem className="gap-2.5" asChild>
+                <Link href="/settings">
+                  <Settings />
+                  Settings
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
             <DropdownMenuGroup>
               <DropdownMenuItem className="gap-2.5">
                 <Sparkles />

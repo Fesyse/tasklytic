@@ -1,66 +1,71 @@
-"use client"
+import {
+  type LucideProps,
+  Layers,
+  LayoutDashboard,
+  UserRound
+} from "lucide-react"
+import Link from "next/link"
+import React from "react"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { cn } from "@/lib/utils"
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { Button } from "@/components/ui/button"
-import { Form } from "@/components/ui/form"
-import { useUserSettingsStore } from "@/components/providers/user-settings-store-provider"
-import { type SettingsSchema, settingsSchema } from "@/lib/schemas"
+export type SettingsTab = {
+  title: "General" | "Appearance" | "Integrations"
+  icon: React.FC<LucideProps>
+  content: React.FC
+}
 
-export const Settings = () => {
-  const { updateUserSettingsStore, ...settingsStore } = useUserSettingsStore(
-    s => s
-  )
-  const form = useForm<SettingsSchema>({
-    defaultValues: {
-      sidebar: {
-        isOpen: settingsStore.sidebar.isOpen
-      }
-    },
-    resolver: zodResolver(settingsSchema)
-  })
-
-  const onSubmit = (data: SettingsSchema) => {
-    updateUserSettingsStore(data)
+const tabs: SettingsTab[] = [
+  { title: "General", icon: UserRound, content: () => <div>General</div> },
+  {
+    title: "Appearance",
+    icon: LayoutDashboard,
+    content: () => <div>Appearance</div>
+  },
+  {
+    title: "Integrations",
+    icon: Layers,
+    content: () => <div>Integrations</div>
   }
+]
 
+type SettingsProps = {
+  className?: string
+  tab: SettingsTab["title"]
+}
+
+export const Settings: React.FC<SettingsProps> = ({ className, tab }) => {
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col space-y-3"
-      >
-        {/* <FormField
-          name="navigationMenu"
-          control={form.control}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Navigation menu</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select navigation menu" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectGroup>
-                    {NAVIGATION_MENU.map(menu => (
-                      <SelectItem key={menu} value={menu}>
-                        {title(menu)}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-              <FormDescription>
-                Select navigation menu to match your preferences.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        /> */}
-        <Button type="submit">Apply changes</Button>
-      </form>
-    </Form>
+    <Tabs className={cn("flex gap-6", className)} defaultValue={tab}>
+      <TabsList className="flex flex-col items-start space-y-3 h-full bg-transparent px-2 py-4 border-r">
+        {/* Tab triggers */}
+        {tabs.map(tab => (
+          <TabsTrigger
+            key={tab.title}
+            value={tab.title}
+            className="flex justify-start gap-2 w-full"
+            asChild
+          >
+            <Link href={`/settings/${tab.title}`}>
+              <tab.icon className="size-4" />
+              {tab.title}
+            </Link>
+          </TabsTrigger>
+        ))}
+      </TabsList>
+
+      <div className="flex flex-col space-y-3">
+        {/* Tab content's */}
+        {tabs.map(tab => (
+          <TabsContent
+            key={tab.title}
+            value={tab.title}
+            className="flex flex-col space-y-3"
+          >
+            <tab.content />
+          </TabsContent>
+        ))}
+      </div>
+    </Tabs>
   )
 }
