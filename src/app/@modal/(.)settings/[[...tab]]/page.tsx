@@ -3,8 +3,6 @@ import { Settings } from "@/components/settings"
 import { type SettingsPageProps } from "@/app/(home)/settings/[[...tab]]/page"
 
 export default async function SettingsPage({ params }: SettingsPageProps) {
-  "use cache"
-
   const { tab } = await params
 
   return (
