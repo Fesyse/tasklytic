@@ -19,8 +19,6 @@ export const AccountSettings = async () => {
     auth.api.listUserAccounts({ headers })
   ])
 
-  console.log(userAccounts)
-
   if (!currentSession) return notFound()
 
   return (

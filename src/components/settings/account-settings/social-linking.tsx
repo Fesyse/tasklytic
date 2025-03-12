@@ -3,12 +3,16 @@
 import { DiscordLogoIcon } from "@radix-ui/react-icons"
 import { AlertCircle, Github, Mail } from "lucide-react"
 import { useState } from "react"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Icons } from "@/components/ui/icons"
+import { authClient } from "@/lib/auth"
 import { type auth } from "@/server/auth"
 
+type SocialProvider = "github" | "google" | "discord"
+
 type SocialAccount = {
-  provider: string
+  provider: SocialProvider
   connected: boolean
   email?: string
 }
@@ -17,13 +21,15 @@ type SocialLinkingProps = {
   userAccounts: Awaited<ReturnType<typeof auth.api.listUserAccounts>>
 }
 
+const defaultSocialAccounts = [
+  { provider: "github", connected: false },
+  { provider: "google", connected: false },
+  { provider: "discord", connected: false }
+] as const
+
 export function SocialLinking({ userAccounts }: SocialLinkingProps) {
   const [socialAccounts, setSocialAccounts] = useState<SocialAccount[]>(
-    [
-      { provider: "github", connected: false },
-      { provider: "google", connected: false },
-      { provider: "discord", connected: false }
-    ].map<SocialAccount>(account => ({
+    defaultSocialAccounts.map<SocialAccount>(account => ({
       ...account,
       connected: userAccounts.some(
         userAccount => userAccount.provider === account.provider
@@ -31,41 +37,21 @@ export function SocialLinking({ userAccounts }: SocialLinkingProps) {
     }))
   )
 
-  const [isLoading, setIsLoading] = useState<string | null>(null)
-
-  const handleConnect = async (provider: string) => {
-    setIsLoading(provider)
-
+  const handleConnect = async (provider: SocialProvider) => {
     try {
-      // This is where you would integrate with better-auth
-      // Example: await betterAuth.connectSocialProvider(provider)
-
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-
-      setSocialAccounts(accounts =>
-        accounts.map(account =>
-          account.provider === provider
-            ? { ...account, connected: true, email: `user@${provider}.com` }
-            : account
-        )
-      )
+      await authClient.linkSocial({
+        provider,
+        callbackURL: window.location.origin
+      })
     } catch (error) {
       console.error("Failed to connect account:", error)
-    } finally {
-      setIsLoading(null)
+      toast.error(`Failed to connect ${provider} account`)
     }
   }
 
-  const handleDisconnect = async (provider: string) => {
-    setIsLoading(provider)
-
+  const handleDisconnect = async (provider: SocialProvider) => {
     try {
-      // This is where you would integrate with better-auth
-      // Example: await betterAuth.disconnectSocialProvider(provider)
-
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await authClient.unlinkAccount({ providerId: provider })
 
       setSocialAccounts(accounts =>
         accounts.map(account =>
@@ -74,14 +60,14 @@ export function SocialLinking({ userAccounts }: SocialLinkingProps) {
             : account
         )
       )
+      toast.success(`Successfully disconnected ${provider} account!`)
     } catch (error) {
       console.error("Failed to disconnect account:", error)
-    } finally {
-      setIsLoading(null)
+      toast.error(`Failed to disconnect ${provider} account!`)
     }
   }
 
-  const getProviderIcon = (provider: string) => {
+  const getProviderIcon = (provider: SocialProvider) => {
     switch (provider) {
       case "github":
         return <Github className="size-5" />
@@ -92,7 +78,7 @@ export function SocialLinking({ userAccounts }: SocialLinkingProps) {
     }
   }
 
-  const getProviderName = (provider: string) => {
+  const getProviderName = (provider: SocialProvider) => {
     return provider.charAt(0).toUpperCase() + provider.slice(1)
   }
 
@@ -141,18 +127,8 @@ export function SocialLinking({ userAccounts }: SocialLinkingProps) {
                   ? handleDisconnect(account.provider)
                   : handleConnect(account.provider)
               }
-              disabled={isLoading !== null}
             >
-              {isLoading === account.provider ? (
-                <span className="flex items-center gap-1">
-                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                  {account.connected ? "Disconnecting..." : "Connecting..."}
-                </span>
-              ) : account.connected ? (
-                "Disconnect"
-              ) : (
-                "Connect"
-              )}
+              {account.connected ? "Disconnect" : "Connect"}
             </Button>
           </div>
         ))}
