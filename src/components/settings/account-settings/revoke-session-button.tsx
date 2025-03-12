@@ -5,11 +5,11 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { authClient } from "@/lib/auth"
-import { auth } from "@/server/auth"
+import type { ActiveSession, Session } from "@/server/auth"
 
 type RevokeSessionButtonProps = {
-  currentSession: NonNullable<Awaited<ReturnType<typeof auth.api.getSession>>>
-  session: Awaited<ReturnType<typeof auth.api.listSessions>>[number]
+  currentSession: Session
+  session: ActiveSession
 }
 
 export const RevokeSessionButton: React.FC<RevokeSessionButtonProps> = ({
@@ -39,7 +39,7 @@ export const RevokeSessionButton: React.FC<RevokeSessionButtonProps> = ({
     >
       {isTerminating === session.id ? (
         <LoadingSpinner size={15} />
-      ) : session.id === currentSession.session.id ? (
+      ) : session.id === currentSession?.session.id ? (
         "Sign Out"
       ) : (
         "Terminate"

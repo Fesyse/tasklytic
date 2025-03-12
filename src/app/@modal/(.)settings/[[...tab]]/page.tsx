@@ -6,7 +6,11 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
   const { tab } = await params
 
   return (
-    <DialogModal title="Settings" showHeader={false} className="p-0">
+    <DialogModal
+      title="Settings"
+      showHeader={false}
+      className="p-0 max-w-3xl w-full"
+    >
       <Settings tab={tab ? tab[0] : "General"} />
     </DialogModal>
   )

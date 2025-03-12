@@ -1,9 +1,10 @@
 "use client"
 
 import { DiscordLogoIcon } from "@radix-ui/react-icons"
-import { AlertCircle, Github, Mail } from "lucide-react"
+import { Github, Mail } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
+import { Alert } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Icons } from "@/components/ui/icons"
 import { authClient } from "@/lib/auth"
@@ -18,6 +19,7 @@ type SocialAccount = {
 }
 
 type SocialLinkingProps = {
+  session: NonNullable<Awaited<ReturnType<typeof auth.api.getSession>>>
   userAccounts: Awaited<ReturnType<typeof auth.api.listUserAccounts>>
 }
 
@@ -27,10 +29,11 @@ const defaultSocialAccounts = [
   { provider: "discord", connected: false }
 ] as const
 
-export function SocialLinking({ userAccounts }: SocialLinkingProps) {
+export function SocialLinking({ session, userAccounts }: SocialLinkingProps) {
   const [socialAccounts, setSocialAccounts] = useState<SocialAccount[]>(
     defaultSocialAccounts.map<SocialAccount>(account => ({
       ...account,
+      email: session.user.email,
       connected: userAccounts.some(
         userAccount => userAccount.provider === account.provider
       )
@@ -133,13 +136,10 @@ export function SocialLinking({ userAccounts }: SocialLinkingProps) {
           </div>
         ))}
 
-        <div className="mt-4 flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-amber-800 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200">
-          <AlertCircle className="size-5" />
-          <p className="text-sm">
-            Connecting accounts allows you to sign in with your preferred social
-            provider.
-          </p>
-        </div>
+        <Alert>
+          In case email of your current social account('s) will unmatch with you
+          are trying to connect, it will result an error.
+        </Alert>
       </div>
     </section>
   )

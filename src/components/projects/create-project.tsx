@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -34,9 +35,14 @@ export const CreateProject = () => {
       toast.success("Successfully created project!")
     }
   })
+  const [showIconField, setShowIconField] = useState(false)
 
   const form = useForm<CreateProjectSchema>({
-    resolver: zodResolver(createProjectSchema)
+    resolver: zodResolver(createProjectSchema),
+    defaultValues: {
+      name: "",
+      checkIcon: false
+    }
   })
 
   const createProject = async (data: CreateProjectSchema) => {
@@ -58,8 +64,6 @@ export const CreateProject = () => {
     const project = { ...data, icon }
     mutate(project)
   }
-
-  const formValues = form.watch()
 
   return (
     <Form {...form}>
@@ -91,7 +95,10 @@ export const CreateProject = () => {
               <FormControl>
                 <Checkbox
                   checked={field.value}
-                  onCheckedChange={field.onChange}
+                  onCheckedChange={(value: boolean) => {
+                    setShowIconField(value)
+                    field.onChange(value)
+                  }}
                 />
               </FormControl>
               <FormLabel>Add icon</FormLabel>
@@ -99,7 +106,7 @@ export const CreateProject = () => {
             </FormItem>
           )}
         />
-        {formValues.checkIcon ? (
+        {showIconField ? (
           <FormField
             name="icon"
             control={form.control}

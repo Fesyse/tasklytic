@@ -41,7 +41,7 @@ type SettingsProps = {
 export const Settings: React.FC<SettingsProps> = ({ className, tab }) => {
   return (
     <Tabs className={cn("flex gap-6", className)} defaultValue={tab}>
-      <TabsList className="flex flex-col items-start justify-start space-y-3 min-h-96 bg-transparent px-2 py-4 border-r">
+      <TabsList className="flex flex-col items-start justify-start space-y-3 min-h-96 h-full bg-transparent px-2 py-4 border-r">
         {/* Tab triggers */}
         {tabs.map(tab => (
           <TabsTrigger
