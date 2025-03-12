@@ -5,8 +5,7 @@ import {
   SettingsIcon,
   UserRound
 } from "lucide-react"
-import Link from "next/link"
-import React from "react"
+import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
 import { AccountSettings } from "./account-settings"
@@ -40,23 +39,24 @@ type SettingsProps = {
 
 export const Settings: React.FC<SettingsProps> = ({ className, tab }) => {
   return (
-    <Tabs className={cn("flex gap-6", className)} defaultValue={tab}>
-      <TabsList className="flex flex-col items-start justify-start space-y-3 min-h-96 h-full bg-transparent px-2 py-4 border-r">
+    <Tabs
+      className={cn("flex items-stretch gap-6", className)}
+      defaultValue={tab}
+    >
+      <TabsList className="flex flex-col items-start justify-start space-y-3 bg-transparent px-2 py-4 h-full">
         {/* Tab triggers */}
         {tabs.map(tab => (
           <TabsTrigger
             key={tab.title}
             value={tab.title}
             className="flex justify-start gap-2 w-full"
-            asChild
           >
-            <Link href={`/settings/${tab.title}`}>
-              <tab.icon className="size-4" />
-              {tab.title}
-            </Link>
+            <tab.icon className="size-4" />
+            {tab.title}
           </TabsTrigger>
         ))}
       </TabsList>
+      <Separator orientation="vertical" />
 
       <div className="flex flex-col space-y-3 w-full">
         {/* Tab content's */}
@@ -64,7 +64,7 @@ export const Settings: React.FC<SettingsProps> = ({ className, tab }) => {
           <TabsContent
             key={tab.title}
             value={tab.title}
-            className="flex flex-col space-y-3 pr-6"
+            className="flex flex-col space-y-3 py-1 pr-6"
           >
             <tab.content />
           </TabsContent>
