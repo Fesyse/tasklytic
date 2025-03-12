@@ -40,10 +40,10 @@ type SettingsProps = {
 export const Settings: React.FC<SettingsProps> = ({ className, tab }) => {
   return (
     <Tabs
-      className={cn("flex items-stretch gap-6", className)}
+      className={cn("flex flex-col md:flex-row items-stretch gap-6", className)}
       defaultValue={tab}
     >
-      <TabsList className="flex flex-col items-start justify-start space-y-3 bg-transparent px-2 py-4 h-full">
+      <TabsList className="flex flex-row md:flex-col items-start justify-start md:space-y-3 bg-transparent px-2 pt-4 md:pb-4 h-full">
         {/* Tab triggers */}
         {tabs.map(tab => (
           <TabsTrigger
@@ -56,7 +56,8 @@ export const Settings: React.FC<SettingsProps> = ({ className, tab }) => {
           </TabsTrigger>
         ))}
       </TabsList>
-      <Separator orientation="vertical" />
+      <Separator orientation="vertical" className="hidden md:block" />
+      <Separator orientation="horizontal" className="md:hidden block" />
 
       <div className="flex flex-col space-y-3 w-full">
         {/* Tab content's */}

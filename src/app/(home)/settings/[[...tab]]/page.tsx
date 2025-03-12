@@ -11,7 +11,7 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
   const { tab } = await params
 
   return (
-    <Card className="max-w-3xl w-full">
+    <Card className="max-w-3xl w-full mx-4">
       <Settings tab={tab ? tab[0] : "General"} />
     </Card>
   )
