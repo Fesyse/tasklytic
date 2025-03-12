@@ -3,13 +3,13 @@
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "sonner"
-import { LoadingSpinner } from "../ui/loading-spinner"
+import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { authClient } from "@/lib/auth"
-import { Session } from "@/server/auth"
+import { auth } from "@/server/auth"
 
 type RevokeSessionButtonProps = {
-  currentSession: Session
-  session: any
+  currentSession: NonNullable<Awaited<ReturnType<typeof auth.api.getSession>>>
+  session: Awaited<ReturnType<typeof auth.api.listSessions>>[number]
 }
 
 export const RevokeSessionButton: React.FC<RevokeSessionButtonProps> = ({

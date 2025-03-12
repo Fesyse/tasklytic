@@ -64,7 +64,7 @@ export const Settings: React.FC<SettingsProps> = ({ className, tab }) => {
           <TabsContent
             key={tab.title}
             value={tab.title}
-            className="flex flex-col space-y-3"
+            className="flex flex-col space-y-3 pr-6"
           >
             <tab.content />
           </TabsContent>
