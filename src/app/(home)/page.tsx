@@ -12,7 +12,7 @@ import { siteConfig } from "@/config"
 
 export default function Home() {
   return (
-    <div className="min-h-[calc(100vh-var(--dashboard-header-size))]) overflow-x-hidden relative rounded dark:bg-grid-white/[0.02]">
+    <div className="min-h-[calc(100vh-var(--dashboard-header-size))]) overflow-x-hidden relative rounded">
       <Spotlight />
 
       <section className="container mt-4 min-h-[calc(100vh-20rem)] flex flex-col justify-center">

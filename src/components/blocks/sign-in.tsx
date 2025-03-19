@@ -72,7 +72,7 @@ export const SignIn = () => {
         </Button>
       </CardContent>
       <CardFooter>
-        <p className="text-center text-sm font-thin">
+        <p className="text-center w-full text-sm font-thin">
           <Balancer>
             By signing in you accept our{" "}
             <Link className="underline" href="/terms-of-service">
