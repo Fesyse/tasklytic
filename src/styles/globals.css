@@ -42,6 +42,7 @@
     --dashboard-background: 300 56% 98%;
     --dashboard-accent: #f5edf9;
     --color-heading: 336.3 70.3% 19.8%;
+    --radius: 0.5rem;
   }
 
   .dark {
@@ -82,6 +83,7 @@
     --dashboard-background: 270 16.13% 12.16%;
     --dashboard-accent: rgba(25, 21, 29, 0.33);
     --color-heading: 328.1 39% 51.8%;
+    --radius: 0.5rem;
   }
 }
 

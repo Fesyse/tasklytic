@@ -1,11 +1,12 @@
 import { PricingCard } from "@/components/ui/dark-gradient-pricing"
 import { Spotlight } from "@/components/ui/spotlight"
+import PricingComparator from "@/components/pricing-comparator"
 
 export default async function Page() {
   return (
-    <div className="min-h-[calc(100vh-var(--dashboard-header-size))]) relative dark:bg-grid-white/[0.02] overflow-x-hidden">
+    <div className="relative overflow-x-hidden">
       <Spotlight />
-      <section className="relative overflow-hidden bg-background text-foreground">
+      <section className="relative overflow-hidden">
         <div className="relative z-10 mx-auto max-w-5xl px-4 py-20 md:px-8">
           <div className="mb-12 space-y-3">
             <h2 className="text-center text-3xl font-semibold leading-tight sm:text-4xl sm:leading-tight md:text-5xl md:leading-tight">
@@ -64,6 +65,8 @@ export default async function Page() {
           </div>
         </div>
       </section>
+
+      <PricingComparator />
     </div>
   )
 }
