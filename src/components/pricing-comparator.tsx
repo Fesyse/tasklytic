@@ -1,6 +1,7 @@
 import { Cpu, Sparkles } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { ProTierButton } from "./pro-tier-button"
 
 const tableData = [
   {
@@ -59,7 +60,7 @@ export default function PricingComparator() {
 
       <div className="mx-auto max-w-5xl px-6">
         <div className="w-full overflow-auto lg:overflow-visible">
-          <table className="w-[200vw] border-separate border-spacing-x-3 md:w-full dark:[--color-muted:var(--color-zinc-900)]">
+          <table className="w-[200vw] border-separate border-spacing-x-3 md:w-full">
             <thead className="bg-background sticky top-0">
               <tr className="*:py-4 *:text-left *:font-medium">
                 <th className="lg:w-2/5"></th>
@@ -67,14 +68,12 @@ export default function PricingComparator() {
                   <span className="block">Free</span>
 
                   <Button asChild variant="outline" size="sm">
-                    <Link href="#">Get Started</Link>
+                    <Link href="/auth/sign-up">Get Started</Link>
                   </Button>
                 </th>
                 <th className="bg-muted rounded-t-lg space-y-3 px-4">
                   <span className="block">Pro</span>
-                  <Button asChild size="sm">
-                    <Link href="#">Get Started</Link>
-                  </Button>
+                  <ProTierButton size="sm" />
                 </th>
                 <th className="space-y-3">
                   <span className="block">Startup</span>

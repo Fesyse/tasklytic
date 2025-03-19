@@ -1,14 +1,12 @@
 "use client"
 
-import { useQuery } from "@tanstack/react-query"
 import { Check, X } from "lucide-react"
 import { motion } from "motion/react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
-import { LoadingSpinner } from "./loading-spinner"
-import { polar } from "@/server/polar"
+import { ProTierButton } from "../pro-tier-button"
 
 type BenefitProps = {
   text: string
@@ -52,20 +50,6 @@ export const PricingCard = ({
   className,
   href
 }: PricingCardProps) => {
-  const { data: product, isLoading } = useQuery({
-    queryKey: ["product", tier],
-    queryFn: () =>
-      fetch(`/api/polar/get-products`).then(
-        res => res.json() as ReturnType<typeof polar.products.list>
-      ),
-    select: data => data.result.items[0],
-    enabled: href === undefined
-  })
-
-  const productHref = product
-    ? `/checkout?priceId=${product.prices[0]!.id}`
-    : "#"
-
   return (
     <motion.div
       initial={{ filter: "blur(2px)" }}
@@ -97,22 +81,13 @@ export const PricingCard = ({
             <Benefit key={index} {...benefit} />
           ))}
         </div>
-        <Button
-          className="w-full"
-          variant={tier === "Pro" ? "default" : "ghost"}
-          disabled={isLoading}
-          asChild
-        >
-          <Link href={href ?? productHref}>
-            {isLoading ? (
-              <span className="flex gap-2 items-center">
-                <LoadingSpinner size={18} /> Loading...
-              </span>
-            ) : (
-              CTA
-            )}
-          </Link>
-        </Button>
+        {tier === "Pro" ? (
+          <ProTierButton className="w-full" />
+        ) : (
+          <Button className="w-full" variant="ghost" asChild>
+            <Link href={href!}>Get Started</Link>
+          </Button>
+        )}
       </Card>
     </motion.div>
   )
