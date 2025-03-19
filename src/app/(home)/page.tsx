@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button"
 import { Beam } from "@/components/ui/grid-beam"
 import { Spotlight } from "@/components/ui/spotlight"
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect"
-import { CTAWithGithub } from "@/components/blocks/cta"
 import { FeaturesSection } from "@/components/blocks/features-section"
 import { siteConfig } from "@/config"
 
@@ -78,9 +77,9 @@ export default function Home() {
         </h2>
         <FeaturesSection />
       </section>
-      <section>
+      {/* <section>
         <CTAWithGithub />
-      </section>
+      </section> */}
     </div>
   )
 }
