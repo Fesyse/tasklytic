@@ -1,18 +1,36 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@config "../../tailwind.config.ts";
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+}
 
 @layer base {
   :root {
-    --radius: 0.625rem;
+    --radius: 0rem;
     --background: oklch(1 0 0);
     --foreground: oklch(0.145 0 0);
     --card: oklch(1 0 0);
     --card-foreground: oklch(0.145 0 0);
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
+    --primary: var(--color-neutral-600);
+    --primary-foreground: var(--color-neutral-50);
     --secondary: oklch(0.97 0 0);
     --secondary-foreground: oklch(0.205 0 0);
     --muted: oklch(0.97 0 0);
@@ -45,8 +63,8 @@
     --card-foreground: oklch(0.985 0 0);
     --popover: oklch(0.269 0 0);
     --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
+    --primary: var(--color-neutral-500);
+    --primary-foreground: var(--color-neutral-50);
     --secondary: oklch(0.269 0 0);
     --secondary-foreground: oklch(0.985 0 0);
     --muted: oklch(0.269 0 0);
@@ -73,52 +91,14 @@
   }
 }
 
-.theme-mono {
-  --font-sans: var(--font-mono);
-  --primary: var(--color-neutral-600);
-  --primary-foreground: var(--color-neutral-50);
-
-  @variant dark {
-    --primary: var(--color-neutral-500);
-    --primary-foreground: var(--color-neutral-50);
-  }
-
-  .rounded-xs,
-  .rounded-sm,
-  .rounded-md,
-  .rounded-lg,
-  .rounded-xl {
-    @apply !rounded-none;
-    border-radius: 0;
-  }
-
-  .shadow-xs,
-  .shadow-sm,
-  .shadow-md,
-  .shadow-lg,
-  .shadow-xl {
-    @apply !shadow-none;
-  }
-
-  [data-slot="toggle-group"],
-  [data-slot="toggle-group-item"] {
-    @apply !rounded-none !shadow-none;
-  }
-}
-
 @layer base {
-  .bg-noise {
-    background-image: url(/noise.png);
-    background-size: auto;
-    background-repeat: repeat;
-    background-size: 96px 96px;
-  }
-
   * {
     @apply border-border;
   }
   body {
-    @apply bg-noise theme-mono bg-background text-foreground;
+    --font-sans: var(--font-mono);
+
+    @apply bg-background text-foreground;
     --dashboard-header-size: 57px;
   }
 }

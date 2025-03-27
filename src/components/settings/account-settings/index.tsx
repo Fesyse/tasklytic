@@ -26,7 +26,7 @@ export const AccountSettings = async () => {
           Manage your account settings and connected social accounts
         </p>
       </div>
-      <Separator className="!mt-4" />
+      <Separator className="mt-4!" />
 
       <ActiveSessions
         currentSession={currentSession}

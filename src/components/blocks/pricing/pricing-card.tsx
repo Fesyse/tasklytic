@@ -29,7 +29,7 @@ export function PricingCard({
     <Card
       className={cn("w-full max-w-sm", {
         "border-primary/25 shadow-lg": isPro,
-        "bg-gradient-to-br": !isPro
+        "bg-linear-to-br": !isPro
       })}
     >
       <CardHeader>

@@ -41,8 +41,8 @@ export const pricingPlans = [
 
 export const FeatureIcon = ({ available }: { available: boolean }) => {
   return available ? (
-    <Check className="h-5 w-5 flex-shrink-0 text-green-500" />
+    <Check className="h-5 w-5 shrink-0 text-green-500" />
   ) : (
-    <X className="h-5 w-5 flex-shrink-0 text-red-500" />
+    <X className="h-5 w-5 shrink-0 text-red-500" />
   )
 }

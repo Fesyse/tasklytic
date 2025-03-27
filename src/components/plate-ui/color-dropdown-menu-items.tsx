@@ -45,7 +45,7 @@ export function ColorDropdownMenuItem({
           variant: "outline"
         }),
         "my-1 flex size-6 items-center justify-center rounded-full border border-solid border-muted p-0 transition-all hover:scale-125",
-        !isBrightColor && "border-transparent text-white hover:!text-white",
+        !isBrightColor && "border-transparent text-white hover:text-white!",
         className
       )}
       style={{ backgroundColor: value }}
@@ -55,7 +55,7 @@ export function ColorDropdownMenuItem({
       }}
       {...props}
     >
-      {isSelected ? <Check className="!size-3" /> : null}
+      {isSelected ? <Check className="size-3!" /> : null}
     </DropdownMenuItem>
   )
 

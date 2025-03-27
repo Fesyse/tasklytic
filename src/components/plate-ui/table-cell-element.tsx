@@ -56,10 +56,10 @@ export const TableCellElement = withRef<
       className={cn(
         "relative h-full overflow-visible border-none bg-background p-0",
         hideBorder && "before:border-none",
-        element.background ? "bg-[--cellBackground]" : "bg-background",
+        element.background ? "bg-(--cellBackground)" : "bg-background",
         !hideBorder &&
           cn(
-            isHeader && "text-left [&_>_*]:m-0",
+            isHeader && "text-left *:m-0",
             "before:size-full",
             selected && "before:z-10 before:bg-muted",
             "before:absolute before:box-border before:select-none before:content-['']",

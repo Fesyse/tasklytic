@@ -4,7 +4,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
   return (
     <>
       {/* Cool background so it doesnt look boring */}
-      <div className="blur-sm">
+      <div className="blur-xs">
         <BackgroundPaths />
       </div>
 

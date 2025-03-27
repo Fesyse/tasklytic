@@ -217,7 +217,7 @@ export function FloatingPanelContent({
             ref={contentRef}
             layoutId={`floating-panel-${uniqueId}`}
             className={cn(
-              "fixed z-50 overflow-hidden border border-zinc-950/10 bg-white shadow-lg outline-none dark:border-zinc-50/10 dark:bg-zinc-800",
+              "fixed z-50 overflow-hidden border border-zinc-950/10 bg-white shadow-lg outline-hidden dark:border-zinc-50/10 dark:bg-zinc-800",
               className
             )}
             style={{
@@ -336,7 +336,7 @@ export function FloatingPanelTextarea({
     <textarea
       id={id}
       className={cn(
-        "h-full w-full resize-none rounded-md bg-transparent px-4 py-3 text-sm outline-none",
+        "h-full w-full resize-none rounded-md bg-transparent px-4 py-3 text-sm outline-hidden",
         className
       )}
       autoFocus

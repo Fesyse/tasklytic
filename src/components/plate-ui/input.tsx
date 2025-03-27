@@ -3,7 +3,7 @@ import { type VariantProps, cva } from "class-variance-authority"
 import React from "react"
 
 export const inputVariants = cva(
-  "flex w-full rounded-md bg-transparent text-base file:border-0 file:bg-background file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+  "flex w-full rounded-md bg-transparent text-base file:border-0 file:bg-background file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
   {
     defaultVariants: {
       h: "md",

@@ -5,7 +5,7 @@ import { HomeLayout } from "@/components/layout/home"
 
 export default function NotFoundPage() {
   return (
-    <HomeLayout className="flex max-w-full flex-col items-center justify-center overflow-hidden bg-background !py-0 px-4">
+    <HomeLayout className="flex max-w-full flex-col items-center justify-center overflow-hidden bg-background py-0! px-4">
       <div className="flex max-w-md flex-col items-center justify-center text-center">
         <div className="mb-8 flex items-center justify-center rounded-lg border">
           <Icons.placeholder className="aspect-square w-52 sm:w-[300px]" />

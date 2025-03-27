@@ -146,7 +146,7 @@ const SubmenuContainer = ({ submenus, width }: SubmenuContainerProps) => {
   return (
     <motion.div
       key="submenus"
-      className="supports-backdrop-blur:bg-white/10 supports-backdrop-blur:dark:bg-black/10 absolute bottom-[calc(100%+0.5rem)] left-1/2 z-[51] flex w-full translate-x-[-50%] flex-col items-center gap-2 rounded-t-xl border border-b-0 bg-background p-2" // Adjusted position
+      className="supports-backdrop-blur:bg-white/10 supports-backdrop-blur:dark:bg-black/10 absolute bottom-[calc(100%+0.5rem)] left-1/2 z-51 flex w-full translate-x-[-50%] flex-col items-center gap-2 rounded-t-xl border border-b-0 bg-background p-2" // Adjusted position
       initial={{ height: 0, padding: 0 }}
       animate={{
         height: submenus.length * 60 + (submenus.length - 1) * 8
@@ -164,7 +164,7 @@ const SubmenuContainer = ({ submenus, width }: SubmenuContainerProps) => {
                 exit={{ opacity: 0, y: 10 }}
                 transition={{ delay: (idx + 1) * 0.1 }}
                 style={{ width, height: width }} // Ensure same width as parent
-                className="z-[52] flex items-center justify-center" // !!!!52!!!! swaaag
+                className="z-52 flex items-center justify-center" // !!!!52!!!! swaaag
               >
                 {"href" in submenu ? (
                   <Link
@@ -190,7 +190,7 @@ const SubmenuContainer = ({ submenus, width }: SubmenuContainerProps) => {
         ))}
       </TooltipProvider>
       {/* <motion.div
-        className="absolute left-0 z-[51] w-full rounded-t-xl border border-b-0 p-2 backdrop-blur-md"
+        className="absolute left-0 z-51 w-full rounded-t-xl border border-b-0 p-2 backdrop-blur-md"
         initial={{ height: 0 }}
         animate={{
           height: submenus.length * 60 + (submenus.length - 1) * 8

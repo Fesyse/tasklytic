@@ -1,14 +1,24 @@
 import svgToDataUri from "mini-svg-data-uri"
-import flattenColorPalette from "tailwindcss/lib/util/flattenColorPalette"
-import type {
-  Config,
-  KeyValuePair,
-  PluginCreator
-} from "tailwindcss/types/config"
-import { withUt } from "uploadthing/tw"
 
-// eslint-disable-next-line @typescript-eslint/unbound-method
-const addVariablesForColors: PluginCreator = ({ addBase, theme }) => {
+const flattenColorPalette = (colors: any) =>
+  Object.assign(
+    {},
+    ...Object.entries(
+      colors !== null && colors !== void 0 ? colors : {}
+    ).flatMap<any>(([color, values]) =>
+      typeof values == "object"
+        ? Object.entries(flattenColorPalette(values)).map(([number, hex]) => ({
+            [color + (number === "DEFAULT" ? "" : `-${number}`)]: hex
+          }))
+        : [
+            {
+              [`${color}`]: values
+            }
+          ]
+    )
+  )
+
+const addVariablesForColors = ({ addBase, theme }: any) => {
   const allColors = flattenColorPalette(theme("colors")) as string | string[]
   const newVars = Object.fromEntries(
     Object.entries(allColors).map(([key, val]) => [`--${key}`, val])
@@ -19,37 +29,33 @@ const addVariablesForColors: PluginCreator = ({ addBase, theme }) => {
   })
 }
 
-// eslint-disable-next-line @typescript-eslint/unbound-method
-const gridBackground: PluginCreator = ({ matchUtilities, theme }) => {
+const gridBackground = ({ matchUtilities, theme }: any) => {
   matchUtilities(
     {
-      "bg-grid": value => ({
+      "bg-grid": (value: any) => ({
         backgroundImage: `url("${svgToDataUri(
           `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="${value}"><path d="M0 .5H31.5V32"/></svg>`
         )}")`
       }),
-      "bg-grid-small": value => ({
+      "bg-grid-small": (value: any) => ({
         backgroundImage: `url("${svgToDataUri(
           `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="8" height="8" fill="none" stroke="${value}"><path d="M0 .5H31.5V32"/></svg>`
         )}")`
       }),
-      "bg-dot": value => ({
+      "bg-dot": (value: any) => ({
         backgroundImage: `url("${svgToDataUri(
           `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="16" height="16" fill="none"><circle fill="${value}" id="pattern-circle" cx="10" cy="10" r="1.6257413380501518"></circle></svg>`
         )}")`
       })
     },
     {
-      values: flattenColorPalette(theme("backgroundColor")) as KeyValuePair<
-        string,
-        string
-      >,
+      values: flattenColorPalette(theme("backgroundColor")) as any,
       type: "color"
     }
   )
 }
 
-const config = withUt({
+const config = {
   darkMode: ["class"],
   content: [
     "./pages/**/*.{ts,tsx}",
@@ -205,6 +211,6 @@ const config = withUt({
     gridBackground,
     require("tailwind-scrollbar-hide")
   ]
-}) satisfies Config
+}
 
 export default config

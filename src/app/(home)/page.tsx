@@ -32,7 +32,7 @@ export default function Home() {
               <TextGenerateEffect
                 words={siteConfig.description}
                 duration={0.25}
-                className="!text-sm sm:!text-base md:!text-lg mb-8 max-w-xl text-muted-foreground lg:text-xl"
+                className="text-sm! sm:text-base! md:text-lg! mb-8 max-w-xl text-muted-foreground lg:text-xl"
               />
             </Balance>
             <div className="flex w-full flex-col justify-center gap-2 sm:flex-row lg:justify-start">
