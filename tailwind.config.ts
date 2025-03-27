@@ -1,4 +1,6 @@
 import svgToDataUri from "mini-svg-data-uri"
+import type { Config } from "tailwindcss"
+import { withUt } from "uploadthing/tw"
 
 const flattenColorPalette = (colors: any) =>
   Object.assign(
@@ -55,8 +57,8 @@ const gridBackground = ({ matchUtilities, theme }: any) => {
   )
 }
 
-const config = {
-  darkMode: ["class"],
+const config = withUt({
+  darkMode: "class",
   content: [
     "./pages/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
@@ -211,6 +213,6 @@ const config = {
     gridBackground,
     require("tailwind-scrollbar-hide")
   ]
-}
+} satisfies Config)
 
 export default config
