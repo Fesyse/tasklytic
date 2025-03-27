@@ -9,9 +9,7 @@ export async function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset className="[background:_linear-gradient(to_right_bottom,_hsl(var(--background)),_hsl(var(--muted)/50%),_hsl(var(--background)))]">
-        {children}
-      </SidebarInset>
+      <SidebarInset className="bg-noise">{children}</SidebarInset>
     </SidebarProvider>
   )
 }

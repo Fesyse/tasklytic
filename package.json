@@ -164,6 +164,7 @@
     "drizzle-kit": "^0.21.4",
     "oxlint": "^0.9.10",
     "postcss": "^8.5.3",
+    "postcss-nesting": "^13.0.1",
     "prettier": "^3.5.2",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "tailwindcss": "^3.4.17",

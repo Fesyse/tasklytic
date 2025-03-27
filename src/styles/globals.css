@@ -4,86 +4,105 @@
 
 @layer base {
   :root {
-    --background: 293.7 46.3% 92%;
-    --foreground: 296 56% 21%;
-    --card: 291 54% 97%;
-    --card-foreground: 240 10% 30%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 296 56% 21%;
-    --primary: 334.2 74.9% 56.9%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 314.7 61.6% 85.7%;
-    --secondary-foreground: 295.8 40.9% 34.5%;
-    --muted: 327.7 61.6% 78.7%;
-    --muted-foreground: 327 77% 38%;
-    --accent: 314.7 61.6% 85.7%;
-    --accent-foreground: 240 10% 30%;
-    --destructive: 335 94% 50%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 304.6 27.7% 90.8%;
-    --input: 317.4 44.2% 83.1%;
-    --ring: 333.3, 71.4%, 50.6%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
-    --sidebar-background: 290.3 49.2% 87.6%;
-    --sidebar-foreground: 240 10% 30%;
-    --sidebar-primary: 240 10% 30%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 60 5% 97%;
-    --sidebar-accent-foreground: 240 10% 30%;
-    --sidebar-border: 20 6% 92%;
-    --sidebar-ring: 333.3, 71.4%, 50.6%;
-    --gradient-noise-top: 292 42.9% 93.1%;
-    --dashboard-border: 304.8 61% 83.9%;
-    --dashboard-background: 300 56% 98%;
-    --dashboard-accent: #f5edf9;
-    --color-heading: 336.3 70.3% 19.8%;
-    --radius: 0.5rem;
+    --radius: 0.625rem;
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.145 0 0);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.145 0 0);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.145 0 0);
+    --primary: oklch(0.205 0 0);
+    --primary-foreground: oklch(0.985 0 0);
+    --secondary: oklch(0.97 0 0);
+    --secondary-foreground: oklch(0.205 0 0);
+    --muted: oklch(0.97 0 0);
+    --muted-foreground: oklch(0.556 0 0);
+    --accent: oklch(0.97 0 0);
+    --accent-foreground: oklch(0.205 0 0);
+    --destructive: oklch(0.577 0.245 27.325);
+    --border: oklch(0.922 0 0);
+    --input: oklch(0.922 0 0);
+    --ring: oklch(0.708 0 0);
+    --chart-1: oklch(0.646 0.222 41.116);
+    --chart-2: oklch(0.6 0.118 184.704);
+    --chart-3: oklch(0.398 0.07 227.392);
+    --chart-4: oklch(0.828 0.189 84.429);
+    --chart-5: oklch(0.769 0.188 70.08);
+    --sidebar: oklch(0.985 0 0);
+    --sidebar-foreground: oklch(0.145 0 0);
+    --sidebar-primary: oklch(0.205 0 0);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.97 0 0);
+    --sidebar-accent-foreground: oklch(0.205 0 0);
+    --sidebar-border: oklch(0.922 0 0);
+    --sidebar-ring: oklch(0.708 0 0);
   }
 
   .dark {
-    --background: 313.8 24.5% 10.4%;
-    --foreground: 270 20% 97.8%;
-    --card: 300 15.8% 3.7%;
-    --card-foreground: 240 4.8% 95.9%;
-    --popover: 320 23.08% 5.1%;
-    --popover-foreground: 326 33% 96%;
-    --primary: 332 100% 32%;
-    --primary-foreground: 326 85% 90%;
-    --secondary: 273.8 15.1% 20.8%;
-    --secondary-foreground: 270 30% 83%;
-    --muted: 283 9% 25%;
-    --muted-foreground: 326 33% 86%;
-    --accent: 272 20% 27%;
-    --accent-foreground: 326 33% 96%;
-    --destructive: 335.82 74.44% 35.29%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 262.5 10% 15.7%;
-    --input: 326.3 20% 15.7%;
-    --ring: 333.3, 71.4%, 50.6%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    --sidebar-background: 240 2.6% 7.6%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 318.5 20.6% 12.4%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 0 0% 0%;
-    --sidebar-ring: 333.3, 71.4%, 50.6%;
-    --gradient-noise-top: 309 15% 9%;
-    --dashboard-border: 334.3 32.6% 16.9%;
-    --dashboard-background: 270 16.13% 12.16%;
-    --dashboard-accent: rgba(25, 21, 29, 0.33);
-    --color-heading: 328.1 39% 51.8%;
-    --radius: 0.5rem;
+    --background: oklch(0.145 0 0);
+    --foreground: oklch(0.985 0 0);
+    --card: oklch(0.205 0 0);
+    --card-foreground: oklch(0.985 0 0);
+    --popover: oklch(0.269 0 0);
+    --popover-foreground: oklch(0.985 0 0);
+    --primary: oklch(0.922 0 0);
+    --primary-foreground: oklch(0.205 0 0);
+    --secondary: oklch(0.269 0 0);
+    --secondary-foreground: oklch(0.985 0 0);
+    --muted: oklch(0.269 0 0);
+    --muted-foreground: oklch(0.708 0 0);
+    --accent: oklch(0.371 0 0);
+    --accent-foreground: oklch(0.985 0 0);
+    --destructive: oklch(0.704 0.191 22.216);
+    --border: oklch(1 0 0 / 10%);
+    --input: oklch(1 0 0 / 15%);
+    --ring: oklch(0.556 0 0);
+    --chart-1: oklch(0.488 0.243 264.376);
+    --chart-2: oklch(0.696 0.17 162.48);
+    --chart-3: oklch(0.769 0.188 70.08);
+    --chart-4: oklch(0.627 0.265 303.9);
+    --chart-5: oklch(0.645 0.246 16.439);
+    --sidebar: oklch(0.205 0 0);
+    --sidebar-foreground: oklch(0.985 0 0);
+    --sidebar-primary: oklch(0.488 0.243 264.376);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.269 0 0);
+    --sidebar-accent-foreground: oklch(0.985 0 0);
+    --sidebar-border: oklch(1 0 0 / 10%);
+    --sidebar-ring: oklch(0.439 0 0);
+  }
+}
+
+.theme-mono {
+  --font-sans: var(--font-mono);
+  --primary: var(--color-neutral-600);
+  --primary-foreground: var(--color-neutral-50);
+
+  @variant dark {
+    --primary: var(--color-neutral-500);
+    --primary-foreground: var(--color-neutral-50);
+  }
+
+  .rounded-xs,
+  .rounded-sm,
+  .rounded-md,
+  .rounded-lg,
+  .rounded-xl {
+    @apply !rounded-none;
+    border-radius: 0;
+  }
+
+  .shadow-xs,
+  .shadow-sm,
+  .shadow-md,
+  .shadow-lg,
+  .shadow-xl {
+    @apply !shadow-none;
+  }
+
+  [data-slot="toggle-group"],
+  [data-slot="toggle-group-item"] {
+    @apply !rounded-none !shadow-none;
   }
 }
 
@@ -99,7 +118,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-noise bg-background text-foreground;
+    @apply bg-noise theme-mono bg-background text-foreground;
     --dashboard-header-size: 57px;
   }
 }

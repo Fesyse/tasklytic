@@ -19,7 +19,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const sidebar = useSidebarNav()
 
   return (
-    <Sidebar className="border-r-0" {...props}>
+    <Sidebar
+      className="border-r-0"
+      style={{
+        backgroundImage:
+          "radial-gradient(closest-corner at 120px 36px, rgba(255, 1, 111, 0.19), rgba(255, 1, 111, 0.08)), linear-gradient(rgb(63, 51, 69) 15%, rgb(7, 3, 9)) !important"
+      }}
+      {...props}
+    >
       <SidebarHeader>
         <ProjectSwitcher projects={sidebar.projects} />
         <NavMain navigation={sidebar.navMain} />
