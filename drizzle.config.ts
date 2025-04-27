@@ -1,26 +1,12 @@
-import { type Config } from "drizzle-kit";
+import { type Config } from "drizzle-kit"
 
-import { env } from "@/env";
-
-export const dbCredentials = {
-  host: env.SINGLESTORE_HOST,
-  user: env.SINGLESTORE_USER,
-  password: env.SINGLESTORE_PASSWORD,
-  port: env.SINGLESTORE_PORT,
-  database: env.SINGLESTORE_DB_NAME,
-  ssl: {},
-};
+import { env } from "@/env"
 
 export default {
-  dialect: "singlestore",
+  dialect: "postgresql",
   schema: "./src/server/db/schema.ts",
   dbCredentials: {
-    host: env.SINGLESTORE_HOST,
-    user: env.SINGLESTORE_USER,
-    password: env.SINGLESTORE_PASSWORD,
-    port: env.SINGLESTORE_PORT,
-    database: env.SINGLESTORE_DB_NAME,
-    ssl: {},
+    url: env.DATABASE_URL
   },
-  tablesFilter: ["froo_*"],
-} satisfies Config;
+  tablesFilter: ["froo_*"]
+} satisfies Config

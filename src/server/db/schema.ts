@@ -1,34 +1,59 @@
-// Example model schema from the Drizzle docs
-// https://orm.drizzle.team/docs/sql-schema-declaration
-
 import {
-  index,
-  int,
-  singlestoreTableCreator,
+  boolean,
+  pgTableCreator,
   text,
   timestamp,
-} from "drizzle-orm/singlestore-core";
+  varchar
+} from "drizzle-orm/pg-core"
 
-/**
- * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
- * database instance for multiple projects.
- *
- * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
- */
-export const createTable = singlestoreTableCreator((name) => `froo_${name}`);
+export const createTable = pgTableCreator((name) => `froo_${name}`)
 
-export const posts = createTable(
-  "post",
-  {
-    id: int("id").primaryKey().autoincrement(),
-    name: text("name"),
+export const users = createTable("user", {
+  id: varchar("id", { length: 36 }).primaryKey(),
+  name: text("name").notNull(),
+  email: varchar("email", { length: 255 }).notNull().unique(),
+  emailVerified: boolean("email_verified").notNull(),
+  image: text("image"),
+  createdAt: timestamp("created_at").notNull(),
+  updatedAt: timestamp("updated_at").notNull()
+})
 
-    createdAt: timestamp("created_at", {
-      mode: "date",
-    }).$defaultFn(() => new Date()),
-    updatedAt: timestamp("updated_at", {
-      mode: "date",
-    }).$onUpdateFn(() => new Date()),
-  },
-  (t) => [index("name_idx").on(t.name)],
-);
+export const sessions = createTable("session", {
+  id: varchar("id", { length: 36 }).primaryKey(),
+  expiresAt: timestamp("expires_at").notNull(),
+  token: varchar("token", { length: 255 }).notNull().unique(),
+  createdAt: timestamp("created_at").notNull(),
+  updatedAt: timestamp("updated_at").notNull(),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id)
+})
+
+export const accounts = createTable("account", {
+  id: varchar("id", { length: 36 }).primaryKey(),
+  accountId: text("account_id").notNull(),
+  providerId: text("provider_id").notNull(),
+  userId: varchar("user_id")
+    .notNull()
+    .references(() => users.id),
+  accessToken: text("access_token"),
+  refreshToken: text("refresh_token"),
+  idToken: text("id_token"),
+  accessTokenExpiresAt: timestamp("access_token_expires_at"),
+  refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
+  scope: text("scope"),
+  password: text("password"),
+  createdAt: timestamp("created_at").notNull(),
+  updatedAt: timestamp("updated_at").notNull()
+})
+
+export const verifications = createTable("verification", {
+  id: varchar("id", { length: 36 }).primaryKey(),
+  identifier: text("identifier").notNull(),
+  value: text("value").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at"),
+  updatedAt: timestamp("updated_at")
+})

@@ -1,5 +1,5 @@
-import { createEnv } from "@t3-oss/env-nextjs";
-import { z } from "zod";
+import { createEnv } from "@t3-oss/env-nextjs"
+import { z } from "zod"
 
 export const env = createEnv({
   /**
@@ -10,11 +10,11 @@ export const env = createEnv({
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
-    SINGLESTORE_HOST: z.string(),
-    SINGLESTORE_PORT: z.coerce.number().int().nonnegative(),
-    SINGLESTORE_USER: z.string(),
-    SINGLESTORE_PASSWORD: z.string(),
-    SINGLESTORE_DB_NAME: z.string(),
+    DATABASE_URL: z.string(),
+    GOOGLE_CLIENT_ID: z.string(),
+    GOOGLE_CLIENT_SECRET: z.string(),
+    GITHUB_CLIENT_ID: z.string(),
+    GITHUB_CLIENT_SECRET: z.string()
   },
 
   /**
@@ -32,11 +32,11 @@ export const env = createEnv({
    */
   runtimeEnv: {
     NODE_ENV: process.env.NODE_ENV,
-    SINGLESTORE_HOST: process.env.SINGLESTORE_HOST,
-    SINGLESTORE_PORT: process.env.SINGLESTORE_PORT,
-    SINGLESTORE_USER: process.env.SINGLESTORE_USER,
-    SINGLESTORE_PASSWORD: process.env.SINGLESTORE_PASSWORD,
-    SINGLESTORE_DB_NAME: process.env.SINGLESTORE_DB_NAME,
+    DATABASE_URL: process.env.DATABASE_URL,
+    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+    GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
+    GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**
@@ -48,5 +48,5 @@ export const env = createEnv({
    * Makes it so that empty strings are treated as undefined. `SOME_VAR: z.string()` and
    * `SOME_VAR=''` will throw an error.
    */
-  emptyStringAsUndefined: true,
-});
+  emptyStringAsUndefined: true
+})
