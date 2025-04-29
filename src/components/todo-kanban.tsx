@@ -43,6 +43,7 @@ function KanbanColumn({
         data-column-id={id}
       >
         <SortableContext
+          id={id}
           items={todos.map((todo) => todo.id)}
           strategy={rectSortingStrategy}
         >
@@ -150,6 +151,8 @@ export function TodoKanban({
       overId === "in-progress" ||
       overId === "completed"
     ) {
+      console.log("active", active)
+      console.log("over", over)
       onStatusChange(activeId, overId as TodoStatus)
     }
 

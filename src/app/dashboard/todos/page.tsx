@@ -7,13 +7,25 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { Todo, ViewMode } from "@/lib/types"
 import { LayoutGrid, ListFilter, Plus } from "lucide-react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useState } from "react"
+import { z } from "zod"
 import { mockTodos } from "./data"
 
+const viewModeSchema = z.enum(["list", "kanban"] as const)
+
 export default function TodosPage() {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const { success, data: defaultViewMode } = viewModeSchema.safeParse(
+    searchParams.get("view-mode")
+  )
+
   const [todos, setTodos] = useState<Todo[]>(mockTodos)
   const [showForm, setShowForm] = useState(false)
-  const [viewMode, setViewMode] = useState<ViewMode>("list")
+  const [viewMode, setViewMode] = useState<ViewMode>(
+    success ? defaultViewMode : "list"
+  )
 
   const handleAddTodo = (todo: Todo) => {
     setTodos([todo, ...todos])
@@ -41,7 +53,10 @@ export default function TodosPage() {
         <div className="flex gap-2">
           <Tabs
             value={viewMode}
-            onValueChange={(value) => setViewMode(value as ViewMode)}
+            onValueChange={(value) => {
+              setViewMode(value as ViewMode)
+              router.push(`/dashboard/todos?view-mode=${value}`)
+            }}
             className="mr-4"
           >
             <TabsList>
