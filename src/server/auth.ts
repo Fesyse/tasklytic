@@ -24,6 +24,19 @@ export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg"
   }),
+  user: {
+    modelName: "users"
+  },
+  session: {
+    modelName: "sessions"
+  },
+  account: {
+    modelName: "accounts"
+  },
+  verification: {
+    modelName: "verification"
+  },
+
   plugins: [
     nextCookies(),
     emailOTP({

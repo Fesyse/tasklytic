@@ -49,7 +49,7 @@ export const accounts = createTable("account", {
   updatedAt: timestamp("updated_at").notNull()
 })
 
-export const verifications = createTable("verification", {
+export const verification = createTable("verification", {
   id: varchar("id", { length: 36 }).primaryKey(),
   identifier: text("identifier").notNull(),
   value: text("value").notNull(),

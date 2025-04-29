@@ -1,6 +1,5 @@
 "use client"
 
-import * as React from "react"
 import {
   IconCamera,
   IconChartBar,
@@ -16,8 +15,9 @@ import {
   IconReport,
   IconSearch,
   IconSettings,
-  IconUsers,
+  IconUsers
 } from "@tabler/icons-react"
+import * as React from "react"
 
 import { NavDocuments } from "@/components/nav-documents"
 import { NavMain } from "@/components/nav-main"
@@ -30,41 +30,41 @@ import {
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem,
+  SidebarMenuItem
 } from "@/components/ui/sidebar"
 
 const data = {
   user: {
     name: "shadcn",
     email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+    avatar: "/avatars/shadcn.jpg"
   },
   navMain: [
     {
       title: "Dashboard",
       url: "#",
-      icon: IconDashboard,
+      icon: IconDashboard
     },
     {
       title: "Lifecycle",
       url: "#",
-      icon: IconListDetails,
+      icon: IconListDetails
     },
     {
       title: "Analytics",
       url: "#",
-      icon: IconChartBar,
+      icon: IconChartBar
     },
     {
       title: "Projects",
       url: "#",
-      icon: IconFolder,
+      icon: IconFolder
     },
     {
       title: "Team",
       url: "#",
-      icon: IconUsers,
-    },
+      icon: IconUsers
+    }
   ],
   navClouds: [
     {
@@ -75,13 +75,13 @@ const data = {
       items: [
         {
           title: "Active Proposals",
-          url: "#",
+          url: "#"
         },
         {
           title: "Archived",
-          url: "#",
-        },
-      ],
+          url: "#"
+        }
+      ]
     },
     {
       title: "Proposal",
@@ -90,13 +90,13 @@ const data = {
       items: [
         {
           title: "Active Proposals",
-          url: "#",
+          url: "#"
         },
         {
           title: "Archived",
-          url: "#",
-        },
-      ],
+          url: "#"
+        }
+      ]
     },
     {
       title: "Prompts",
@@ -105,49 +105,49 @@ const data = {
       items: [
         {
           title: "Active Proposals",
-          url: "#",
+          url: "#"
         },
         {
           title: "Archived",
-          url: "#",
-        },
-      ],
-    },
+          url: "#"
+        }
+      ]
+    }
   ],
   navSecondary: [
     {
       title: "Settings",
       url: "#",
-      icon: IconSettings,
+      icon: IconSettings
     },
     {
       title: "Get Help",
       url: "#",
-      icon: IconHelp,
+      icon: IconHelp
     },
     {
       title: "Search",
       url: "#",
-      icon: IconSearch,
-    },
+      icon: IconSearch
+    }
   ],
   documents: [
     {
       name: "Data Library",
       url: "#",
-      icon: IconDatabase,
+      icon: IconDatabase
     },
     {
       name: "Reports",
       url: "#",
-      icon: IconReport,
+      icon: IconReport
     },
     {
       name: "Word Assistant",
       url: "#",
-      icon: IconFileWord,
-    },
-  ],
+      icon: IconFileWord
+    }
+  ]
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -174,7 +174,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
     </Sidebar>
   )
