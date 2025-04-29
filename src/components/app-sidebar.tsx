@@ -1,16 +1,12 @@
 "use client"
 
 import {
-  IconCamera,
   IconChartBar,
   IconDashboard,
   IconDatabase,
-  IconFileAi,
-  IconFileDescription,
   IconFileWord,
   IconFolder,
   IconHelp,
-  IconListDetails,
   IconReport,
   IconSearch,
   IconSettings,
@@ -34,117 +30,59 @@ import { CalendarCheck } from "lucide-react"
 import Link from "next/link"
 
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg"
-  },
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
+      url: "/dashboard",
       icon: IconDashboard
     },
     {
-      title: "Lifecycle",
-      url: "#",
-      icon: IconListDetails
-    },
-    {
       title: "Analytics",
-      url: "#",
+      url: "/dashboard/analytics",
       icon: IconChartBar
     },
     {
       title: "Projects",
-      url: "#",
+      url: "/dashboard/projects",
       icon: IconFolder
     },
     {
       title: "Team",
-      url: "#",
+      url: "/dashboard/team",
       icon: IconUsers
-    }
-  ],
-  navClouds: [
-    {
-      title: "Capture",
-      icon: IconCamera,
-      isActive: true,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#"
-        },
-        {
-          title: "Archived",
-          url: "#"
-        }
-      ]
-    },
-    {
-      title: "Proposal",
-      icon: IconFileDescription,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#"
-        },
-        {
-          title: "Archived",
-          url: "#"
-        }
-      ]
-    },
-    {
-      title: "Prompts",
-      icon: IconFileAi,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#"
-        },
-        {
-          title: "Archived",
-          url: "#"
-        }
-      ]
     }
   ],
   navSecondary: [
     {
       title: "Settings",
-      url: "#",
+      url: "/dashboard/settings",
       icon: IconSettings
     },
     {
       title: "Get Help",
-      url: "#",
+      url: "/dashboard/help",
       icon: IconHelp
     },
     {
       title: "Search",
-      url: "#",
+      url: "/dashboard/search",
       icon: IconSearch
     }
   ],
   documents: [
     {
       name: "Data Library",
-      url: "#",
+      url: "/dashboard/data-library",
       icon: IconDatabase
     },
     {
       name: "Reports",
-      url: "#",
+      url: "/dashboard/reports",
       icon: IconReport
     },
     {
       name: "Word Assistant",
-      url: "#",
+      url: "/dashboard/word-assistant",
       icon: IconFileWord
     }
   ]
