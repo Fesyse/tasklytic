@@ -8,11 +8,11 @@ import {
   SidebarGroupContent,
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem,
+  SidebarMenuItem
 } from "@/components/ui/sidebar"
 
 export function NavMain({
-  items,
+  items
 }: {
   items: {
     title: string

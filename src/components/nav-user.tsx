@@ -54,7 +54,10 @@ export function NavUser() {
                 <Skeleton className="h-8 w-8 rounded-full" />
               ) : (
                 <Avatar className="h-8 w-8 rounded-lg grayscale">
-                  <AvatarImage src={user?.image} alt={user?.name} />
+                  <AvatarImage
+                    src={user?.image ?? "/user.svg"}
+                    alt={user?.name}
+                  />
                   <AvatarFallback className="rounded-lg">
                     {user?.name.slice(0, 2).toUpperCase()}
                   </AvatarFallback>
@@ -78,7 +81,10 @@ export function NavUser() {
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user?.image} alt={user?.name} />
+                  <AvatarImage
+                    src={user?.image ?? "/user.svg"}
+                    alt={user?.name}
+                  />
                   <AvatarFallback className="rounded-lg">
                     {user?.name.slice(0, 2).toUpperCase()}
                   </AvatarFallback>
