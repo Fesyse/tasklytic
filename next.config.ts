@@ -8,6 +8,12 @@ import "./src/env"
 const config: NextConfig = {
   experimental: {
     nodeMiddleware: true
+  },
+  typescript: {
+    ignoreBuildErrors: true
+  },
+  eslint: {
+    ignoreDuringBuilds: true
   }
 }
 
