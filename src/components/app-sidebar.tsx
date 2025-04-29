@@ -26,7 +26,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from "@/components/ui/sidebar"
-import { CalendarCheck } from "lucide-react"
+import { CalendarCheck, ListTodo } from "lucide-react"
 import Link from "next/link"
 
 const data = {
@@ -35,6 +35,11 @@ const data = {
       title: "Dashboard",
       url: "/dashboard",
       icon: IconDashboard
+    },
+    {
+      title: "Todos",
+      url: "/dashboard/todos",
+      icon: ListTodo
     },
     {
       title: "Analytics",
