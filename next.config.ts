@@ -6,6 +6,15 @@ import type { NextConfig } from "next"
 import "./src/env"
 
 const config: NextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        hostname: "res.cloudinary.com",
+        protocol: "https",
+        pathname: "**"
+      }
+    ]
+  },
   typescript: {
     ignoreBuildErrors: true
   },

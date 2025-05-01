@@ -8,7 +8,8 @@ import { ThemeProvider } from "next-themes"
 
 export const metadata: Metadata = {
   title: "froo",
-  description: "Discipline improvement app",
+  description:
+    "Improve your discipline, improve your life. Froo helps you build the habits you need to succeed.",
   icons: [{ rel: "icon", url: "/favicon.ico" }]
 }
 
