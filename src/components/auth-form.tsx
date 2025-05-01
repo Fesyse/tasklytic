@@ -13,8 +13,10 @@ import { Input } from "@/components/ui/input"
 import { authClient } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { Loader2 } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
@@ -48,6 +50,8 @@ export function AuthForm({
   type,
   ...props
 }: React.ComponentProps<"form"> & { type: "sign-in" | "sign-up" }) {
+  const [isLoading, setIsLoading] = useState(false)
+
   const router = useRouter()
   const form = useForm<z.infer<typeof signInSchema | typeof signUpSchema>>({
     resolver: zodResolver(type === "sign-in" ? signInSchema : signUpSchema),
@@ -59,13 +63,14 @@ export function AuthForm({
     }
   })
 
-  const handleSubmit = (
+  const handleSubmit = async (
     data: z.infer<
       typeof type extends "sign-in" ? typeof signInSchema : typeof signUpSchema
     >
   ) => {
     if (type === "sign-in") {
-      authClient.signIn.email({
+      setIsLoading(true)
+      await authClient.signIn.email({
         email: data.email,
         password: data.password,
         callbackURL: "/dashboard",
@@ -76,13 +81,18 @@ export function AuthForm({
           }
         }
       })
+      setIsLoading(false)
     } else {
-      authClient.signUp.email({
+      setIsLoading(true)
+      await authClient.signUp.email({
         name: data.name,
         email: data.email,
         password: data.password,
-        callbackURL: "/auth/verify-email"
+        callbackURL: "/dashboard"
       })
+
+      router.push(`/auth/verify-email?email=${data.email}`)
+      setIsLoading(false)
     }
   }
 
@@ -168,7 +178,8 @@ export function AuthForm({
               )}
             />
           )}
-          <Button type="submit" className="w-full">
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? <Loader2 className="size-4 animate-spin" /> : null}
             {type === "sign-in" ? "Sign in" : "Sign up"}
           </Button>
           <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">

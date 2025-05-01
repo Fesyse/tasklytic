@@ -45,11 +45,11 @@ export const auth = betterAuth({
   emailVerification: {
     expiresIn: 60 * 15,
     sendOnSignUp: true,
-    sendVerificationEmail: async ({ user, url, token }) => {
+    sendVerificationEmail: async ({ user, url }) => {
       const { error } = await resend.emails.send({
         from: siteConfig.emails.noreply,
         to: user.email,
-        subject: "Tasklytic - Verification Code",
+        subject: "Sign Up - Verify your email",
         react: <VerifyEmail url={url} userName={user.name} />
       })
 
