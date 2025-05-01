@@ -27,6 +27,8 @@ import {
 
 import { Skeleton } from "@/components/ui/skeleton"
 import { authClient } from "@/lib/auth-client"
+import type { User } from "better-auth"
+import { UserIcon } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
@@ -50,32 +52,9 @@ export function NavUser() {
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              {isPending ? (
-                <Skeleton className="h-8 w-8 rounded-lg" />
-              ) : (
-                <Avatar className="h-8 w-8 rounded-lg grayscale">
-                  <AvatarImage
-                    src={user?.image ?? "/user.svg"}
-                    alt={user?.name}
-                  />
-                  <AvatarFallback className="rounded-lg">
-                    {user?.name.slice(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-              )}
-              {isPending ? (
-                <div className="grid flex-1 gap-1 text-left text-sm leading-tight">
-                  <Skeleton className="h-4 w-12 rounded-lg" />
-                  <Skeleton className="h-4 w-25 rounded-lg" />
-                </div>
-              ) : (
-                <div className="grid flex-1 gap-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user?.name}</span>
-                  <span className="text-muted-foreground truncate text-xs">
-                    {user?.email}
-                  </span>
-                </div>
-              )}
+              <UserAvatar user={user} isPending={isPending} />
+              <UserDetails user={user} isPending={isPending} />
+
               <IconDotsVertical className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
@@ -87,21 +66,8 @@ export function NavUser() {
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage
-                    src={user?.image ?? "/user.svg"}
-                    alt={user?.name}
-                  />
-                  <AvatarFallback className="rounded-lg">
-                    {user?.name.slice(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user?.name}</span>
-                  <span className="text-muted-foreground truncate text-xs">
-                    {user?.email}
-                  </span>
-                </div>
+                <UserAvatar user={user} isPending={isPending} />
+                <UserDetails user={user} isPending={isPending} />
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
@@ -144,5 +110,60 @@ export function NavUser() {
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
+  )
+}
+
+function UserAvatar({
+  user,
+  isPending
+}: {
+  user: User | undefined
+  isPending: boolean
+}) {
+  if (isPending) {
+    return <Skeleton className="h-8 w-8 rounded-lg" />
+  }
+
+  if (user?.image) {
+    return (
+      <Avatar className="h-8 w-8 rounded-lg grayscale">
+        <AvatarImage src={user?.image} alt={user?.name} />
+        <AvatarFallback className="rounded-lg">
+          {user?.name.slice(0, 2).toUpperCase()}
+        </AvatarFallback>
+      </Avatar>
+    )
+  }
+
+  return (
+    <Avatar className="bg-muted flex h-8 w-8 items-center justify-center rounded-lg">
+      <UserIcon className="size-4" />
+    </Avatar>
+  )
+}
+
+function UserDetails({
+  user,
+  isPending
+}: {
+  user: User | undefined
+  isPending: boolean
+}) {
+  if (isPending) {
+    return (
+      <div className="grid flex-1 gap-1 text-left text-sm leading-tight">
+        <Skeleton className="h-4 w-12 rounded-lg" />
+        <Skeleton className="h-4 w-25 rounded-lg" />
+      </div>
+    )
+  }
+
+  return (
+    <div className="grid flex-1 gap-1 text-left text-sm leading-tight">
+      <span className="truncate font-medium">{user?.name}</span>
+      <span className="text-muted-foreground truncate text-xs">
+        {user?.email}
+      </span>
+    </div>
   )
 }
