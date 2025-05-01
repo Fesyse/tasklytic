@@ -3,6 +3,7 @@ import "@/styles/globals.css"
 import { type Metadata } from "next"
 import { Geist } from "next/font/google"
 
+import { Toaster } from "@/components/ui/sonner"
 import { siteConfig } from "@/lib/site-config"
 import { TRPCReactProvider } from "@/trpc/react"
 import { ThemeProvider } from "next-themes"
@@ -35,6 +36,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            <Toaster />
             {children}
           </ThemeProvider>
         </TRPCReactProvider>

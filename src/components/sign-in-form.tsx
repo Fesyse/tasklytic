@@ -92,15 +92,6 @@ export function SignInForm({
         // @ts-expect-error - TODO: fix this
         onSubmit={form.handleSubmit(handleSubmit)}
       >
-        <div className="flex flex-col items-center gap-2 text-center">
-          <h1 className="text-2xl font-bold">
-            Sign {type === "sign-in" ? "in to your account" : "up"}
-          </h1>
-          <p className="text-muted-foreground text-sm text-balance">
-            Enter your email below to sign{" "}
-            {type === "sign-in" ? "in to your account" : "up"}
-          </p>
-        </div>
         <div className="grid gap-6">
           {type === "sign-up" && (
             <FormField
@@ -135,12 +126,12 @@ export function SignInForm({
                 <div className="flex items-center justify-between">
                   <FormLabel>Password</FormLabel>
                   {type === "sign-in" && (
-                    <a
-                      href="#"
+                    <Link
+                      href="/auth/forgot-password"
                       className="ml-auto text-sm underline-offset-4 hover:underline"
                     >
                       Forgot your password?
-                    </a>
+                    </Link>
                   )}
                 </div>
                 <div className="relative">

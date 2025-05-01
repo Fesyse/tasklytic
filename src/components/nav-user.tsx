@@ -38,7 +38,7 @@ export function NavUser() {
   const router = useRouter()
 
   if (error) {
-    toast.error("Error fetching session")
+    toast.error("Error fetching user.")
   }
 
   return (
@@ -124,8 +124,13 @@ export function NavUser() {
               onClick={() =>
                 authClient.signOut({
                   fetchOptions: {
+                    onError: (error) => {
+                      toast.error("Error signing out, try again later.", {
+                        description: error.error?.message
+                      })
+                    },
                     onSuccess: () => {
-                      toast.success("Signed out successfully")
+                      toast.success("Signed out successfully!")
                       router.push("/")
                     }
                   }
