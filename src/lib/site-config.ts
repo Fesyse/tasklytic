@@ -10,5 +10,9 @@ export const siteConfig = {
   links: {
     telegram: "https://t.me/fesyse",
     github: "https://github.com/fesyse"
+  },
+  emails: {
+    support: "support@tasklytic.fesyse.site",
+    noreply: "noreply@tasklytic.fesyse.site"
   }
 }

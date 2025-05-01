@@ -14,7 +14,9 @@ import { authClient } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
+import { toast } from "sonner"
 import { z } from "zod"
 import { PasswordInput } from "./password-input"
 import { Icons } from "./ui/icons"
@@ -46,6 +48,7 @@ export function AuthForm({
   type,
   ...props
 }: React.ComponentProps<"form"> & { type: "sign-in" | "sign-up" }) {
+  const router = useRouter()
   const form = useForm<z.infer<typeof signInSchema | typeof signUpSchema>>({
     resolver: zodResolver(type === "sign-in" ? signInSchema : signUpSchema),
     defaultValues: {
@@ -65,14 +68,20 @@ export function AuthForm({
       authClient.signIn.email({
         email: data.email,
         password: data.password,
-        callbackURL: "/dashboard"
+        callbackURL: "/dashboard",
+        fetchOptions: {
+          onSuccess: () => {
+            toast.success(`Signed in as "${data.name}" successfully!`)
+            router.push("/dashboard")
+          }
+        }
       })
     } else {
       authClient.signUp.email({
         name: data.name,
         email: data.email,
         password: data.password,
-        callbackURL: "/dashboard"
+        callbackURL: "/auth/verify-email"
       })
     }
   }
