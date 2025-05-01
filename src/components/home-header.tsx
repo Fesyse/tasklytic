@@ -1,11 +1,14 @@
 "use client"
+
 import { Button } from "@/components/ui/button"
+import { authClient } from "@/lib/auth-client"
 import { siteConfig } from "@/lib/site-config"
 import { cn } from "@/lib/utils"
 import { Menu, X } from "lucide-react"
 import Link from "next/link"
 import React from "react"
 import { Icons } from "./ui/icons"
+import { Skeleton } from "./ui/skeleton"
 
 const menuItems = [
   { name: "Features", href: "#features" },
@@ -15,6 +18,7 @@ const menuItems = [
 ]
 
 export const Header = () => {
+  const { data, isPending } = authClient.useSession()
   const [menuState, setMenuState] = React.useState(false)
   const [isScrolled, setIsScrolled] = React.useState(false)
 
@@ -90,34 +94,49 @@ export const Header = () => {
                 </ul>
               </div>
               <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
-                <Button
-                  asChild
-                  variant="outline"
-                  size="sm"
-                  className={cn(isScrolled && "lg:hidden")}
-                >
-                  <Link href="/auth/sign-in">
-                    <span>Login</span>
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  size="sm"
-                  className={cn(isScrolled && "lg:hidden")}
-                >
-                  <Link href="/auth/sign-up">
-                    <span>Sign Up</span>
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  size="sm"
-                  className={cn(isScrolled ? "lg:inline-flex" : "hidden")}
-                >
-                  <Link href="/auth/sign-up">
-                    <span>Get Started</span>
-                  </Link>
-                </Button>
+                {isPending ? (
+                  <Skeleton className="h-8 w-32" />
+                ) : !data?.user ? (
+                  <>
+                    <Button
+                      asChild
+                      variant="outline"
+                      size="sm"
+                      className={cn(isScrolled && "lg:hidden")}
+                    >
+                      <Link href="/auth/sign-in">
+                        <span>Login</span>
+                      </Link>
+                    </Button>
+                    <Button
+                      asChild
+                      size="sm"
+                      className={cn(isScrolled && "lg:hidden")}
+                    >
+                      <Link href="/auth/sign-up">
+                        <span>Sign Up</span>
+                      </Link>
+                    </Button>
+                    <Button
+                      asChild
+                      size="sm"
+                      className={cn(isScrolled ? "lg:inline-flex" : "hidden")}
+                    >
+                      <Link href="/auth/sign-up">
+                        <span>Get Started</span>
+                      </Link>
+                    </Button>
+                  </>
+                ) : (
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className={cn(isScrolled && "lg:hidden")}
+                  >
+                    <Link href="/dashboard">Go to Dashboard</Link>
+                  </Button>
+                )}
               </div>
             </div>
           </div>
