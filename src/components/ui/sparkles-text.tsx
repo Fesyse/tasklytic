@@ -9,7 +9,7 @@ import {
 } from "react"
 
 import { cn } from "@/lib/utils"
-import { TextEffect } from "./text-effect"
+import { TextEffect, type TextEffectProps } from "./text-effect"
 
 interface Sparkle {
   id: string
@@ -71,6 +71,14 @@ interface SparklesTextProps {
     first: string
     second: string
   }
+
+  /**
+   * @default { delay: 0.6 }
+   * @type object
+   * @description
+   * The props of the text effect
+   * */
+  textEffectProps?: Omit<TextEffectProps, "children">
 }
 
 const SparklesText: React.FC<SparklesTextProps> = ({
@@ -79,6 +87,7 @@ const SparklesText: React.FC<SparklesTextProps> = ({
   className,
   sparklesCount = 10,
   withFadeIn = false,
+  textEffectProps,
   ...props
 }) => {
   const [sparkles, setSparkles] = useState<Sparkle[]>([])
@@ -134,7 +143,7 @@ const SparklesText: React.FC<SparklesTextProps> = ({
           <Sparkle key={sparkle.id} {...sparkle} />
         ))}
         {withFadeIn ? (
-          <TextEffect preset="fade-in-blur" speedSegment={0.3} as="span">
+          <TextEffect {...textEffectProps} as="span">
             {text}
           </TextEffect>
         ) : (

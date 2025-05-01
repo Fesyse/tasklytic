@@ -107,6 +107,11 @@ export function HeroSection() {
                 </TextEffect>
                 <SparklesText
                   withFadeIn
+                  textEffectProps={{
+                    preset: "fade-in-blur",
+                    delay: 0.6,
+                    speedSegment: 0.3
+                  }}
                   text={siteConfig.name}
                   className="ml-3 text-6xl text-balance md:text-7xl lg:mt-16 xl:text-[5.25rem]"
                 />
