@@ -31,7 +31,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
 export function NavUser() {
-  const { data: session, isPending, error } = authClient.useSession.get()
+  const { data: session, isPending, error } = authClient.useSession()
   const user = session?.user
 
   const { isMobile } = useSidebar()
@@ -51,7 +51,7 @@ export function NavUser() {
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               {isPending ? (
-                <Skeleton className="h-8 w-8 rounded-full" />
+                <Skeleton className="h-8 w-8 rounded-lg" />
               ) : (
                 <Avatar className="h-8 w-8 rounded-lg grayscale">
                   <AvatarImage
@@ -63,12 +63,19 @@ export function NavUser() {
                   </AvatarFallback>
                 </Avatar>
               )}
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user?.name}</span>
-                <span className="text-muted-foreground truncate text-xs">
-                  {user?.email}
-                </span>
-              </div>
+              {isPending ? (
+                <div className="grid flex-1 gap-1 text-left text-sm leading-tight">
+                  <Skeleton className="h-4 w-12 rounded-lg" />
+                  <Skeleton className="h-4 w-25 rounded-lg" />
+                </div>
+              ) : (
+                <div className="grid flex-1 gap-1 text-left text-sm leading-tight">
+                  <span className="truncate font-medium">{user?.name}</span>
+                  <span className="text-muted-foreground truncate text-xs">
+                    {user?.email}
+                  </span>
+                </div>
+              )}
               <IconDotsVertical className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
