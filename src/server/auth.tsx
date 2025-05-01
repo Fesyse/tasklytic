@@ -14,7 +14,8 @@ export const auth = betterAuth({
     enabled: true,
     minPasswordLength: 8,
     requireEmailVerification: true,
-    autoSignIn: true
+    autoSignIn: true,
+    autoSignInAfterVerification: true
   },
   socialProviders: {
     google: {
@@ -45,6 +46,7 @@ export const auth = betterAuth({
   emailVerification: {
     expiresIn: 60 * 15,
     sendOnSignUp: true,
+    autoSignInAfterVerification: true,
     sendVerificationEmail: async ({ user, url }) => {
       const { error } = await resend.emails.send({
         from: siteConfig.emails.noreply,
