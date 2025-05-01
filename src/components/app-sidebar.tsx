@@ -26,6 +26,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from "@/components/ui/sidebar"
+import { siteConfig } from "@/lib/site-config"
 import { CalendarCheck, ListTodo } from "lucide-react"
 import Link from "next/link"
 
@@ -105,7 +106,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             >
               <Link href="/">
                 <CalendarCheck className="!size-5" />
-                <span className="text-base font-semibold">Froo</span>
+                <span className="text-base font-semibold">
+                  {siteConfig.name}
+                </span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

@@ -1,5 +1,6 @@
 "use client"
 import { Button } from "@/components/ui/button"
+import { siteConfig } from "@/lib/site-config"
 import { cn } from "@/lib/utils"
 import { Menu, X } from "lucide-react"
 import Link from "next/link"
@@ -13,7 +14,7 @@ const menuItems = [
   { name: "About", href: "#about" }
 ]
 
-export const HeroHeader = () => {
+export const Header = () => {
   const [menuState, setMenuState] = React.useState(false)
   const [isScrolled, setIsScrolled] = React.useState(false)
 
@@ -45,7 +46,7 @@ export const HeroHeader = () => {
                 className="flex items-center space-x-2"
               >
                 <Icons.logo className="text-primary" />
-                <span className="text-xl">Froo</span>
+                <span className="text-xl">{siteConfig.name}</span>
               </Link>
 
               <button

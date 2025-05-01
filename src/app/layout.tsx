@@ -3,13 +3,13 @@ import "@/styles/globals.css"
 import { type Metadata } from "next"
 import { Geist } from "next/font/google"
 
+import { siteConfig } from "@/lib/site-config"
 import { TRPCReactProvider } from "@/trpc/react"
 import { ThemeProvider } from "next-themes"
 
 export const metadata: Metadata = {
-  title: "froo",
-  description:
-    "Improve your discipline, improve your life. Froo helps you build the habits you need to succeed.",
+  title: siteConfig.name,
+  description: siteConfig.description,
   icons: [{ rel: "icon", url: "/favicon.ico" }]
 }
 
