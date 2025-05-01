@@ -128,13 +128,10 @@ export const Header = () => {
                     </Button>
                   </>
                 ) : (
-                  <Button
-                    asChild
-                    variant="outline"
-                    size="sm"
-                    className={cn(isScrolled && "lg:hidden")}
-                  >
-                    <Link href="/dashboard">Go to Dashboard</Link>
+                  <Button asChild variant="outline" size="sm">
+                    <Link href="/dashboard">
+                      {isScrolled ? "Dashboard" : "Go to Dashboard"}
+                    </Link>
                   </Button>
                 )}
               </div>

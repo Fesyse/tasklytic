@@ -101,9 +101,9 @@ export function HeroSection() {
                 </Link>
               </AnimatedGroup>
 
-              <h1 className="mt-8 text-6xl text-balance md:text-7xl lg:mt-16 xl:text-[5.25rem]">
+              <h1 className="mt-8 text-4xl text-balance md:text-7xl lg:mt-16 xl:text-[5.25rem]">
                 <TextEffect preset="fade-in-blur" speedSegment={0.3} as="span">
-                  Improve your discipline improve your life with
+                  Improve your discipline, improve your life with
                 </TextEffect>
                 <SparklesText
                   withFadeIn
@@ -113,7 +113,7 @@ export function HeroSection() {
                     speedSegment: 0.3
                   }}
                   text={siteConfig.name}
-                  className="ml-3 text-6xl text-balance md:text-7xl lg:mt-16 xl:text-[5.25rem]"
+                  className="ml-3 text-4xl text-balance md:text-7xl lg:mt-16 xl:text-[5.25rem]"
                 />
               </h1>
               <TextEffect
@@ -122,7 +122,7 @@ export function HeroSection() {
                 speedSegment={0.3}
                 delay={0.5}
                 as="p"
-                className="mx-auto mt-8 max-w-2xl text-lg text-balance"
+                className="mx-auto mt-8 max-w-2xl text-balance sm:text-lg"
               >
                 {siteConfig.secondDescription}
               </TextEffect>
