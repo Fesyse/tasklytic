@@ -31,6 +31,7 @@ import type { User } from "better-auth"
 import { UserIcon } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
+import { ModeToggle } from "./mode-toggle"
 
 export function NavUser() {
   const { data: session, isPending, error } = authClient.useSession()
@@ -72,6 +73,12 @@ export function NavUser() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
+              <DropdownMenuItem asChild>
+                <ModeToggle
+                  expanded
+                  className="hover:!bg-accent !bg-transparent !px-2"
+                />
+              </DropdownMenuItem>
               <DropdownMenuItem>
                 <IconUserCircle />
                 Account

@@ -19,6 +19,7 @@ type ModeToggleProps = {
 export function ModeToggle({
   iconSize = 16,
   expanded = false,
+  className,
   ...props
 }: ModeToggleProps) {
   const { setTheme } = useTheme()
@@ -29,10 +30,14 @@ export function ModeToggle({
         <Button
           variant="outline"
           size={expanded ? "default" : "icon"}
-          className={cn({
-            "flex h-auto w-full items-center justify-start gap-3 rounded-sm border-0 px-2 py-1.5":
-              expanded
-          })}
+          className={
+            expanded
+              ? cn(
+                  "flex h-auto w-full items-center justify-start gap-3 rounded-sm border-0 px-2 py-1.5",
+                  className
+                )
+              : className
+          }
         >
           <SunIcon
             width={iconSize}
