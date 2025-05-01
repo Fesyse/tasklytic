@@ -6,7 +6,7 @@ import {
   varchar
 } from "drizzle-orm/pg-core"
 
-export const createTable = pgTableCreator((name) => `froo_${name}`)
+export const createTable = pgTableCreator((name) => `tasklytic_${name}`)
 
 export const users = createTable("user", {
   id: varchar("id", { length: 36 }).primaryKey(),

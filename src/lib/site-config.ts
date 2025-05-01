@@ -1,11 +1,11 @@
 export const siteConfig = {
-  name: "Froo",
+  name: "Tasklytic",
   description:
-    "Improve your discipline, improve your life. Froo helps you build the habits you need to succeed.",
+    "Improve your discipline, improve your life. Tasklytic helps you build the habits you need to succeed.",
   secondDescription:
     "Develop ironclad self-discipline with our habit-tracking and goal-setting app. Break down your goals, track your progress, and stay motivated with personalized reminders and insights.",
   announcement: "We are in beta",
-  url: "https://froo.fesyse.site",
+  url: "https://tasklytic.fesyse.site",
   logo: "/logo.svg",
   links: {
     telegram: "https://t.me/fesyse",

@@ -1,1 +1,0 @@
-ALTER TABLE `froo_post` DROP INDEX `froo_post_id_unique`;

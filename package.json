@@ -1,5 +1,5 @@
 {
-  "name": "froo",
+  "name": "tasklytic",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -60,6 +60,7 @@
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.56.1",
     "recharts": "^2.15.3",
+    "resend": "^4.4.1",
     "server-only": "^0.0.1",
     "sonner": "^2.0.3",
     "superjson": "^2.2.1",

@@ -1,4 +1,4 @@
-import { SignInForm } from "@/components/sign-in-form"
+import { AuthForm } from "@/components/auth-form"
 
 export default async function SignUpPage() {
   return (
@@ -9,7 +9,7 @@ export default async function SignUpPage() {
           Enter your email below to create new account
         </p>
       </div>
-      <SignInForm type="sign-up" />
+      <AuthForm type="sign-up" />
     </>
   )
 }

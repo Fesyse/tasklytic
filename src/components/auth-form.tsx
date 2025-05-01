@@ -41,7 +41,7 @@ const signUpSchema = z
     }
   })
 
-export function SignInForm({
+export function AuthForm({
   className,
   type,
   ...props

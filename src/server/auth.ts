@@ -40,6 +40,7 @@ export const auth = betterAuth({
   plugins: [
     nextCookies(),
     emailOTP({
+      allowedAttempts: 5,
       async sendVerificationOTP({ email, otp, type }) {
         // Implement the sendVerificationOTP method to send the OTP to the user's email address
       }
