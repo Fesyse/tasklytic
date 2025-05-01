@@ -1,12 +1,12 @@
 import "@/styles/globals.css"
 
-import { type Metadata } from "next"
-import { Geist } from "next/font/google"
-
 import { Toaster } from "@/components/ui/sonner"
 import { siteConfig } from "@/lib/site-config"
 import { TRPCReactProvider } from "@/trpc/react"
+import { SpeedInsights } from "@vercel/speed-insights/next"
+import { type Metadata } from "next"
 import { ThemeProvider } from "next-themes"
+import { Geist } from "next/font/google"
 
 export const metadata: Metadata = {
   title: siteConfig.name,
@@ -37,6 +37,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <Toaster />
+            <SpeedInsights />
             {children}
           </ThemeProvider>
         </TRPCReactProvider>
