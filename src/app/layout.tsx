@@ -1,5 +1,6 @@
 import "@/styles/globals.css"
 
+import { PostHogProvider } from "@/components/posthog-provider"
 import { Toaster } from "@/components/ui/sonner"
 import { siteConfig } from "@/lib/site-config"
 import { TRPCReactProvider } from "@/trpc/react"
@@ -36,9 +37,11 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <Toaster />
+            <PostHogProvider>
+              <Toaster />
+              {children}
+            </PostHogProvider>
             <SpeedInsights />
-            {children}
           </ThemeProvider>
         </TRPCReactProvider>
       </body>
