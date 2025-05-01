@@ -2,6 +2,7 @@ import { HeroHeader } from "@/components/home-header"
 import { AnimatedGroup } from "@/components/ui/animated-group"
 import { Button } from "@/components/ui/button"
 import { TextEffect } from "@/components/ui/text-effect"
+import { siteConfig } from "@/lib/site-config"
 import { ArrowRight, ChevronRight } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -70,7 +71,7 @@ export function HeroSection() {
               className="absolute inset-0 -z-20"
             >
               <Image
-                src="https://res.cloudinary.com/dg4jhba5c/image/upload/v1741605538/night-background_ni3vqb.jpg"
+                src="https://ik.imagekit.io/lrigu76hy/tailark/night-background.jpg?updatedAt=1745733451120"
                 alt="background"
                 className="absolute inset-x-0 top-56 -z-20 hidden lg:top-32 dark:block"
                 width="3276"
@@ -86,7 +87,7 @@ export function HeroSection() {
                     className="hover:bg-background dark:hover:border-t-border bg-muted group mx-auto flex w-fit items-center gap-4 rounded-full border p-1 pl-4 shadow-md shadow-zinc-950/5 transition-colors duration-300 dark:border-t-white/5 dark:shadow-zinc-950"
                   >
                     <span className="text-foreground text-sm">
-                      Introducing Support for AI Models
+                      {siteConfig.announcement}
                     </span>
                     <span className="dark:border-background block h-4 w-0.5 border-l bg-white dark:bg-zinc-700"></span>
 
@@ -109,11 +110,11 @@ export function HeroSection() {
                     speedSegment={0.3}
                     as="span"
                   >
-                    Improve your discipline improve your life
+                    Improve your discipline improve your life with
                   </TextEffect>
                   <SparklesText
                     withFadeIn
-                    text="with Froo"
+                    text="Froo"
                     className="ml-3 text-6xl text-balance md:text-7xl lg:mt-16 xl:text-[5.25rem]"
                   />
                 </h1>
@@ -125,8 +126,7 @@ export function HeroSection() {
                   as="p"
                   className="mx-auto mt-8 max-w-2xl text-lg text-balance"
                 >
-                  Highly customizable components for building modern websites
-                  and applications that look and feel the way you mean it.
+                  {siteConfig.secondDescription}
                 </TextEffect>
 
                 <AnimatedGroup
@@ -152,8 +152,8 @@ export function HeroSection() {
                       size="lg"
                       className="rounded-xl px-5 text-base"
                     >
-                      <Link href="#link">
-                        <span className="text-nowrap">Start Building</span>
+                      <Link href="/auth/sign-up">
+                        <span className="text-nowrap">Start for free</span>
                       </Link>
                     </Button>
                   </div>
@@ -164,8 +164,8 @@ export function HeroSection() {
                     variant="ghost"
                     className="h-10.5 rounded-xl px-5"
                   >
-                    <Link href="#link">
-                      <span className="text-nowrap">Request a demo</span>
+                    <Link href="/pricing">
+                      <span className="text-nowrap">Pricing</span>
                     </Link>
                   </Button>
                 </AnimatedGroup>
