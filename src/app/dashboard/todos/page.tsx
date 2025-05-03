@@ -5,6 +5,7 @@ import { TodoKanban } from "@/components/todo-kanban"
 import { TodoList } from "@/components/todo-list"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { DraggedTodoProvider } from "@/hooks/DraggedTodoProvider"
 import type { ViewMode } from "@/lib/types"
 import type { SubTodo, TodoStatus, TodoWithSubTodos } from "@/server/db/schema"
 import { api } from "@/trpc/react"
@@ -222,13 +223,25 @@ export default function TodosPage() {
     })
   }
 
-  const handleStatusChange = (id: string, status: TodoStatus) => {
-    // Apply optimistic update
-    addOptimisticTodos({ action: "update", data: { id, status } })
+  const handleStatusChange = (
+    id: string,
+    status: TodoStatus,
+    skipOptimisticUpdate = false
+  ) => {
+    // Skip optimistic update if this change is coming from the kanban drag and drop
+    if (!skipOptimisticUpdate) {
+      addOptimisticTodos({ action: "update", data: { id, status } })
+    }
 
     // Perform the actual mutation inside a transition
     startTransition(async () => {
-      await updateTodo.mutateAsync({ id, status })
+      try {
+        await updateTodo.mutateAsync({ id, status })
+      } catch (error) {
+        console.error("Failed to update todo status:", error)
+        // If there was an error, refetch to get the correct state
+        refetch()
+      }
     })
   }
 
@@ -377,14 +390,18 @@ export default function TodosPage() {
                 }}
                 transition={{ duration: 0.3 }}
               >
-                <TodoKanban
-                  todos={displayTodos}
-                  onDelete={handleDelete}
-                  onStatusChange={handleStatusChange}
-                  onAddSubTodo={handleAddSubTodo}
-                  onUpdateSubTodo={handleUpdateSubTodo}
-                  onDeleteSubTodo={handleDeleteSubTodo}
-                />
+                <DraggedTodoProvider>
+                  <TodoKanban
+                    todos={displayTodos}
+                    onDelete={handleDelete}
+                    onStatusChange={(id, status) =>
+                      handleStatusChange(id, status, true)
+                    }
+                    onAddSubTodo={handleAddSubTodo}
+                    onUpdateSubTodo={handleUpdateSubTodo}
+                    onDeleteSubTodo={handleDeleteSubTodo}
+                  />
+                </DraggedTodoProvider>
               </motion.div>
             )}
           </AnimatePresence>

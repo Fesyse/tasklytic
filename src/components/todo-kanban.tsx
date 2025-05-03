@@ -1,4 +1,5 @@
 import { TodoItem } from "@/components/todo-item"
+import { useDraggedTodo } from "@/hooks/useDraggedTodo"
 import { cn } from "@/lib/utils"
 import type { TodoStatus, TodoWithSubTodos } from "@/server/db/schema"
 import type { DragEndEvent, DragOverEvent, DragStartEvent } from "@dnd-kit/core"
@@ -11,8 +12,23 @@ import {
   useSensors
 } from "@dnd-kit/core"
 import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable"
-import { useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { createPortal } from "react-dom"
+
+// Simple throttle function
+function throttle<T extends (...args: any[]) => any>(
+  func: T,
+  delay: number
+): (...args: Parameters<T>) => void {
+  let lastCall = 0
+  return (...args: Parameters<T>) => {
+    const now = Date.now()
+    if (now - lastCall >= delay) {
+      lastCall = now
+      func(...args)
+    }
+  }
+}
 
 type KanbanColumnProps = {
   id: TodoStatus
@@ -102,6 +118,10 @@ type TodoKanbanProps = {
   onDeleteSubTodo?: (id: string) => void
 }
 
+interface TodoWithDisplayStatus extends TodoWithSubTodos {
+  _displayStatus?: TodoStatus
+}
+
 export function TodoKanban({
   todos,
   onDelete,
@@ -111,6 +131,33 @@ export function TodoKanban({
   onDeleteSubTodo
 }: TodoKanbanProps) {
   const [activeTodo, setActiveTodo] = useState<TodoWithSubTodos | null>(null)
+  const { startDrag, updateDragStatus, endDrag, draggedTodo } = useDraggedTodo()
+
+  // Create a modified todos array with display status
+  const [displayTodos, setDisplayTodos] = useState<TodoWithDisplayStatus[]>([])
+
+  // Update display todos when real todos or dragged state changes
+  useEffect(() => {
+    setDisplayTodos(
+      todos.map((todo) => {
+        if (draggedTodo.id === todo.id && draggedTodo.currentStatus) {
+          return {
+            ...todo,
+            _displayStatus: draggedTodo.currentStatus
+          }
+        }
+        return todo
+      })
+    )
+  }, [todos, draggedTodo])
+
+  // Create a stable throttled update function reference
+  const throttledUpdate = useCallback(
+    throttle((status: TodoStatus) => {
+      updateDragStatus(status)
+    }, 100),
+    [updateDragStatus]
+  )
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -120,66 +167,95 @@ export function TodoKanban({
     })
   )
 
-  const plannedTodos = todos.filter((todo) => todo.status === "planned")
-  const inProgressTodos = todos.filter((todo) => todo.status === "in-progress")
-  const completedTodos = todos.filter((todo) => todo.status === "completed")
+  // Filter todos by their current status or by their temporary drag status
+  const getFilteredTodos = useCallback(
+    (status: TodoStatus) => {
+      return displayTodos.filter((todo) => {
+        const effectiveStatus = todo._displayStatus || todo.status
+        return effectiveStatus === status
+      })
+    },
+    [displayTodos]
+  )
+
+  const plannedTodos = getFilteredTodos("planned")
+  const inProgressTodos = getFilteredTodos("in-progress")
+  const completedTodos = getFilteredTodos("completed")
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event
     const draggedTodo = todos.find((todo) => todo.id === active.id)
+
     if (draggedTodo) {
       setActiveTodo(draggedTodo)
+      // Initialize drag tracking with the current todo and its status
+      startDrag(draggedTodo.id, draggedTodo.status)
     }
   }
 
-  const handleDragOver = (event: DragOverEvent) => {
-    const { active, over } = event
+  const handleDragOver = useCallback(
+    (event: DragOverEvent) => {
+      const { active, over } = event
 
-    if (!over) return
+      if (!over) return
 
-    const activeId = active.id as string
-    const overId = over.id as string
+      const activeId = active.id as string
+      const overId = over.id as string
 
-    const activeTodo = todos.find((todo) => todo.id === activeId)
-    if (!activeTodo) return
+      const activeTodo = todos.find((todo) => todo.id === activeId)
+      if (!activeTodo) return
 
-    const isColumn = over.data.current?.type === "column"
+      const isColumn = over.data.current?.type === "column"
 
-    if (isColumn) {
-      const columnStatus = over.data.current?.status as TodoStatus
-      if (activeTodo.status !== columnStatus) {
-        onStatusChange(activeId, columnStatus)
+      if (isColumn) {
+        const columnStatus = over.data.current?.status as TodoStatus
+        // Use the throttled update function
+        throttledUpdate(columnStatus)
+        return
       }
-      return
-    }
 
-    const overTodo = todos.find((todo) => todo.id === overId)
-    if (overTodo && activeTodo.status !== overTodo.status) {
-      onStatusChange(activeId, overTodo.status)
-    }
-  }
+      const overTodo = todos.find((todo) => todo.id === overId)
+      if (overTodo) {
+        // Use the throttled update function
+        throttledUpdate(overTodo.status)
+      }
+    },
+    [todos, throttledUpdate]
+  )
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
 
     if (!over) {
       setActiveTodo(null)
+      // Reset drag state without making any changes
+      endDrag()
       return
     }
 
     const activeId = active.id as string
     const overId = over.id as string
 
+    // Determine final status based on drop target
+    let finalStatus: TodoStatus | null = null
+
     // Check if dropped on a column
     if (over.data.current?.type === "column") {
-      const columnStatus = over.data.current.status as TodoStatus
-      onStatusChange(activeId, columnStatus)
+      finalStatus = over.data.current.status as TodoStatus
     } else {
       // If dropped on another todo, find that todo and use its status
       const overTodo = todos.find((todo) => todo.id === overId)
       if (overTodo) {
-        onStatusChange(activeId, overTodo.status)
+        finalStatus = overTodo.status
       }
+    }
+
+    // Get the drag state and finalize the operation
+    const dragResult = endDrag()
+
+    // Only call the status change if there was a real change
+    if (dragResult && dragResult.id && finalStatus) {
+      onStatusChange(dragResult.id, finalStatus)
     }
 
     setActiveTodo(null)

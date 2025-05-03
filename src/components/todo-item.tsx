@@ -25,8 +25,14 @@ import {
 } from "lucide-react"
 import { useRef, useState } from "react"
 
+// Add a type for todos with display status
+interface TodoWithDisplayStatus extends TodoWithSubTodos {
+  _displayStatus?: TodoStatus
+}
+
+// Update the props type
 type TodoItemProps = {
-  todo: TodoWithSubTodos
+  todo: TodoWithSubTodos | TodoWithDisplayStatus
   onDelete: (id: string) => void
   onStatusChange: (id: string, status: TodoStatus) => void
   onAddSubTodo?: (todoId: string, title: string, status?: TodoStatus) => void
@@ -90,6 +96,11 @@ export function TodoItem({
     "in-progress": "bg-amber-100 text-amber-800",
     completed: "bg-green-100 text-green-800"
   }
+
+  // Get effective status for display (supports drag operations)
+  const effectiveStatus = (
+    "_displayStatus" in todo ? todo._displayStatus : todo.status
+  ) as TodoStatus
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat("en-US", {
@@ -179,9 +190,9 @@ export function TodoItem({
                 <ListTodoIcon className="size-7" />
               )}
               <h3 className="font-semibold">{todo.title}</h3>
-              <Badge className={cn(statusColors[todo.status])}>
-                {todo.status.charAt(0).toUpperCase() +
-                  todo.status.slice(1).replace("-", " ")}
+              <Badge className={cn(statusColors[effectiveStatus])}>
+                {effectiveStatus.charAt(0).toUpperCase() +
+                  effectiveStatus.slice(1).replace("-", " ")}
               </Badge>
             </div>
 
@@ -202,19 +213,19 @@ export function TodoItem({
           <DropdownMenuContent align="end">
             <DropdownMenuItem
               onClick={() => onStatusChange(todo.id, "planned")}
-              disabled={todo.status === "planned"}
+              disabled={effectiveStatus === "planned"}
             >
               Set to Planned
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => onStatusChange(todo.id, "in-progress")}
-              disabled={todo.status === "in-progress"}
+              disabled={effectiveStatus === "in-progress"}
             >
               Set to In Progress
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => onStatusChange(todo.id, "completed")}
-              disabled={todo.status === "completed"}
+              disabled={effectiveStatus === "completed"}
             >
               Set to Completed
             </DropdownMenuItem>
