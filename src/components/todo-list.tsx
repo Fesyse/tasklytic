@@ -10,7 +10,7 @@ import {
 import type { Todo } from "@/lib/types"
 import { useState } from "react"
 
-interface TodoListProps {
+type TodoListProps = {
   todos: Todo[]
   onDelete: (id: string) => void
   onStatusChange: (id: string, status: Todo["status"]) => void

@@ -20,7 +20,7 @@ import {
 } from "lucide-react"
 import { useState } from "react"
 
-interface TodoItemProps {
+type TodoItemProps = {
   todo: Todo
   onDelete: (id: string) => void
   onStatusChange: (id: string, status: Todo["status"]) => void

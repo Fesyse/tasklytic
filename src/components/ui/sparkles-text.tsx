@@ -11,7 +11,7 @@ import {
 import { cn } from "@/lib/utils"
 import { TextEffect, type TextEffectProps } from "./text-effect"
 
-interface Sparkle {
+type Sparkle = {
   id: string
   x: string
   y: string
@@ -21,7 +21,7 @@ interface Sparkle {
   lifespan: number
 }
 
-interface SparklesTextProps {
+type SparklesTextProps = {
   /**
    * @default false
    * @type boolean

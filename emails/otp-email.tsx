@@ -13,7 +13,7 @@ import {
 } from "@react-email/components"
 import { Support } from "./components/support"
 
-interface OTPEmailProps {
+type OTPEmailProps = {
   otp?: string
   userName?: string
   expiryMinutes?: number

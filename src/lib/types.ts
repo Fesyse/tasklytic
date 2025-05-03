@@ -1,13 +1,13 @@
 export type TodoStatus = "planned" | "in-progress" | "completed"
 
-export interface SubTodo {
+export type SubTodo = {
   id: string
   title: string
   status: TodoStatus
   createdAt: Date
 }
 
-export interface Todo {
+export type Todo = {
   id: string
   title: string
   emoji?: string

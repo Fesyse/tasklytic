@@ -6,6 +6,7 @@ import {
   DndContext,
   DragOverlay,
   PointerSensor,
+  useDroppable,
   useSensor,
   useSensors
 } from "@dnd-kit/core"
@@ -13,7 +14,7 @@ import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable"
 import { useState } from "react"
 import { createPortal } from "react-dom"
 
-interface KanbanColumnProps {
+type KanbanColumnProps = {
   id: TodoStatus
   title: string
   todos: Todo[]
@@ -30,10 +31,20 @@ function KanbanColumn({
   onStatusChange,
   className
 }: KanbanColumnProps) {
+  const { setNodeRef, isOver } = useDroppable({
+    id: id,
+    data: {
+      type: "column",
+      status: id
+    }
+  })
+
   return (
     <div
+      ref={setNodeRef}
       className={cn(
         "bg-muted/20 flex h-full flex-col rounded-lg border p-4",
+        isOver && "bg-muted/40 border-dashed", // Visual feedback when dragging over
         className
       )}
     >
@@ -67,7 +78,7 @@ function KanbanColumn({
   )
 }
 
-interface TodoKanbanProps {
+type TodoKanbanProps = {
   todos: Todo[]
   onDelete: (id: string) => void
   onStatusChange: (id: string, status: Todo["status"]) => void
@@ -103,40 +114,33 @@ export function TodoKanban({
   const handleDragOver = (event: DragOverEvent) => {
     const { active, over } = event
 
-    // If not dropping over anything or the same status, do nothing
     if (!over) return
 
     const activeId = active.id as string
     const overId = over.id as string
 
-    // Find the active todo being dragged
     const activeTodo = todos.find((todo) => todo.id === activeId)
     if (!activeTodo) return
 
-    // Handle dropping onto another todo
-    const overTodo = todos.find((todo) => todo.id === overId)
-    if (overTodo) {
-      // If dragging onto another todo, use that todo's status
-      if (activeTodo.status !== overTodo.status) {
-        onStatusChange(activeId, overTodo.status)
+    const isColumn = over.data.current?.type === "column"
+
+    if (isColumn) {
+      const columnStatus = over.data.current?.status as TodoStatus
+      if (activeTodo.status !== columnStatus) {
+        onStatusChange(activeId, columnStatus)
       }
       return
     }
 
-    // Handle dropping onto a column
-    const overColumn = over.data.current?.columnId || over.id
-    if (typeof overColumn === "string" && overColumn !== activeTodo.status) {
-      // Valid column statuses are "planned", "in-progress", or "completed"
-      if (["planned", "in-progress", "completed"].includes(overColumn)) {
-        onStatusChange(activeId, overColumn as TodoStatus)
-      }
+    const overTodo = todos.find((todo) => todo.id === overId)
+    if (overTodo && activeTodo.status !== overTodo.status) {
+      onStatusChange(activeId, overTodo.status)
     }
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
 
-    // If not dropping over anything, do nothing
     if (!over) {
       setActiveTodo(null)
       return
@@ -145,31 +149,20 @@ export function TodoKanban({
     const activeId = active.id as string
     const overId = over.id as string
 
-    // Find the column we're dropping onto (if applicable)
-    if (
-      overId === "planned" ||
-      overId === "in-progress" ||
-      overId === "completed"
-    ) {
-      console.log("active", active)
-      console.log("over", over)
-      onStatusChange(activeId, overId as TodoStatus)
-    }
+    console.log("DragEnd - Active ID:", activeId, "Over ID:", overId)
+    console.log("Over data:", over.data.current)
 
-    // Find the element we're dropping onto by looking at its data attributes
-    if (event.activatorEvent instanceof MouseEvent) {
-      const overElement = document.elementFromPoint(
-        event.activatorEvent.clientX,
-        event.activatorEvent.clientY
-      )
-      const columnEl = overElement?.closest("[data-column-id]")
-      const columnId = columnEl?.getAttribute("data-column-id")
-
-      if (
-        columnId &&
-        ["planned", "in-progress", "completed"].includes(columnId)
-      ) {
-        onStatusChange(activeId, columnId as TodoStatus)
+    // Check if dropped on a column
+    if (over.data.current?.type === "column") {
+      const columnStatus = over.data.current.status as TodoStatus
+      console.log("Dropping onto column:", columnStatus)
+      onStatusChange(activeId, columnStatus)
+    } else {
+      // If dropped on another todo, find that todo and use its status
+      const overTodo = todos.find((todo) => todo.id === overId)
+      if (overTodo) {
+        console.log("Dropping onto todo with status:", overTodo.status)
+        onStatusChange(activeId, overTodo.status)
       }
     }
 

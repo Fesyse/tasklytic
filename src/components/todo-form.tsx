@@ -36,12 +36,12 @@ const todoFormSchema = z.object({
 
 type TodoFormValues = z.infer<typeof todoFormSchema>
 
-interface TodoFormProps {
+type TodoFormProps = {
   onSave: (todo: Todo) => void
   onCancel: () => void
 }
 
-interface SubTodoInput {
+type SubTodoInput = {
   title: string
   status: TodoStatus
 }
