@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { Todo, ViewMode } from "@/lib/types"
 import { LayoutGrid, ListFilter, Plus } from "lucide-react"
+import { AnimatePresence, motion } from "motion/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useState } from "react"
 import { z } from "zod"
@@ -41,7 +42,7 @@ export default function TodosPage() {
   }
 
   return (
-    <div className="flex flex-1 flex-col space-y-6 p-8">
+    <div className="flex flex-1 flex-col gap-6 p-8">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Todos</h1>
@@ -87,19 +88,39 @@ export default function TodosPage() {
         </div>
       )}
 
-      {viewMode === "list" ? (
-        <TodoList
-          todos={todos}
-          onDelete={handleDelete}
-          onStatusChange={handleStatusChange}
-        />
-      ) : (
-        <TodoKanban
-          todos={todos}
-          onDelete={handleDelete}
-          onStatusChange={handleStatusChange}
-        />
-      )}
+      <div className="relative">
+        <AnimatePresence>
+          {viewMode === "list" ? (
+            <motion.div
+              key="list"
+              initial={{ opacity: 0, filter: "blur(10px)" }}
+              animate={{ opacity: 1, filter: "blur(0px)" }}
+              exit={{ opacity: 0, filter: "blur(10px)", position: "absolute" }}
+              transition={{ duration: 0.3 }}
+            >
+              <TodoList
+                todos={todos}
+                onDelete={handleDelete}
+                onStatusChange={handleStatusChange}
+              />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="kanban"
+              initial={{ opacity: 0, filter: "blur(10px)" }}
+              animate={{ opacity: 1, filter: "blur(0px)" }}
+              exit={{ opacity: 0, filter: "blur(10px)", position: "absolute" }}
+              transition={{ duration: 0.3 }}
+            >
+              <TodoKanban
+                todos={todos}
+                onDelete={handleDelete}
+                onStatusChange={handleStatusChange}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   )
 }

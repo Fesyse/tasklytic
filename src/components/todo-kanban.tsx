@@ -183,7 +183,7 @@ export function TodoKanban({
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div className="grid h-[calc(100vh-12rem)] grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-4">
         <KanbanColumn
           id="planned"
           title="Planned"
