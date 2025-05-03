@@ -1,6 +1,7 @@
 "use client"
 
 import {
+  IconCalendar,
   IconChartBar,
   IconDashboard,
   IconDatabase,
@@ -41,6 +42,11 @@ const data = {
       title: "Todos",
       url: "/dashboard/todos",
       icon: ListTodo
+    },
+    {
+      title: "Calendar",
+      url: "/dashboard/calendar",
+      icon: IconCalendar
     },
     {
       title: "Analytics",

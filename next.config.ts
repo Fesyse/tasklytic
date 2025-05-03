@@ -6,6 +6,13 @@ import type { NextConfig } from "next"
 import "./src/env"
 
 const config: NextConfig = {
+  redirects: async () => [
+    {
+      source: "/dashboard/calendar",
+      destination: "/dashboard/calendar/month-view",
+      permanent: true
+    }
+  ],
   images: {
     remotePatterns: [
       {
