@@ -1,6 +1,6 @@
 import { TodoItem } from "@/components/todo-item"
 import { cn } from "@/lib/utils"
-import type { Todo, TodoStatus, TodoWithSubTodos } from "@/server/db/schema"
+import type { TodoStatus, TodoWithSubTodos } from "@/server/db/schema"
 import type { DragEndEvent, DragOverEvent, DragStartEvent } from "@dnd-kit/core"
 import {
   DndContext,
@@ -19,7 +19,13 @@ type KanbanColumnProps = {
   title: string
   todos: TodoWithSubTodos[]
   onDelete: (id: string) => void
-  onStatusChange: (id: string, status: Todo["status"]) => void
+  onStatusChange: (id: string, status: TodoStatus) => void
+  onAddSubTodo?: (todoId: string, title: string, status?: TodoStatus) => void
+  onUpdateSubTodo?: (
+    id: string,
+    updates: { title?: string; status?: TodoStatus }
+  ) => void
+  onDeleteSubTodo?: (id: string) => void
   className?: string
 }
 
@@ -29,6 +35,9 @@ function KanbanColumn({
   todos,
   onDelete,
   onStatusChange,
+  onAddSubTodo,
+  onUpdateSubTodo,
+  onDeleteSubTodo,
   className
 }: KanbanColumnProps) {
   const { setNodeRef, isOver } = useDroppable({
@@ -64,6 +73,9 @@ function KanbanColumn({
               todo={todo}
               onDelete={onDelete}
               onStatusChange={onStatusChange}
+              onAddSubTodo={onAddSubTodo}
+              onUpdateSubTodo={onUpdateSubTodo}
+              onDeleteSubTodo={onDeleteSubTodo}
               isDraggable
             />
           ))}
@@ -81,13 +93,22 @@ function KanbanColumn({
 type TodoKanbanProps = {
   todos: TodoWithSubTodos[]
   onDelete: (id: string) => void
-  onStatusChange: (id: string, status: Todo["status"]) => void
+  onStatusChange: (id: string, status: TodoStatus) => void
+  onAddSubTodo?: (todoId: string, title: string, status?: TodoStatus) => void
+  onUpdateSubTodo?: (
+    id: string,
+    updates: { title?: string; status?: TodoStatus }
+  ) => void
+  onDeleteSubTodo?: (id: string) => void
 }
 
 export function TodoKanban({
   todos,
   onDelete,
-  onStatusChange
+  onStatusChange,
+  onAddSubTodo,
+  onUpdateSubTodo,
+  onDeleteSubTodo
 }: TodoKanbanProps) {
   const [activeTodo, setActiveTodo] = useState<TodoWithSubTodos | null>(null)
 
@@ -149,19 +170,14 @@ export function TodoKanban({
     const activeId = active.id as string
     const overId = over.id as string
 
-    console.log("DragEnd - Active ID:", activeId, "Over ID:", overId)
-    console.log("Over data:", over.data.current)
-
     // Check if dropped on a column
     if (over.data.current?.type === "column") {
       const columnStatus = over.data.current.status as TodoStatus
-      console.log("Dropping onto column:", columnStatus)
       onStatusChange(activeId, columnStatus)
     } else {
       // If dropped on another todo, find that todo and use its status
       const overTodo = todos.find((todo) => todo.id === overId)
       if (overTodo) {
-        console.log("Dropping onto todo with status:", overTodo.status)
         onStatusChange(activeId, overTodo.status)
       }
     }
@@ -183,6 +199,9 @@ export function TodoKanban({
           todos={plannedTodos}
           onDelete={onDelete}
           onStatusChange={onStatusChange}
+          onAddSubTodo={onAddSubTodo}
+          onUpdateSubTodo={onUpdateSubTodo}
+          onDeleteSubTodo={onDeleteSubTodo}
         />
         <KanbanColumn
           id="in-progress"
@@ -190,6 +209,9 @@ export function TodoKanban({
           todos={inProgressTodos}
           onDelete={onDelete}
           onStatusChange={onStatusChange}
+          onAddSubTodo={onAddSubTodo}
+          onUpdateSubTodo={onUpdateSubTodo}
+          onDeleteSubTodo={onDeleteSubTodo}
         />
         <KanbanColumn
           id="completed"
@@ -197,6 +219,9 @@ export function TodoKanban({
           todos={completedTodos}
           onDelete={onDelete}
           onStatusChange={onStatusChange}
+          onAddSubTodo={onAddSubTodo}
+          onUpdateSubTodo={onUpdateSubTodo}
+          onDeleteSubTodo={onDeleteSubTodo}
         />
       </div>
 
@@ -209,6 +234,9 @@ export function TodoKanban({
                   todo={activeTodo}
                   onDelete={onDelete}
                   onStatusChange={onStatusChange}
+                  onAddSubTodo={onAddSubTodo}
+                  onUpdateSubTodo={onUpdateSubTodo}
+                  onDeleteSubTodo={onDeleteSubTodo}
                   isDraggable={false}
                 />
               </div>

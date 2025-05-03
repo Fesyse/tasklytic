@@ -5,26 +5,36 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
+import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
-import type { SubTodo, Todo, TodoWithSubTodos } from "@/server/db/schema"
+import type { SubTodo, TodoStatus, TodoWithSubTodos } from "@/server/db/schema"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import {
   ChevronDown,
   ChevronRight,
   GripVertical,
+  ListPlus,
   ListTodoIcon,
   MoreHorizontal,
+  PencilIcon,
   Trash
 } from "lucide-react"
-import { useState } from "react"
+import { useRef, useState } from "react"
 
 type TodoItemProps = {
   todo: TodoWithSubTodos
   onDelete: (id: string) => void
-  onStatusChange: (id: string, status: Todo["status"]) => void
+  onStatusChange: (id: string, status: TodoStatus) => void
+  onAddSubTodo?: (todoId: string, title: string, status?: TodoStatus) => void
+  onUpdateSubTodo?: (
+    id: string,
+    updates: { title?: string; status?: TodoStatus }
+  ) => void
+  onDeleteSubTodo?: (id: string) => void
   isDraggable?: boolean
 }
 
@@ -32,9 +42,19 @@ export function TodoItem({
   todo,
   onDelete,
   onStatusChange,
+  onAddSubTodo,
+  onUpdateSubTodo,
+  onDeleteSubTodo,
   isDraggable = false
 }: TodoItemProps) {
   const [expanded, setExpanded] = useState(false)
+  const [isAddingSubTodo, setIsAddingSubTodo] = useState(false)
+  const [newSubTodoTitle, setNewSubTodoTitle] = useState("")
+  const [editingSubTodoId, setEditingSubTodoId] = useState<string | null>(null)
+  const [editingSubTodoTitle, setEditingSubTodoTitle] = useState("")
+
+  const newSubTodoInputRef = useRef<HTMLInputElement>(null)
+  const editSubTodoInputRef = useRef<HTMLInputElement>(null)
 
   // Set up sortable functionality if this item is draggable
   const {
@@ -77,6 +97,44 @@ export function TodoItem({
       day: "numeric",
       year: "numeric"
     }).format(new Date(date))
+  }
+
+  const handleAddSubTodoClick = () => {
+    setIsAddingSubTodo(true)
+    setExpanded(true)
+    setTimeout(() => {
+      newSubTodoInputRef.current?.focus()
+    }, 0)
+  }
+
+  const handleAddSubTodoSubmit = () => {
+    if (newSubTodoTitle.trim() && onAddSubTodo) {
+      onAddSubTodo(todo.id, newSubTodoTitle.trim(), "planned")
+      setNewSubTodoTitle("")
+      setIsAddingSubTodo(false)
+    }
+  }
+
+  const handleSubTodoEditClick = (subTodo: SubTodo) => {
+    setEditingSubTodoId(subTodo.id)
+    setEditingSubTodoTitle(subTodo.title)
+    setTimeout(() => {
+      editSubTodoInputRef.current?.focus()
+    }, 0)
+  }
+
+  const handleSubTodoEditSubmit = () => {
+    if (editingSubTodoId && editingSubTodoTitle.trim() && onUpdateSubTodo) {
+      onUpdateSubTodo(editingSubTodoId, { title: editingSubTodoTitle.trim() })
+      setEditingSubTodoId(null)
+      setEditingSubTodoTitle("")
+    }
+  }
+
+  const handleSubTodoStatusChange = (subTodoId: string, status: TodoStatus) => {
+    if (onUpdateSubTodo) {
+      onUpdateSubTodo(subTodoId, { status })
+    }
   }
 
   return (
@@ -160,6 +218,18 @@ export function TodoItem({
             >
               Set to Completed
             </DropdownMenuItem>
+
+            {onAddSubTodo && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleAddSubTodoClick}>
+                  <ListPlus className="mr-2 h-4 w-4" />
+                  Add Sub-task
+                </DropdownMenuItem>
+              </>
+            )}
+
+            <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => onDelete(todo.id)}
               className="text-red-600 focus:text-red-600"
@@ -171,22 +241,160 @@ export function TodoItem({
         </DropdownMenu>
       </div>
 
-      {expanded && todo.subTodos.length > 0 && (
+      {expanded && (
         <div className="mt-3 ml-7 border-l-2 pl-4">
-          <h4 className="mb-2 text-sm font-medium">Sub-tasks</h4>
-          <ul className="space-y-2">
-            {todo.subTodos.map((subTodo: SubTodo) => (
-              <li key={subTodo.id} className="flex items-center gap-2 text-sm">
-                <Badge
-                  className={cn(
-                    "h-2 w-2 rounded-full p-0",
-                    statusColors[subTodo.status]
-                  )}
+          {todo.subTodos.length > 0 && (
+            <>
+              <h4 className="mb-2 text-sm font-medium">Sub-tasks</h4>
+              <ul className="space-y-2">
+                {todo.subTodos.map((subTodo: SubTodo) => (
+                  <li
+                    key={subTodo.id}
+                    className="flex items-center justify-between gap-2 text-sm"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Badge
+                        className={cn(
+                          "h-2 w-2 rounded-full p-0",
+                          statusColors[subTodo.status]
+                        )}
+                      />
+
+                      {editingSubTodoId === subTodo.id ? (
+                        <form
+                          onSubmit={(e) => {
+                            e.preventDefault()
+                            handleSubTodoEditSubmit()
+                          }}
+                          className="flex-1"
+                        >
+                          <Input
+                            ref={editSubTodoInputRef}
+                            value={editingSubTodoTitle}
+                            onChange={(e) =>
+                              setEditingSubTodoTitle(e.target.value)
+                            }
+                            onBlur={handleSubTodoEditSubmit}
+                            className="h-6 py-1 text-sm"
+                          />
+                        </form>
+                      ) : (
+                        <span>{subTodo.title}</span>
+                      )}
+                    </div>
+
+                    {onUpdateSubTodo &&
+                      onDeleteSubTodo &&
+                      editingSubTodoId !== subTodo.id && (
+                        <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100 hover:opacity-100">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-6 w-6"
+                              >
+                                <MoreHorizontal className="h-3 w-3" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  handleSubTodoStatusChange(
+                                    subTodo.id,
+                                    "planned"
+                                  )
+                                }
+                                disabled={subTodo.status === "planned"}
+                              >
+                                Set to Planned
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  handleSubTodoStatusChange(
+                                    subTodo.id,
+                                    "in-progress"
+                                  )
+                                }
+                                disabled={subTodo.status === "in-progress"}
+                              >
+                                Set to In Progress
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  handleSubTodoStatusChange(
+                                    subTodo.id,
+                                    "completed"
+                                  )
+                                }
+                                disabled={subTodo.status === "completed"}
+                              >
+                                Set to Completed
+                              </DropdownMenuItem>
+
+                              <DropdownMenuSeparator />
+
+                              <DropdownMenuItem
+                                onClick={() => handleSubTodoEditClick(subTodo)}
+                              >
+                                <PencilIcon className="mr-2 h-3 w-3" />
+                                Edit
+                              </DropdownMenuItem>
+
+                              <DropdownMenuItem
+                                onClick={() => onDeleteSubTodo(subTodo.id)}
+                                className="text-red-600 focus:text-red-600"
+                              >
+                                <Trash className="mr-2 h-3 w-3" />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      )}
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+
+          {isAddingSubTodo && onAddSubTodo && (
+            <div className="mt-3">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault()
+                  handleAddSubTodoSubmit()
+                }}
+                className="flex gap-2"
+              >
+                <Input
+                  ref={newSubTodoInputRef}
+                  value={newSubTodoTitle}
+                  onChange={(e) => setNewSubTodoTitle(e.target.value)}
+                  placeholder="New sub-task..."
+                  className="flex-1"
                 />
-                <span>{subTodo.title}</span>
-              </li>
-            ))}
-          </ul>
+                <Button
+                  type="submit"
+                  size="sm"
+                  disabled={!newSubTodoTitle.trim()}
+                >
+                  Add
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setIsAddingSubTodo(false)
+                    setNewSubTodoTitle("")
+                  }}
+                >
+                  Cancel
+                </Button>
+              </form>
+            </div>
+          )}
         </div>
       )}
     </Card>

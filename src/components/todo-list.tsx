@@ -7,16 +7,29 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
-import type { Todo, TodoWithSubTodos } from "@/server/db/schema"
+import type { TodoStatus, TodoWithSubTodos } from "@/server/db/schema"
 import { useState } from "react"
 
 type TodoListProps = {
   todos: TodoWithSubTodos[]
   onDelete: (id: string) => void
-  onStatusChange: (id: string, status: Todo["status"]) => void
+  onStatusChange: (id: string, status: TodoStatus) => void
+  onAddSubTodo?: (todoId: string, title: string, status?: TodoStatus) => void
+  onUpdateSubTodo?: (
+    id: string,
+    updates: { title?: string; status?: TodoStatus }
+  ) => void
+  onDeleteSubTodo?: (id: string) => void
 }
 
-export function TodoList({ todos, onDelete, onStatusChange }: TodoListProps) {
+export function TodoList({
+  todos,
+  onDelete,
+  onStatusChange,
+  onAddSubTodo,
+  onUpdateSubTodo,
+  onDeleteSubTodo
+}: TodoListProps) {
   const [filterStatus, setFilterStatus] = useState<string>("all")
   const [searchTerm, setSearchTerm] = useState("")
 
@@ -69,6 +82,9 @@ export function TodoList({ todos, onDelete, onStatusChange }: TodoListProps) {
               todo={todo}
               onDelete={onDelete}
               onStatusChange={onStatusChange}
+              onAddSubTodo={onAddSubTodo}
+              onUpdateSubTodo={onUpdateSubTodo}
+              onDeleteSubTodo={onDeleteSubTodo}
             />
           ))
         ) : (

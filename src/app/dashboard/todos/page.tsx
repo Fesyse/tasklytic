@@ -6,12 +6,12 @@ import { TodoList } from "@/components/todo-list"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { ViewMode } from "@/lib/types"
-import type { Todo } from "@/server/db/schema"
+import type { SubTodo, TodoStatus, TodoWithSubTodos } from "@/server/db/schema"
 import { api } from "@/trpc/react"
 import { LayoutGrid, ListFilter, Plus } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useState } from "react"
+import { startTransition, useOptimistic, useState } from "react"
 import { z } from "zod"
 import TodosLoading from "./loading"
 
@@ -30,43 +30,267 @@ export default function TodosPage() {
   )
 
   // Fetch todos using tRPC
-  const { data: todos, isLoading, refetch } = api.todo.getAll.useQuery()
+  const { data: todos = [], isLoading, refetch } = api.todo.getAll.useQuery()
 
-  // Use tRPC mutations for CRUD operations
+  // Use optimistic todos with the useOptimistic hook
+  const [optimisticTodos, addOptimisticTodos] = useOptimistic<
+    TodoWithSubTodos[],
+    {
+      action:
+        | "create"
+        | "update"
+        | "delete"
+        | "createSubTodo"
+        | "updateSubTodo"
+        | "deleteSubTodo"
+      data: any
+    }
+  >(todos, (currentTodos, { action, data }) => {
+    // Create a copy of the current todos
+    const todosCopy = [...currentTodos]
+
+    switch (action) {
+      case "create": {
+        // Add the new todo to the beginning of the list
+        return [data, ...todosCopy]
+      }
+
+      case "update": {
+        // Update the todo with matching id
+        return todosCopy.map((todo) =>
+          todo.id === data.id
+            ? { ...todo, ...data, status: data.status ?? todo.status }
+            : todo
+        )
+      }
+
+      case "delete": {
+        // Remove the todo with matching id
+        return todosCopy.filter((todo) => todo.id !== data.id)
+      }
+
+      case "createSubTodo": {
+        // Add the new subtodo to the parent todo
+        return todosCopy.map((todo) =>
+          todo.id === data.todoId
+            ? {
+                ...todo,
+                subTodos: [...todo.subTodos, data.subTodo]
+              }
+            : todo
+        )
+      }
+
+      case "updateSubTodo": {
+        // Update the subtodo in its parent todo
+        return todosCopy.map((todo) => {
+          // Find if this todo contains the subtodo
+          const subTodoIndex = todo.subTodos.findIndex(
+            (sub) => sub.id === data.id
+          )
+
+          if (subTodoIndex >= 0) {
+            // Create a copy of the subtodos array
+            const newSubTodos = [...todo.subTodos]
+            // Get the current subtodo
+            const currentSubTodo = newSubTodos[subTodoIndex]
+
+            if (currentSubTodo) {
+              // Update the subtodo with new values
+              newSubTodos[subTodoIndex] = {
+                id: currentSubTodo.id,
+                title: data.title ?? currentSubTodo.title,
+                status: data.status ?? currentSubTodo.status,
+                createdAt: currentSubTodo.createdAt,
+                todoId: currentSubTodo.todoId
+              }
+
+              // Return the updated todo
+              return {
+                ...todo,
+                subTodos: newSubTodos
+              }
+            }
+          }
+
+          // No matching subtodo found, return todo unchanged
+          return todo
+        })
+      }
+
+      case "deleteSubTodo": {
+        // Remove the subtodo from its parent todo
+        return todosCopy.map((todo) => ({
+          ...todo,
+          subTodos: todo.subTodos.filter((subTodo) => subTodo.id !== data.id)
+        }))
+      }
+
+      default:
+        return todosCopy
+    }
+  })
+
+  // Use the tRPC mutations but with the new useOptimistic approach
   const createTodo = api.todo.create.useMutation({
-    onSuccess: () => refetch()
+    onSettled: () => {
+      refetch()
+    }
   })
 
   const updateTodo = api.todo.update.useMutation({
-    onSuccess: () => refetch()
+    onSettled: () => {
+      refetch()
+    }
   })
 
   const deleteTodo = api.todo.delete.useMutation({
-    onSuccess: () => refetch()
+    onSettled: () => {
+      refetch()
+    }
+  })
+
+  // SubTodo mutations
+  const createSubTodo = api.todo.createSubTodo.useMutation({
+    onSettled: () => {
+      refetch()
+    }
+  })
+
+  const updateSubTodo = api.todo.updateSubTodo.useMutation({
+    onSettled: () => {
+      refetch()
+    }
+  })
+
+  const deleteSubTodo = api.todo.deleteSubTodo.useMutation({
+    onSettled: () => {
+      refetch()
+    }
   })
 
   const handleAddTodo = (todo: CreateTodo) => {
-    createTodo.mutate({
+    // Create an optimistic todo with a temporary ID
+    const tempId = `temp-${Date.now()}`
+    const optimisticTodo: TodoWithSubTodos = {
+      id: tempId,
       title: todo.title,
-      emoji: todo.emoji ?? undefined,
-      status: todo.status,
+      emoji: todo.emoji ?? null,
+      status: todo.status ?? "planned",
       startDate: todo.startDate,
-      endDate: todo.endDate ?? undefined,
-      subTodos: todo.subTodos.map((st) => ({
-        title: st.title,
-        status: st.status
+      endDate: todo.endDate ?? null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      userId: "", // Will be filled by server
+      subTodos: (todo.subTodos ?? []).map((subTodo, index) => ({
+        id: `${tempId}-sub-${index}`,
+        title: subTodo.title,
+        status: subTodo.status ?? "planned",
+        createdAt: new Date(),
+        todoId: tempId
       }))
+    }
+
+    // Apply optimistic update
+    addOptimisticTodos({ action: "create", data: optimisticTodo })
+
+    // Perform the actual mutation inside a transition
+    startTransition(async () => {
+      await createTodo.mutateAsync({
+        title: todo.title,
+        emoji: todo.emoji ?? undefined,
+        status: todo.status,
+        startDate: todo.startDate,
+        endDate: todo.endDate ?? undefined,
+        subTodos: todo.subTodos.map((st) => ({
+          title: st.title,
+          status: st.status
+        }))
+      })
     })
+
     setShowForm(false)
   }
 
   const handleDelete = (id: string) => {
-    deleteTodo.mutate({ id })
+    // Apply optimistic update
+    addOptimisticTodos({ action: "delete", data: { id } })
+
+    // Perform the actual mutation inside a transition
+    startTransition(async () => {
+      await deleteTodo.mutateAsync({ id })
+    })
   }
 
-  const handleStatusChange = (id: string, status: Todo["status"]) => {
-    updateTodo.mutate({ id, status })
+  const handleStatusChange = (id: string, status: TodoStatus) => {
+    // Apply optimistic update
+    addOptimisticTodos({ action: "update", data: { id, status } })
+
+    // Perform the actual mutation inside a transition
+    startTransition(async () => {
+      await updateTodo.mutateAsync({ id, status })
+    })
   }
+
+  // Add handlers for SubTodo operations
+  const handleAddSubTodo = (
+    todoId: string,
+    title: string,
+    status: TodoStatus = "planned"
+  ) => {
+    // Create an optimistic subtodo
+    const tempId = `temp-sub-${Date.now()}`
+    const optimisticSubTodo: SubTodo = {
+      id: tempId,
+      title,
+      status,
+      createdAt: new Date(),
+      todoId
+    }
+
+    // Apply optimistic update
+    addOptimisticTodos({
+      action: "createSubTodo",
+      data: {
+        todoId,
+        subTodo: optimisticSubTodo
+      }
+    })
+
+    // Perform the actual mutation inside a transition
+    startTransition(async () => {
+      await createSubTodo.mutateAsync({ todoId, title, status })
+    })
+  }
+
+  const handleUpdateSubTodo = (
+    id: string,
+    updates: { title?: string; status?: TodoStatus }
+  ) => {
+    // Apply optimistic update
+    addOptimisticTodos({
+      action: "updateSubTodo",
+      data: { id, ...updates }
+    })
+
+    // Perform the actual mutation inside a transition
+    startTransition(async () => {
+      await updateSubTodo.mutateAsync({ id, ...updates })
+    })
+  }
+
+  const handleDeleteSubTodo = (id: string) => {
+    // Apply optimistic update
+    addOptimisticTodos({ action: "deleteSubTodo", data: { id } })
+
+    // Perform the actual mutation inside a transition
+    startTransition(async () => {
+      await deleteSubTodo.mutateAsync({ id })
+    })
+  }
+
+  // The display todos are now simply the optimistic todos
+  const displayTodos = optimisticTodos
 
   return (
     <div className="flex flex-1 flex-col gap-6 p-8">
@@ -115,7 +339,7 @@ export default function TodosPage() {
         </div>
       )}
 
-      {isLoading || !todos ? (
+      {isLoading && !displayTodos.length ? (
         <TodosLoading />
       ) : (
         <div className="relative">
@@ -133,9 +357,12 @@ export default function TodosPage() {
                 transition={{ duration: 0.3 }}
               >
                 <TodoList
-                  todos={todos}
+                  todos={displayTodos}
                   onDelete={handleDelete}
                   onStatusChange={handleStatusChange}
+                  onAddSubTodo={handleAddSubTodo}
+                  onUpdateSubTodo={handleUpdateSubTodo}
+                  onDeleteSubTodo={handleDeleteSubTodo}
                 />
               </motion.div>
             ) : (
@@ -151,9 +378,12 @@ export default function TodosPage() {
                 transition={{ duration: 0.3 }}
               >
                 <TodoKanban
-                  todos={todos}
+                  todos={displayTodos}
                   onDelete={handleDelete}
                   onStatusChange={handleStatusChange}
+                  onAddSubTodo={handleAddSubTodo}
+                  onUpdateSubTodo={handleUpdateSubTodo}
+                  onDeleteSubTodo={handleDeleteSubTodo}
                 />
               </motion.div>
             )}

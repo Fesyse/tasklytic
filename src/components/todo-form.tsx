@@ -28,7 +28,7 @@ import * as z from "zod"
 // Define the form schema with zod
 const todoFormSchema = z.object({
   title: z.string().min(1, "Title is required"),
-  emoji: z.string().emoji().optional(),
+  emoji: z.string().max(1, "Emoji must be exactly 1 character").optional(),
   status: z.enum(["planned", "in-progress", "completed"] as const),
   startDate: z.string().min(1, "Start date is required"),
   endDate: z.string().optional()
