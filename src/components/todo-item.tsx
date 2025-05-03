@@ -7,21 +7,22 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
-import type { SubTodo, Todo } from "@/lib/types"
 import { cn } from "@/lib/utils"
+import type { SubTodo, Todo, TodoWithSubTodos } from "@/server/db/schema"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import {
   ChevronDown,
   ChevronRight,
   GripVertical,
+  ListTodoIcon,
   MoreHorizontal,
   Trash
 } from "lucide-react"
 import { useState } from "react"
 
 type TodoItemProps = {
-  todo: Todo
+  todo: TodoWithSubTodos
   onDelete: (id: string) => void
   onStatusChange: (id: string, status: Todo["status"]) => void
   isDraggable?: boolean
@@ -114,7 +115,11 @@ export function TodoItem({
 
           <div>
             <div className="flex items-center gap-2">
-              {todo.emoji && <span className="text-lg">{todo.emoji}</span>}
+              {todo.emoji ? (
+                <span className="text-lg">{todo.emoji}</span>
+              ) : (
+                <ListTodoIcon className="size-7" />
+              )}
               <h3 className="font-semibold">{todo.title}</h3>
               <Badge className={cn(statusColors[todo.status])}>
                 {todo.status.charAt(0).toUpperCase() +

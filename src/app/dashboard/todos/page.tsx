@@ -1,18 +1,19 @@
 "use client"
 
-import { TodoForm } from "@/components/todo-form"
+import { TodoForm, type CreateTodo } from "@/components/todo-form"
 import { TodoKanban } from "@/components/todo-kanban"
 import { TodoList } from "@/components/todo-list"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { ViewMode } from "@/lib/types"
-import type { Todo, TodoWithSubTodos } from "@/server/db/schema"
+import type { Todo } from "@/server/db/schema"
 import { api } from "@/trpc/react"
 import { LayoutGrid, ListFilter, Plus } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useState } from "react"
 import { z } from "zod"
+import TodosLoading from "./loading"
 
 const viewModeSchema = z.enum(["list", "kanban"] as const)
 
@@ -44,7 +45,7 @@ export default function TodosPage() {
     onSuccess: () => refetch()
   })
 
-  const handleAddTodo = (todo: TodoWithSubTodos) => {
+  const handleAddTodo = (todo: CreateTodo) => {
     createTodo.mutate({
       title: todo.title,
       emoji: todo.emoji ?? undefined,
@@ -115,9 +116,7 @@ export default function TodosPage() {
       )}
 
       {isLoading || !todos ? (
-        <div className="flex h-64 items-center justify-center">
-          <p>Loading todos...</p>
-        </div>
+        <TodosLoading />
       ) : (
         <div className="relative">
           <AnimatePresence>

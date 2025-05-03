@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
-import type { Todo, TodoStatus } from "@/lib/types"
+import type { TodoStatus } from "@/server/db/schema"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Plus, X } from "lucide-react"
 import { useState } from "react"
@@ -28,7 +28,7 @@ import * as z from "zod"
 // Define the form schema with zod
 const todoFormSchema = z.object({
   title: z.string().min(1, "Title is required"),
-  emoji: z.string().optional(),
+  emoji: z.string().emoji().optional(),
   status: z.enum(["planned", "in-progress", "completed"] as const),
   startDate: z.string().min(1, "Start date is required"),
   endDate: z.string().optional()
@@ -37,13 +37,22 @@ const todoFormSchema = z.object({
 type TodoFormValues = z.infer<typeof todoFormSchema>
 
 type TodoFormProps = {
-  onSave: (todo: Todo) => void
+  onSave: (todo: CreateTodo) => void
   onCancel: () => void
 }
 
 type SubTodoInput = {
   title: string
   status: TodoStatus
+}
+
+export type CreateTodo = {
+  title: string
+  emoji?: string | null
+  status: TodoStatus
+  startDate: Date
+  endDate?: Date | null
+  subTodos: SubTodoInput[]
 }
 
 export function TodoForm({ onSave, onCancel }: TodoFormProps) {
@@ -80,15 +89,13 @@ export function TodoForm({ onSave, onCancel }: TodoFormProps) {
   }
 
   function onSubmit(data: TodoFormValues) {
-    const newTodo: Todo = {
-      id: crypto.randomUUID(),
+    const newTodo = {
       title: data.title.trim(),
-      emoji: data.emoji?.trim() || undefined,
+      emoji: data.emoji?.trim() ?? null,
       status: data.status,
       startDate: new Date(data.startDate),
-      endDate: data.endDate ? new Date(data.endDate) : undefined,
+      endDate: data.endDate ? new Date(data.endDate) : null,
       subTodos: subTodos.map((st) => ({
-        id: crypto.randomUUID(),
         title: st.title,
         status: st.status,
         createdAt: new Date()

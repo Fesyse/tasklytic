@@ -17,7 +17,7 @@ import { createPortal } from "react-dom"
 type KanbanColumnProps = {
   id: TodoStatus
   title: string
-  todos: Todo[]
+  todos: TodoWithSubTodos[]
   onDelete: (id: string) => void
   onStatusChange: (id: string, status: Todo["status"]) => void
   className?: string
