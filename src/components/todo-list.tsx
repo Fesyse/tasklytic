@@ -7,11 +7,11 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
-import type { Todo } from "@/lib/types"
+import type { Todo, TodoWithSubTodos } from "@/server/db/schema"
 import { useState } from "react"
 
 type TodoListProps = {
-  todos: Todo[]
+  todos: TodoWithSubTodos[]
   onDelete: (id: string) => void
   onStatusChange: (id: string, status: Todo["status"]) => void
 }

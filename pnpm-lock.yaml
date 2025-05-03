@@ -23,6 +23,9 @@ importers:
       '@hookform/resolvers':
         specifier: ^5.0.1
         version: 5.0.1(react-hook-form@7.56.1(react@19.1.0))
+      '@paralleldrive/cuid2':
+        specifier: ^2.2.2
+        version: 2.2.2
       '@radix-ui/react-avatar':
         specifier: ^1.1.7
         version: 1.1.7(@types/react-dom@19.1.2(@types/react@19.1.1))(@types/react@19.1.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -1242,6 +1245,9 @@ packages:
   '@nolyfill/is-core-module@1.0.39':
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
+
+  '@paralleldrive/cuid2@2.2.2':
+    resolution: {integrity: sha512-ZOBkgDwEdoYVlSeRbYYXs0S9MejQofiVYoTbKzy/6GQa39/q5tQU2IX46+shYnUkpEl3wc+J6wRlar7r2EK2xA==}
 
   '@peculiar/asn1-android@2.3.16':
     resolution: {integrity: sha512-a1viIv3bIahXNssrOIkXZIlI2ePpZaNmR30d4aBL99mu2rO+mT9D6zBsp7H6eROWGtmwv0Ionp5olJurIo09dw==}
@@ -5193,6 +5199,10 @@ snapshots:
       fastq: 1.19.1
 
   '@nolyfill/is-core-module@1.0.39': {}
+
+  '@paralleldrive/cuid2@2.2.2':
+    dependencies:
+      '@noble/hashes': 1.8.0
 
   '@peculiar/asn1-android@2.3.16':
     dependencies:

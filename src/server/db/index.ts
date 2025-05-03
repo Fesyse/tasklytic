@@ -19,4 +19,9 @@ client.addListener("error", (err) => {
   console.error("[DATABASE] connection error:", err)
 })
 
-export const db = drizzle({ client, schema })
+// Enhanced drizzle client with relations support
+export const db = drizzle(client, {
+  schema,
+  // This ensures the relations are properly loaded
+  logger: env.NODE_ENV === "development"
+})

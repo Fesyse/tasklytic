@@ -5,13 +5,14 @@ import { TodoKanban } from "@/components/todo-kanban"
 import { TodoList } from "@/components/todo-list"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import type { Todo, ViewMode } from "@/lib/types"
+import type { ViewMode } from "@/lib/types"
+import type { Todo, TodoWithSubTodos } from "@/server/db/schema"
+import { api } from "@/trpc/react"
 import { LayoutGrid, ListFilter, Plus } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useState } from "react"
 import { z } from "zod"
-import { mockTodos } from "./data"
 
 const viewModeSchema = z.enum(["list", "kanban"] as const)
 
@@ -22,23 +23,48 @@ export default function TodosPage() {
     searchParams.get("view-mode")
   )
 
-  const [todos, setTodos] = useState<Todo[]>(mockTodos)
   const [showForm, setShowForm] = useState(false)
   const [viewMode, setViewMode] = useState<ViewMode>(
     success ? defaultViewMode : "list"
   )
 
-  const handleAddTodo = (todo: Todo) => {
-    setTodos([todo, ...todos])
+  // Fetch todos using tRPC
+  const { data: todos, isLoading, refetch } = api.todo.getAll.useQuery()
+
+  // Use tRPC mutations for CRUD operations
+  const createTodo = api.todo.create.useMutation({
+    onSuccess: () => refetch()
+  })
+
+  const updateTodo = api.todo.update.useMutation({
+    onSuccess: () => refetch()
+  })
+
+  const deleteTodo = api.todo.delete.useMutation({
+    onSuccess: () => refetch()
+  })
+
+  const handleAddTodo = (todo: TodoWithSubTodos) => {
+    createTodo.mutate({
+      title: todo.title,
+      emoji: todo.emoji ?? undefined,
+      status: todo.status,
+      startDate: todo.startDate,
+      endDate: todo.endDate ?? undefined,
+      subTodos: todo.subTodos.map((st) => ({
+        title: st.title,
+        status: st.status
+      }))
+    })
     setShowForm(false)
   }
 
   const handleDelete = (id: string) => {
-    setTodos(todos.filter((todo) => todo.id !== id))
+    deleteTodo.mutate({ id })
   }
 
   const handleStatusChange = (id: string, status: Todo["status"]) => {
-    setTodos(todos.map((todo) => (todo.id === id ? { ...todo, status } : todo)))
+    updateTodo.mutate({ id, status })
   }
 
   return (
@@ -88,39 +114,53 @@ export default function TodosPage() {
         </div>
       )}
 
-      <div className="relative">
-        <AnimatePresence>
-          {viewMode === "list" ? (
-            <motion.div
-              key="list"
-              initial={{ opacity: 0, filter: "blur(10px)" }}
-              animate={{ opacity: 1, filter: "blur(0px)" }}
-              exit={{ opacity: 0, filter: "blur(10px)", position: "absolute" }}
-              transition={{ duration: 0.3 }}
-            >
-              <TodoList
-                todos={todos}
-                onDelete={handleDelete}
-                onStatusChange={handleStatusChange}
-              />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="kanban"
-              initial={{ opacity: 0, filter: "blur(10px)" }}
-              animate={{ opacity: 1, filter: "blur(0px)" }}
-              exit={{ opacity: 0, filter: "blur(10px)", position: "absolute" }}
-              transition={{ duration: 0.3 }}
-            >
-              <TodoKanban
-                todos={todos}
-                onDelete={handleDelete}
-                onStatusChange={handleStatusChange}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+      {isLoading || !todos ? (
+        <div className="flex h-64 items-center justify-center">
+          <p>Loading todos...</p>
+        </div>
+      ) : (
+        <div className="relative">
+          <AnimatePresence>
+            {viewMode === "list" ? (
+              <motion.div
+                key="list"
+                initial={{ opacity: 0, filter: "blur(10px)" }}
+                animate={{ opacity: 1, filter: "blur(0px)" }}
+                exit={{
+                  opacity: 0,
+                  filter: "blur(10px)",
+                  position: "absolute"
+                }}
+                transition={{ duration: 0.3 }}
+              >
+                <TodoList
+                  todos={todos}
+                  onDelete={handleDelete}
+                  onStatusChange={handleStatusChange}
+                />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="kanban"
+                initial={{ opacity: 0, filter: "blur(10px)" }}
+                animate={{ opacity: 1, filter: "blur(0px)" }}
+                exit={{
+                  opacity: 0,
+                  filter: "blur(10px)",
+                  position: "absolute"
+                }}
+                transition={{ duration: 0.3 }}
+              >
+                <TodoKanban
+                  todos={todos}
+                  onDelete={handleDelete}
+                  onStatusChange={handleStatusChange}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      )}
     </div>
   )
 }

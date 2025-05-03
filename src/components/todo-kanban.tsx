@@ -1,6 +1,6 @@
 import { TodoItem } from "@/components/todo-item"
-import type { Todo, TodoStatus } from "@/lib/types"
 import { cn } from "@/lib/utils"
+import type { Todo, TodoStatus, TodoWithSubTodos } from "@/server/db/schema"
 import type { DragEndEvent, DragOverEvent, DragStartEvent } from "@dnd-kit/core"
 import {
   DndContext,
@@ -79,7 +79,7 @@ function KanbanColumn({
 }
 
 type TodoKanbanProps = {
-  todos: Todo[]
+  todos: TodoWithSubTodos[]
   onDelete: (id: string) => void
   onStatusChange: (id: string, status: Todo["status"]) => void
 }
@@ -89,7 +89,7 @@ export function TodoKanban({
   onDelete,
   onStatusChange
 }: TodoKanbanProps) {
-  const [activeTodo, setActiveTodo] = useState<Todo | null>(null)
+  const [activeTodo, setActiveTodo] = useState<TodoWithSubTodos | null>(null)
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
