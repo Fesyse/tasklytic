@@ -110,7 +110,7 @@ export function CalendarHeader({ events }: IProps) {
             size="icon"
             className="[&_svg]:size-5"
           >
-            <Link href="/calendar/settings">
+            <Link href="/dashboard/calendar/settings">
               <Settings strokeWidth={1.8} />
             </Link>
           </Button>

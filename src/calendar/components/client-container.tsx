@@ -1,7 +1,7 @@
 "use client"
 
 import { isSameDay, parseISO } from "date-fns"
-import { Suspense, useMemo } from "react"
+import { useMemo } from "react"
 
 import { CalendarSkeleton } from "@/calendar/components/loading"
 import { useCalendar } from "@/calendar/contexts/calendar-context"
@@ -21,7 +21,7 @@ interface IProps {
   view: TCalendarView
 }
 
-function CalendarContent({ view }: IProps) {
+export function CalendarContent({ view }: IProps) {
   const { selectedDate, selectedUserId, events, isLoading } = useCalendar()
 
   // If we're loading data, render the loading skeleton
@@ -174,13 +174,5 @@ function CalendarContent({ view }: IProps) {
         )}
       </DndProviderWrapper>
     </div>
-  )
-}
-
-export function ClientContainer({ view }: IProps) {
-  return (
-    <Suspense fallback={<CalendarSkeleton view={view} />}>
-      <CalendarContent view={view} />
-    </Suspense>
   )
 }

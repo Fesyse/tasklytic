@@ -1,5 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton"
 import { memo } from "react"
+import type { TCalendarView } from "../types"
 
 export function CalendarHeaderSkeleton() {
   return (
@@ -179,7 +180,7 @@ export function CalendarAgendaViewSkeleton() {
   )
 }
 
-function CalendarSkeleton({ view }: { view: string }) {
+function CalendarSkeleton({ view }: { view: TCalendarView }) {
   return (
     <div className="overflow-hidden rounded-xl border">
       <CalendarHeaderSkeleton />

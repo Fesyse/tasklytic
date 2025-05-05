@@ -72,12 +72,12 @@ The calendar module uses the following database schema:
 ### Basic Usage
 
 ```tsx
-import { ClientContainer } from "@/calendar/components/client-container"
+import { CalendarContent } from "@/calendar/components/client-container"
 
 export default function CalendarPage() {
   return (
     <div className="container py-10">
-      <ClientContainer view="month" />
+      <CalendarContent view="month" />
     </div>
   )
 }

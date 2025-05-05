@@ -1,5 +1,5 @@
-import { ClientContainer } from "@/calendar/components/client-container"
+import { CalendarContent } from "@/calendar/components/client-container"
 
 export default function CalendarDayViewPage() {
-  return <ClientContainer view="day" />
+  return <CalendarContent view="day" />
 }
