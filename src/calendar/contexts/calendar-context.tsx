@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState } from "react"
+import { createContext, useContext, useEffect, useState } from "react"
 
 import type { IEvent, IUser } from "@/calendar/interfaces"
 import type {
@@ -8,6 +8,8 @@ import type {
   TVisibleHours,
   TWorkingHours
 } from "@/calendar/types"
+import { api } from "@/trpc/react"
+import { useRouter } from "next/navigation"
 import type { Dispatch, SetStateAction } from "react"
 
 interface ICalendarContext {
@@ -23,51 +25,154 @@ interface ICalendarContext {
   visibleHours: TVisibleHours
   setVisibleHours: Dispatch<SetStateAction<TVisibleHours>>
   events: IEvent[]
-  setLocalEvents: Dispatch<SetStateAction<IEvent[]>>
+  updateEvent: (updatedEvent: IEvent) => void
+  createEvent: (newEvent: Omit<IEvent, "id">) => void
+  deleteEvent: (eventId: string | number) => void
+  isLoading: boolean
 }
 
 const CalendarContext = createContext({} as ICalendarContext)
 
-const WORKING_HOURS = {
+const DEFAULT_WORKING_HOURS = {
   0: { from: 0, to: 0 },
   1: { from: 8, to: 17 },
   2: { from: 8, to: 17 },
   3: { from: 8, to: 17 },
   4: { from: 8, to: 17 },
   5: { from: 8, to: 17 },
-  6: { from: 8, to: 12 }
+  6: { from: 0, to: 0 }
 }
 
-const VISIBLE_HOURS = { from: 7, to: 18 }
+const DEFAULT_VISIBLE_HOURS = { from: 7, to: 18 }
 
 export function CalendarProvider({
   children,
-  users,
-  events
+  initialUsers,
+  initialEvents
 }: {
   children: React.ReactNode
-  users: IUser[]
-  events: IEvent[]
+  initialUsers: IUser[]
+  initialEvents: IEvent[]
 }) {
-  const [badgeVariant, setBadgeVariant] = useState<TBadgeVariant>("colored")
-  const [visibleHours, setVisibleHours] = useState<TVisibleHours>(VISIBLE_HOURS)
-  const [workingHours, setWorkingHours] = useState<TWorkingHours>(WORKING_HOURS)
+  const router = useRouter()
 
+  // Server data state
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [selectedUserId, setSelectedUserId] = useState<IUser["id"] | "all">(
     "all"
   )
 
-  // This localEvents doesn't need to exists in a real scenario.
-  // It's used here just to simulate the update of the events.
-  // In a real scenario, the events would be updated in the backend
-  // and the request that fetches the events should be refetched
-  const [localEvents, setLocalEvents] = useState<IEvent[]>(events)
+  // Fetch settings from server
+  const { data: settingsData } = api.calendar.getCalendarSettings.useQuery(
+    undefined,
+    {
+      initialData: {
+        defaultView: "month",
+        defaultBadgeVariant: "colored",
+        visibleHoursFrom: 7,
+        visibleHoursTo: 18
+      }
+    }
+  )
+
+  // Fetch working hours from server
+  const { data: workingHoursData } = api.calendar.getWorkingHours.useQuery(
+    undefined,
+    {
+      initialData: DEFAULT_WORKING_HOURS
+    }
+  )
+
+  // Settings state derived from server data
+  const [badgeVariant, setBadgeVariant] = useState<TBadgeVariant>(
+    (settingsData?.defaultBadgeVariant as TBadgeVariant) || "dot"
+  )
+
+  const [visibleHours, setVisibleHours] = useState<TVisibleHours>({
+    from: settingsData?.visibleHoursFrom || DEFAULT_VISIBLE_HOURS.from,
+    to: settingsData?.visibleHoursTo || DEFAULT_VISIBLE_HOURS.to
+  })
+
+  const [workingHours, setWorkingHours] = useState<TWorkingHours>(
+    workingHoursData || DEFAULT_WORKING_HOURS
+  )
+
+  // Update local state when settings change from server
+  useEffect(() => {
+    if (settingsData) {
+      setBadgeVariant(
+        (settingsData.defaultBadgeVariant as TBadgeVariant) || "dot"
+      )
+      setVisibleHours({
+        from: settingsData.visibleHoursFrom || DEFAULT_VISIBLE_HOURS.from,
+        to: settingsData.visibleHoursTo || DEFAULT_VISIBLE_HOURS.to
+      })
+    }
+  }, [settingsData])
+
+  // Update local state when working hours change from server
+  useEffect(() => {
+    if (workingHoursData) {
+      setWorkingHours(workingHoursData)
+    }
+  }, [workingHoursData])
+
+  // Events operations
+  const { data: events = initialEvents, isLoading: isEventsLoading } =
+    api.calendar.getEvents.useQuery()
+  const { data: users = initialUsers, isLoading: isUsersLoading } =
+    api.calendar.getUsers.useQuery()
+
+  // Mutations for CRUD operations
+  const { mutate: createEventMutation } = api.calendar.createEvent.useMutation({
+    onSuccess: () => {
+      router.refresh()
+    }
+  })
+
+  const { mutate: updateEventMutation } = api.calendar.updateEvent.useMutation({
+    onSuccess: () => {
+      router.refresh()
+    }
+  })
+
+  const { mutate: deleteEventMutation } = api.calendar.deleteEvent.useMutation({
+    onSuccess: () => {
+      router.refresh()
+    }
+  })
+
+  const createEvent = (newEvent: Omit<IEvent, "id">) => {
+    createEventMutation({
+      title: newEvent.title,
+      description: newEvent.description || "",
+      startDate: newEvent.startDate,
+      endDate: newEvent.endDate,
+      color: newEvent.color
+    })
+  }
+
+  const updateEvent = (updatedEvent: IEvent) => {
+    updateEventMutation({
+      id: String(updatedEvent.id),
+      title: updatedEvent.title,
+      description: updatedEvent.description || "",
+      startDate: updatedEvent.startDate,
+      endDate: updatedEvent.endDate,
+      color: updatedEvent.color
+    })
+  }
+
+  const deleteEvent = (eventId: string | number) => {
+    deleteEventMutation({ id: String(eventId) })
+  }
 
   const handleSelectDate = (date: Date | undefined) => {
     if (!date) return
     setSelectedDate(date)
   }
+
+  const isLoading = isEventsLoading || isUsersLoading
 
   return (
     <CalendarContext.Provider
@@ -83,9 +188,11 @@ export function CalendarProvider({
         setVisibleHours,
         workingHours,
         setWorkingHours,
-        // If you go to the refetch approach, you can remove the localEvents and pass the events directly
-        events: localEvents,
-        setLocalEvents
+        events,
+        updateEvent,
+        createEvent,
+        deleteEvent,
+        isLoading
       }}
     >
       {children}

@@ -3,21 +3,17 @@ import { useCalendar } from "@/calendar/contexts/calendar-context"
 import type { IEvent } from "@/calendar/interfaces"
 
 export function useUpdateEvent() {
-  const { setLocalEvents } = useCalendar()
+  const { updateEvent: updateEventFromContext } = useCalendar()
 
-  // This is just and example, in a real scenario
-  // you would call an API to update the event
+  // Format the event and call the context method that will use the API
   const updateEvent = (event: IEvent) => {
-    const newEvent: IEvent = event
+    const newEvent: IEvent = {
+      ...event,
+      startDate: new Date(event.startDate).toISOString(),
+      endDate: new Date(event.endDate).toISOString()
+    }
 
-    newEvent.startDate = new Date(event.startDate).toISOString()
-    newEvent.endDate = new Date(event.endDate).toISOString()
-
-    setLocalEvents((prev) => {
-      const index = prev.findIndex((e) => e.id === event.id)
-      if (index === -1) return prev
-      return [...prev.slice(0, index), newEvent, ...prev.slice(index + 1)]
-    })
+    updateEventFromContext(newEvent)
   }
 
   return { updateEvent }

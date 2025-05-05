@@ -1,4 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton"
+import { memo } from "react"
 
 export function CalendarHeaderSkeleton() {
   return (
@@ -40,7 +41,7 @@ export function CalendarMonthViewSkeleton() {
             (_, eventIndex) => (
               <Skeleton
                 key={`event-${cellIndex}-${eventIndex}`}
-                className="mx-auto my-1 h-6 w-[80%] rounded-md"
+                className="mx-auto mb-1 h-6 w-[75%] rounded-md"
               />
             )
           )}
@@ -178,7 +179,7 @@ export function CalendarAgendaViewSkeleton() {
   )
 }
 
-export function CalendarSkeleton({ view }: { view: string }) {
+function CalendarSkeleton({ view }: { view: string }) {
   return (
     <div className="overflow-hidden rounded-xl border">
       <CalendarHeaderSkeleton />
@@ -190,3 +191,7 @@ export function CalendarSkeleton({ view }: { view: string }) {
     </div>
   )
 }
+
+const CalendarSkeletonMemoized = memo(CalendarSkeleton)
+
+export { CalendarSkeletonMemoized as CalendarSkeleton }

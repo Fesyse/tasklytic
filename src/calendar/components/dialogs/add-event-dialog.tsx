@@ -1,36 +1,60 @@
-"use client";
+"use client"
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
 
-import { useDisclosure } from "@/hooks/use-disclosure";
-import { useCalendar } from "@/calendar/contexts/calendar-context";
+import { useCalendar } from "@/calendar/contexts/calendar-context"
+import { useAddEvent } from "@/calendar/hooks/use-add-event"
+import { useDisclosure } from "@/hooks/use-disclosure"
 
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { TimeInput } from "@/components/ui/time-input";
-import { SingleDayPicker } from "@/components/ui/single-day-picker";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Form, FormField, FormLabel, FormItem, FormControl, FormMessage } from "@/components/ui/form";
-import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogHeader, DialogClose, DialogContent, DialogTrigger, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from "@/components/ui/dialog"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select"
+import { SingleDayPicker } from "@/components/ui/single-day-picker"
+import { Textarea } from "@/components/ui/textarea"
+import { TimeInput } from "@/components/ui/time-input"
 
-import { eventSchema } from "@/calendar/schemas";
+import { eventSchema } from "@/calendar/schemas"
+import { toast } from "sonner"
 
-import type { TimeValue } from "react-aria-components";
-import type { TEventFormData } from "@/calendar/schemas";
+import type { TEventFormData } from "@/calendar/schemas"
+import type { TimeValue } from "react-aria-components"
 
 interface IProps {
-  children: React.ReactNode;
-  startDate?: Date;
-  startTime?: { hour: number; minute: number };
+  children: React.ReactNode
+  startDate?: Date
+  startTime?: { hour: number; minute: number }
 }
 
 export function AddEventDialog({ children, startDate, startTime }: IProps) {
-  const { users } = useCalendar();
-
-  const { isOpen, onClose, onToggle } = useDisclosure();
+  const { users } = useCalendar()
+  const { addEvent } = useAddEvent()
+  const { isOpen, onClose, onToggle } = useDisclosure()
 
   const form = useForm<TEventFormData>({
     resolver: zodResolver(eventSchema),
@@ -38,15 +62,16 @@ export function AddEventDialog({ children, startDate, startTime }: IProps) {
       title: "",
       description: "",
       startDate: typeof startDate !== "undefined" ? startDate : undefined,
-      startTime: typeof startTime !== "undefined" ? startTime : undefined,
-    },
-  });
+      startTime: typeof startTime !== "undefined" ? startTime : undefined
+    }
+  })
 
-  const onSubmit = (_values: TEventFormData) => {
-    // TO DO: Create use-add-event hook
-    onClose();
-    form.reset();
-  };
+  const onSubmit = (values: TEventFormData) => {
+    addEvent(values)
+    toast.success("Event created successfully")
+    onClose()
+    form.reset()
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onToggle}>
@@ -56,12 +81,16 @@ export function AddEventDialog({ children, startDate, startTime }: IProps) {
         <DialogHeader>
           <DialogTitle>Add New Event</DialogTitle>
           <DialogDescription>
-            This is just and example of how to use the form. In a real application, you would call the API to create the event
+            Fill in the details to create a new calendar event
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
-          <form id="event-form" onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 py-4">
+          <form
+            id="event-form"
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="grid gap-4 py-4"
+          >
             <FormField
               control={form.control}
               name="user"
@@ -75,12 +104,21 @@ export function AddEventDialog({ children, startDate, startTime }: IProps) {
                       </SelectTrigger>
 
                       <SelectContent>
-                        {users.map(user => (
-                          <SelectItem key={user.id} value={user.id} className="flex-1">
+                        {users.map((user) => (
+                          <SelectItem
+                            key={user.id}
+                            value={user.id}
+                            className="flex-1"
+                          >
                             <div className="flex items-center gap-2">
                               <Avatar key={user.id} className="size-6">
-                                <AvatarImage src={user.picturePath ?? undefined} alt={user.name} />
-                                <AvatarFallback className="text-xxs">{user.name[0]}</AvatarFallback>
+                                <AvatarImage
+                                  src={user.picturePath ?? undefined}
+                                  alt={user.name}
+                                />
+                                <AvatarFallback className="text-xxs">
+                                  {user.name[0]}
+                                </AvatarFallback>
                               </Avatar>
 
                               <p className="truncate">{user.name}</p>
@@ -103,7 +141,12 @@ export function AddEventDialog({ children, startDate, startTime }: IProps) {
                   <FormLabel htmlFor="title">Title</FormLabel>
 
                   <FormControl>
-                    <Input id="title" placeholder="Enter a title" data-invalid={fieldState.invalid} {...field} />
+                    <Input
+                      id="title"
+                      placeholder="Enter a title"
+                      data-invalid={fieldState.invalid}
+                      {...field}
+                    />
                   </FormControl>
 
                   <FormMessage />
@@ -123,7 +166,7 @@ export function AddEventDialog({ children, startDate, startTime }: IProps) {
                       <SingleDayPicker
                         id="startDate"
                         value={field.value}
-                        onSelect={date => field.onChange(date as Date)}
+                        onSelect={(date) => field.onChange(date as Date)}
                         placeholder="Select a date"
                         data-invalid={fieldState.invalid}
                       />
@@ -142,7 +185,12 @@ export function AddEventDialog({ children, startDate, startTime }: IProps) {
                     <FormLabel>Start Time</FormLabel>
 
                     <FormControl>
-                      <TimeInput value={field.value as TimeValue} onChange={field.onChange} hourCycle={12} data-invalid={fieldState.invalid} />
+                      <TimeInput
+                        value={field.value as TimeValue}
+                        onChange={field.onChange}
+                        hourCycle={12}
+                        data-invalid={fieldState.invalid}
+                      />
                     </FormControl>
 
                     <FormMessage />
@@ -161,7 +209,7 @@ export function AddEventDialog({ children, startDate, startTime }: IProps) {
                     <FormControl>
                       <SingleDayPicker
                         value={field.value}
-                        onSelect={date => field.onChange(date as Date)}
+                        onSelect={(date) => field.onChange(date as Date)}
                         placeholder="Select a date"
                         data-invalid={fieldState.invalid}
                       />
@@ -179,7 +227,12 @@ export function AddEventDialog({ children, startDate, startTime }: IProps) {
                     <FormLabel>End Time</FormLabel>
 
                     <FormControl>
-                      <TimeInput value={field.value as TimeValue} onChange={field.onChange} hourCycle={12} data-invalid={fieldState.invalid} />
+                      <TimeInput
+                        value={field.value as TimeValue}
+                        onChange={field.onChange}
+                        hourCycle={12}
+                        data-invalid={fieldState.invalid}
+                      />
                     </FormControl>
 
                     <FormMessage />
@@ -260,14 +313,16 @@ export function AddEventDialog({ children, startDate, startTime }: IProps) {
             <FormField
               control={form.control}
               name="description"
-              render={({ field, fieldState }) => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Description</FormLabel>
-
                   <FormControl>
-                    <Textarea {...field} value={field.value} data-invalid={fieldState.invalid} />
+                    <Textarea
+                      className="min-h-24 resize-none"
+                      placeholder="Enter a description"
+                      {...field}
+                    />
                   </FormControl>
-
                   <FormMessage />
                 </FormItem>
               )}
@@ -275,18 +330,18 @@ export function AddEventDialog({ children, startDate, startTime }: IProps) {
           </form>
         </Form>
 
-        <DialogFooter>
+        <DialogFooter className="gap-2 sm:gap-0">
           <DialogClose asChild>
             <Button type="button" variant="outline">
               Cancel
             </Button>
           </DialogClose>
 
-          <Button form="event-form" type="submit">
-            Create Event
+          <Button type="submit" form="event-form">
+            Save Event
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
+  )
 }
