@@ -1,8 +1,9 @@
 "use client"
 
 import { isSameDay, parseISO } from "date-fns"
-import { useMemo } from "react"
+import { Suspense, useMemo } from "react"
 
+import { CalendarSkeleton } from "@/calendar/components/loading"
 import { useCalendar } from "@/calendar/contexts/calendar-context"
 
 import { DndProviderWrapper } from "@/calendar/components/dnd/dnd-provider"
@@ -20,7 +21,7 @@ interface IProps {
   view: TCalendarView
 }
 
-export function ClientContainer({ view }: IProps) {
+function CalendarContent({ view }: IProps) {
   const { selectedDate, selectedUserId, events } = useCalendar()
 
   const filteredEvents = useMemo(() => {
@@ -109,6 +110,8 @@ export function ClientContainer({ view }: IProps) {
           selectedUserId === "all" || event.user.id === selectedUserId
         return isInSelectedDay && isUserMatch
       }
+
+      return false
     })
   }, [selectedDate, selectedUserId, events, view])
 
@@ -166,5 +169,13 @@ export function ClientContainer({ view }: IProps) {
         )}
       </DndProviderWrapper>
     </div>
+  )
+}
+
+export function ClientContainer({ view }: IProps) {
+  return (
+    <Suspense fallback={<CalendarSkeleton view={view} />}>
+      <CalendarContent view={view} />
+    </Suspense>
   )
 }

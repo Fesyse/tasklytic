@@ -4,7 +4,8 @@ import {
   Grid2x2,
   Grid3x3,
   List,
-  Plus
+  Plus,
+  Settings
 } from "lucide-react"
 import Link from "next/link"
 
@@ -102,12 +103,24 @@ export function CalendarHeader({ events }: IProps) {
           <UserSelect />
         </div>
 
-        <AddEventDialog>
-          <Button className="w-full sm:w-auto">
-            <Plus />
-            Add Event
+        <div className="flex w-full items-center gap-2 sm:w-auto">
+          <Button
+            asChild
+            variant="outline"
+            size="icon"
+            className="[&_svg]:size-5"
+          >
+            <Link href="/calendar/settings">
+              <Settings strokeWidth={1.8} />
+            </Link>
           </Button>
-        </AddEventDialog>
+          <AddEventDialog>
+            <Button className="w-full sm:w-auto">
+              <Plus />
+              Add Event
+            </Button>
+          </AddEventDialog>
+        </div>
       </div>
     </div>
   )
