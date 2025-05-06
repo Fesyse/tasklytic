@@ -76,7 +76,7 @@ export const calendarRouter = createTRPCRouter({
 
     // Transform to match the expected interface format
     return events.map((event) => ({
-      id: Number(event.id),
+      id: event.id,
       title: event.title,
       description: event.description || "",
       startDate: event.startDate.toISOString(),

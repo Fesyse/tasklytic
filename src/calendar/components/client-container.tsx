@@ -24,7 +24,6 @@ interface IProps {
 export function CalendarContent({ view }: IProps) {
   const { selectedDate, selectedUserId, events, isLoading } = useCalendar()
 
-  // If we're loading data, render the loading skeleton
   if (isLoading) {
     return <CalendarSkeleton view={view} />
   }

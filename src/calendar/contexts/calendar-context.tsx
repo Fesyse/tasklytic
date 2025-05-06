@@ -9,7 +9,7 @@ import type {
   TWorkingHours
 } from "@/calendar/types"
 import { api } from "@/trpc/react"
-import { useRouter } from "next/navigation"
+import { parseAsIsoDateTime, useQueryState } from "nuqs"
 import type { Dispatch, SetStateAction } from "react"
 
 interface ICalendarContext {
@@ -54,10 +54,10 @@ export function CalendarProvider({
   initialUsers: IUser[]
   initialEvents: IEvent[]
 }) {
-  const router = useRouter()
-
-  // Server data state
-  const [selectedDate, setSelectedDate] = useState(new Date())
+  const [selectedDate, setSelectedDate] = useQueryState("selected-date", {
+    ...parseAsIsoDateTime,
+    defaultValue: new Date()
+  })
   const [selectedUserId, setSelectedUserId] = useState<IUser["id"] | "all">(
     "all"
   )
@@ -123,23 +123,19 @@ export function CalendarProvider({
   const { data: users = initialUsers, isLoading: isUsersLoading } =
     api.calendar.getUsers.useQuery()
 
+  const utils = api.useUtils()
+
   // Mutations for CRUD operations
   const { mutate: createEventMutation } = api.calendar.createEvent.useMutation({
-    onSuccess: () => {
-      router.refresh()
-    }
+    onSuccess: () => utils.calendar.getEvents.invalidate()
   })
 
   const { mutate: updateEventMutation } = api.calendar.updateEvent.useMutation({
-    onSuccess: () => {
-      router.refresh()
-    }
+    onSuccess: () => utils.calendar.getEvents.invalidate()
   })
 
   const { mutate: deleteEventMutation } = api.calendar.deleteEvent.useMutation({
-    onSuccess: () => {
-      router.refresh()
-    }
+    onSuccess: () => utils.calendar.getEvents.invalidate()
   })
 
   const createEvent = (newEvent: Omit<IEvent, "id">) => {

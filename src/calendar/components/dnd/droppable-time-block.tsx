@@ -1,59 +1,70 @@
-"use client";
+"use client"
 
-import { useDrop } from "react-dnd";
-import { parseISO, differenceInMilliseconds } from "date-fns";
+import { differenceInMilliseconds, parseISO } from "date-fns"
+import { useDrop } from "react-dnd"
 
-import { useUpdateEvent } from "@/calendar/hooks/use-update-event";
+import { useUpdateEvent } from "@/calendar/hooks/use-update-event"
 
-import { cn } from "@/lib/utils";
-import { ItemTypes } from "@/calendar/components/dnd/draggable-event";
+import { ItemTypes } from "@/calendar/components/dnd/draggable-event"
+import { cn } from "@/lib/utils"
 
-import type { IEvent } from "@/calendar/interfaces";
+import type { IEvent } from "@/calendar/interfaces"
 
 interface DroppableTimeBlockProps {
-  date: Date;
-  hour: number;
-  minute: number;
-  children: React.ReactNode;
+  date: Date
+  hour: number
+  minute: number
+  children: React.ReactNode
 }
 
-export function DroppableTimeBlock({ date, hour, minute, children }: DroppableTimeBlockProps) {
-  const { updateEvent } = useUpdateEvent();
+export function DroppableTimeBlock({
+  date,
+  hour,
+  minute,
+  children
+}: DroppableTimeBlockProps) {
+  const { updateEvent } = useUpdateEvent()
 
   const [{ isOver, canDrop }, drop] = useDrop(
     () => ({
       accept: ItemTypes.EVENT,
       drop: (item: { event: IEvent }) => {
-        const droppedEvent = item.event;
+        const droppedEvent = item.event
 
-        const eventStartDate = parseISO(droppedEvent.startDate);
-        const eventEndDate = parseISO(droppedEvent.endDate);
+        const eventStartDate = parseISO(droppedEvent.startDate)
+        const eventEndDate = parseISO(droppedEvent.endDate)
 
-        const eventDurationMs = differenceInMilliseconds(eventEndDate, eventStartDate);
+        const eventDurationMs = differenceInMilliseconds(
+          eventEndDate,
+          eventStartDate
+        )
 
-        const newStartDate = new Date(date);
-        newStartDate.setHours(hour, minute, 0, 0);
-        const newEndDate = new Date(newStartDate.getTime() + eventDurationMs);
+        const newStartDate = new Date(date)
+        newStartDate.setHours(hour, minute, 0, 0)
+        const newEndDate = new Date(newStartDate.getTime() + eventDurationMs)
 
         updateEvent({
           ...droppedEvent,
           startDate: newStartDate.toISOString(),
-          endDate: newEndDate.toISOString(),
-        });
+          endDate: newEndDate.toISOString()
+        })
 
-        return { moved: true };
+        return { moved: true }
       },
-      collect: monitor => ({
+      collect: (monitor) => ({
         isOver: monitor.isOver(),
-        canDrop: monitor.canDrop(),
-      }),
+        canDrop: monitor.canDrop()
+      })
     }),
     [date, hour, minute, updateEvent]
-  );
+  )
 
   return (
-    <div ref={drop as unknown as React.RefObject<HTMLDivElement>} className={cn("h-[24px]", isOver && canDrop && "bg-accent/50")}>
+    <div
+      ref={drop as unknown as React.RefObject<HTMLDivElement>}
+      className={cn("h-[24px]", isOver && canDrop && "bg-accent/50")}
+    >
       {children}
     </div>
-  );
+  )
 }

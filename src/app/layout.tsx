@@ -8,6 +8,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 import { type Metadata } from "next"
 import { ThemeProvider } from "next-themes"
 import { Geist } from "next/font/google"
+import { NuqsAdapter } from "nuqs/adapters/next/app"
 
 export const metadata: Metadata = {
   title: siteConfig.name,
@@ -39,7 +40,7 @@ export default function RootLayout({
           >
             <PostHogProvider>
               <Toaster />
-              {children}
+              <NuqsAdapter>{children}</NuqsAdapter>
             </PostHogProvider>
             <SpeedInsights />
           </ThemeProvider>
