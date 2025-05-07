@@ -45,15 +45,7 @@ const DEFAULT_WORKING_HOURS = {
 
 const DEFAULT_VISIBLE_HOURS = { from: 7, to: 18 }
 
-export function CalendarProvider({
-  children,
-  initialUsers,
-  initialEvents
-}: {
-  children: React.ReactNode
-  initialUsers: IUser[]
-  initialEvents: IEvent[]
-}) {
+export function CalendarProvider({ children }: { children: React.ReactNode }) {
   const [selectedDate, setSelectedDate] = useQueryState("selected-date", {
     ...parseAsIsoDateTime,
     defaultValue: new Date()
@@ -118,10 +110,14 @@ export function CalendarProvider({
   }, [workingHoursData])
 
   // Events operations
-  const { data: events = initialEvents, isLoading: isEventsLoading } =
-    api.calendar.getEvents.useQuery()
-  const { data: users = initialUsers, isLoading: isUsersLoading } =
-    api.calendar.getUsers.useQuery()
+  const { data: events, isLoading: isEventsLoading } =
+    api.calendar.getEvents.useQuery(undefined, {
+      initialData: []
+    })
+  const { data: users, isLoading: isUsersLoading } =
+    api.calendar.getUsers.useQuery(undefined, {
+      initialData: []
+    })
 
   const utils = api.useUtils()
 

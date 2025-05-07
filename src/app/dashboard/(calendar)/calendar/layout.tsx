@@ -1,5 +1,4 @@
 import { CalendarProvider } from "@/calendar/contexts/calendar-context"
-import { getEvents, getUsers } from "@/calendar/requests"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
@@ -12,13 +11,8 @@ export default async function CalendarLayout({
 }: {
   children: React.ReactNode
 }) {
-  const [initialEvents, initialUsers] = await Promise.all([
-    getEvents(),
-    getUsers()
-  ])
-
   return (
-    <CalendarProvider initialUsers={initialUsers} initialEvents={initialEvents}>
+    <CalendarProvider>
       <div className="mx-auto flex w-full max-w-screen-2xl flex-col gap-4 px-8 py-4">
         {children}
       </div>
