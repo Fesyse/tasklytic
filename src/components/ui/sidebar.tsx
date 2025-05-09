@@ -1,12 +1,11 @@
 "use client"
 
-import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
-import { VariantProps, cva } from "class-variance-authority"
+import type { VariantProps } from "class-variance-authority"
+import { cva } from "class-variance-authority"
 import { PanelLeftIcon } from "lucide-react"
+import * as React from "react"
 
-import { useIsMobile } from "@/hooks/use-mobile"
-import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
@@ -24,6 +23,8 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "@/components/ui/tooltip"
+import { useIsMobile } from "@/hooks/use-mobile"
+import { cn } from "@/lib/utils"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -244,7 +245,21 @@ function Sidebar({
         <div
           data-sidebar="sidebar"
           data-slot="sidebar-inner"
-          className="bg-sidebar group-data-[variant=floating]:border-sidebar-border flex h-full w-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm"
+          className={cn(
+            "bg-sidebar flex h-full w-full flex-col transition-shadow duration-200",
+            // Floating variant styling
+            "group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm",
+            // Sidebar variant shadow styling
+            "group-data-[variant=sidebar]:shadow-lg",
+            // Left side shadow (default)
+            "group-data-[side=left]:group-data-[variant=sidebar]:shadow-[4px_0_12px_rgba(0,0,0,0.2)]",
+            // Right side shadow
+            "group-data-[side=right]:group-data-[variant=sidebar]:shadow-[-4px_0_12px_rgba(0,0,0,0.2)]",
+            // Hover effects for shadow
+            "hover:group-data-[variant=sidebar]:shadow-xl",
+            "hover:group-data-[side=left]:group-data-[variant=sidebar]:shadow-[8px_0_18px_rgba(0,0,0,0.2)]",
+            "hover:group-data-[side=right]:group-data-[variant=sidebar]:shadow-[-8px_0_18px_rgba(0,0,0,0.2)]"
+          )}
         >
           {children}
         </div>

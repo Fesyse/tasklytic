@@ -14,7 +14,7 @@ export default function DashboardLayout({ children }: React.PropsWithChildren) {
         } as React.CSSProperties
       }
     >
-      <AppSidebar variant="inset" />
+      <AppSidebar />
       <SidebarInset>
         <SiteHeader />
         {children}
