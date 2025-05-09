@@ -20,6 +20,7 @@ const breadcrumbs = {
   "/dashboard/settings/notifications": "Notifications",
   "/dashboard/settings/security": "Security",
   "/dashboard/settings/privacy": "Privacy",
+  "/dashboard/calendar/settings": "Calendar settings",
   ...calendarBreadcrumbs
 }
 
