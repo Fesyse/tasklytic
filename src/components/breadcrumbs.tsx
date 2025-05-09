@@ -4,7 +4,6 @@ import { usePathname } from "next/navigation"
 
 const breadcrumbs = {
   "/dashboard": "Dashboard",
-  "/dashboard/todos": "Todos",
   "/dashboard/habits": "Habits",
   "/dashboard/goals": "Goals",
   "/dashboard/settings": "Settings",

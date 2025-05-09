@@ -72,60 +72,6 @@ export const verification = createTable("verification", {
   updatedAt: timestamp("updated_at")
 })
 
-// Enum for todo status
-export const todoStatusEnum = pgEnum("todo_status", [
-  "planned",
-  "in-progress",
-  "completed"
-])
-export type TodoStatus = (typeof todoStatusEnum.enumValues)[number]
-
-// Todo table
-export const todos = createTable("todo", {
-  id: varchar("id", { length: 36 })
-    .$defaultFn(() => createId())
-    .primaryKey(),
-  title: text("title").notNull(),
-  emoji: text("emoji"),
-  status: todoStatusEnum("status").notNull().default("planned"),
-  startDate: timestamp("start_date").notNull(),
-  endDate: timestamp("end_date"),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
-  userId: varchar("user_id", { length: 36 })
-    .notNull()
-    .references(() => users.id)
-})
-
-// SubTodo table
-export const subTodos = createTable("sub_todo", {
-  id: varchar("id", { length: 36 })
-    .$defaultFn(() => createId())
-    .primaryKey(),
-  title: text("title").notNull(),
-  status: todoStatusEnum("status").notNull().default("planned"),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  todoId: varchar("todo_id", { length: 36 })
-    .notNull()
-    .references(() => todos.id, { onDelete: "cascade" })
-})
-
-// Define relations
-export const todosRelations = relations(todos, ({ many, one }) => ({
-  subTodos: many(subTodos),
-  user: one(users, {
-    fields: [todos.userId],
-    references: [users.id]
-  })
-}))
-
-export const subTodosRelations = relations(subTodos, ({ one }) => ({
-  todo: one(todos, {
-    fields: [subTodos.todoId],
-    references: [todos.id]
-  })
-}))
-
 export const calendarViewEnum = pgEnum("calendar_view", [
   "day",
   "week",
@@ -238,8 +184,3 @@ export type NewCalendarSettings = typeof calendarSettings.$inferInsert
 export type CalendarView = (typeof calendarViewEnum.enumValues)[number]
 export type EventColor = (typeof eventColorEnum.enumValues)[number]
 export type BadgeVariant = (typeof badgeVariantEnum.enumValues)[number]
-export type Todo = typeof todos.$inferSelect
-export type SubTodo = typeof subTodos.$inferSelect
-export type TodoWithSubTodos = Todo & {
-  subTodos: SubTodo[]
-}

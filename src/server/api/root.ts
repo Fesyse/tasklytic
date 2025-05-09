@@ -1,6 +1,5 @@
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc"
 import { calendarRouter } from "./routers/calendar"
-import { todoRouter } from "./routers/todo"
 
 /**
  * This is the primary router for your server.
@@ -8,7 +7,6 @@ import { todoRouter } from "./routers/todo"
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  todo: todoRouter,
   calendar: calendarRouter
 })
 
