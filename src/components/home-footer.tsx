@@ -1,5 +1,6 @@
 import { siteConfig } from "@/lib/site-config"
 import Link from "next/link"
+import { ModeToggle } from "./mode-toggle"
 import { Icons } from "./ui/icons"
 
 const links = [
@@ -52,7 +53,7 @@ export function Footer() {
             </Link>
           ))}
         </div>
-        <div className="my-8 flex flex-wrap justify-center gap-6 text-sm">
+        <div className="my-8 flex flex-wrap items-center justify-center gap-6 text-sm">
           <Link
             href="#"
             target="_blank"
@@ -178,6 +179,7 @@ export function Footer() {
               ></path>
             </svg>
           </Link>
+          <ModeToggle className="rounded-full" />
         </div>
         <span className="text-muted-foreground block text-center text-sm">
           {" "}
