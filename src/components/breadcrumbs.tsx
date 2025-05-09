@@ -1,6 +1,15 @@
 "use client"
 
+import { views } from "@/calendar/constants"
+import { title } from "@/lib/utils"
 import { usePathname } from "next/navigation"
+
+const calendarBreadcrumbs = Object.fromEntries(
+  views.map((view) => [
+    `/dashboard/calendar/${view}-view`,
+    `Calendar | ${title(view)} view`
+  ])
+)
 
 const breadcrumbs = {
   "/dashboard": "Dashboard",
@@ -10,7 +19,8 @@ const breadcrumbs = {
   "/dashboard/settings/profile": "Profile",
   "/dashboard/settings/notifications": "Notifications",
   "/dashboard/settings/security": "Security",
-  "/dashboard/settings/privacy": "Privacy"
+  "/dashboard/settings/privacy": "Privacy",
+  ...calendarBreadcrumbs
 }
 
 export function Breadcrumbs() {
