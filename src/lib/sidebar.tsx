@@ -6,21 +6,22 @@ import {
   type LucideIcon
 } from "lucide-react"
 
-type Nav = {
+export type NavItem = {
   title: string
   url: string
   icon: LucideIcon
 }
-
-type NoteNav = Nav & {
+export type NoteNavItem = NavItem & {
   emoji: string
 }
 
 type SidebarNav = {
-  navMain: Nav[]
-  privateNotes: NoteNav[]
-  sharedNotes?: NoteNav[]
-  navSecondary: Nav[]
+  navMain: NavItem[]
+
+  privateNotes: NoteNavItem[]
+  sharedNotes?: NoteNavItem[]
+
+  navSecondary: NavItem[]
 }
 
 export const useSidebarNav = (): SidebarNav => {

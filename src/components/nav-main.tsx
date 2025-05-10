@@ -1,6 +1,6 @@
 "use client"
 
-import { IconCirclePlusFilled, IconMail, type Icon } from "@tabler/icons-react"
+import { IconCirclePlusFilled, IconMail } from "@tabler/icons-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -10,19 +10,11 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from "@/components/ui/sidebar"
-import type { LucideIcon } from "lucide-react"
+import type { NavItem } from "@/lib/sidebar"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
-export function NavMain({
-  items
-}: {
-  items: {
-    title: string
-    url: string
-    icon?: Icon | LucideIcon
-  }[]
-}) {
+export function NavMain({ items }: { items: NavItem[] }) {
   const pathname = usePathname()
 
   return (

@@ -1,7 +1,7 @@
 import { SidebarProvider } from "@/components/ui/sidebar"
 
 import { AppSidebar } from "@/components/app-sidebar"
-import { SiteHeader } from "@/components/site-header"
+import { InnerSidebarTrigger } from "@/components/inner-sidebar-trigger"
 import { SidebarInset } from "@/components/ui/sidebar"
 
 export default function DashboardLayout({ children }: React.PropsWithChildren) {
@@ -15,8 +15,8 @@ export default function DashboardLayout({ children }: React.PropsWithChildren) {
       }
     >
       <AppSidebar />
-      <SidebarInset>
-        <SiteHeader />
+      <SidebarInset className="relative">
+        <InnerSidebarTrigger />
         {children}
       </SidebarInset>
     </SidebarProvider>

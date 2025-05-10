@@ -10,7 +10,9 @@ import {
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem
+  SidebarMenuItem,
+  SidebarTrigger,
+  useSidebar
 } from "@/components/ui/sidebar"
 import { useSidebarNav } from "@/lib/sidebar"
 import { siteConfig } from "@/lib/site-config"
@@ -18,13 +20,14 @@ import { CalendarCheck } from "lucide-react"
 import Link from "next/link"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { open } = useSidebar()
   const sidebarNav = useSidebarNav()
 
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <SidebarMenu>
-          <SidebarMenuItem>
+          <SidebarMenuItem className="flex items-center">
             <SidebarMenuButton
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
@@ -36,6 +39,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </span>
               </Link>
             </SidebarMenuButton>
+            {open ? <SidebarTrigger /> : null}
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
