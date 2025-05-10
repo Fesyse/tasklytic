@@ -12,44 +12,14 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from "@/components/ui/sidebar"
+import { useSidebarNav } from "@/lib/sidebar"
 import { siteConfig } from "@/lib/site-config"
-import {
-  CalendarCheck,
-  CalendarIcon,
-  HomeIcon,
-  InboxIcon,
-  SettingsIcon
-} from "lucide-react"
+import { CalendarCheck } from "lucide-react"
 import Link from "next/link"
 
-const data = {
-  navMain: [
-    {
-      title: "Home",
-      url: "/dashboard",
-      icon: HomeIcon
-    },
-    {
-      title: "Inbox",
-      url: "/dashboard/inbox",
-      icon: InboxIcon
-    }
-  ],
-  navSecondary: [
-    {
-      title: "Calendar",
-      url: "/dashboard/calendar",
-      icon: CalendarIcon
-    },
-    {
-      title: "Settings",
-      url: "/dashboard/settings",
-      icon: SettingsIcon
-    }
-  ]
-}
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const sidebarNav = useSidebarNav()
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -70,8 +40,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        <NavMain items={sidebarNav.navMain} />
+        <NavSecondary items={sidebarNav.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
         <NavUser />
