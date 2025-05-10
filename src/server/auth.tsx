@@ -3,11 +3,11 @@ import VerifyEmail from "@/emails/verify-email"
 import { env } from "@/env"
 import { siteConfig } from "@/lib/site-config"
 import { db } from "@/server/db"
+import { resend } from "@/server/resend"
 import { betterAuth } from "better-auth"
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
 import { nextCookies } from "better-auth/next-js"
 import { emailOTP } from "better-auth/plugins"
-import { resend } from "./resend"
 
 export const auth = betterAuth({
   emailAndPassword: {

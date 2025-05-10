@@ -1,7 +1,10 @@
+"use client"
+
+import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Eye, EyeOff } from "lucide-react"
 import { useState } from "react"
-import { Button } from "./ui/button"
+
 export function PasswordInput({
   ...props
 }: React.ComponentProps<typeof Input>) {

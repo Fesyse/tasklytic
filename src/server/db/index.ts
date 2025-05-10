@@ -1,7 +1,7 @@
 import { env } from "@/env"
+import * as schema from "@/server/db/schema"
 import { drizzle } from "drizzle-orm/node-postgres"
 import { Pool } from "pg"
-import * as schema from "./schema"
 
 /**
  * Cache the database connection in development. This avoids creating a new connection on every HMR

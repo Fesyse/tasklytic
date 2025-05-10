@@ -1,7 +1,7 @@
+import { ModeToggle } from "@/components/mode-toggle"
+import { Icons } from "@/components/ui/icons"
 import { siteConfig } from "@/lib/site-config"
 import Link from "next/link"
-import { ModeToggle } from "./mode-toggle"
-import { Icons } from "./ui/icons"
 
 const links = [
   {

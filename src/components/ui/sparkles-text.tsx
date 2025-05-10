@@ -8,8 +8,8 @@ import {
   useState
 } from "react"
 
+import { TextEffect, type TextEffectProps } from "@/components/ui/text-effect"
 import { cn } from "@/lib/utils"
-import { TextEffect, type TextEffectProps } from "./text-effect"
 
 type Sparkle = {
   id: string

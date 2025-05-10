@@ -1,5 +1,5 @@
+import { calendarRouter } from "@/server/api/routers/calendar"
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc"
-import { calendarRouter } from "./routers/calendar"
 
 /**
  * This is the primary router for your server.

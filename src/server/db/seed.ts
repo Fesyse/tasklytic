@@ -9,8 +9,8 @@ import type {
   NewCalendarEvent,
   NewCalendarSettings,
   NewWorkingHours
-} from "./schema"
-import * as schema from "./schema"
+} from "@/server/db/schema"
+import * as schema from "@/server/db/schema"
 
 const env = process.env as Env
 

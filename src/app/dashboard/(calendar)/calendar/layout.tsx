@@ -1,10 +1,10 @@
+import type { CalendarPageProps } from "@/app/dashboard/(calendar)/calendar/[view]/page"
 import { CalendarSkeleton } from "@/calendar/components/loading"
 import { views } from "@/calendar/constants"
 import { CalendarProvider } from "@/calendar/contexts/calendar-context"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { Suspense } from "react"
-import type { CalendarPageProps } from "./[view]/page"
 
 export const metadata: Metadata = {
   title: "Calendar | Dashboard",
