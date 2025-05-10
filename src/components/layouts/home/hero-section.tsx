@@ -5,7 +5,7 @@ import { siteConfig } from "@/lib/site-config"
 import { ArrowRight, ChevronRight } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import { SparklesText } from "./ui/sparkles-text"
+import { SparklesText } from "../../ui/sparkles-text"
 
 const transitionVariants = {
   item: {

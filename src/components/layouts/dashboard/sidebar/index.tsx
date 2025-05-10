@@ -1,8 +1,8 @@
 "use client"
 
-import { NavMain } from "@/components/nav-main"
-import { NavSecondary } from "@/components/nav-secondary"
-import { NavUser } from "@/components/nav-user"
+import { NavMain } from "@/components/layouts/dashboard/sidebar/nav-main"
+import { NavSecondary } from "@/components/layouts/dashboard/sidebar/nav-secondary"
+import { NavUser } from "@/components/layouts/dashboard/sidebar/nav-user"
 import {
   Sidebar,
   SidebarContent,

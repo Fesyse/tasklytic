@@ -1,14 +1,9 @@
 import "@/styles/globals.css"
 
-import { PostHogProvider } from "@/components/posthog-provider"
-import { Toaster } from "@/components/ui/sonner"
+import { Providers } from "@/components/providers"
 import { siteConfig } from "@/lib/site-config"
-import { TRPCReactProvider } from "@/trpc/react"
-import { SpeedInsights } from "@vercel/speed-insights/next"
 import { type Metadata } from "next"
-import { ThemeProvider } from "next-themes"
 import { Geist } from "next/font/google"
-import { NuqsAdapter } from "nuqs/adapters/next/app"
 
 export const metadata: Metadata = {
   title: siteConfig.name,
@@ -31,20 +26,7 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" sizes="32x32" />
       </head>
       <body>
-        <TRPCReactProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <PostHogProvider>
-              <Toaster />
-              <NuqsAdapter>{children}</NuqsAdapter>
-            </PostHogProvider>
-            <SpeedInsights />
-          </ThemeProvider>
-        </TRPCReactProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   )

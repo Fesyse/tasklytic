@@ -20,8 +20,8 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
-import { PasswordInput } from "./password-input"
-import { Icons } from "./ui/icons"
+import { PasswordInput } from "../password-input"
+import { Icons } from "../ui/icons"
 
 const signInSchema = z.object({
   email: z.string().email(),
