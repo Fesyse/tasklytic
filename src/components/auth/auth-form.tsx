@@ -9,7 +9,9 @@ import {
   FormLabel,
   FormMessage
 } from "@/components/ui/form"
+import { Icons } from "@/components/ui/icons"
 import { Input } from "@/components/ui/input"
+import { PasswordInput } from "@/components/ui/password-input"
 import { authClient } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -20,8 +22,6 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
-import { PasswordInput } from "../password-input"
-import { Icons } from "../ui/icons"
 
 const signInSchema = z.object({
   email: z.string().email(),

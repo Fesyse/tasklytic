@@ -1,6 +1,6 @@
+import type { TCalendarView } from "@/calendar/types"
 import { Skeleton } from "@/components/ui/skeleton"
 import { memo } from "react"
-import type { TCalendarView } from "../types"
 
 export function CalendarHeaderSkeleton() {
   return (

@@ -19,13 +19,13 @@ import {
   useSidebar
 } from "@/components/ui/sidebar"
 
+import { ModeToggle } from "@/components/mode-toggle"
 import { Skeleton } from "@/components/ui/skeleton"
 import { authClient } from "@/lib/auth-client"
 import type { User } from "better-auth"
 import { SettingsIcon, UserIcon } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import { ModeToggle } from "./mode-toggle"
 
 export function NavUser() {
   const { data: session, isPending, error } = authClient.useSession()
