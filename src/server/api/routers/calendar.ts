@@ -290,7 +290,7 @@ export const calendarRouter = createTRPCRouter({
       .from(users)
 
     // Transform to match the expected interface format
-    return [...allUsers, ctx.session.user].map((user) => ({
+    return allUsers.map((user) => ({
       id: user.id,
       name: user.name,
       picturePath: user.image

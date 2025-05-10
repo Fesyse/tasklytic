@@ -19,12 +19,12 @@ interface ICalendarContext {
   setSelectedUserId: (userId: IUser["id"] | "all") => void
   badgeVariant: TBadgeVariant
   setBadgeVariant: (variant: TBadgeVariant) => void
-  users: IUser[]
+  users: IUser[] | undefined
   workingHours: TWorkingHours
   setWorkingHours: Dispatch<SetStateAction<TWorkingHours>>
   visibleHours: TVisibleHours
   setVisibleHours: Dispatch<SetStateAction<TVisibleHours>>
-  events: IEvent[]
+  events: IEvent[] | undefined
   updateEvent: (updatedEvent: IEvent) => void
   createEvent: (newEvent: Omit<IEvent, "id">) => void
   deleteEvent: (eventId: string | number) => void
@@ -111,13 +111,9 @@ export function CalendarProvider({ children }: { children: React.ReactNode }) {
 
   // Events operations
   const { data: events, isLoading: isEventsLoading } =
-    api.calendar.getEvents.useQuery(undefined, {
-      initialData: []
-    })
+    api.calendar.getEvents.useQuery()
   const { data: users, isLoading: isUsersLoading } =
-    api.calendar.getUsers.useQuery(undefined, {
-      initialData: []
-    })
+    api.calendar.getUsers.useQuery()
 
   const utils = api.useUtils()
 

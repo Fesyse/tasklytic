@@ -21,7 +21,7 @@ import type { TCalendarView } from "@/calendar/types"
 import { usePathname } from "next/navigation"
 
 interface IProps {
-  events: IEvent[]
+  events: IEvent[] | undefined
 }
 
 export function CalendarHeader({ events }: IProps) {
