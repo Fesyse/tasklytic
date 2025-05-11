@@ -10,7 +10,7 @@ import {
   Users
 } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { useState, type ChangeEvent } from "react"
+import { useCallback, useEffect, useState, type ChangeEvent } from "react"
 import { useForm, type ControllerRenderProps } from "react-hook-form"
 import { z } from "zod"
 
@@ -48,9 +48,12 @@ const organizationSchema = z.object({
 type OrganizationSchema = z.infer<typeof organizationSchema>
 
 export default function NewOrganizationPage() {
+  const session = authClient.useSession()
   const router = useRouter()
   const [step, setStep] = useState<1 | 2>(1)
   const [isLoading, setIsLoading] = useState(false)
+  const [isCheckingSlug, setIsCheckingSlug] = useState(false)
+  const [slugError, setSlugError] = useState<string | null>(null)
 
   const form = useForm<OrganizationSchema>({
     resolver: zodResolver(organizationSchema),
@@ -62,9 +65,75 @@ export default function NewOrganizationPage() {
     }
   })
 
+  // Function to check if slug is available
+  const checkSlugAvailability = useCallback(
+    async (slug: string) => {
+      if (slug.length < 3) return
+
+      setIsCheckingSlug(true)
+      setSlugError(null)
+
+      try {
+        const response = await authClient.organization.checkSlug({
+          slug
+        })
+
+        console.log(response)
+
+        if (response.error) {
+          setSlugError("This slug is already taken. Please choose another one.")
+          form.setError("slug", {
+            type: "manual",
+            message: "This slug is already taken. Please choose another one."
+          })
+        } else {
+          form.clearErrors("slug")
+        }
+      } catch (error) {
+        console.error("Error checking slug availability:", error)
+      } finally {
+        setIsCheckingSlug(false)
+      }
+    },
+    [form]
+  )
+
+  // Check slug availability when slug changes
+  useEffect(() => {
+    const slug = form.watch("slug")
+    const delayDebounce = setTimeout(() => {
+      if (slug.length >= 3) {
+        checkSlugAvailability(slug)
+      }
+    }, 500)
+
+    return () => clearTimeout(delayDebounce)
+  }, [form.watch("slug"), checkSlugAvailability])
+
   const onSubmit = async (data: OrganizationSchema) => {
     setIsLoading(true)
     try {
+      if (!session.data) {
+        toast.error("Not authenticated")
+        setIsLoading(false)
+        return
+      }
+
+      // Check slug availability one more time before submitting
+      const slugResponse = await authClient.organization.checkSlug({
+        slug: data.slug
+      })
+
+      if (slugResponse.error) {
+        setSlugError("This slug is already taken. Please choose another one.")
+        form.setError("slug", {
+          type: "manual",
+          message: "This slug is already taken. Please choose another one."
+        })
+        setIsLoading(false)
+        return
+      }
+
       // Create organization using better-auth organization plugin
       const response = await authClient.organization.create({
         name: data.name,
@@ -72,11 +141,12 @@ export default function NewOrganizationPage() {
         metadata: {
           teamType: data.teamType,
           layoutType: data.layoutType
-        }
+        },
+        userId: session.data.user.id
       })
 
       if (response.error) {
-        toast.error(response.error.message)
+        toast.error(response.error.message ?? response.error.statusText)
       } else {
         toast.success(`Organization "${data.name}" created successfully!`)
         router.push("/dashboard")
@@ -91,15 +161,17 @@ export default function NewOrganizationPage() {
 
   // Function to generate a slug from the name
   const generateSlug = (name: string) => {
-    return name.toLowerCase().replace(" ", "-")
+    return name.toLowerCase().replace(/ /g, "-")
   }
+
   const handleNameInput = (
     e: ChangeEvent<HTMLInputElement>,
     field: ControllerRenderProps<OrganizationSchema, "name" | "slug">
   ) => {
     field.onChange(e)
     // Auto-generate slug when name changes
-    form.setValue("slug", generateSlug(e.target.value))
+    const newSlug = generateSlug(e.target.value)
+    form.setValue("slug", newSlug)
   }
 
   return (
@@ -114,7 +186,15 @@ export default function NewOrganizationPage() {
         </div>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-6"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && step === 1) {
+                e.preventDefault()
+              }
+            }}
+          >
             <Card>
               <CardHeader>
                 <CardTitle>Create your organization</CardTitle>
@@ -151,13 +231,24 @@ export default function NewOrganizationPage() {
                       render={({ field }) => (
                         <FormItem className="grid gap-3">
                           <FormLabel>URL Slug</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="my-workspace"
-                              {...field}
-                              onChange={(e) => handleNameInput(e, field)}
-                            />
-                          </FormControl>
+                          <div className="relative">
+                            <FormControl>
+                              <Input
+                                placeholder="my-workspace"
+                                {...field}
+                                onChange={(e) => {
+                                  field.onChange(e)
+                                  setSlugError(null)
+                                }}
+                                className={
+                                  slugError ? "border-red-500 pr-10" : ""
+                                }
+                              />
+                            </FormControl>
+                            {isCheckingSlug && (
+                              <Loader2 className="absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 animate-spin" />
+                            )}
+                          </div>
                           <p className="text-muted-foreground text-xs">
                             This will be used in URLs for your organization
                           </p>
@@ -174,7 +265,8 @@ export default function NewOrganizationPage() {
                           <FormLabel>Usage Type</FormLabel>
                           <div className="grid grid-cols-2 gap-4">
                             <FormControl>
-                              <div
+                              <button
+                                type="button"
                                 className={cn(
                                   "hover:border-primary flex cursor-pointer flex-col items-center justify-center rounded-lg border p-4",
                                   field.value === "solo" &&
@@ -191,10 +283,11 @@ export default function NewOrganizationPage() {
                                     Use Tasklytic alone
                                   </p>
                                 </div>
-                              </div>
+                              </button>
                             </FormControl>
                             <FormControl>
-                              <div
+                              <button
+                                type="button"
                                 className={cn(
                                   "hover:border-primary flex cursor-pointer flex-col items-center justify-center rounded-lg border p-4",
                                   field.value === "team" &&
@@ -211,7 +304,7 @@ export default function NewOrganizationPage() {
                                     Collaborate with others
                                   </p>
                                 </div>
-                              </div>
+                              </button>
                             </FormControl>
                           </div>
                           <FormMessage />
@@ -228,9 +321,10 @@ export default function NewOrganizationPage() {
                         <FormLabel>Layout Style</FormLabel>
                         <div className="grid gap-4">
                           <FormControl>
-                            <div
+                            <button
+                              type="button"
                               className={cn(
-                                "hover:border-primary flex cursor-pointer items-start gap-4 rounded-lg border p-4",
+                                "hover:border-primary flex w-full cursor-pointer items-start gap-4 rounded-lg border p-4 text-left",
                                 field.value === "default" &&
                                   "border-primary bg-primary/5"
                               )}
@@ -246,12 +340,13 @@ export default function NewOrganizationPage() {
                                   content area
                                 </p>
                               </div>
-                            </div>
+                            </button>
                           </FormControl>
                           <FormControl>
-                            <div
+                            <button
+                              type="button"
                               className={cn(
-                                "hover:border-primary flex cursor-pointer items-start gap-4 rounded-lg border p-4",
+                                "hover:border-primary flex w-full cursor-pointer items-start gap-4 rounded-lg border p-4 text-left",
                                 field.value === "minimalist" &&
                                   "border-primary bg-primary/5"
                               )}
@@ -266,12 +361,13 @@ export default function NewOrganizationPage() {
                                   Clean interface with minimal distractions
                                 </p>
                               </div>
-                            </div>
+                            </button>
                           </FormControl>
                           <FormControl>
-                            <div
+                            <button
+                              type="button"
                               className={cn(
-                                "hover:border-primary flex cursor-pointer items-start gap-4 rounded-lg border p-4",
+                                "hover:border-primary flex w-full cursor-pointer items-start gap-4 rounded-lg border p-4 text-left",
                                 field.value === "detailed" &&
                                   "border-primary bg-primary/5"
                               )}
@@ -287,7 +383,7 @@ export default function NewOrganizationPage() {
                                   analytics
                                 </p>
                               </div>
-                            </div>
+                            </button>
                           </FormControl>
                         </div>
                         <FormMessage />
@@ -306,7 +402,15 @@ export default function NewOrganizationPage() {
                     >
                       Back
                     </Button>
-                    <Button type="submit" disabled={isLoading}>
+                    <Button
+                      type="submit"
+                      disabled={
+                        isLoading ||
+                        session.isPending ||
+                        isCheckingSlug ||
+                        !!slugError
+                      }
+                    >
                       {isLoading && (
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       )}
@@ -324,29 +428,14 @@ export default function NewOrganizationPage() {
                     </Button>
                     <Button
                       type="button"
-                      onClick={() => {
-                        const nameResult = form.getFieldState("name").invalid
-                        const slugResult = form.getFieldState("slug").invalid
-
-                        if (!form.getValues("name")) {
-                          form.setError("name", {
-                            type: "manual",
-                            message: "Organization name is required"
-                          })
-                          return
-                        }
-
-                        if (!form.getValues("slug")) {
-                          form.setError("slug", {
-                            type: "manual",
-                            message: "URL slug is required"
-                          })
-                          return
-                        }
-
-                        if (nameResult || slugResult) return
+                      onClick={(e) => {
+                        e.preventDefault()
+                        if (!form.formState.isValid || slugError) return
                         setStep(2)
                       }}
+                      disabled={
+                        !form.formState.isValid || isCheckingSlug || !!slugError
+                      }
                     >
                       Next
                     </Button>
