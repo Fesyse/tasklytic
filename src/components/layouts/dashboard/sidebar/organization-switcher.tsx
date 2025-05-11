@@ -15,54 +15,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
+import { SidebarMenuItem, useSidebar } from "@/components/ui/sidebar"
+import { Skeleton } from "@/components/ui/skeleton"
 import { authClient } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
 
-// Organization types
-type OrganizationMetadata = {
-  teamType?: "solo" | "team"
-  layoutType?: "default" | "minimalist" | "detailed"
-}
-
-type OrganizationWithMetadata = {
-  id: string
-  name: string
-  slug: string
-  metadata?: OrganizationMetadata
-}
-
-type OrganizationSwitcherContextType = {
-  organizations: OrganizationWithMetadata[] | null
-  activeOrg: OrganizationWithMetadata | null
-  isLoading: boolean
-  isOpen: boolean
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
-  switchOrganization: (orgId: string) => Promise<void>
-}
-
-// Create the context
-const OrganizationSwitcherContext =
-  React.createContext<OrganizationSwitcherContextType | null>(null)
-
-// Custom hook to use the organization context
-export function useOrganizationSwitcher() {
-  const context = React.useContext(OrganizationSwitcherContext)
-
-  if (!context) {
-    throw new Error(
-      "useOrganizationSwitcher must be used within an OrganizationSwitcherProvider"
-    )
-  }
-
-  return context
-}
-
-// Provider component that wraps your app and makes organization data available to any child component that calls useOrganizationSwitcher
-export function OrganizationSwitcherProvider({
-  children
-}: {
-  children: React.ReactNode
-}) {
+export function OrganizationSwitcher() {
+  const { open: sidebarOpen } = useSidebar()
   const [isOpen, setIsOpen] = React.useState(false)
   const router = useRouter()
 
@@ -94,58 +53,38 @@ export function OrganizationSwitcherProvider({
     await switchOrgMutation.mutateAsync(orgId)
   }
 
-  // Memoize the context value to prevent unnecessary re-renders
-  const value = React.useMemo<OrganizationSwitcherContextType>(
-    () => ({
-      organizations,
-      activeOrg,
-      isLoading,
-      isOpen,
-      setIsOpen,
-      switchOrganization
-    }),
-    [organizations, activeOrg, isLoading, isOpen, switchOrganization]
-  )
-
-  return (
-    <OrganizationSwitcherContext.Provider value={value}>
-      {children}
-    </OrganizationSwitcherContext.Provider>
-  )
-}
-
-// The UI component that displays the organization switcher dropdown
-export function OrganizationSwitcher() {
-  const {
-    organizations,
-    activeOrg,
-    isLoading,
-    isOpen,
-    setIsOpen,
-    switchOrganization
-  } = useOrganizationSwitcher()
-
-  const router = useRouter()
-
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="w-full justify-between">
-          <div className="flex items-center gap-2 truncate">
-            {activeOrg ? (
-              <>
-                <Users className="h-4 w-4" />
-                <span className="truncate">{activeOrg.name}</span>
-              </>
-            ) : isLoading ? (
-              <span>Loading...</span>
-            ) : (
-              <span>Select an organization</span>
-            )}
-          </div>
-          <ChevronsUpDown className="ml-auto h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </DropdownMenuTrigger>
+      <SidebarMenuItem>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="outline"
+            className={cn("w-full justify-between")}
+            size={sidebarOpen ? "default" : "icon"}
+          >
+            <span
+              className={
+                "flex h-8 w-full items-center gap-2 rounded-md text-left outline-hidden transition-[width,height,padding] duration-200 ease-linear group-has-data-[sidebar=menu-action]/menu-item:pr-8 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium [&>span:last-child]:truncate [&>svg]:size-4"
+              }
+            >
+              {activeOrg ? (
+                <>
+                  <Users />
+                  <span>{activeOrg.name}</span>
+                </>
+              ) : (
+                <>
+                  <Skeleton className="size-4" />
+                  <Skeleton className="h-4 w-20" />
+                </>
+              )}
+            </span>
+            {sidebarOpen ? (
+              <ChevronsUpDown className="ml-auto h-4 w-4 shrink-0 opacity-50" />
+            ) : null}
+          </Button>
+        </DropdownMenuTrigger>
+      </SidebarMenuItem>
       <DropdownMenuContent className="w-[200px]">
         <DropdownMenuLabel>Organizations</DropdownMenuLabel>
         {isLoading ? (
