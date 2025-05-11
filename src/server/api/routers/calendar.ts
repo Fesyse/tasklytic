@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm"
+import { and, eq, gte, lte, or } from "drizzle-orm"
 import { z } from "zod"
 
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
@@ -52,43 +52,87 @@ const updateCalendarSettingsSchema = z.object({
   visibleHoursTo: z.number().min(0).max(23).optional()
 })
 
+// Schema for date range filtering
+const dateRangeSchema = z.object({
+  startDate: z
+    .string()
+    .transform((str) => new Date(str))
+    .optional(),
+  endDate: z
+    .string()
+    .transform((str) => new Date(str))
+    .optional()
+})
+
 export const calendarRouter = createTRPCRouter({
   // Get all events for the current user and all other users
-  getEvents: protectedProcedure.query(async ({ ctx }) => {
-    // Fetch events for all users
-    const events = await ctx.db
-      .select({
-        id: calendarEvents.id,
-        title: calendarEvents.title,
-        description: calendarEvents.description,
-        startDate: calendarEvents.startDate,
-        endDate: calendarEvents.endDate,
-        color: calendarEvents.color,
-        userId: calendarEvents.userId,
-        user: {
-          id: users.id,
-          name: users.name,
-          image: users.image
-        }
-      })
-      .from(calendarEvents)
-      .innerJoin(users, eq(calendarEvents.userId, users.id))
+  getEvents: protectedProcedure
+    .input(dateRangeSchema.optional())
+    .query(async ({ ctx, input }) => {
+      // Build the where clause based on the date range
+      let whereClause = undefined
 
-    // Transform to match the expected interface format
-    return events.map((event) => ({
-      id: event.id,
-      title: event.title,
-      description: event.description || "",
-      startDate: event.startDate.toISOString(),
-      endDate: event.endDate.toISOString(),
-      color: event.color,
-      user: {
-        id: event.user.id,
-        name: event.user.name,
-        picturePath: event.user.image
+      if (input?.startDate && input?.endDate) {
+        // Events that overlap with the given date range:
+        // 1. Events that start during the range
+        // 2. Events that end during the range
+        // 3. Events that span the entire range
+        whereClause = or(
+          // Event starts during the range
+          and(
+            gte(calendarEvents.startDate, input.startDate),
+            lte(calendarEvents.startDate, input.endDate)
+          ),
+          // Event ends during the range
+          and(
+            gte(calendarEvents.endDate, input.startDate),
+            lte(calendarEvents.endDate, input.endDate)
+          ),
+          // Event spans the entire range
+          and(
+            lte(calendarEvents.startDate, input.startDate),
+            gte(calendarEvents.endDate, input.endDate)
+          )
+        )
       }
-    }))
-  }),
+
+      // Fetch events with optional date filtering
+      const events = await ctx.db
+        .select({
+          id: calendarEvents.id,
+          title: calendarEvents.title,
+          description: calendarEvents.description,
+          startDate: calendarEvents.startDate,
+          endDate: calendarEvents.endDate,
+          color: calendarEvents.color,
+          userId: calendarEvents.userId,
+          user: {
+            id: users.id,
+            name: users.name,
+            image: users.image
+          }
+        })
+        .from(calendarEvents)
+        .innerJoin(users, eq(calendarEvents.userId, users.id))
+        .where(whereClause)
+        .orderBy(calendarEvents.startDate)
+        .limit(200) // Limit the number of events returned
+
+      // Transform to match the expected interface format
+      return events.map((event) => ({
+        id: event.id,
+        title: event.title,
+        description: event.description || "",
+        startDate: event.startDate.toISOString(),
+        endDate: event.endDate.toISOString(),
+        color: event.color,
+        user: {
+          id: event.user.id,
+          name: event.user.name,
+          picturePath: event.user.image
+        }
+      }))
+    }),
 
   // Get a specific event
   getEvent: protectedProcedure

@@ -1,21 +1,42 @@
 "use client"
 
 import { isSameDay, parseISO } from "date-fns"
-import { useMemo } from "react"
+import { lazy, Suspense, useMemo } from "react"
 
 import { CalendarSkeleton } from "@/calendar/components/loading"
 import { useCalendar } from "@/calendar/contexts/calendar-context"
 
 import { DndProviderWrapper } from "@/calendar/components/dnd/dnd-provider"
 
-import { CalendarAgendaView } from "@/calendar/components/agenda-view/calendar-agenda-view"
 import { CalendarHeader } from "@/calendar/components/header/calendar-header"
-import { CalendarMonthView } from "@/calendar/components/month-view/calendar-month-view"
-import { CalendarDayView } from "@/calendar/components/week-and-day-view/calendar-day-view"
-import { CalendarWeekView } from "@/calendar/components/week-and-day-view/calendar-week-view"
-import { CalendarYearView } from "@/calendar/components/year-view/calendar-year-view"
-
 import type { TCalendarView } from "@/calendar/types"
+
+// Dynamically import view components to improve initial load time
+const CalendarAgendaView = lazy(() =>
+  import("@/calendar/components/agenda-view/calendar-agenda-view").then(
+    (mod) => ({ default: mod.CalendarAgendaView })
+  )
+)
+const CalendarMonthView = lazy(() =>
+  import("@/calendar/components/month-view/calendar-month-view").then(
+    (mod) => ({ default: mod.CalendarMonthView })
+  )
+)
+const CalendarDayView = lazy(() =>
+  import("@/calendar/components/week-and-day-view/calendar-day-view").then(
+    (mod) => ({ default: mod.CalendarDayView })
+  )
+)
+const CalendarWeekView = lazy(() =>
+  import("@/calendar/components/week-and-day-view/calendar-week-view").then(
+    (mod) => ({ default: mod.CalendarWeekView })
+  )
+)
+const CalendarYearView = lazy(() =>
+  import("@/calendar/components/year-view/calendar-year-view").then((mod) => ({
+    default: mod.CalendarYearView
+  }))
+)
 
 interface IProps {
   view: TCalendarView
@@ -141,37 +162,57 @@ export function CalendarContent({ view }: IProps) {
     }))
   }, [filteredEvents])
 
+  const renderViewComponent = () => {
+    // Only render the view that's currently active to reduce initial load
+    const ViewComponent = () => {
+      switch (view) {
+        case "day":
+          return (
+            <CalendarDayView
+              singleDayEvents={singleDayEvents}
+              multiDayEvents={multiDayEvents}
+            />
+          )
+        case "month":
+          return (
+            <CalendarMonthView
+              singleDayEvents={singleDayEvents}
+              multiDayEvents={multiDayEvents}
+            />
+          )
+        case "week":
+          return (
+            <CalendarWeekView
+              singleDayEvents={singleDayEvents}
+              multiDayEvents={multiDayEvents}
+            />
+          )
+        case "year":
+          return <CalendarYearView allEvents={eventStartDates} />
+        case "agenda":
+          return (
+            <CalendarAgendaView
+              singleDayEvents={singleDayEvents}
+              multiDayEvents={multiDayEvents}
+            />
+          )
+        default:
+          return null
+      }
+    }
+
+    return (
+      <Suspense fallback={<div className="p-4">Loading view...</div>}>
+        <ViewComponent />
+      </Suspense>
+    )
+  }
+
   return (
     <div className="overflow-hidden rounded-xl border">
       <CalendarHeader events={filteredEvents} />
 
-      <DndProviderWrapper>
-        {view === "day" && (
-          <CalendarDayView
-            singleDayEvents={singleDayEvents}
-            multiDayEvents={multiDayEvents}
-          />
-        )}
-        {view === "month" && (
-          <CalendarMonthView
-            singleDayEvents={singleDayEvents}
-            multiDayEvents={multiDayEvents}
-          />
-        )}
-        {view === "week" && (
-          <CalendarWeekView
-            singleDayEvents={singleDayEvents}
-            multiDayEvents={multiDayEvents}
-          />
-        )}
-        {view === "year" && <CalendarYearView allEvents={eventStartDates} />}
-        {view === "agenda" && (
-          <CalendarAgendaView
-            singleDayEvents={singleDayEvents}
-            multiDayEvents={multiDayEvents}
-          />
-        )}
-      </DndProviderWrapper>
+      <DndProviderWrapper>{renderViewComponent()}</DndProviderWrapper>
     </div>
   )
 }

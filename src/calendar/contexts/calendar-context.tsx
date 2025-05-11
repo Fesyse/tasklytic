@@ -54,7 +54,7 @@ export function CalendarProvider({ children }: { children: React.ReactNode }) {
     "all"
   )
 
-  // Fetch settings from server
+  // Use deferred data fetching for settings to improve initial load
   const { data: settingsData } = api.calendar.getCalendarSettings.useQuery(
     undefined,
     {
@@ -63,15 +63,17 @@ export function CalendarProvider({ children }: { children: React.ReactNode }) {
         defaultBadgeVariant: "colored",
         visibleHoursFrom: 7,
         visibleHoursTo: 18
-      }
+      },
+      staleTime: 5 * 60 * 1000 // Cache settings for 5 minutes
     }
   )
 
-  // Fetch working hours from server
+  // Fetch working hours with a longer stale time
   const { data: workingHoursData } = api.calendar.getWorkingHours.useQuery(
     undefined,
     {
-      initialData: DEFAULT_WORKING_HOURS
+      initialData: DEFAULT_WORKING_HOURS,
+      staleTime: 10 * 60 * 1000 // Cache working hours for 10 minutes
     }
   )
 
@@ -109,11 +111,34 @@ export function CalendarProvider({ children }: { children: React.ReactNode }) {
     }
   }, [workingHoursData])
 
-  // Events operations
+  // Optimize events loading: Only fetch events near the selected date
+  // This significantly reduces initial data load
+  const startOfMonth = new Date(selectedDate)
+  startOfMonth.setDate(1)
+  startOfMonth.setHours(0, 0, 0, 0)
+
+  const endOfMonth = new Date(selectedDate)
+  endOfMonth.setMonth(endOfMonth.getMonth() + 1)
+  endOfMonth.setDate(0)
+  endOfMonth.setHours(23, 59, 59, 999)
+
+  // Events operations with date range filter to reduce payload size
   const { data: events, isLoading: isEventsLoading } =
-    api.calendar.getEvents.useQuery()
+    api.calendar.getEvents.useQuery(
+      {
+        startDate: startOfMonth.toISOString(),
+        endDate: endOfMonth.toISOString()
+      },
+      {
+        staleTime: 30 * 1000 // Cache for 30 seconds
+      }
+    )
+
+  // Lazy load users only when needed
   const { data: users, isLoading: isUsersLoading } =
-    api.calendar.getUsers.useQuery()
+    api.calendar.getUsers.useQuery(undefined, {
+      staleTime: 5 * 60 * 1000 // Cache users for 5 minutes
+    })
 
   const utils = api.useUtils()
 

@@ -25,7 +25,17 @@ export default async function CalendarLayout(
   }
 
   return (
-    <Suspense fallback={view ? <CalendarSkeleton view={view} /> : undefined}>
+    <Suspense
+      fallback={
+        view ? (
+          <CalendarSkeleton view={view} />
+        ) : (
+          <div className="flex h-32 w-full items-center justify-center">
+            Loading calendar...
+          </div>
+        )
+      }
+    >
       <CalendarProvider>
         <div className="mx-auto flex w-full max-w-screen-2xl flex-col gap-4 px-8 py-4">
           {props.children}
