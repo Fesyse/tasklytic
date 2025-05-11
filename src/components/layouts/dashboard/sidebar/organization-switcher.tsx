@@ -15,8 +15,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
-import { SidebarMenuItem, useSidebar } from "@/components/ui/sidebar"
-import { Skeleton } from "@/components/ui/skeleton"
+import {
+  SidebarMenuItem,
+  SidebarMenuSkeleton,
+  useSidebar
+} from "@/components/ui/sidebar"
 import { authClient } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
 
@@ -56,34 +59,29 @@ export function OrganizationSwitcher() {
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <SidebarMenuItem>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="outline"
-            className={cn("w-full justify-between")}
-            size={sidebarOpen ? "default" : "icon"}
-          >
-            <span
-              className={
-                "flex h-8 w-full items-center gap-2 rounded-md text-left outline-hidden transition-[width,height,padding] duration-200 ease-linear group-has-data-[sidebar=menu-action]/menu-item:pr-8 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium [&>span:last-child]:truncate [&>svg]:size-4"
-              }
+        {activeOrg ? (
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn("w-full justify-between")}
+              size={sidebarOpen ? "default" : "icon"}
             >
-              {activeOrg ? (
-                <>
-                  <Users />
-                  <span>{activeOrg.name}</span>
-                </>
-              ) : (
-                <>
-                  <Skeleton className="size-4" />
-                  <Skeleton className="h-4 w-20" />
-                </>
-              )}
-            </span>
-            {sidebarOpen ? (
-              <ChevronsUpDown className="ml-auto h-4 w-4 shrink-0 opacity-50" />
-            ) : null}
-          </Button>
-        </DropdownMenuTrigger>
+              <span
+                className={
+                  "flex h-8 w-full items-center gap-2 rounded-md text-left outline-hidden transition-[width,height,padding] duration-200 ease-linear group-has-data-[sidebar=menu-action]/menu-item:pr-8 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium [&>span:last-child]:truncate [&>svg]:size-4"
+                }
+              >
+                <Users />
+                <span>{activeOrg.name}</span>
+              </span>
+              {sidebarOpen ? (
+                <ChevronsUpDown className="ml-auto h-4 w-4 shrink-0 opacity-50" />
+              ) : null}
+            </Button>
+          </DropdownMenuTrigger>
+        ) : (
+          <SidebarMenuSkeleton showIcon className="h-9 p-2" />
+        )}
       </SidebarMenuItem>
       <DropdownMenuContent className="w-[200px]">
         <DropdownMenuLabel>Organizations</DropdownMenuLabel>

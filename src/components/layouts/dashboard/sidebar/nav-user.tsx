@@ -23,7 +23,8 @@ import { ModeToggle } from "@/components/mode-toggle"
 import { Skeleton } from "@/components/ui/skeleton"
 import { authClient } from "@/lib/auth-client"
 import type { User } from "better-auth"
-import { SettingsIcon, UserIcon } from "lucide-react"
+import { HomeIcon, SettingsIcon, UserIcon } from "lucide-react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
@@ -73,9 +74,17 @@ export function NavUser() {
                   className="hover:!bg-accent !bg-transparent !px-2"
                 />
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <SettingsIcon />
-                Settings
+              <DropdownMenuItem asChild>
+                <Link href="/settings">
+                  <SettingsIcon />
+                  Settings
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/home">
+                  <HomeIcon />
+                  Home
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

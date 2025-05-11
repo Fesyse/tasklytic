@@ -24,7 +24,7 @@ import {
   TooltipTrigger
 } from "@/components/ui/tooltip"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { cn } from "@/lib/utils"
+import { cn, getCookie } from "@/lib/utils"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -32,6 +32,12 @@ const SIDEBAR_WIDTH = "16rem"
 const SIDEBAR_WIDTH_MOBILE = "18rem"
 const SIDEBAR_WIDTH_ICON = "3rem"
 const SIDEBAR_KEYBOARD_SHORTCUT = "b"
+
+function getSidebarCookieState(): boolean | undefined {
+  const cookie = getCookie(SIDEBAR_COOKIE_NAME)
+
+  return cookie === "true" ? true : cookie === "false" ? false : undefined
+}
 
 type SidebarContextProps = {
   state: "expanded" | "collapsed"
@@ -55,7 +61,7 @@ function useSidebar() {
 }
 
 function SidebarProvider({
-  defaultOpen = true,
+  defaultOpen = getSidebarCookieState() ?? true,
   open: openProp,
   onOpenChange: setOpenProp,
   className,
@@ -616,10 +622,12 @@ function SidebarMenuBadge({
 
 function SidebarMenuSkeleton({
   className,
+  iconClassName,
   showIcon = false,
   ...props
 }: React.ComponentProps<"div"> & {
   showIcon?: boolean
+  iconClassName?: string
 }) {
   // Random width between 50 to 90%.
   const width = React.useMemo(() => {
@@ -635,7 +643,7 @@ function SidebarMenuSkeleton({
     >
       {showIcon && (
         <Skeleton
-          className="size-4 rounded-md"
+          className={cn("size-4 rounded-md", iconClassName)}
           data-sidebar="menu-skeleton-icon"
         />
       )}

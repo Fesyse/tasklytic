@@ -15,6 +15,7 @@ import {
   useSidebar
 } from "@/components/ui/sidebar"
 import { useSidebarNav } from "@/lib/sidebar"
+import { AnimatePresence, motion } from "motion/react"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { open } = useSidebar()
@@ -26,7 +27,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem className="grid grid-cols-[1fr_auto] items-center gap-2">
             <OrganizationSwitcher />
-            {open ? <SidebarTrigger className="size-8" /> : null}
+            <AnimatePresence>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                {open ? <SidebarTrigger /> : null}
+              </motion.div>
+            </AnimatePresence>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
