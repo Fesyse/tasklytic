@@ -36,6 +36,7 @@ import { Input } from "@/components/ui/input"
 import { authClient } from "@/lib/auth-client"
 import { siteConfig } from "@/lib/site-config"
 import { cn } from "@/lib/utils"
+import { AnimatePresence, motion } from "motion/react"
 import { toast } from "sonner"
 
 const organizationSchema = z.object({
@@ -78,8 +79,6 @@ export default function NewOrganizationPage() {
           slug
         })
 
-        console.log(response)
-
         if (response.error) {
           setSlugError("This slug is already taken. Please choose another one.")
           form.setError("slug", {
@@ -99,8 +98,8 @@ export default function NewOrganizationPage() {
   )
 
   // Check slug availability when slug changes
+  const slug = form.watch("slug")
   useEffect(() => {
-    const slug = form.watch("slug")
     const delayDebounce = setTimeout(() => {
       if (slug.length >= 3) {
         checkSlugAvailability(slug)
@@ -108,7 +107,7 @@ export default function NewOrganizationPage() {
     }, 500)
 
     return () => clearTimeout(delayDebounce)
-  }, [form.watch("slug"), checkSlugAvailability])
+  }, [slug, checkSlugAvailability])
 
   const onSubmit = async (data: OrganizationSchema) => {
     setIsLoading(true)
@@ -240,14 +239,22 @@ export default function NewOrganizationPage() {
                                   field.onChange(e)
                                   setSlugError(null)
                                 }}
-                                className={
-                                  slugError ? "border-red-500 pr-10" : ""
-                                }
                               />
                             </FormControl>
-                            {isCheckingSlug && (
-                              <Loader2 className="absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 animate-spin" />
-                            )}
+                            <AnimatePresence>
+                              {isCheckingSlug ? (
+                                <motion.div
+                                  initial={{ opacity: 0 }}
+                                  animate={{
+                                    opacity: 1
+                                  }}
+                                  exit={{ opacity: 0 }}
+                                  className="absolute top-1/2 right-3 flex h-4 w-4 -translate-y-1/2 items-center justify-center"
+                                >
+                                  <Loader2 className="animate-spin" />
+                                </motion.div>
+                              ) : null}
+                            </AnimatePresence>
                           </div>
                           <p className="text-muted-foreground text-xs">
                             This will be used in URLs for your organization
@@ -405,10 +412,7 @@ export default function NewOrganizationPage() {
                     <Button
                       type="submit"
                       disabled={
-                        isLoading ||
-                        session.isPending ||
-                        isCheckingSlug ||
-                        !!slugError
+                        isLoading || session.isPending || isCheckingSlug
                       }
                     >
                       {isLoading && (
@@ -433,9 +437,7 @@ export default function NewOrganizationPage() {
                         if (!form.formState.isValid || slugError) return
                         setStep(2)
                       }}
-                      disabled={
-                        !form.formState.isValid || isCheckingSlug || !!slugError
-                      }
+                      disabled={!form.formState.isValid || isCheckingSlug}
                     >
                       Next
                     </Button>
