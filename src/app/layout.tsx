@@ -22,6 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geist.variable}`}>
       <head>
+        <meta name="apple-mobile-web-app-title" content="Tasklytic" />
         <link rel="icon" href="/icon.svg" sizes="any" type="image/svg+" />
         <link rel="icon" href="/favicon.ico" sizes="32x32" />
       </head>

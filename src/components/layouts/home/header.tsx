@@ -1,14 +1,14 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { Icons } from "@/components/ui/icons"
+import { Skeleton } from "@/components/ui/skeleton"
 import { authClient } from "@/lib/auth-client"
 import { siteConfig } from "@/lib/site-config"
 import { cn } from "@/lib/utils"
 import { Menu, X } from "lucide-react"
 import Link from "next/link"
 import React from "react"
-import { Icons } from "./ui/icons"
-import { Skeleton } from "./ui/skeleton"
 
 const menuItems = [
   { name: "Features", href: "#features" },
@@ -49,7 +49,7 @@ export const Header = () => {
                 aria-label="home"
                 className="flex items-center space-x-2"
               >
-                <Icons.logo className="text-primary" />
+                <Icons.icon className="text-primary" />
                 <span className="text-xl">{siteConfig.name}</span>
               </Link>
 

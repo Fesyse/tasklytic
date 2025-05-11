@@ -3,6 +3,7 @@
 import { NavMain } from "@/components/layouts/dashboard/sidebar/nav-main"
 import { NavSecondary } from "@/components/layouts/dashboard/sidebar/nav-secondary"
 import { NavUser } from "@/components/layouts/dashboard/sidebar/nav-user"
+import { Icons } from "@/components/ui/icons"
 import {
   Sidebar,
   SidebarContent,
@@ -16,7 +17,6 @@ import {
 } from "@/components/ui/sidebar"
 import { useSidebarNav } from "@/lib/sidebar"
 import { siteConfig } from "@/lib/site-config"
-import { CalendarCheck } from "lucide-react"
 import Link from "next/link"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -30,10 +30,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem className="flex items-center">
             <SidebarMenuButton
               asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5"
+              className="data-[slot=sidebar-menu-button]:!p-1.5 [&>svg]:size-7"
             >
               <Link href="/">
-                <CalendarCheck className="!size-5" />
+                <Icons.icon />
                 <span className="text-base font-semibold">
                   {siteConfig.name}
                 </span>

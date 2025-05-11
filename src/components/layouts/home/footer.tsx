@@ -39,7 +39,7 @@ export function Footer() {
           aria-label="go home"
           className="mx-auto flex size-fit items-center gap-1"
         >
-          <Icons.logo /> {siteConfig.name}
+          <Icons.icon /> {siteConfig.name}
         </Link>
 
         <div className="my-8 flex flex-wrap justify-center gap-6 text-sm">
