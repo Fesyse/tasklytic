@@ -7,7 +7,7 @@ import { useState } from "react"
 
 export function PasswordInput({
   ...props
-}: React.ComponentProps<typeof Input>) {
+}: Omit<React.ComponentProps<typeof Input>, "type">) {
   const [showPassword, setShowPassword] = useState(false)
 
   return (
