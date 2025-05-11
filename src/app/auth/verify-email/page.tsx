@@ -1,5 +1,4 @@
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
+import { GoToInboxButton } from "@/components/go-to-inbox-button"
 import { notFound } from "next/navigation"
 
 type VerifyEmailProps = {
@@ -24,9 +23,7 @@ export default async function VerifyEmail({ searchParams }: VerifyEmailProps) {
           link to verify your account.
         </p>
 
-        <Button asChild variant="outline" className="mt-3">
-          <Link href={`mailto:${email}`}>Go to inbox</Link>
-        </Button>
+        <GoToInboxButton variant="outline" className="mt-3" email={email} />
       </div>
     </div>
   )

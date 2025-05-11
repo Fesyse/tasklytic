@@ -6,6 +6,7 @@ import {
   Heading,
   Hr,
   Html,
+  Link,
   Preview,
   Section,
   Tailwind,
@@ -13,26 +14,24 @@ import {
 } from "@react-email/components"
 import { Support } from "./components/support"
 
-type OTPEmailProps = {
-  otp?: string
+type ResetPasswordEmailProps = {
+  url?: string
   userName?: string
-  expiryMinutes?: number
 }
 
-export default function OTPEmail({
-  otp = "123456",
-  userName = "User",
-  expiryMinutes = 15
-}: OTPEmailProps) {
+export default function ResetPasswordEmail({
+  url = "https://tasklytic.fesyse.site",
+  userName = "User"
+}: ResetPasswordEmailProps) {
   return (
     <Tailwind config={tailwindConfig}>
       <Html>
         <Head />
-        <Preview>Your verification code</Preview>
+        <Preview>Reset your password - Tasklytic</Preview>
         <Body className="bg-background mx-auto my-0 font-sans">
           <Container className="bg-card mx-auto my-10 max-w-md rounded-xl border border-solid border-[#eaeaea] p-8">
             <Heading className="text-foreground mb-6 text-center text-2xl font-bold">
-              Verification Code
+              Reset your password
             </Heading>
 
             <Text className="text-muted-foreground mb-6 text-base">
@@ -40,21 +39,27 @@ export default function OTPEmail({
             </Text>
 
             <Text className="text-muted-foreground mb-4 text-base">
-              Please use the verification code below to complete your action:
+              Please click the link below to reset your password:
             </Text>
 
             <Section className="mb-6 text-center">
-              <div className="bg-secondary mx-auto rounded-lg px-2 py-6 text-center">
-                <Text className="text-primary m-0 font-mono text-3xl font-bold tracking-widest">
-                  {otp}
-                </Text>
-              </div>
+              <Link
+                href={url}
+                className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex rounded-md px-4 py-3 text-center text-sm shadow-xs"
+              >
+                Click here to reset your password
+              </Link>
             </Section>
 
-            <Text className="text-muted-foreground mb-6 text-sm">
-              This code will expire in {expiryMinutes} minutes. If you didn't
-              request this code, you can safely ignore this email.
-            </Text>
+            <Section className="mb-6 text-center text-sm">
+              <Text className="text-muted-foreground mb-0">
+                This link will expire in 15 minutes.
+              </Text>
+              <Text className="text-muted-foreground mt-2">
+                If you didn't request this password reset, you can safely ignore
+                this email. Your account is secure.
+              </Text>
+            </Section>
 
             <Hr className="my-6 border border-solid border-[#eaeaea]" />
 
