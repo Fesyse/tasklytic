@@ -1,14 +1,13 @@
 import { AuthForm } from "@/components/auth/auth-form"
+import { AuthHeader } from "@/components/auth/auth-header"
 
 export default async function SignUpPage() {
   return (
     <>
-      <div className="mb-4 flex flex-col items-center gap-2 text-center">
-        <h1 className="text-2xl font-bold">Sign up</h1>
-        <p className="text-muted-foreground text-sm text-balance">
-          Enter your email below to create new account
-        </p>
-      </div>
+      <AuthHeader
+        title="Sign up"
+        description="Enter your email below to create new account"
+      />
       <AuthForm type="sign-up" />
     </>
   )

@@ -84,14 +84,21 @@ export function AuthForm({
       setIsLoading(false)
     } else {
       setIsLoading(true)
-      await authClient.signUp.email({
+      const { data: newUser, error } = await authClient.signUp.email({
         name: data.name,
         email: data.email,
         password: data.password,
         callbackURL: "/dashboard"
       })
 
-      router.push(`/auth/verify-email?email=${data.email}`)
+      if (error) {
+        toast.error(error.message)
+      } else {
+        if (!newUser?.user.emailVerified) {
+          router.push(`/auth/verify-email?email=${data.email}`)
+        }
+      }
+
       setIsLoading(false)
     }
   }

@@ -27,7 +27,7 @@ export default function VerifyEmail({
     <Tailwind config={tailwindConfig}>
       <Html>
         <Head />
-        <Preview>Sign Up - Verify your email</Preview>
+        <Preview>Verify your email | Sign Up - Tasklytic</Preview>
         <Body className="bg-background mx-auto my-0 font-sans">
           <Container className="bg-card mx-auto my-10 max-w-md rounded-xl border border-solid border-[#eaeaea] p-8">
             <Heading className="text-foreground mb-6 text-center text-2xl font-bold">

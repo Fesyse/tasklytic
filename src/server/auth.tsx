@@ -1,4 +1,4 @@
-import OTPEmail from "@/emails/otp-email"
+import ResetPasswordEmail from "@/emails/reset-password-email"
 import VerifyEmail from "@/emails/verify-email"
 import { env } from "@/env"
 import { siteConfig } from "@/lib/site-config"
@@ -7,7 +7,7 @@ import { resend } from "@/server/resend"
 import { betterAuth } from "better-auth"
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
 import { nextCookies } from "better-auth/next-js"
-import { emailOTP, organization } from "better-auth/plugins"
+import { organization } from "better-auth/plugins/organization"
 
 export const auth = betterAuth({
   emailAndPassword: {
@@ -15,7 +15,19 @@ export const auth = betterAuth({
     minPasswordLength: 8,
     requireEmailVerification: true,
     autoSignIn: true,
-    autoSignInAfterVerification: true
+    autoSignInAfterVerification: true,
+    sendResetPassword: async ({ user, url }) => {
+      const { error } = await resend.emails.send({
+        from: siteConfig.emails.noreply,
+        to: user.email,
+        subject: "Reset your password - Tasklytic",
+        react: <ResetPasswordEmail url={url} userName={user.name} />
+      })
+
+      if (error) {
+        throw new Error(error.message)
+      }
+    }
   },
   socialProviders: {
     google: {
@@ -51,7 +63,7 @@ export const auth = betterAuth({
       const { error } = await resend.emails.send({
         from: siteConfig.emails.noreply,
         to: user.email,
-        subject: "Sign Up - Verify your email",
+        subject: "Verify your email | Sign Up - Tasklytic",
         react: <VerifyEmail url={url} userName={user.name} />
       })
 
@@ -73,21 +85,6 @@ export const auth = betterAuth({
         },
         invitation: {
           modelName: "invitations"
-        }
-      }
-    }),
-    emailOTP({
-      allowedAttempts: 5,
-      async sendVerificationOTP({ email, otp }) {
-        const { error } = await resend.emails.send({
-          from: siteConfig.emails.noreply,
-          to: email,
-          subject: "Tasklytic - Verification Code",
-          react: <OTPEmail otp={otp} />
-        })
-
-        if (error) {
-          throw new Error(error.message)
         }
       }
     })
