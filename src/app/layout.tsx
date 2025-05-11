@@ -6,7 +6,10 @@ import { type Metadata } from "next"
 import { Geist } from "next/font/google"
 
 export const metadata: Metadata = {
-  title: siteConfig.name,
+  title: {
+    template: `%s | ${siteConfig.name}`,
+    default: siteConfig.name
+  },
   description: siteConfig.description,
   icons: [{ rel: "icon", url: "/favicon.ico" }]
 }
