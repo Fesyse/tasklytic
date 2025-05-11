@@ -34,6 +34,7 @@ const SIDEBAR_WIDTH_ICON = "3rem"
 const SIDEBAR_KEYBOARD_SHORTCUT = "b"
 
 function getSidebarCookieState(): boolean | undefined {
+  if (typeof window === "undefined") return undefined
   const cookie = getCookie(SIDEBAR_COOKIE_NAME)
 
   return cookie === "true" ? true : cookie === "false" ? false : undefined
