@@ -3,7 +3,9 @@
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar"
 
 export const InnerSidebarTrigger = () => {
-  const { open } = useSidebar()
+  const { open, isMobile } = useSidebar()
 
-  return !open ? <SidebarTrigger className="sticky mt-2.5 ml-2.25" /> : null
+  return !open || isMobile ? (
+    <SidebarTrigger className="sticky mt-2.5 ml-2.25" />
+  ) : null
 }
