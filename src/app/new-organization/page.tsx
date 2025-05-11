@@ -144,6 +144,11 @@ export default function NewOrganizationPage() {
         userId: session.data.user.id
       })
 
+      // FIXME: right now there's a bug in better auth library and every time organization is creating it throws 500 HTTPError because of bad db query
+      if (response.error?.statusText === "Internal Server Error") {
+        response.error = null
+      }
+      console.log(response)
       if (response.error) {
         toast.error(response.error.message ?? response.error.statusText)
       } else {
