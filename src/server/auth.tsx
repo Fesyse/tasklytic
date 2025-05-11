@@ -7,6 +7,7 @@ import { resend } from "@/server/resend"
 import { betterAuth } from "better-auth"
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
 import { nextCookies } from "better-auth/next-js"
+import { organization } from "better-auth/plugins"
 
 export const auth = betterAuth({
   emailAndPassword: {
@@ -72,5 +73,20 @@ export const auth = betterAuth({
     }
   },
 
-  plugins: [nextCookies()]
+  plugins: [
+    nextCookies(),
+    organization({
+      schema: {
+        organization: {
+          modelName: "organizations"
+        },
+        member: {
+          modelName: "members"
+        },
+        invitation: {
+          modelName: "invitations"
+        }
+      }
+    })
+  ]
 })
