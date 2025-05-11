@@ -39,6 +39,8 @@ import { cn } from "@/lib/utils"
 import { AnimatePresence, motion } from "motion/react"
 import { toast } from "sonner"
 
+const INTERNAL_SERVER_ERROR_LITERAL = "Internal Server Error"
+
 const organizationSchema = z.object({
   name: z.string().min(3, "Organization name must be at least 3 characters"),
   slug: z.string().min(3, "Slug must be at least 3 characters"),
@@ -133,28 +135,27 @@ export default function NewOrganizationPage() {
         return
       }
 
-      // Create organization using better-auth organization plugin
-      const response = await authClient.organization.create({
-        name: data.name,
-        slug: data.slug,
-        metadata: {
-          teamType: data.teamType,
-          layoutType: data.layoutType
-        },
-        userId: session.data.user.id
-      })
+      const { data: newOrganization, error: newOrganizationError } =
+        await authClient.organization.create({
+          name: data.name,
+          slug: data.slug,
+          metadata: {
+            teamType: data.teamType,
+            layoutType: data.layoutType
+          },
+          userId: session.data.user.id
+        })
 
-      // FIXME: right now there's a bug in better auth library and every time organization is creating it throws 500 HTTPError because of bad db query
-      if (response.error?.statusText === "Internal Server Error") {
-        response.error = null
+      if (newOrganizationError) {
+        return toast.error(
+          newOrganizationError.message ?? newOrganizationError.statusText
+        )
       }
-      console.log(response)
-      if (response.error) {
-        toast.error(response.error.message ?? response.error.statusText)
-      } else {
-        toast.success(`Organization "${data.name}" created successfully!`)
-        router.push("/dashboard")
-      }
+
+      toast.success(
+        `Organization "${newOrganization.name}" created successfully!`
+      )
+      router.push("/dashboard")
     } catch (error) {
       toast.error("Failed to create organization. Please try again.")
       console.error(error)

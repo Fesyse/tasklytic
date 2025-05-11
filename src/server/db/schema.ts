@@ -46,6 +46,9 @@ export const sessions = createTable(
     updatedAt: timestamp("updated_at").notNull(),
     ipAddress: text("ip_address"),
     userAgent: text("user_agent"),
+    activeOrganizationId: text("active_organization_id").references(
+      () => organizations.id
+    ),
     userId: text("user_id")
       .notNull()
       .references(() => users.id)

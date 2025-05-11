@@ -3,21 +3,21 @@
 import { NavMain } from "@/components/layouts/dashboard/sidebar/nav-main"
 import { NavSecondary } from "@/components/layouts/dashboard/sidebar/nav-secondary"
 import { NavUser } from "@/components/layouts/dashboard/sidebar/nav-user"
-import { Icons } from "@/components/ui/icons"
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
   SidebarTrigger,
   useSidebar
 } from "@/components/ui/sidebar"
 import { useSidebarNav } from "@/lib/sidebar"
-import { siteConfig } from "@/lib/site-config"
-import Link from "next/link"
+import {
+  OrganizationSwitcher,
+  OrganizationSwitcherProvider
+} from "../organization-switcher"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { open } = useSidebar()
@@ -28,17 +28,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center">
-            <SidebarMenuButton
-              asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5 [&>svg]:size-7"
-            >
-              <Link href="/">
-                <Icons.icon />
-                <span className="text-base font-semibold">
-                  {siteConfig.name}
-                </span>
-              </Link>
-            </SidebarMenuButton>
+            <OrganizationSwitcherProvider>
+              <OrganizationSwitcher />
+            </OrganizationSwitcherProvider>
             {open ? <SidebarTrigger /> : null}
           </SidebarMenuItem>
         </SidebarMenu>
