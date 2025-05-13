@@ -11,7 +11,7 @@ import {
   varchar
 } from "drizzle-orm/pg-core"
 
-const createId = init({
+export const createId = init({
   fingerprint: "tasklytic",
   length: 20
 })

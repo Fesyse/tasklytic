@@ -1,5 +1,6 @@
 import InviteToOrganizationEmail from "@/emails/invite-to-organization-email"
 import { siteConfig } from "@/lib/site-config"
+import { tryCatch } from "@/lib/utils"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { auth } from "@/server/auth"
 import { resend } from "@/server/resend"
@@ -41,6 +42,15 @@ export const organizationRouter = createTRPCRouter({
 
           return invitationPromise
         } else {
+          // ctx.db.insert(invitations).values({
+          //   id: `new-user-${createId()}`,
+          //   inviterId: ctx.session.user.id,
+          //   organizationId: activeOrganization.id,
+          //   status: "",
+          //   email: invitation.email,
+          //   expiresAt: addDays(new Date(), 2)
+          // })
+
           const invitationPromise = resend.emails.send({
             from: siteConfig.emails.noreply,
             to: invitation.email,
@@ -58,16 +68,30 @@ export const organizationRouter = createTRPCRouter({
         }
       })
 
-      const result = await Promise.allSettled(invitationPromises)
+      const { data: result, error: resultError } = await tryCatch(
+        Promise.allSettled(invitationPromises)
+      )
 
-      const error = result.some((val) => {
-        if (val.status === "rejected") return true
-        if (!val.value) return true
-        if ("error" in val.value && val.value.error) return true
+      if (resultError) {
+        throw new Error(auth.$ERROR_CODES.FAILED_TO_RETRIEVE_INVITATION)
+      }
+      const errors = result.map((val) => {
+        if (val.status === "rejected") return val.reason.body.message as string
+        if (!val.value) return auth.$ERROR_CODES.FAILED_TO_RETRIEVE_INVITATION
+        if ("error" in val.value && val.value.error)
+          return val.value.error.message
       })
 
-      if (error) {
-        throw new Error(auth.$ERROR_CODES.FAILED_TO_RETRIEVE_INVITATION)
+      if (errors.length) {
+        throw new Error(
+          errors
+            .map((error, i) =>
+              error
+                ? `Failed to invite "${input.invitations[i]?.email}", reason: ${error}`
+                : ""
+            )
+            .join(",\n")
+        )
       }
 
       return result

@@ -55,10 +55,10 @@ export const InvitePeopleForm = () => {
   const utils = api.useUtils()
   const { mutate: invitePeople } = api.organization.invitePeople.useMutation({
     onSuccess: (data) => toast.success(`${data.length} invitation(s) sent!`),
-    onError: (error) => {
-      console.log(error)
-      toast.error(error.message)
-    }
+    onError: (error) =>
+      toast.error(error.message, {
+        duration: 5000
+      })
   })
   const checkUserExists = useCallback(
     async (email: string) => {

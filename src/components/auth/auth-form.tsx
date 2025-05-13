@@ -88,7 +88,7 @@ export function AuthForm({
         name: data.name,
         email: data.email,
         password: data.password,
-        callbackURL: "/dashboard"
+        callbackURL: "/new-organization"
       })
 
       if (error) {
@@ -106,7 +106,8 @@ export function AuthForm({
   const handleSocialSignIn = (provider: "github" | "google") => () => {
     authClient.signIn.social({
       provider,
-      callbackURL: "/dashboard"
+      callbackURL: "/dashboard",
+      newUserCallbackURL: "/new-organization"
     })
   }
 
