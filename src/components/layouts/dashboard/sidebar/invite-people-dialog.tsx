@@ -26,7 +26,7 @@ export const InvitePeopleDialog = () => {
           </SidebarMenuButton>
         </SidebarMenuItem>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="sm:max-w-96">
         <DialogHeader>
           <DialogTitle>Invite people</DialogTitle>
           <DialogDescription>
