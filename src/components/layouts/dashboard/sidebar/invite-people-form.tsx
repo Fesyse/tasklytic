@@ -19,7 +19,6 @@ import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
 
-// Define types for the invite form
 type InviteEmail = {
   email: string
   isRegistered: boolean
@@ -33,27 +32,34 @@ type InviteEmail = {
 
 const emailSchema = z.string().email("Please enter a valid email address")
 
-const formSchema = z.object({
+const invitePeopleSchema = z.object({
   email: emailSchema
 })
 
-type FormValues = z.infer<typeof formSchema>
+type InvitePeopleSchema = z.infer<typeof invitePeopleSchema>
 
 export const InvitePeopleForm = () => {
   const [isCheckingEmail, setIsCheckingEmail] = useState(false)
   const [inviteList, setInviteList] = useState<InviteEmail[]>([])
 
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<InvitePeopleSchema>({
+    resolver: zodResolver(invitePeopleSchema),
     defaultValues: {
       email: ""
     }
   })
 
-  const utils = api.useUtils()
-
   const { data: userData, isPending: isCurrentUserPending } =
     authClient.useSession()
+
+  const utils = api.useUtils()
+  const { mutate: invitePeople } = api.organization.invitePeople.useMutation({
+    onSuccess: (data) => toast.success(`${data.length} invitation(s) sent!`),
+    onError: (error) => {
+      console.log(error)
+      toast.error(error.message)
+    }
+  })
   const checkUserExists = useCallback(
     async (email: string) => {
       try {
@@ -128,9 +134,12 @@ export const InvitePeopleForm = () => {
       return
     }
 
-    // Here the user would handle the actual invitation process
-    console.log("Inviting users:", inviteList)
-    toast.success(`${inviteList.length} invitation(s) sent!`)
+    invitePeople({
+      invitations: inviteList.map((item) => ({
+        email: item.email,
+        userId: item.user?.id
+      }))
+    })
 
     // Reset form state
     setInviteList([])

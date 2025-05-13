@@ -1,3 +1,4 @@
+import InviteToOrganizationEmail from "@/emails/invite-to-organization-email"
 import ResetPasswordEmail from "@/emails/reset-password-email"
 import VerifyEmail from "@/emails/verify-email"
 import { env } from "@/env"
@@ -76,6 +77,31 @@ export const auth = betterAuth({
   plugins: [
     nextCookies(),
     organization({
+      sendInvitationEmail: async ({ email, inviter, organization }) => {
+        const recipient = await db.query.users.findFirst({
+          where: (users, { eq }) => eq(users.email, email)
+        })
+        if (!recipient) {
+          throw new Error(auth.$ERROR_CODES.INVALID_EMAIL)
+        }
+
+        const { error } = await resend.emails.send({
+          from: siteConfig.emails.noreply,
+          to: email,
+          subject: `You've been invited to join ${organization.name}`,
+          react: (
+            <InviteToOrganizationEmail
+              inviteExpiryDays={2}
+              inviterName={inviter.user.name}
+              recipientName={recipient.name}
+              organizationName={organization.name}
+            />
+          )
+        })
+        if (error) {
+          throw new Error(auth.$ERROR_CODES.FAILED_TO_RETRIEVE_INVITATION)
+        }
+      },
       schema: {
         organization: {
           modelName: "organizations"
