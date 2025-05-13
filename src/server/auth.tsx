@@ -10,9 +10,6 @@ import { betterAuth } from "better-auth"
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
 import { nextCookies } from "better-auth/next-js"
 import { organization } from "better-auth/plugins/organization"
-import { headers as nextHeaders } from "next/headers"
-
-const BETTER_AUTH_COOKIE_NAME = "better-auth.session_token"
 
 export const auth = betterAuth({
   emailAndPassword: {
@@ -120,33 +117,3 @@ export const auth = betterAuth({
     })
   ]
 })
-
-type InviteMemberBody = {
-  email: string
-  role: typeof auth.$Infer.Member.role
-}
-export async function inviteMember(body: InviteMemberBody, headers?: Headers) {
-  headers ??= await nextHeaders()
-
-  const sessionCookie = headers.get(BETTER_AUTH_COOKIE_NAME)
-  const response = await fetch(
-    `${getBaseUrl()}/api/auth/organization/invite-member`,
-    {
-      method: "POST",
-      body: JSON.stringify(body),
-      headers: sessionCookie
-        ? {
-            [BETTER_AUTH_COOKIE_NAME]: sessionCookie
-          }
-        : undefined
-    }
-  )
-
-  const data = await response.json()
-
-  if (!response.ok) {
-    throw new Error(data.message)
-  }
-
-  return data
-}

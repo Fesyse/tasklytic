@@ -53,13 +53,6 @@ export const InvitePeopleForm = () => {
     authClient.useSession()
 
   const utils = api.useUtils()
-  const { mutate: invitePeople } = api.organization.invitePeople.useMutation({
-    onSuccess: (data) => toast.success(`${data.length} invitation(s) sent!`),
-    onError: (error) =>
-      toast.error(error.message, {
-        duration: 5000
-      })
-  })
   const checkUserExists = useCallback(
     async (email: string) => {
       try {
@@ -126,7 +119,7 @@ export const InvitePeopleForm = () => {
   }
 
   // Handle final submission of all invitations
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (inviteList.length === 0) {
@@ -134,11 +127,27 @@ export const InvitePeopleForm = () => {
       return
     }
 
-    invitePeople({
-      emails: inviteList.map((invite) => invite.email)
+    const invitationPromises = inviteList.map((invite) => {
+      return authClient.organization.inviteMember({
+        email: invite.email,
+        role: "member"
+      })
+    })
+    const result = await Promise.all(invitationPromises)
+
+    let errors = ""
+    result.map((item, i) => {
+      if (item.error) {
+        errors = errors + `"${inviteList[i]?.email}". ${item.error.message}\n`
+      }
     })
 
-    // Reset form state
+    if (errors.length > 0) {
+      toast.error(errors)
+    } else {
+      toast.success(`Successfuly invited ${inviteList.length} people(s).`)
+    }
+
     setInviteList([])
   }
 
