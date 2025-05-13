@@ -1,5 +1,6 @@
 "use client"
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -9,175 +10,158 @@ import {
   FormMessage
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Popover, PopoverContent } from "@/components/ui/popover"
+import { authClient } from "@/lib/auth-client"
 import { api } from "@/trpc/react"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Check, Loader2, Mail, PlusCircle, X } from "lucide-react"
-import { useEffect, useState } from "react"
+import { Loader2, Mail, PlusCircle, UserIcon, X } from "lucide-react"
+import { useCallback, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
 
+// Define types for the invite form
+type InviteEmail = {
+  email: string
+  isRegistered: boolean
+  user?: {
+    id: string
+    name: string
+    email: string
+    image: string | null
+  } | null
+}
+
 const emailSchema = z.string().email("Please enter a valid email address")
 
-const invitePeopleSchema = z.object({
+const formSchema = z.object({
   email: emailSchema
 })
 
-type InvitePeopleSchema = z.infer<typeof invitePeopleSchema>
+type FormValues = z.infer<typeof formSchema>
 
 export const InvitePeopleForm = () => {
-  // State for tracking the email input and verification status
-  const [isInputFocused, setIsInputFocused] = useState(false)
   const [isCheckingEmail, setIsCheckingEmail] = useState(false)
-  const [isExistingUser, setIsExistingUser] = useState<boolean | null>(null)
-  const [debouncedEmail, setDebouncedEmail] = useState("")
-  const [emailsToInvite, setEmailsToInvite] = useState<string[]>([])
+  const [inviteList, setInviteList] = useState<InviteEmail[]>([])
 
-  // Initialize form
-  const form = useForm<InvitePeopleSchema>({
-    resolver: zodResolver(invitePeopleSchema),
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       email: ""
     }
   })
 
-  // Watch for email changes
-  const emailValue = form.watch("email")
+  const utils = api.useUtils()
 
-  // Use tRPC to search for users by email
-  const { data: searchedUsers, status } = api.users.searchMany.useQuery(
-    { email: debouncedEmail },
-    {
-      enabled: !!debouncedEmail && emailSchema.safeParse(debouncedEmail).success
-    }
+  const { data: userData, isPending: isCurrentUserPending } =
+    authClient.useSession()
+  const checkUserExists = useCallback(
+    async (email: string) => {
+      try {
+        const result = await utils.users.getByEmail.fetch({ email })
+        return result
+      } catch (error) {
+        console.error("Error checking user:", error)
+        return null
+      }
+    },
+    [utils.users.getByEmail.fetch]
   )
 
-  useEffect(() => {
-    if (status === "success") {
-      setIsCheckingEmail(false)
-      setIsExistingUser(searchedUsers.length > 0)
-    } else {
-      setIsCheckingEmail(false)
-      setIsExistingUser(null)
-    }
-  }, [status])
-
-  // Debounce email search to avoid too many requests
-  useEffect(() => {
-    if (!emailValue || !emailSchema.safeParse(emailValue).success) {
-      setIsExistingUser(null)
-      return
-    }
-
-    setIsCheckingEmail(true)
-    const timerId = setTimeout(() => {
-      setDebouncedEmail(emailValue)
-    }, 500)
-
-    return () => clearTimeout(timerId)
-  }, [emailValue])
-
-  // Handle invitation submission
-  const handleInviteUser = () => {
+  // Handle adding an email to the invite list
+  const handleAddEmail = async () => {
     const { email } = form.getValues()
 
+    // Validate email
     if (!email || !emailSchema.safeParse(email).success) {
+      toast.error("Please enter a valid email address")
       return
     }
 
-    // Add email to the list and reset form
-    setEmailsToInvite([...emailsToInvite, email])
-    form.reset({ email: "" })
-    setIsExistingUser(null)
-    toast.success(`Invitation ready: ${email}`)
+    // Check if email already in list
+    if (inviteList.some((item) => item.email === email)) {
+      toast.error("This email is already in your invitation list")
+      return
+    }
+
+    // Check if user exists
+    setIsCheckingEmail(true)
+    try {
+      if (isCurrentUserPending || !userData || userData.user.email === email) {
+        toast.error("You are already in organization!")
+        return
+      }
+
+      const user = await checkUserExists(email)
+
+      // Add to invite list
+      setInviteList([
+        ...inviteList,
+        {
+          email,
+          isRegistered: !!user,
+          user
+        }
+      ])
+
+      // Reset form
+      form.reset({ email: "" })
+      toast.success(`Added ${email} to invitation list`)
+    } catch (error) {
+      toast.error("Failed to check if user exists")
+      console.error(error)
+    } finally {
+      setIsCheckingEmail(false)
+    }
   }
 
   // Handle removing an email from the invitation list
   const handleRemoveEmail = (emailToRemove: string) => {
-    setEmailsToInvite(emailsToInvite.filter((email) => email !== emailToRemove))
+    setInviteList(inviteList.filter((item) => item.email !== emailToRemove))
   }
 
   // Handle final submission of all invitations
-  const onSubmit = () => {
-    if (emailsToInvite.length === 0) {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (inviteList.length === 0) {
       toast.error("Add at least one email address to invite")
       return
     }
 
     // Here the user would handle the actual invitation process
-    // As specified in your requirements, you'll handle this part
-    toast.success(`${emailsToInvite.length} invitation(s) sent!`)
+    console.log("Inviting users:", inviteList)
+    toast.success(`${inviteList.length} invitation(s) sent!`)
 
     // Reset form state
-    setEmailsToInvite([])
+    setInviteList([])
   }
 
   return (
     <Form {...form}>
-      <div className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div className="relative">
           <FormField
             name="email"
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormControl>
-                  <div className="relative">
-                    <Input
-                      {...field}
-                      placeholder="Type an email address..."
-                      onFocus={() => setIsInputFocused(true)}
-                      onBlur={() =>
-                        setTimeout(() => setIsInputFocused(false), 200)
-                      }
-                    />
-                    {emailValue &&
-                      emailSchema.safeParse(emailValue).success && (
-                        <Button
-                          type="button"
-                          size="icon"
-                          variant="ghost"
-                          className="absolute top-1/2 right-1 h-7 w-7 -translate-y-1/2"
-                          onClick={handleInviteUser}
-                        >
-                          <PlusCircle className="h-4 w-4" />
-                        </Button>
-                      )}
-                  </div>
-                </FormControl>
-                <Popover
-                  open={
-                    isInputFocused &&
-                    !!emailValue &&
-                    emailSchema.safeParse(emailValue).success
-                  }
-                >
-                  <PopoverContent className="w-80 p-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Mail className="text-muted-foreground h-4 w-4" />
-                        <span className="text-sm font-medium">
-                          {emailValue}
-                        </span>
-                      </div>
-                      <div>
-                        {isCheckingEmail ? (
-                          <Loader2 className="text-muted-foreground h-4 w-4 animate-spin" />
-                        ) : isExistingUser === true ? (
-                          <div className="flex items-center gap-1 text-sm text-green-500">
-                            <Check className="h-4 w-4" />
-                            <span>User exists</span>
-                          </div>
-                        ) : isExistingUser === false ? (
-                          <div className="flex items-center gap-1 text-sm text-amber-500">
-                            <span>New user</span>
-                          </div>
-                        ) : null}
-                      </div>
-                    </div>
-                  </PopoverContent>
-                </Popover>
+                <div className="flex gap-2">
+                  <FormControl>
+                    <Input {...field} placeholder="Type an email address..." />
+                  </FormControl>
+                  <Button
+                    type="button"
+                    size="icon"
+                    disabled={isCheckingEmail}
+                    onClick={handleAddEmail}
+                  >
+                    {isCheckingEmail ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <PlusCircle className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
                 <FormMessage />
               </FormItem>
             )}
@@ -185,22 +169,43 @@ export const InvitePeopleForm = () => {
         </div>
 
         {/* Display emails to be invited */}
-        {emailsToInvite.length > 0 && (
+        {inviteList.length > 0 && (
           <div className="space-y-2">
             <p className="text-sm font-medium">People to invite:</p>
             <div className="space-y-2">
-              {emailsToInvite.map((email) => (
+              {inviteList.map((item) => (
                 <div
-                  key={email}
+                  key={item.email}
                   className="bg-muted/40 flex items-center justify-between rounded-md border p-2 text-sm"
                 >
-                  <span className="truncate">{email}</span>
+                  <div className="flex items-center gap-2">
+                    {item.isRegistered && item.user ? (
+                      <Avatar className="h-8 w-8">
+                        {item.user.image ? (
+                          <AvatarImage
+                            src={item.user.image}
+                            alt={item.user.name}
+                          />
+                        ) : (
+                          <UserIcon className="h-4 w-4" />
+                        )}
+                        <AvatarFallback>
+                          {item.user.name.slice(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                    ) : (
+                      <div className="bg-muted flex h-8 w-8 items-center justify-center rounded-full">
+                        <Mail className="text-muted-foreground h-4 w-4" />
+                      </div>
+                    )}
+                    <span className="truncate font-medium">{item.email}</span>
+                  </div>
                   <Button
                     type="button"
                     size="icon"
                     variant="ghost"
                     className="h-6 w-6"
-                    onClick={() => handleRemoveEmail(email)}
+                    onClick={() => handleRemoveEmail(item.email)}
                   >
                     <X className="h-3 w-3" />
                   </Button>
@@ -212,14 +217,13 @@ export const InvitePeopleForm = () => {
 
         {/* Submit button */}
         <Button
-          type="button"
+          type="submit"
           className="w-full"
-          disabled={emailsToInvite.length === 0}
-          onClick={onSubmit}
+          disabled={inviteList.length === 0}
         >
           Invite people
         </Button>
-      </div>
+      </form>
     </Form>
   )
 }

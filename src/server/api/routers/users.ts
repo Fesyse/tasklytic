@@ -4,14 +4,14 @@ import { eq } from "drizzle-orm"
 import { z } from "zod"
 
 export const userRouter = createTRPCRouter({
-  searchMany: protectedProcedure
+  getByEmail: protectedProcedure
     .input(
       z.object({
-        email: z.string().email().optional()
+        email: z.string().email()
       })
     )
     .query(async ({ input, ctx }) => {
-      const usersResult = await ctx.db
+      const user = await ctx.db
         .select({
           id: users.id,
           name: users.name,
@@ -19,8 +19,9 @@ export const userRouter = createTRPCRouter({
           image: users.image
         })
         .from(users)
-        .where(input.email ? eq(users.email, input.email) : undefined)
+        .where(eq(users.email, input.email))
+        .limit(1)
 
-      return usersResult
+      return user[0] || null
     })
 })
