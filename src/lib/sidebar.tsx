@@ -1,3 +1,4 @@
+import { InvitePeopleDialog } from "@/components/layouts/dashboard/sidebar/invite-people-dialog"
 import {
   CalendarIcon,
   HomeIcon,
@@ -6,11 +7,17 @@ import {
   type LucideIcon
 } from "lucide-react"
 
-export type NavItem = {
-  title: string
-  url: string
-  icon: LucideIcon
-}
+export type NavItem =
+  | {
+      title: string
+      url: string
+      icon: LucideIcon
+      type: "url"
+    }
+  | {
+      component: React.JSX.Element
+      type: "component"
+    }
 export type NoteNavItem = NavItem & {
   emoji: string
 }
@@ -30,25 +37,33 @@ export const useSidebarNav = (): SidebarNav => {
       {
         title: "Home",
         url: "/dashboard",
-        icon: HomeIcon
+        icon: HomeIcon,
+        type: "url"
       },
       {
         title: "Inbox",
         url: "/dashboard/inbox",
-        icon: InboxIcon
+        icon: InboxIcon,
+        type: "url"
       }
     ],
     privateNotes: [],
     navSecondary: [
       {
+        component: <InvitePeopleDialog />,
+        type: "component"
+      },
+      {
         title: "Calendar",
         url: "/dashboard/calendar",
-        icon: CalendarIcon
+        icon: CalendarIcon,
+        type: "url"
       },
       {
         title: "Settings",
         url: "/dashboard/settings",
-        icon: SettingsIcon
+        icon: SettingsIcon,
+        type: "url"
       }
     ]
   }
