@@ -58,12 +58,12 @@ export function OrganizationSwitcher() {
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
-      <SidebarMenuItem>
+      <SidebarMenuItem className="grow">
         {activeOrg ? (
           <DropdownMenuTrigger asChild>
             <Button
               variant="outline"
-              className={cn("w-full justify-between")}
+              className="w-full justify-between"
               size={sidebarOpen ? "default" : "icon"}
             >
               <span
@@ -80,7 +80,7 @@ export function OrganizationSwitcher() {
             </Button>
           </DropdownMenuTrigger>
         ) : (
-          <SidebarMenuSkeleton showIcon className="h-9 p-2" />
+          <SidebarMenuSkeleton showIcon className="h-9 w-full p-2" />
         )}
       </SidebarMenuItem>
       <DropdownMenuContent className="w-[200px]">
