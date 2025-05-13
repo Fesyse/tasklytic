@@ -3,12 +3,16 @@ import ResetPasswordEmail from "@/emails/reset-password-email"
 import VerifyEmail from "@/emails/verify-email"
 import { env } from "@/env"
 import { siteConfig } from "@/lib/site-config"
+import { getBaseUrl } from "@/lib/utils"
 import { db } from "@/server/db"
 import { resend } from "@/server/resend"
 import { betterAuth } from "better-auth"
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
 import { nextCookies } from "better-auth/next-js"
 import { organization } from "better-auth/plugins/organization"
+import { headers as nextHeaders } from "next/headers"
+
+const BETTER_AUTH_COOKIE_NAME = "better-auth.session_token"
 
 export const auth = betterAuth({
   emailAndPassword: {
@@ -77,13 +81,12 @@ export const auth = betterAuth({
   plugins: [
     nextCookies(),
     organization({
-      sendInvitationEmail: async ({ email, inviter, organization }) => {
+      sendInvitationEmail: async ({ id, email, inviter, organization }) => {
         const recipient = await db.query.users.findFirst({
           where: (users, { eq }) => eq(users.email, email)
         })
-        if (!recipient) {
-          throw new Error(auth.$ERROR_CODES.INVALID_EMAIL)
-        }
+
+        const url = `${getBaseUrl()}/${recipient ? `/accept-invitation?id=${id}` : `/auth/sign-up?invitationId=${id}`}`
 
         const { error } = await resend.emails.send({
           from: siteConfig.emails.noreply,
@@ -91,9 +94,10 @@ export const auth = betterAuth({
           subject: `You've been invited to join ${organization.name}`,
           react: (
             <InviteToOrganizationEmail
+              url={url}
               inviteExpiryDays={2}
               inviterName={inviter.user.name}
-              recipientName={recipient.name}
+              recipientName={recipient ? recipient.name : undefined}
               organizationName={organization.name}
             />
           )
@@ -116,3 +120,33 @@ export const auth = betterAuth({
     })
   ]
 })
+
+type InviteMemberBody = {
+  email: string
+  role: typeof auth.$Infer.Member.role
+}
+export async function inviteMember(body: InviteMemberBody, headers?: Headers) {
+  headers ??= await nextHeaders()
+
+  const sessionCookie = headers.get(BETTER_AUTH_COOKIE_NAME)
+  const response = await fetch(
+    `${getBaseUrl()}/api/auth/organization/invite-member`,
+    {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: sessionCookie
+        ? {
+            [BETTER_AUTH_COOKIE_NAME]: sessionCookie
+          }
+        : undefined
+    }
+  )
+
+  const data = await response.json()
+
+  if (!response.ok) {
+    throw new Error(data.message)
+  }
+
+  return data
+}

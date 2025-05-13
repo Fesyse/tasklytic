@@ -135,10 +135,7 @@ export const InvitePeopleForm = () => {
     }
 
     invitePeople({
-      invitations: inviteList.map((item) => ({
-        email: item.email,
-        userId: item.user?.id
-      }))
+      emails: inviteList.map((invite) => invite.email)
     })
 
     // Reset form state
