@@ -29,7 +29,7 @@ const transitionVariants = {
 
 export function HeroSection() {
   return (
-    <main className="overflow-hidden">
+    <main className="bg-noise overflow-hidden">
       <div
         aria-hidden
         className="absolute inset-0 isolate hidden opacity-65 contain-strict lg:block"
@@ -75,7 +75,7 @@ export function HeroSection() {
               height="4095"
             />
           </AnimatedGroup>
-          <div className="absolute inset-0 -z-10 size-full [background:radial-gradient(125%_125%_at_50%_100%,transparent_0%,var(--color-background)_75%)]"></div>
+          <div className="bg-noise absolute inset-0 -z-10 size-full [background:radial-gradient(125%_125%_at_50%_100%,transparent_0%,var(--color-background)_75%)]"></div>
           <div className="mx-auto max-w-7xl px-6">
             <div className="text-center sm:mx-auto lg:mt-0 lg:mr-auto">
               <AnimatedGroup variants={transitionVariants}>
