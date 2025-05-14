@@ -3,7 +3,7 @@
 import { useMutation } from "@tanstack/react-query"
 import { Check, ChevronsUpDown, PlusCircle, Users } from "lucide-react"
 import { useRouter } from "next/navigation"
-import * as React from "react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -25,12 +25,16 @@ import { cn } from "@/lib/utils"
 
 export function OrganizationSwitcher() {
   const { open: sidebarOpen } = useSidebar()
-  const [isOpen, setIsOpen] = React.useState(false)
+  const [isOpen, setIsOpen] = useState(false)
   const router = useRouter()
 
   // Fetch organizations with React Query
-  const { data: organizations, isPending: isLoadingOrganizations } =
-    authClient.useListOrganizations()
+  const {
+    data: organizations,
+    isPending: isLoadingOrganizations,
+    error: organizationsError,
+    isRefetching
+  } = authClient.useListOrganizations()
 
   // Fetch active organization with React Query
   const { data: activeOrg, isPending: isLoadingActiveOrg } =
@@ -51,6 +55,18 @@ export function OrganizationSwitcher() {
   const switchOrganization = async (orgId: string) => {
     await switchOrgMutation.mutateAsync(orgId)
   }
+
+  useEffect(() => {
+    if (organizationsError) {
+      toast.error(
+        organizationsError?.message || "Failed to get your organizations"
+      )
+      return
+    }
+    if (!organizations?.length && !isLoadingOrganizations && !isRefetching) {
+      router.push("/new-organization")
+    }
+  }, [organizations, isLoadingOrganizations, organizationsError, isRefetching])
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
