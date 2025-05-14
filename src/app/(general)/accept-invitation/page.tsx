@@ -20,13 +20,13 @@ export default function AcceptInvitationPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const invitationId = searchParams.get("id")
+  const isNewUser = searchParams.get("isNewUser") === "1"
 
   const [error, setError] = useState<string>()
   const [success, setSuccess] = useState(false)
   const [accepting, setAccepting] = useState(false)
   const [rejecting, setRejecting] = useState(false)
 
-  // Get user session to check if logged in
   const { data: session, isPending: sessionLoading } = authClient.useSession()
 
   const {
@@ -61,7 +61,6 @@ export default function AcceptInvitationPage() {
 
   // Redirect to sign-in if user is not logged in
   useEffect(() => {
-    console.log(sessionLoading, session)
     if (!sessionLoading && !session && invitationId) {
       router.push(`/auth/sign-in?invitationId=${invitationId}`)
     }
@@ -118,11 +117,14 @@ export default function AcceptInvitationPage() {
         return
       }
 
-      toast.success("Invitation rejected")
+      toast.success("Invitation rejected", {
+        description: isNewUser
+          ? "Redirecting to create new organization, because youre dont have one"
+          : undefined
+      })
 
-      // Redirect to dashboard after a short delay
       setTimeout(() => {
-        router.push("/dashboard")
+        router.push(isNewUser ? "/new-organization" : "/dashboard")
       }, 2000)
     } catch (err: any) {
       toast.error(
@@ -152,7 +154,6 @@ export default function AcceptInvitationPage() {
       </div>
     )
   }
-  console.log(errors)
 
   // Show error state
   if (errors) {
