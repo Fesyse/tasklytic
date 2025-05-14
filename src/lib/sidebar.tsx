@@ -1,3 +1,4 @@
+import { InvitationsDialog } from "@/components/layouts/dashboard/sidebar/invitations-dialog"
 import { InvitePeopleDialog } from "@/components/layouts/dashboard/sidebar/invite-people-dialog"
 import {
   CalendarIcon,
@@ -49,6 +50,10 @@ export const useSidebarNav = (): SidebarNav => {
     ],
     privateNotes: [],
     navSecondary: [
+      {
+        component: <InvitationsDialog />,
+        type: "component"
+      },
       {
         component: <InvitePeopleDialog />,
         type: "component"

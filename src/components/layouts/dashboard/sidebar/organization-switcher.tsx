@@ -40,10 +40,6 @@ export function OrganizationSwitcher() {
   const switchOrgMutation = useMutation({
     mutationFn: (organizationId: string) =>
       authClient.organization.setActive({ organizationId }),
-    onSuccess: async () => {
-      toast.success("Organization switched successfully")
-      router.refresh()
-    },
     onError: (error) => {
       console.error("Error switching organization:", error)
       toast.error("Failed to switch organization")
