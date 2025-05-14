@@ -17,8 +17,8 @@ import { cn } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2 } from "lucide-react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { Suspense, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
@@ -45,12 +45,22 @@ const signUpSchema = z
     }
   })
 
-export function AuthForm({
+function AuthFormContent({
   className,
   type,
   ...props
 }: React.ComponentProps<"form"> & { type: "sign-in" | "sign-up" }) {
+  const searchParams = useSearchParams()
+  const invitationId = searchParams.get("invitationId")
   const [isLoading, setIsLoading] = useState(false)
+
+  const signUpCallbackUrl = useMemo(
+    () =>
+      invitationId
+        ? `/accept-invitation?id=${invitationId}&isNewUser=1`
+        : "/new-organization",
+    [invitationId]
+  )
 
   const router = useRouter()
   const form = useForm<z.infer<typeof signInSchema | typeof signUpSchema>>({
@@ -88,7 +98,7 @@ export function AuthForm({
         name: data.name,
         email: data.email,
         password: data.password,
-        callbackURL: "/dashboard"
+        callbackURL: signUpCallbackUrl
       })
 
       if (error) {
@@ -106,7 +116,10 @@ export function AuthForm({
   const handleSocialSignIn = (provider: "github" | "google") => () => {
     authClient.signIn.social({
       provider,
-      callbackURL: "/dashboard"
+      callbackURL: invitationId
+        ? `/accept-invitation?id=${invitationId}`
+        : "/dashboard",
+      newUserCallbackURL: signUpCallbackUrl
     })
   }
 
@@ -115,8 +128,7 @@ export function AuthForm({
       <form
         {...props}
         className={cn("flex flex-col gap-6", className)}
-        // @ts-expect-error - TODO: fix this
-        onSubmit={form.handleSubmit(handleSubmit)}
+        onSubmit={form.handleSubmit(handleSubmit as any)}
       >
         <div className="grid gap-6">
           {type === "sign-up" && (
@@ -226,5 +238,55 @@ export function AuthForm({
         </div>
       </form>
     </Form>
+  )
+}
+
+// Export the component wrapped in Suspense
+export function AuthForm(
+  props: React.ComponentProps<"form"> & { type: "sign-in" | "sign-up" }
+) {
+  return (
+    <Suspense fallback={<AuthFormSkeleton type={props.type} />}>
+      <AuthFormContent {...props} />
+    </Suspense>
+  )
+}
+
+function AuthFormSkeleton({ type }: { type: "sign-in" | "sign-up" }) {
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="grid gap-6">
+        {type === "sign-up" && (
+          <div className="grid gap-3">
+            <div className="text-sm font-medium">Name</div>
+            <div className="bg-muted h-10 w-full animate-pulse rounded-md"></div>
+          </div>
+        )}
+        <div className="grid gap-3">
+          <div className="text-sm font-medium">Email</div>
+          <div className="bg-muted h-10 w-full animate-pulse rounded-md"></div>
+        </div>
+        <div className="grid gap-3">
+          <div className="flex items-center justify-between">
+            <div className="text-sm font-medium">Password</div>
+          </div>
+          <div className="bg-muted h-10 w-full animate-pulse rounded-md"></div>
+        </div>
+        {type === "sign-up" && (
+          <div className="grid gap-3">
+            <div className="text-sm font-medium">Confirm Password</div>
+            <div className="bg-muted h-10 w-full animate-pulse rounded-md"></div>
+          </div>
+        )}
+        <div className="bg-muted h-10 w-full animate-pulse rounded-md"></div>
+        <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
+          <span className="bg-background text-muted-foreground relative z-10 px-2">
+            Or continue with
+          </span>
+        </div>
+        <div className="bg-muted h-10 w-full animate-pulse rounded-md"></div>
+        <div className="bg-muted h-10 w-full animate-pulse rounded-md"></div>
+      </div>
+    </div>
   )
 }

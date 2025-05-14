@@ -11,21 +11,28 @@ import {
   varchar
 } from "drizzle-orm/pg-core"
 
-const createId = init({
+export const createId = init({
   fingerprint: "tasklytic",
   length: 20
 })
 export const createTable = pgTableCreator((name) => `tasklytic_${name}`)
 
-export const users = createTable("user", {
-  id: varchar("id", { length: 36 }).primaryKey(),
-  name: text("name").notNull(),
-  email: varchar("email", { length: 255 }).notNull().unique(),
-  emailVerified: boolean("email_verified").notNull(),
-  image: text("image"),
-  createdAt: timestamp("created_at").notNull(),
-  updatedAt: timestamp("updated_at").notNull()
-})
+export const users = createTable(
+  "user",
+  {
+    id: varchar("id", { length: 36 }).primaryKey(),
+    name: text("name").notNull(),
+    email: varchar("email", { length: 255 }).notNull().unique(),
+    emailVerified: boolean("email_verified").notNull(),
+    image: text("image"),
+    createdAt: timestamp("created_at").notNull(),
+    updatedAt: timestamp("updated_at").notNull()
+  },
+  (table) => ({
+    // Index for email lookups as recommended by Better Auth
+    emailIdx: index("user_email_idx").on(table.email)
+  })
+)
 
 export const sessions = createTable(
   "session",
@@ -39,6 +46,9 @@ export const sessions = createTable(
     updatedAt: timestamp("updated_at").notNull(),
     ipAddress: text("ip_address"),
     userAgent: text("user_agent"),
+    activeOrganizationId: text("active_organization_id").references(
+      () => organizations.id
+    ),
     userId: text("user_id")
       .notNull()
       .references(() => users.id)
@@ -46,6 +56,8 @@ export const sessions = createTable(
   (table) => ({
     // Index to improve session lookup by user
     userIdIdx: index("session_user_id_idx").on(table.userId),
+    // Index for session lookup by token as recommended by Better Auth
+    tokenIdx: index("session_token_idx").on(table.token),
     // Index for quickly finding expired sessions
     expiresAtIdx: index("session_expires_at_idx").on(table.expiresAt)
   })
@@ -73,7 +85,7 @@ export const accounts = createTable(
     updatedAt: timestamp("updated_at").notNull()
   },
   (table) => ({
-    // Index to improve account lookup by user
+    // Index to improve account lookup by user as recommended by Better Auth
     userIdIdx: index("account_user_id_idx").on(table.userId),
     // Composite index for looking up accounts by provider and account ID
     providerAccountIdx: index("account_provider_account_idx").on(
@@ -96,12 +108,134 @@ export const verification = createTable(
     updatedAt: timestamp("updated_at")
   },
   (table) => ({
-    // Index for looking up verifications by identifier
+    // Index for looking up verifications by identifier as recommended by Better Auth
     identifierIdx: index("verification_identifier_idx").on(table.identifier),
     // Index for cleaning up expired verifications
     expiresAtIdx: index("verification_expires_at_idx").on(table.expiresAt)
   })
 )
+
+export const organizations = createTable(
+  "organization",
+  {
+    id: text("id").primaryKey(),
+    name: text("name").notNull(),
+    slug: text("slug").unique(),
+    logo: text("logo"),
+    createdAt: timestamp("created_at").notNull(),
+    metadata: text("metadata")
+  },
+  (table) => ({
+    // Index for organization lookup by slug as recommended by Better Auth
+    slugIdx: index("organization_slug_idx").on(table.slug)
+  })
+)
+
+export const members = createTable(
+  "member",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organizations.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    role: text("role").notNull(),
+    createdAt: timestamp("created_at").notNull()
+  },
+  (table) => ({
+    // Index for member lookup by userId as recommended by Better Auth
+    userIdIdx: index("member_user_id_idx").on(table.userId),
+    // Index for member lookup by organizationId as recommended by Better Auth
+    organizationIdIdx: index("member_organization_id_idx").on(
+      table.organizationId
+    ),
+    // Composite index for user's organization memberships
+    userOrganizationIdx: index("member_user_organization_idx").on(
+      table.userId,
+      table.organizationId
+    )
+  })
+)
+
+export const invitations = createTable(
+  "invitation",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organizations.id, { onDelete: "cascade" }),
+    email: text("email").notNull(),
+    role: text("role"),
+    status: text("status").notNull(),
+    expiresAt: timestamp("expires_at").notNull(),
+    inviterId: text("inviter_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" })
+  },
+  (table) => ({
+    // Index for invitation lookup by email as recommended by Better Auth
+    emailIdx: index("invitation_email_idx").on(table.email),
+    // Index for invitation lookup by organizationId as recommended by Better Auth
+    organizationIdIdx: index("invitation_organization_id_idx").on(
+      table.organizationId
+    ),
+    // Composite index for organization's invitations by email
+    organizationEmailIdx: index("invitation_organization_email_idx").on(
+      table.organizationId,
+      table.email
+    )
+  })
+)
+
+// Add passkey table as recommended by Better Auth
+export const passkey = createTable(
+  "passkey",
+  {
+    id: varchar("id", { length: 36 })
+      .$defaultFn(() => createId())
+      .primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    credentialId: text("credential_id").notNull().unique(),
+    publicKey: text("public_key").notNull(),
+    counter: integer("counter").notNull(),
+    transports: text("transports"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    lastUsedAt: timestamp("last_used_at")
+  },
+  (table) => ({
+    // Index for passkey lookup by userId as recommended by Better Auth
+    userIdIdx: index("passkey_user_id_idx").on(table.userId)
+  })
+)
+
+// Add twoFactor table as recommended by Better Auth
+export const twoFactor = createTable(
+  "two_factor",
+  {
+    id: varchar("id", { length: 36 })
+      .$defaultFn(() => createId())
+      .primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" })
+      .unique(),
+    secret: text("secret").notNull(),
+    verified: boolean("verified").notNull().default(false),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow()
+  },
+  (table) => ({
+    // Index for twoFactor lookup by secret as recommended by Better Auth
+    secretIdx: index("two_factor_secret_idx").on(table.secret)
+  })
+)
+
+// Calendar
 
 export const calendarViewEnum = pgEnum("calendar_view", [
   "day",
@@ -242,6 +376,21 @@ export const calendarSettingsRelations = relations(
   })
 )
 
+// Add relations for new tables
+export const passkeyRelations = relations(passkey, ({ one }) => ({
+  user: one(users, {
+    fields: [passkey.userId],
+    references: [users.id]
+  })
+}))
+
+export const twoFactorRelations = relations(twoFactor, ({ one }) => ({
+  user: one(users, {
+    fields: [twoFactor.userId],
+    references: [users.id]
+  })
+}))
+
 // Types
 export type CalendarEvent = typeof calendarEvents.$inferSelect
 export type NewCalendarEvent = typeof calendarEvents.$inferInsert
@@ -251,6 +400,12 @@ export type NewWorkingHours = typeof workingHours.$inferInsert
 
 export type CalendarSettings = typeof calendarSettings.$inferSelect
 export type NewCalendarSettings = typeof calendarSettings.$inferInsert
+
+export type Passkey = typeof passkey.$inferSelect
+export type NewPasskey = typeof passkey.$inferInsert
+
+export type TwoFactor = typeof twoFactor.$inferSelect
+export type NewTwoFactor = typeof twoFactor.$inferInsert
 
 export type CalendarView = (typeof calendarViewEnum.enumValues)[number]
 export type EventColor = (typeof eventColorEnum.enumValues)[number]
