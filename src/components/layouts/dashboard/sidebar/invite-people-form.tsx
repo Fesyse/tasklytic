@@ -39,7 +39,7 @@ const invitePeopleSchema = z.object({
 type InvitePeopleSchema = z.infer<typeof invitePeopleSchema>
 
 export const InvitePeopleForm = () => {
-  const [isCheckingEmail, setIsCheckingEmail] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [inviteList, setInviteList] = useState<InviteEmail[]>([])
 
   const form = useForm<InvitePeopleSchema>({
@@ -82,8 +82,7 @@ export const InvitePeopleForm = () => {
       return
     }
 
-    // Check if user exists
-    setIsCheckingEmail(true)
+    setIsLoading(true)
     try {
       if (isCurrentUserPending || !userData || userData.user.email === email) {
         toast.error("You are already in organization!")
@@ -109,7 +108,7 @@ export const InvitePeopleForm = () => {
       toast.error("Failed to check if user exists")
       console.error(error)
     } finally {
-      setIsCheckingEmail(false)
+      setIsLoading(false)
     }
   }
 
@@ -126,6 +125,7 @@ export const InvitePeopleForm = () => {
       toast.error("Add at least one email address to invite")
       return
     }
+    setIsLoading(true)
 
     const invitationPromises = inviteList.map((invite) => {
       return authClient.organization.inviteMember({
@@ -148,6 +148,7 @@ export const InvitePeopleForm = () => {
       toast.success(`Successfuly invited ${inviteList.length} people(s).`)
     }
 
+    setIsLoading(false)
     setInviteList([])
   }
 
@@ -167,10 +168,10 @@ export const InvitePeopleForm = () => {
                   <Button
                     type="button"
                     size="icon"
-                    disabled={isCheckingEmail}
+                    disabled={isLoading}
                     onClick={handleAddEmail}
                   >
-                    {isCheckingEmail ? (
+                    {isLoading ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
                       <PlusCircle className="h-4 w-4" />
