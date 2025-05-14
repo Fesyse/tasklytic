@@ -13,10 +13,10 @@ import { authClient } from "@/lib/auth-client"
 import { useQuery } from "@tanstack/react-query"
 import { CheckCircle2, Loader2, XCircle } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useEffect, useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { toast } from "sonner"
 
-export default function AcceptInvitationPage() {
+function AcceptInvitationPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const invitationId = searchParams.get("id")
@@ -265,5 +265,36 @@ export default function AcceptInvitationPage() {
         </CardFooter>
       </Card>
     </div>
+  )
+}
+
+function InvitationSkeleton() {
+  return (
+    <div className="flex min-h-[80vh] flex-col items-center justify-center">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <div className="bg-muted mx-auto h-6 w-2/3 animate-pulse rounded-md"></div>
+          <div className="bg-muted mx-auto mt-2 h-4 w-4/5 animate-pulse rounded-md opacity-70"></div>
+        </CardHeader>
+        <CardContent className="py-6">
+          <div className="space-y-4 text-center">
+            <div className="bg-muted mx-auto h-4 w-3/4 animate-pulse rounded-md"></div>
+            <div className="bg-muted mx-auto h-4 w-1/2 animate-pulse rounded-md"></div>
+          </div>
+        </CardContent>
+        <CardFooter className="flex flex-col space-y-2">
+          <div className="bg-muted h-10 w-full animate-pulse rounded-md"></div>
+          <div className="bg-muted h-10 w-full animate-pulse rounded-md opacity-70"></div>
+        </CardFooter>
+      </Card>
+    </div>
+  )
+}
+
+export default function AcceptInvitationPage() {
+  return (
+    <Suspense fallback={<InvitationSkeleton />}>
+      <AcceptInvitationPageContent />
+    </Suspense>
   )
 }

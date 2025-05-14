@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useEffect, useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
@@ -35,7 +35,7 @@ const resetPasswordSchema = z
 
 type ResetPasswordSchema = z.infer<typeof resetPasswordSchema>
 
-export default function ForgotPasswordProceedPage() {
+function ForgotPasswordProceedPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [status, setStatus] = useState<
@@ -217,5 +217,35 @@ export default function ForgotPasswordProceedPage() {
         </form>
       </Form>
     </>
+  )
+}
+
+function PasswordResetSkeleton() {
+  return (
+    <>
+      <div className="space-y-2">
+        <div className="bg-muted h-8 w-2/3 animate-pulse rounded-md"></div>
+        <div className="bg-muted h-4 w-full animate-pulse rounded-md opacity-70"></div>
+      </div>
+      <div className="mt-6 space-y-4">
+        <div className="space-y-2">
+          <div className="bg-muted h-5 w-1/4 animate-pulse rounded-md"></div>
+          <div className="bg-muted h-10 w-full animate-pulse rounded-md"></div>
+        </div>
+        <div className="space-y-2">
+          <div className="bg-muted h-5 w-1/3 animate-pulse rounded-md"></div>
+          <div className="bg-muted h-10 w-full animate-pulse rounded-md"></div>
+        </div>
+        <div className="bg-muted h-10 w-full animate-pulse rounded-md"></div>
+      </div>
+    </>
+  )
+}
+
+export default function ForgotPasswordProceedPage() {
+  return (
+    <Suspense fallback={<PasswordResetSkeleton />}>
+      <ForgotPasswordProceedPageContent />
+    </Suspense>
   )
 }

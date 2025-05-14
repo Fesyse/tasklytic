@@ -18,7 +18,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2 } from "lucide-react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useMemo, useState } from "react"
+import { Suspense, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
@@ -45,7 +45,7 @@ const signUpSchema = z
     }
   })
 
-export function AuthForm({
+function AuthFormContent({
   className,
   type,
   ...props
@@ -238,5 +238,55 @@ export function AuthForm({
         </div>
       </form>
     </Form>
+  )
+}
+
+// Export the component wrapped in Suspense
+export function AuthForm(
+  props: React.ComponentProps<"form"> & { type: "sign-in" | "sign-up" }
+) {
+  return (
+    <Suspense fallback={<AuthFormSkeleton type={props.type} />}>
+      <AuthFormContent {...props} />
+    </Suspense>
+  )
+}
+
+function AuthFormSkeleton({ type }: { type: "sign-in" | "sign-up" }) {
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="grid gap-6">
+        {type === "sign-up" && (
+          <div className="grid gap-3">
+            <div className="text-sm font-medium">Name</div>
+            <div className="bg-muted h-10 w-full animate-pulse rounded-md"></div>
+          </div>
+        )}
+        <div className="grid gap-3">
+          <div className="text-sm font-medium">Email</div>
+          <div className="bg-muted h-10 w-full animate-pulse rounded-md"></div>
+        </div>
+        <div className="grid gap-3">
+          <div className="flex items-center justify-between">
+            <div className="text-sm font-medium">Password</div>
+          </div>
+          <div className="bg-muted h-10 w-full animate-pulse rounded-md"></div>
+        </div>
+        {type === "sign-up" && (
+          <div className="grid gap-3">
+            <div className="text-sm font-medium">Confirm Password</div>
+            <div className="bg-muted h-10 w-full animate-pulse rounded-md"></div>
+          </div>
+        )}
+        <div className="bg-muted h-10 w-full animate-pulse rounded-md"></div>
+        <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
+          <span className="bg-background text-muted-foreground relative z-10 px-2">
+            Or continue with
+          </span>
+        </div>
+        <div className="bg-muted h-10 w-full animate-pulse rounded-md"></div>
+        <div className="bg-muted h-10 w-full animate-pulse rounded-md"></div>
+      </div>
+    </div>
   )
 }
