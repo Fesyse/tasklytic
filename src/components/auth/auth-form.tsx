@@ -17,8 +17,8 @@ import { cn } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2 } from "lucide-react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
@@ -50,7 +50,17 @@ export function AuthForm({
   type,
   ...props
 }: React.ComponentProps<"form"> & { type: "sign-in" | "sign-up" }) {
+  const searchParams = useSearchParams()
+  const invitationId = searchParams.get("invitationId")
   const [isLoading, setIsLoading] = useState(false)
+
+  const signUpCallbackUrl = useMemo(
+    () =>
+      invitationId
+        ? `/accept-invitation?id=${invitationId}&isNewUser=1`
+        : "/new-organization",
+    [invitationId]
+  )
 
   const router = useRouter()
   const form = useForm<z.infer<typeof signInSchema | typeof signUpSchema>>({
@@ -88,7 +98,7 @@ export function AuthForm({
         name: data.name,
         email: data.email,
         password: data.password,
-        callbackURL: "/new-organization"
+        callbackURL: signUpCallbackUrl
       })
 
       if (error) {
@@ -106,8 +116,10 @@ export function AuthForm({
   const handleSocialSignIn = (provider: "github" | "google") => () => {
     authClient.signIn.social({
       provider,
-      callbackURL: "/dashboard",
-      newUserCallbackURL: "/new-organization"
+      callbackURL: invitationId
+        ? `/accept-invitation?id=${invitationId}`
+        : "/dashboard",
+      newUserCallbackURL: signUpCallbackUrl
     })
   }
 
@@ -116,8 +128,7 @@ export function AuthForm({
       <form
         {...props}
         className={cn("flex flex-col gap-6", className)}
-        // @ts-expect-error - TODO: fix this
-        onSubmit={form.handleSubmit(handleSubmit)}
+        onSubmit={form.handleSubmit(handleSubmit as any)}
       >
         <div className="grid gap-6">
           {type === "sign-up" && (

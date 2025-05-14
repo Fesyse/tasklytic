@@ -83,7 +83,7 @@ export const auth = betterAuth({
           where: (users, { eq }) => eq(users.email, email)
         })
 
-        const url = `${getBaseUrl()}/${recipient ? `/accept-invitation?id=${id}` : `/auth/sign-up?invitationId=${id}`}`
+        const url = `${getBaseUrl()}${recipient ? `/accept-invitation?id=${id}` : `/auth/sign-up?invitationId=${id}`}`
 
         const { error } = await resend.emails.send({
           from: siteConfig.emails.noreply,

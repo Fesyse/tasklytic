@@ -23,7 +23,7 @@ type InviteToOrganizationEmailProps = {
 }
 
 export default function InviteToOrganizationEmail({
-  url = "https://tasklytic.fesyse.site/accept-invite",
+  url = "https://tasklytic.fesyse.site/accept-invitation",
   organizationName = "Organization",
   inviterName = "Team Member",
   recipientName = "there",
