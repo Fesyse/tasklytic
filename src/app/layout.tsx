@@ -20,8 +20,12 @@ const geist = Geist({
 })
 
 export default function RootLayout({
-  children
-}: Readonly<{ children: React.ReactNode }>) {
+  children,
+  modal
+}: Readonly<{
+  children: React.ReactNode
+  modal: React.ReactNode
+}>) {
   return (
     <html lang="en" className={`${geist.variable}`}>
       <head>
@@ -30,7 +34,10 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" sizes="32x32" />
       </head>
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+          {modal}
+        </Providers>
       </body>
     </html>
   )
