@@ -66,7 +66,7 @@ export const useSidebarNav = (): SidebarNav => {
       },
       {
         title: "Settings",
-        url: "/dashboard/settings",
+        url: "/settings",
         icon: SettingsIcon,
         type: "url"
       }

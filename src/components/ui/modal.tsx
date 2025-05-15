@@ -7,40 +7,40 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog"
-import { usePathname, useRouter } from "next/navigation"
-import { useEffect, useState, type FC, type PropsWithChildren } from "react"
+import { useRouter } from "next/navigation"
+import { useState, type FC, type PropsWithChildren } from "react"
 
 type ModalProps = {
-  title: React.ReactNode
+  title?: React.ReactNode
   description?: React.ReactNode
+  className?: string
 }
 
 export const Modal: FC<PropsWithChildren<ModalProps>> = ({
   children,
   title,
-  description
+  description,
+  className
 }) => {
-  const [isFirstRender, setIsFirstRender] = useState(false)
   const [open, setOpen] = useState(true)
   const router = useRouter()
-  const pathname = usePathname()
 
-  const handleOpenChange = () => router.back()
-
-  useEffect(() => {
-    if (isFirstRender) setOpen(false)
-    else setIsFirstRender(true)
-  }, [pathname])
+  const handleOpenChange = () => {
+    setOpen(false)
+    router.back()
+  }
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          {description ? (
-            <DialogDescription>{description}</DialogDescription>
-          ) : null}
-        </DialogHeader>
+      <DialogContent className={className}>
+        {title || description ? (
+          <DialogHeader>
+            {title ? <DialogTitle>{title}</DialogTitle> : null}
+            {description ? (
+              <DialogDescription>{description}</DialogDescription>
+            ) : null}
+          </DialogHeader>
+        ) : null}
         {children}
       </DialogContent>
     </Dialog>
