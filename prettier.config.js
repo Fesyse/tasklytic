@@ -2,5 +2,5 @@
 export default {
   trailingComma: "none",
   semi: false,
-  plugins: ["prettier-plugin-tailwindcss"],
-};
+  plugins: ["prettier-plugin-tailwindcss"]
+}

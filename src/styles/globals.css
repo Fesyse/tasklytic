@@ -1,4 +1,6 @@
 @import "tailwindcss";
+
+@plugin "tailwind-scrollbar-hide";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
@@ -78,6 +80,8 @@
   --shadow-opacity: var(--shadow-opacity);
   --color-shadow-color: var(--shadow-color);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-highlight: var(--highlight);
+  --color-brand: var(--brand);
 }
 
 :root {
@@ -89,7 +93,7 @@
   --popover: oklch(0.97 0 0);
   --popover-foreground: oklch(0.32 0 0);
   --primary: oklch(0.49 0 0);
-  --primary-foreground: oklch(1.00 0 0);
+  --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.91 0 0);
   --secondary-foreground: oklch(0.32 0 0);
   --muted: oklch(0.89 0 0);
@@ -108,12 +112,12 @@
   --sidebar: oklch(0.94 0 0);
   --sidebar-foreground: oklch(0.32 0 0);
   --sidebar-primary: oklch(0.49 0 0);
-  --sidebar-primary-foreground: oklch(1.00 0 0);
+  --sidebar-primary-foreground: oklch(1 0 0);
   --sidebar-accent: oklch(0.81 0 0);
   --sidebar-accent-foreground: oklch(0.32 0 0);
   --sidebar-border: oklch(0.86 0 0);
   --sidebar-ring: oklch(0.49 0 0);
-  --destructive-foreground: oklch(1.00 0 0);
+  --destructive-foreground: oklch(1 0 0);
   --font-sans: Montserrat, sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: Fira Code, monospace;
@@ -127,13 +131,20 @@
   --spacing: 0.25rem;
   --shadow-2xs: 0px 2px 0px 0px hsl(0 0% 20% / 0.07);
   --shadow-xs: 0px 2px 0px 0px hsl(0 0% 20% / 0.07);
-  --shadow-sm: 0px 2px 0px 0px hsl(0 0% 20% / 0.15), 0px 1px 2px -1px hsl(0 0% 20% / 0.15);
-  --shadow: 0px 2px 0px 0px hsl(0 0% 20% / 0.15), 0px 1px 2px -1px hsl(0 0% 20% / 0.15);
-  --shadow-md: 0px 2px 0px 0px hsl(0 0% 20% / 0.15), 0px 2px 4px -1px hsl(0 0% 20% / 0.15);
-  --shadow-lg: 0px 2px 0px 0px hsl(0 0% 20% / 0.15), 0px 4px 6px -1px hsl(0 0% 20% / 0.15);
-  --shadow-xl: 0px 2px 0px 0px hsl(0 0% 20% / 0.15), 0px 8px 10px -1px hsl(0 0% 20% / 0.15);
+  --shadow-sm:
+    0px 2px 0px 0px hsl(0 0% 20% / 0.15), 0px 1px 2px -1px hsl(0 0% 20% / 0.15);
+  --shadow:
+    0px 2px 0px 0px hsl(0 0% 20% / 0.15), 0px 1px 2px -1px hsl(0 0% 20% / 0.15);
+  --shadow-md:
+    0px 2px 0px 0px hsl(0 0% 20% / 0.15), 0px 2px 4px -1px hsl(0 0% 20% / 0.15);
+  --shadow-lg:
+    0px 2px 0px 0px hsl(0 0% 20% / 0.15), 0px 4px 6px -1px hsl(0 0% 20% / 0.15);
+  --shadow-xl:
+    0px 2px 0px 0px hsl(0 0% 20% / 0.15), 0px 8px 10px -1px hsl(0 0% 20% / 0.15);
   --shadow-2xl: 0px 2px 0px 0px hsl(0 0% 20% / 0.38);
   --tracking-normal: 0em;
+  --brand: oklch(0.623 0.214 259.815);
+  --highlight: oklch(0.852 0.199 91.936);
 }
 
 .dark {
@@ -148,7 +159,7 @@
   --secondary: oklch(0.31 0 0);
   --secondary-foreground: oklch(0.89 0 0);
   --muted: oklch(0.29 0 0);
-  --muted-foreground: oklch(0.60 0 0);
+  --muted-foreground: oklch(0.6 0 0);
   --accent: oklch(0.37 0 0);
   --accent-foreground: oklch(0.89 0 0);
   --destructive: oklch(0.66 0.15 22.17);
@@ -168,7 +179,7 @@
   --sidebar-accent-foreground: oklch(0.89 0 0);
   --sidebar-border: oklch(0.33 0 0);
   --sidebar-ring: oklch(0.71 0 0);
-  --destructive-foreground: oklch(1.00 0 0);
+  --destructive-foreground: oklch(1 0 0);
   --radius: 0.35rem;
   --font-sans: Inter, sans-serif;
   --font-serif: Georgia, serif;
@@ -183,12 +194,19 @@
   --spacing: 0.25rem;
   --shadow-2xs: 0px 2px 0px 0px hsl(0 0% 20% / 0.07);
   --shadow-xs: 0px 2px 0px 0px hsl(0 0% 20% / 0.07);
-  --shadow-sm: 0px 2px 0px 0px hsl(0 0% 20% / 0.15), 0px 1px 2px -1px hsl(0 0% 20% / 0.15);
-  --shadow: 0px 2px 0px 0px hsl(0 0% 20% / 0.15), 0px 1px 2px -1px hsl(0 0% 20% / 0.15);
-  --shadow-md: 0px 2px 0px 0px hsl(0 0% 20% / 0.15), 0px 2px 4px -1px hsl(0 0% 20% / 0.15);
-  --shadow-lg: 0px 2px 0px 0px hsl(0 0% 20% / 0.15), 0px 4px 6px -1px hsl(0 0% 20% / 0.15);
-  --shadow-xl: 0px 2px 0px 0px hsl(0 0% 20% / 0.15), 0px 8px 10px -1px hsl(0 0% 20% / 0.15);
+  --shadow-sm:
+    0px 2px 0px 0px hsl(0 0% 20% / 0.15), 0px 1px 2px -1px hsl(0 0% 20% / 0.15);
+  --shadow:
+    0px 2px 0px 0px hsl(0 0% 20% / 0.15), 0px 1px 2px -1px hsl(0 0% 20% / 0.15);
+  --shadow-md:
+    0px 2px 0px 0px hsl(0 0% 20% / 0.15), 0px 2px 4px -1px hsl(0 0% 20% / 0.15);
+  --shadow-lg:
+    0px 2px 0px 0px hsl(0 0% 20% / 0.15), 0px 4px 6px -1px hsl(0 0% 20% / 0.15);
+  --shadow-xl:
+    0px 2px 0px 0px hsl(0 0% 20% / 0.15), 0px 8px 10px -1px hsl(0 0% 20% / 0.15);
   --shadow-2xl: 0px 2px 0px 0px hsl(0 0% 20% / 0.38);
+  --brand: oklch(0.707 0.165 254.624);
+  --highlight: oklch(0.852 0.199 91.936);
 }
 
 @layer base {

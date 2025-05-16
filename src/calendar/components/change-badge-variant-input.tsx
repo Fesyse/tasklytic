@@ -1,11 +1,17 @@
-"use client";
+"use client"
 
-import { useCalendar } from "@/calendar/contexts/calendar-context";
+import { useCalendar } from "@/calendar/contexts/calendar-context"
 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select"
 
 export function ChangeBadgeVariantInput() {
-  const { badgeVariant, setBadgeVariant } = useCalendar();
+  const { badgeVariant, setBadgeVariant } = useCalendar()
 
   return (
     <div className="space-y-2">
@@ -23,5 +29,5 @@ export function ChangeBadgeVariantInput() {
         </SelectContent>
       </Select>
     </div>
-  );
+  )
 }
