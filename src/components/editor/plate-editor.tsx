@@ -8,8 +8,11 @@ import { Plate } from "@udecode/plate/react"
 import { SettingsDialog } from "@/components/editor/settings"
 import { useCreateEditor } from "@/components/editor/use-create-editor"
 import { Editor, EditorContainer } from "@/components/ui/editor"
+import { useParams } from "next/navigation"
 
 export function PlateEditor() {
+  const { noteId } = useParams<{ noteId: string }>()
+
   const editor = useCreateEditor()
 
   return (
