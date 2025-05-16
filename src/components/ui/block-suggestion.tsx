@@ -49,14 +49,14 @@ import {
 } from "@udecode/plate/react"
 import { CheckIcon, XIcon } from "lucide-react"
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
 import {
   type TDiscussion,
   discussionPlugin
 } from "@/components/editor/plugins/discussion-plugin"
 import { suggestionPlugin } from "@/components/editor/plugins/suggestion-plugin"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 import { type TComment, Comment, formatCommentDate } from "./comment"
 import { CommentCreateForm } from "./comment-create-form"
@@ -421,11 +421,11 @@ export const useResolveSuggestion = (
           if (lineBreakData.type === "insert") {
             newText += lineBreakData.isLineBreak
               ? BLOCK_SUGGESTION
-              : BLOCK_SUGGESTION + TYPE_TEXT_MAP[node.type](node)
+              : BLOCK_SUGGESTION + TYPE_TEXT_MAP[node.type]?.(node)
           } else if (lineBreakData.type === "remove") {
             text += lineBreakData.isLineBreak
               ? BLOCK_SUGGESTION
-              : BLOCK_SUGGESTION + TYPE_TEXT_MAP[node.type](node)
+              : BLOCK_SUGGESTION + TYPE_TEXT_MAP[node.type]?.(node)
           }
         }
       })

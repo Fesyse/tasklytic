@@ -14,7 +14,7 @@ export const InnerSidebarTrigger = () => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
-          <SidebarTrigger className="sticky mt-2.5 ml-2.25" />
+          <SidebarTrigger className="fixed z-10 mt-2.5 ml-2.25" />
         </motion.div>
       ) : null}
     </AnimatePresence>

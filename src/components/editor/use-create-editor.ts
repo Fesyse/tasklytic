@@ -59,8 +59,6 @@ import {
 
 import { copilotPlugins } from "@/components/editor/plugins/copilot-plugins"
 import { editorPlugins } from "@/components/editor/plugins/editor-plugins"
-import { FixedToolbarPlugin } from "@/components/editor/plugins/fixed-toolbar-plugin"
-import { FloatingToolbarPlugin } from "@/components/editor/plugins/floating-toolbar-plugin"
 import { AILeaf } from "@/components/ui/ai-leaf"
 import { BlockquoteElement } from "@/components/ui/blockquote-element"
 import { CalloutElement } from "@/components/ui/callout-element"
@@ -185,12 +183,7 @@ export const useCreateEditor = (
         },
         ...override
       },
-      plugins: [
-        ...copilotPlugins,
-        ...editorPlugins,
-        FixedToolbarPlugin,
-        FloatingToolbarPlugin
-      ],
+      plugins: [...copilotPlugins, ...editorPlugins],
       value: [
         {
           children: [{ text: "Playground" }],
