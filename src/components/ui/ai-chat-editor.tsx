@@ -132,8 +132,6 @@ const components = {
   [BaseUnderlinePlugin.key]: withProps(SlateLeaf, { as: "u" }),
 
   [BaseVideoPlugin.key]: MediaVideoElementStatic,
-  [HEADING_KEYS.h1]: withProps(HeadingElementStatic, { variant: "h1" }),
-
   [HEADING_KEYS.h2]: withProps(HeadingElementStatic, { variant: "h2" }),
   [HEADING_KEYS.h3]: withProps(HeadingElementStatic, { variant: "h3" })
 

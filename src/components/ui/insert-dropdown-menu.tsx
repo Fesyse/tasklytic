@@ -47,15 +47,15 @@ import {
 } from "lucide-react"
 
 import {
+  insertBlock,
+  insertInlineElement
+} from "@/components/editor/transforms"
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
-import {
-  insertBlock,
-  insertInlineElement
-} from "@/components/editor/transforms"
 
 import { ToolbarButton, ToolbarMenuGroup } from "./toolbar"
 
@@ -84,17 +84,17 @@ const groups: Group[] = [
       {
         icon: <Heading1Icon />,
         label: "Heading 1",
-        value: HEADING_KEYS.h1
+        value: HEADING_KEYS.h2
       },
       {
         icon: <Heading2Icon />,
         label: "Heading 2",
-        value: HEADING_KEYS.h2
+        value: HEADING_KEYS.h3
       },
       {
         icon: <Heading3Icon />,
         label: "Heading 3",
-        value: HEADING_KEYS.h3
+        value: HEADING_KEYS.h4
       },
       {
         icon: <TableIcon />,

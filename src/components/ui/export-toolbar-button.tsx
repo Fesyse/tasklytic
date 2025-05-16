@@ -72,13 +72,6 @@ import { useEditorRef } from "@udecode/plate/react"
 import { all, createLowlight } from "lowlight"
 import { ArrowDownToLineIcon } from "lucide-react"
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu"
 import { BlockquoteElementStatic } from "@/components/ui/blockquote-element-static"
 import { CodeBlockElementStatic } from "@/components/ui/code-block-element-static"
 import { CodeLeafStatic } from "@/components/ui/code-leaf-static"
@@ -88,6 +81,13 @@ import { ColumnElementStatic } from "@/components/ui/column-element-static"
 import { ColumnGroupElementStatic } from "@/components/ui/column-group-element-static"
 import { CommentLeafStatic } from "@/components/ui/comment-leaf-static"
 import { DateElementStatic } from "@/components/ui/date-element-static"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu"
 import { HeadingElementStatic } from "@/components/ui/heading-element-static"
 import { HighlightLeafStatic } from "@/components/ui/highlight-leaf-static"
 import { HrElementStatic } from "@/components/ui/hr-element-static"
@@ -227,7 +227,6 @@ export function ExportToolbarButton(props: DropdownMenuProps) {
       [BaseTogglePlugin.key]: ToggleElementStatic,
       [BaseUnderlinePlugin.key]: withProps(SlateLeaf, { as: "u" }),
       [BaseVideoPlugin.key]: MediaVideoElementStatic,
-      [HEADING_KEYS.h1]: withProps(HeadingElementStatic, { variant: "h1" }),
       [HEADING_KEYS.h2]: withProps(HeadingElementStatic, { variant: "h2" }),
       [HEADING_KEYS.h3]: withProps(HeadingElementStatic, { variant: "h3" }),
       [HEADING_KEYS.h4]: withProps(HeadingElementStatic, { variant: "h4" }),

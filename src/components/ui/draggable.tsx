@@ -124,7 +124,6 @@ export function Draggable(props: PlateElementProps) {
               "slate-blockToolbarWrapper",
               "flex h-[1.5em]",
               isType(editor, element, [
-                HEADING_KEYS.h1,
                 HEADING_KEYS.h2,
                 HEADING_KEYS.h3,
                 HEADING_KEYS.h4,
@@ -190,7 +189,6 @@ function Gutter({
           : "group-hover:opacity-100",
         isSelectionAreaVisible && "hidden",
         !selected && "opacity-0",
-        isNodeType(HEADING_KEYS.h1) && "pb-1 text-[1.875em]",
         isNodeType(HEADING_KEYS.h2) && "pb-1 text-[1.5em]",
         isNodeType(HEADING_KEYS.h3) && "pt-[2px] pb-1 text-[1.25em]",
         isNodeType([HEADING_KEYS.h4, HEADING_KEYS.h5]) &&

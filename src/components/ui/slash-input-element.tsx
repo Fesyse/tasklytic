@@ -18,9 +18,9 @@ import { TogglePlugin } from "@udecode/plate-toggle/react"
 import {
   type PlateEditor,
   type PlateElementProps,
-  ParagraphPlugin
+  ParagraphPlugin,
+  PlateElement
 } from "@udecode/plate/react"
-import { PlateElement } from "@udecode/plate/react"
 import {
   CalendarIcon,
   ChevronRightIcon,
@@ -98,19 +98,19 @@ const groups: Group[] = [
         icon: <Heading1Icon />,
         keywords: ["title", "h1"],
         label: "Heading 1",
-        value: HEADING_KEYS.h1
+        value: HEADING_KEYS.h2
       },
       {
         icon: <Heading2Icon />,
         keywords: ["subtitle", "h2"],
         label: "Heading 2",
-        value: HEADING_KEYS.h2
+        value: HEADING_KEYS.h3
       },
       {
         icon: <Heading3Icon />,
         keywords: ["subtitle", "h3"],
         label: "Heading 3",
-        value: HEADING_KEYS.h3
+        value: HEADING_KEYS.h4
       },
       {
         icon: <ListIcon />,

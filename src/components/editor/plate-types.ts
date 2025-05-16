@@ -76,11 +76,6 @@ export interface MyExcalidrawElement
   type: typeof ExcalidrawPlugin.key
 }
 
-export interface MyH1Element extends MyBlockElement {
-  children: MyInlineChildren
-  type: typeof HEADING_KEYS.h1
-}
-
 export interface MyH2Element extends MyBlockElement {
   children: MyInlineChildren
   type: typeof HEADING_KEYS.h2
@@ -161,7 +156,6 @@ export type MyRootBlock =
   | MyBlockquoteElement
   | MyCodeBlockElement
   | MyExcalidrawElement
-  | MyH1Element
   | MyH2Element
   | MyH3Element
   | MyHrElement

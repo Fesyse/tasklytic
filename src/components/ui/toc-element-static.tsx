@@ -1,5 +1,3 @@
-import * as React from "react"
-
 import type { SlateEditor, SlateElementProps, TElement } from "@udecode/plate"
 
 import { NodeApi, SlateElement } from "@udecode/plate"
@@ -57,7 +55,6 @@ export function TocElementStatic(props: SlateElementProps) {
 }
 
 const headingDepth: Record<string, number> = {
-  [HEADING_KEYS.h1]: 1,
   [HEADING_KEYS.h2]: 2,
   [HEADING_KEYS.h3]: 3,
   [HEADING_KEYS.h4]: 4,

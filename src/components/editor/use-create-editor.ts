@@ -117,7 +117,6 @@ export const viewComponents = {
   [EquationPlugin.key]: EquationElement,
   [ExcalidrawPlugin.key]: ExcalidrawElement,
   [FilePlugin.key]: MediaFileElement,
-  [HEADING_KEYS.h1]: withProps(HeadingElement, { variant: "h1" }),
   [HEADING_KEYS.h2]: withProps(HeadingElement, { variant: "h2" }),
   [HEADING_KEYS.h3]: withProps(HeadingElement, { variant: "h3" }),
   [HEADING_KEYS.h4]: withProps(HeadingElement, { variant: "h4" }),

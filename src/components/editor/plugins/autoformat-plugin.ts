@@ -111,30 +111,25 @@ const autoformatBlocks: AutoformatRule[] = [
   {
     match: "# ",
     mode: "block",
-    type: HEADING_KEYS.h1
+    type: HEADING_KEYS.h2
   },
   {
     match: "## ",
     mode: "block",
-    type: HEADING_KEYS.h2
+    type: HEADING_KEYS.h3
   },
   {
     match: "### ",
     mode: "block",
-    type: HEADING_KEYS.h3
+    type: HEADING_KEYS.h4
   },
   {
     match: "#### ",
     mode: "block",
-    type: HEADING_KEYS.h4
-  },
-  {
-    match: "##### ",
-    mode: "block",
     type: HEADING_KEYS.h5
   },
   {
-    match: "###### ",
+    match: "##### ",
     mode: "block",
     type: HEADING_KEYS.h6
   },

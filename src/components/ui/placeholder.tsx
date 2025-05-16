@@ -2,9 +2,8 @@
 
 import * as React from "react"
 
-import { HEADING_KEYS } from "@udecode/plate-heading"
-import { ParagraphPlugin } from "@udecode/plate/react"
 import {
+  ParagraphPlugin,
   type PlaceholderProps,
   createNodeHOC,
   createNodesHOC,
@@ -46,10 +45,5 @@ export const withPlaceholders = (components: any) =>
       query: {
         maxLevel: 1
       }
-    },
-    {
-      key: HEADING_KEYS.h1,
-      hideOnBlur: false,
-      placeholder: "Untitled"
     }
   ])
