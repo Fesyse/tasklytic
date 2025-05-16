@@ -29,11 +29,13 @@ import {
   useEditorRef,
   useElement,
   usePath,
-  usePluginOption
+  usePluginOption,
+  useReadOnly,
+  useSelected
 } from "@udecode/plate/react"
-import { useReadOnly, useSelected } from "@udecode/plate/react"
 import { GripVertical } from "lucide-react"
 
+import { STRUCTURAL_TYPES } from "@/components/editor/transforms"
 import { Button } from "@/components/ui/button"
 import {
   Tooltip,
@@ -41,7 +43,6 @@ import {
   TooltipTrigger
 } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
-import { STRUCTURAL_TYPES } from "@/components/editor/transforms"
 
 const UNDRAGGABLE_KEYS = [
   ColumnItemPlugin.key,
