@@ -1,12 +1,15 @@
 import { InvitationsDialog } from "@/components/layouts/dashboard/sidebar/invitations-dialog"
 import { InvitePeopleDialog } from "@/components/layouts/dashboard/sidebar/invite-people-dialog"
+import { useLiveQuery } from "dexie-react-hooks"
 import {
   CalendarIcon,
+  FileIcon,
   HomeIcon,
   InboxIcon,
   SettingsIcon,
   type LucideIcon
 } from "lucide-react"
+import { dexieDB } from "./db-client"
 
 export type NavItem =
   | {
@@ -19,20 +22,24 @@ export type NavItem =
       component: React.JSX.Element
       type: "component"
     }
-export type NoteNavItem = NavItem & {
-  emoji: string
+export type NoteNavItem = {
+  title: string
+  url: string
+  icon: string | LucideIcon
 }
 
 type SidebarNav = {
   navMain: NavItem[]
 
-  privateNotes: NoteNavItem[]
-  sharedNotes?: NoteNavItem[]
+  privateNotes: { isLoading: boolean; items: NoteNavItem[] | undefined }
+  sharedNotes: { isLoading: boolean; items: NoteNavItem[] | undefined }
 
   navSecondary: NavItem[]
 }
 
 export const useSidebarNav = (): SidebarNav => {
+  const notes = useLiveQuery(() => dexieDB.notes.toArray(), [])
+
   return {
     navMain: [
       {
@@ -48,7 +55,28 @@ export const useSidebarNav = (): SidebarNav => {
         type: "url"
       }
     ],
-    privateNotes: [],
+    privateNotes: {
+      isLoading: notes === undefined,
+      items:
+        notes
+          ?.filter((note) => !note.isPublic)
+          .map<NoteNavItem>((note) => ({
+            icon: note.emoji ?? FileIcon,
+            title: note.title,
+            url: `/dashboard/note/${note.id}`
+          })) ?? []
+    },
+    sharedNotes: {
+      isLoading: notes === undefined,
+      items:
+        notes
+          ?.filter((note) => note.isPublic)
+          .map<NoteNavItem>((note) => ({
+            icon: note.emoji ?? FileIcon,
+            title: note.title,
+            url: `/dashboard/note/${note.id}`
+          })) ?? []
+    },
     navSecondary: [
       {
         component: <InvitationsDialog />,

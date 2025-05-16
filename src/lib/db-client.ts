@@ -5,11 +5,12 @@ import { siteConfig } from "./site-config"
 type Note = {
   id: string
   title: string
-  emoji: string
+  emoji?: string
   updatedAt: Date
   createdAt: Date
   updatedByUserId: string
   createdByUserId: string
+  isPublic: boolean
 }
 
 type Block = {
@@ -25,7 +26,7 @@ const dexieDB = new Dexie(`${siteConfig.name}Database`) as Dexie & {
 
 dexieDB.version(1).stores({
   notes:
-    "&id, title, emoji, updatedByUserId, updatedAt, createdByUserId, createdAt",
+    "&id, title, emoji, isPublic, updatedByUserId, updatedAt, createdByUserId, createdAt",
   blocks: "&id, noteId, content"
 })
 

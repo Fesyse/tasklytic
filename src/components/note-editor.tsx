@@ -13,8 +13,8 @@ export const NoteEditor = () => {
   return (
     <SettingsProvider>
       <input
-        className="mx-auto mb-12 block w-full max-w-[44rem] border-none !bg-transparent p-0 font-sans !text-4xl font-bold outline-none"
         placeholder="New page"
+        className="mx-auto mb-12 block w-full max-w-[44rem] border-none !bg-transparent p-0 font-sans !text-4xl font-bold outline-none"
       />
       <PlateEditor />
     </SettingsProvider>
