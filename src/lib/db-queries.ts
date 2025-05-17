@@ -35,6 +35,13 @@ export function getNote(id: string, organizationId: string) {
 export function getBlocks(noteId: string) {
   return tryCatch(dexieDB.blocks.where("noteId").equals(noteId).toArray())
 }
+
+export function getNotes(organizationId: string) {
+  return tryCatch(
+    dexieDB.notes.where("organizationId").equals(organizationId).toArray()
+  )
+}
+
 export function getNoteWithBlocks(id: string, organizationId: string) {
   return tryCatch(
     (async () => {

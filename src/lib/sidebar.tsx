@@ -9,7 +9,8 @@ import {
   SettingsIcon,
   type LucideIcon
 } from "lucide-react"
-import { dexieDB } from "./db-client"
+import { authClient } from "./auth-client"
+import { getNotes } from "./db-queries"
 
 export type NavItem =
   | {
@@ -39,7 +40,11 @@ type SidebarNav = {
 }
 
 export const useSidebarNav = (): SidebarNav => {
-  const notes = useLiveQuery(() => dexieDB.notes.toArray(), [])
+  const { data: organization } = authClient.useActiveOrganization()
+  const result = useLiveQuery(
+    () => getNotes(organization!.id),
+    [organization?.id]
+  )
 
   return {
     navMain: [
@@ -57,9 +62,9 @@ export const useSidebarNav = (): SidebarNav => {
       }
     ],
     privateNotes: {
-      isLoading: notes === undefined,
+      isLoading: result === undefined || !result.data,
       items:
-        notes
+        result?.data
           ?.filter((note) => !note.isPublic)
           .map<NoteNavItem>((note) => ({
             id: note.id,
@@ -69,9 +74,9 @@ export const useSidebarNav = (): SidebarNav => {
           })) ?? []
     },
     sharedNotes: {
-      isLoading: notes === undefined,
+      isLoading: result === undefined || !result.data,
       items:
-        notes
+        result?.data
           ?.filter((note) => note.isPublic)
           .map<NoteNavItem>((note) => ({
             id: note.id,
