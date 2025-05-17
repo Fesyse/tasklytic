@@ -15,6 +15,7 @@ import {
   useSidebar
 } from "@/components/ui/sidebar"
 import { useSidebarNav } from "@/lib/sidebar"
+import { NavNotes } from "./nav-notes"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { open } = useSidebar()
@@ -32,6 +33,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={sidebarNav.navMain} />
+        <NavNotes
+          notes={sidebarNav.privateNotes.items}
+          isLoading={sidebarNav.privateNotes.isLoading}
+          type="private"
+        />
+        <NavNotes
+          notes={sidebarNav.sharedNotes.items}
+          isLoading={sidebarNav.sharedNotes.isLoading}
+          type="shared"
+        />
         <NavSecondary items={sidebarNav.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
