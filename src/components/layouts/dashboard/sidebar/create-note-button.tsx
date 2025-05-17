@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
 export const CreateNoteButton = () => {
+  const { data: activeOrganization } = authClient.useActiveOrganization()
   const { data: session } = authClient.useSession()
   const router = useRouter()
 
@@ -19,7 +20,7 @@ export const CreateNoteButton = () => {
       size="sm"
       className="w-full"
       onClick={async () => {
-        if (!session) return
+        if (!session || !activeOrganization) return
 
         const { data: noteId, error } = await tryCatch(
           dexieDB.notes.add({
@@ -30,7 +31,8 @@ export const CreateNoteButton = () => {
             updatedAt: new Date(),
             updatedByUserId: session.user.id,
             createdByUserId: session.user.id,
-            createdAt: new Date()
+            createdAt: new Date(),
+            organizationId: activeOrganization.id
           })
         )
 
@@ -46,7 +48,7 @@ export const CreateNoteButton = () => {
       }}
     >
       <FileIcon />
-      New page
+      New note
     </Button>
   )
 }

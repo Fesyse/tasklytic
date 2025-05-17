@@ -22,7 +22,7 @@ export const NoteTitleInput = ({ note }: { note: Note }) => {
 
   return (
     <input
-      placeholder="New page"
+      placeholder="Untitled"
       className="mx-auto mb-12 block w-full max-w-[44rem] border-none !bg-transparent p-0 font-sans !text-4xl font-bold outline-none"
       defaultValue={note?.title}
       onChange={handleChangeInput}
