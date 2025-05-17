@@ -1,7 +1,10 @@
 import { useLiveQuery } from "dexie-react-hooks"
 import { useEffect, useState } from "react"
 
-export function useDexieDb<T>(queryFunction: () => Promise<T>) {
+export function useDexieDb<T>(
+  queryFunction: () => Promise<T>,
+  dependencies?: any[]
+) {
   const [isLoading, setIsLoading] = useState(true)
 
   const data = useLiveQuery(async () => {
@@ -12,7 +15,7 @@ export function useDexieDb<T>(queryFunction: () => Promise<T>) {
     } finally {
       setIsLoading(false)
     }
-  })
+  }, dependencies)
 
   useEffect(() => {
     if (data) {
