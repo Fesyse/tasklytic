@@ -2,6 +2,7 @@
 
 import {
   SidebarGroup,
+  SidebarGroupAction,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
@@ -9,9 +10,13 @@ import {
   SidebarMenuItem,
   SidebarMenuSkeleton
 } from "@/components/ui/sidebar"
+import { authClient } from "@/lib/auth-client"
 import type { NoteNavItem } from "@/lib/sidebar"
+import { PlusIcon } from "lucide-react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
+import { toast } from "sonner"
+import { createNote } from "./create-note-button"
 
 export function NavNotes({
   notes,
@@ -22,7 +27,27 @@ export function NavNotes({
   notes: NoteNavItem[] | undefined
   isLoading: boolean
 }) {
+  const { data: activeOrganization } = authClient.useActiveOrganization()
+  const { data: session } = authClient.useSession()
+  const router = useRouter()
   const pathname = usePathname()
+
+  const handleCreateNote = async () => {
+    if (!activeOrganization || !session) return
+
+    const { error, data: noteId } = await createNote({
+      organization: activeOrganization,
+      user: session.user
+    })
+
+    if (error) {
+      toast.error("An error occurred while creating the note")
+      return
+    }
+
+    toast.success("Note created successfully")
+    router.push(`/dashboard/note/${noteId}`)
+  }
 
   return (
     <SidebarGroup>
@@ -30,6 +55,11 @@ export function NavNotes({
         <SidebarGroupLabel>
           {type === "private" ? "Private Notes" : "Shared Notes"}
         </SidebarGroupLabel>
+      )}
+      {!isLoading && !notes?.length && type === "shared" ? null : (
+        <SidebarGroupAction onClick={handleCreateNote}>
+          <PlusIcon className="size-4" />
+        </SidebarGroupAction>
       )}
       <SidebarGroupContent>
         <SidebarMenu>
