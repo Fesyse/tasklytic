@@ -37,7 +37,11 @@ export const NoteEditor = () => {
             {editor && !isLoading && (
               <Plate editor={editor}>
                 <EditorContainer>
-                  <Editor variant="demo" className="pt-0" />
+                  <Editor
+                    variant="demo"
+                    className="pt-0"
+                    placeholder="Start typing your note here..."
+                  />
                 </EditorContainer>
 
                 <SettingsDialog />
