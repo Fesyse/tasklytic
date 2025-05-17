@@ -1,5 +1,5 @@
 import { useCreateEditor } from "@/components/editor/use-create-editor"
-import { dexieDB } from "@/lib/db-client"
+import { dexieDB, type Note } from "@/lib/db-client"
 import { useDexieDb } from "@/lib/use-dexie-db"
 import { tryCatch } from "@/lib/utils"
 import type { Value } from "@udecode/plate"
@@ -10,14 +10,16 @@ import { toast } from "sonner"
 export function useNoteEditor() {
   const { noteId } = useParams<{ noteId: string }>()
 
-  const { data, isLoading, isError } = useDexieDb(async () => {
+  const {
+    data: note,
+    isLoading,
+    isError
+  } = useDexieDb(async () => {
     const note = await dexieDB.notes.where("id").equals(noteId).first()
     const blocks = await dexieDB.blocks.where("noteId").equals(noteId).toArray()
 
     return { ...note, blocks: blocks.map((block) => block.content) }
   })
-
-  const note = data as NonNullable<typeof data>
 
   const editor = useCreateEditor({
     skipInitialization: true
@@ -34,13 +36,15 @@ export function useNoteEditor() {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (!note) return
+
       if (event.key === "s" && (event.metaKey || event.ctrlKey)) {
         event.preventDefault()
         const value = editor.children
 
         saveNotesLocally({
           noteId,
-          oldValue: note?.blocks,
+          oldValue: note.blocks,
           newValue: value
         })
       }
@@ -48,12 +52,13 @@ export function useNoteEditor() {
 
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [dexieDB, note?.blocks])
+  }, [dexieDB, note?.blocks, editor])
 
-  if (isLoading) return null
   if (isError) notFound()
+  if (!note) return { editor, isLoading, note: undefined }
 
-  return editor
+  const { blocks, ...returnNote } = note
+  return { editor, isLoading, note: returnNote as Note }
 }
 
 async function saveNotesLocally(data: {
