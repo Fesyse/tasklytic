@@ -23,6 +23,7 @@ export type NavItem =
       type: "component"
     }
 export type NoteNavItem = {
+  id: string
   title: string
   url: string
   icon: string | LucideIcon
@@ -61,6 +62,7 @@ export const useSidebarNav = (): SidebarNav => {
         notes
           ?.filter((note) => !note.isPublic)
           .map<NoteNavItem>((note) => ({
+            id: note.id,
             icon: note.emoji ?? FileIcon,
             title: note.title,
             url: `/dashboard/note/${note.id}`
@@ -72,6 +74,7 @@ export const useSidebarNav = (): SidebarNav => {
         notes
           ?.filter((note) => note.isPublic)
           .map<NoteNavItem>((note) => ({
+            id: note.id,
             icon: note.emoji ?? FileIcon,
             title: note.title,
             url: `/dashboard/note/${note.id}`

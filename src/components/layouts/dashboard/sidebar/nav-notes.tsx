@@ -1,22 +1,38 @@
 "use client"
 
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu"
+import {
   SidebarGroup,
   SidebarGroupAction,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
+  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSkeleton
+  SidebarMenuSkeleton,
+  useSidebar
 } from "@/components/ui/sidebar"
 import { authClient } from "@/lib/auth-client"
+import { createNote, deleteNote } from "@/lib/db-queries"
 import type { NoteNavItem } from "@/lib/sidebar"
-import { PlusIcon } from "lucide-react"
+import { getBaseUrl } from "@/lib/utils"
+import {
+  ArrowUpRight,
+  LinkIcon,
+  MoreHorizontal,
+  PlusIcon,
+  Trash2
+} from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { toast } from "sonner"
-import { createNote } from "./create-note-button"
 
 export function NavNotes({
   notes,
@@ -27,10 +43,20 @@ export function NavNotes({
   notes: NoteNavItem[] | undefined
   isLoading: boolean
 }) {
-  const { data: activeOrganization } = authClient.useActiveOrganization()
-  const { data: session } = authClient.useSession()
   const router = useRouter()
   const pathname = usePathname()
+  const { isMobile } = useSidebar()
+  const { data: activeOrganization } = authClient.useActiveOrganization()
+  const { data: session } = authClient.useSession()
+
+  const handleCopyLink = (url: string) => {
+    navigator.clipboard.writeText(url)
+    toast.success("Link successfully copied to clipboard")
+  }
+
+  const handleOpenInNewTab = (url: string) => {
+    window.open(url, "_blank")
+  }
 
   const handleCreateNote = async () => {
     if (!activeOrganization || !session) return
@@ -47,6 +73,20 @@ export function NavNotes({
 
     toast.success("Note created successfully")
     router.push(`/dashboard/note/${noteId}`)
+  }
+
+  const handleDeleteNote = async (noteId: string) => {
+    const { error } = await deleteNote(noteId)
+
+    if (error) {
+      toast.error("An error occurred while deleting the note")
+      return
+    }
+
+    toast.success("Note deleted successfully")
+    if (pathname === `/dashboard/note/${noteId}`) {
+      router.push("/dashboard")
+    }
   }
 
   return (
@@ -76,23 +116,56 @@ export function NavNotes({
               </span>
             </SidebarMenuItem>
           ) : (
-            notes.map((item) => (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname.startsWith(item.url)}
-                >
-                  <Link href={item.url} prefetch>
-                    {typeof item.icon === "string" ? (
-                      <span className="text-2xl">{item.icon}</span>
-                    ) : (
-                      <item.icon />
-                    )}
-                    <span>{item.title.length ? item.title : "Untitled"}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))
+            notes.map((item) => {
+              const fullUrl = `${getBaseUrl()}${item.url}`
+              const isActive = pathname.startsWith(fullUrl)
+
+              return (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild isActive={isActive}>
+                    <Link href={item.url} prefetch>
+                      {typeof item.icon === "string" ? (
+                        <span className="text-2xl">{item.icon}</span>
+                      ) : (
+                        <item.icon />
+                      )}
+                      <span>{item.title.length ? item.title : "Untitled"}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <SidebarMenuAction showOnHover className="cursor-pointer">
+                        <MoreHorizontal />
+                        <span className="sr-only">More</span>
+                      </SidebarMenuAction>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      className="w-56 rounded-lg"
+                      side={isMobile ? "bottom" : "right"}
+                      align={isMobile ? "end" : "start"}
+                    >
+                      <DropdownMenuItem onClick={() => handleCopyLink(fullUrl)}>
+                        <LinkIcon className="text-muted-foreground" />
+                        <span>Copy Link</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => handleOpenInNewTab(fullUrl)}
+                      >
+                        <ArrowUpRight className="text-muted-foreground" />
+                        <span>Open in New Tab</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={() => handleDeleteNote(item.id)}
+                      >
+                        <Trash2 className="text-muted-foreground" />
+                        <span>Delete</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </SidebarMenuItem>
+              )
+            })
           )}
         </SidebarMenu>
       </SidebarGroupContent>
