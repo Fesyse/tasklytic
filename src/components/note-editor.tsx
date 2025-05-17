@@ -1,23 +1,14 @@
 "use client"
 
-import { dexieDB } from "@/lib/db-client"
-import { useDexieDb } from "@/lib/use-dexie-db"
-import { notFound, useParams } from "next/navigation"
-import { PlateEditor } from "./editor/plate-editor"
-import { SettingsProvider } from "./editor/settings"
+import { useNoteEditor } from "@/hooks/use-note-editor"
+import { Plate } from "@udecode/plate/react"
+import { DndProvider } from "react-dnd"
+import { HTML5Backend } from "react-dnd-html5-backend"
+import { SettingsDialog, SettingsProvider } from "./editor/settings"
+import { Editor, EditorContainer } from "./ui/editor"
 
 export const NoteEditor = () => {
-  const { noteId } = useParams<{ noteId: string }>()
-
-  const { data, isLoading, isError } = useDexieDb(async () => {
-    const note = await dexieDB.notes.where("id").equals(noteId).first()
-    const blocks = await dexieDB.blocks.where("noteId").equals(noteId).toArray()
-
-    return { ...note, blocks: blocks.map((block) => block.content) }
-  })
-
-  if (isError) return notFound()
-  const note = data as NonNullable<typeof data>
+  const editor = useNoteEditor()
 
   return (
     <SettingsProvider>
@@ -25,11 +16,17 @@ export const NoteEditor = () => {
         placeholder="New page"
         className="mx-auto mb-12 block w-full max-w-[44rem] border-none !bg-transparent p-0 font-sans !text-4xl font-bold outline-none"
       />
-      {isLoading ? (
-        <div>Loading...</div>
-      ) : (
-        <PlateEditor defaultValue={note.blocks} />
-      )}
+      <DndProvider backend={HTML5Backend}>
+        {editor && (
+          <Plate editor={editor}>
+            <EditorContainer>
+              <Editor variant="demo" className="pt-0" />
+            </EditorContainer>
+
+            <SettingsDialog />
+          </Plate>
+        )}
+      </DndProvider>
     </SettingsProvider>
   )
 }
