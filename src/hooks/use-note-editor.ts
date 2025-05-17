@@ -1,8 +1,8 @@
 import { useCreateEditor } from "@/components/editor/use-create-editor"
 import { authClient } from "@/lib/auth-client"
 import { dexieDB, type Note } from "@/lib/db-client"
-import { useDexieDb } from "@/lib/use-dexie-db"
 import { tryCatch } from "@/lib/utils"
+import { useQuery } from "@tanstack/react-query"
 import type { Value } from "@udecode/plate"
 import { notFound, useParams } from "next/navigation"
 import { useEffect } from "react"
@@ -16,15 +16,22 @@ export function useNoteEditor() {
     data: note,
     isLoading,
     isError
-  } = useDexieDb(async () => {
-    const note = await dexieDB.notes
-      .where("id")
-      .equals(noteId)
-      .and((note) => note.organizationId === organization?.id)
-      .first()
-    const blocks = await dexieDB.blocks.where("noteId").equals(noteId).toArray()
-    return { ...note, blocks: blocks.map((block) => block.content) }
-  }, [organization?.id, noteId])
+  } = useQuery({
+    queryKey: ["note", noteId, organization?.id],
+    queryFn: async () => {
+      const note = await dexieDB.notes
+        .where("id")
+        .equals(noteId)
+        .and((note) => note.organizationId === organization?.id)
+        .first()
+      const blocks = await dexieDB.blocks
+        .where("noteId")
+        .equals(noteId)
+        .toArray()
+      return { ...note, blocks: blocks.map((block) => block.content) }
+    },
+    enabled: !!noteId && !!organization?.id
+  })
 
   const editor = useCreateEditor({
     skipInitialization: true
@@ -57,7 +64,7 @@ export function useNoteEditor() {
 
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [dexieDB, note?.blocks, editor])
+  }, [noteId, note?.blocks, editor])
 
   if (isError) notFound()
   if (!note) return { editor, isLoading, note: undefined }
