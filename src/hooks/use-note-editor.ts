@@ -1,6 +1,7 @@
 import { useCreateEditor } from "@/components/editor/use-create-editor"
 import { authClient } from "@/lib/auth-client"
 import { dexieDB, type Note } from "@/lib/db-client"
+import { getNoteWithBlocks } from "@/lib/db-queries"
 import { tryCatch } from "@/lib/utils"
 import { useQuery } from "@tanstack/react-query"
 import type { Value } from "@udecode/plate"
@@ -19,18 +20,11 @@ export function useNoteEditor() {
   } = useQuery({
     queryKey: ["note", noteId, organization?.id],
     queryFn: async () => {
-      const note = await dexieDB.notes
-        .where("id")
-        .equals(noteId)
-        .and((note) => note.organizationId === organization?.id)
-        .first()
-      const blocks = await dexieDB.blocks
-        .where("noteId")
-        .equals(noteId)
-        .toArray()
-      return { ...note, blocks: blocks.map((block) => block.content) }
+      const { data, error } = await getNoteWithBlocks(noteId, organization!.id)
+      if (error) throw error
+      return data
     },
-    enabled: !!noteId && !!organization?.id
+    enabled: !!organization?.id
   })
 
   const editor = useCreateEditor({
