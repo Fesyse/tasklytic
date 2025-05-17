@@ -8,9 +8,10 @@ import { Plate } from "@udecode/plate/react"
 import { SettingsDialog } from "@/components/editor/settings"
 import { useCreateEditor } from "@/components/editor/use-create-editor"
 import { Editor, EditorContainer } from "@/components/ui/editor"
+import type { TElement } from "@udecode/plate"
 
-export function PlateEditor() {
-  const editor = useCreateEditor()
+export function PlateEditor(props: { defaultValue?: TElement[] }) {
+  const editor = useCreateEditor(props)
 
   return (
     <DndProvider backend={HTML5Backend}>

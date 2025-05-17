@@ -1,6 +1,6 @@
 "use client"
 
-import type { Value } from "@udecode/plate"
+import type { TElement, Value } from "@udecode/plate"
 
 import { withProps } from "@udecode/cn"
 import { AIPlugin } from "@udecode/plate-ai/react"
@@ -161,12 +161,14 @@ export const useCreateEditor = (
     override,
     placeholders,
     readOnly,
+    defaultValue,
     ...options
   }: {
     components?: Record<string, any>
     placeholders?: boolean
     plugins?: any[]
     readOnly?: boolean
+    defaultValue?: TElement[]
   } & Omit<CreatePlateEditorOptions, "plugins"> = {},
   deps: any[] = []
 ) => {
@@ -184,22 +186,7 @@ export const useCreateEditor = (
         ...override
       },
       plugins: [...copilotPlugins, ...editorPlugins, FloatingToolbarPlugin],
-      value: [
-        {
-          children: [{ text: "Playground" }],
-          type: "h1"
-        },
-        {
-          children: [
-            { text: "A rich-text editor with AI capabilities. Try the " },
-            { bold: true, text: "AI commands" },
-            { text: " or use " },
-            { kbd: true, text: "Cmd+J" },
-            { text: " to open the AI menu." }
-          ],
-          type: ParagraphPlugin.key
-        }
-      ],
+      value: defaultValue,
       ...options
     },
     deps
