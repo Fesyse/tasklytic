@@ -135,12 +135,12 @@ export function NoteNavActions() {
           className={cn(
             "rounded-md px-2 py-1 text-xs transition-opacity duration-200 ease-in-out",
             {
-              "opacity-0": !isSaving,
-              "opacity-100": isSaving
+              "opacity-0": !isSaving && !isAutoSaving,
+              "opacity-100": isSaving || isAutoSaving
             }
           )}
         >
-          {isSaving ? "Saving..." : null}
+          {isAutoSaving ? "Auto-saving..." : isSaving ? "Saving..." : null}
         </button>
       </div>
       <div className="flex h-7 items-center justify-center gap-2 text-sm">
