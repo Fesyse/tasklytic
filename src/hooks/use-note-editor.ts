@@ -3,12 +3,21 @@ import { dexieDB, type Note } from "@/lib/db-client"
 import { tryCatch } from "@/lib/utils"
 import type { Value } from "@udecode/plate"
 import { notFound, useParams } from "next/navigation"
-import { useEffect } from "react"
+import { useCallback, useEffect, useRef } from "react"
 import { toast } from "sonner"
 import { useNote } from "./use-note"
 
-export function useNoteEditor() {
+type UseNoteEditorProps = {
+  setIsSaving: React.Dispatch<React.SetStateAction<boolean>>
+  setIsAutoSaving: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export function useNoteEditor({
+  setIsSaving,
+  setIsAutoSaving
+}: UseNoteEditorProps) {
   const { noteId } = useParams<{ noteId: string }>()
+  const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   const { data: note, isLoading, isError } = useNote()
 
@@ -25,38 +34,78 @@ export function useNoteEditor() {
     }
   }, [note?.blocks, editor])
 
+  // Clean up auto-save timer when component unmounts
+  useEffect(() => {
+    return () => {
+      if (autoSaveTimerRef.current) {
+        clearTimeout(autoSaveTimerRef.current)
+      }
+    }
+  }, [])
+
+  const saveNote = useCallback(async () => {
+    if (!note || !editor) return
+
+    // Clear any pending auto-save
+    if (autoSaveTimerRef.current) {
+      clearTimeout(autoSaveTimerRef.current)
+      autoSaveTimerRef.current = null
+    }
+
+    const value = editor.children
+
+    try {
+      setIsSaving(true)
+      await saveNotesLocally({
+        noteId,
+        oldValue: note.blocks,
+        newValue: value
+      })
+      setIsSaving(false)
+
+      toast.success("Note saved successfully!")
+    } catch (error) {
+      console.error("Failed to save note:", error)
+    }
+  }, [noteId, note, editor])
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (!note) return
 
       if (event.key === "s" && (event.metaKey || event.ctrlKey)) {
         event.preventDefault()
-        const value = editor.children
-
-        saveNotesLocally({
-          noteId,
-          oldValue: note.blocks,
-          newValue: value
-        })
+        saveNote()
       }
     }
 
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [noteId, note?.blocks, editor])
+  }, [noteId, note, editor, saveNote])
 
   if (isError) notFound()
-  if (!note) return { editor, isLoading, note: undefined }
+  if (!note)
+    return {
+      editor,
+      isLoading,
+      note: undefined,
+      saveNote
+    }
 
   const { blocks: _blocks, ...returnNote } = note
-  return { editor, isLoading, note: returnNote as Note }
+  return {
+    editor,
+    isLoading,
+    note: returnNote as Note,
+    saveNote
+  }
 }
 
 async function saveNotesLocally(data: {
   noteId: string
   oldValue: Value
   newValue: Value
-}) {
+}): Promise<void> {
   const createdBlocks = data.newValue.filter((block) => {
     const oldBlock = data.oldValue.find((b) => b.id === block.id)
     return !oldBlock
@@ -100,5 +149,6 @@ async function saveNotesLocally(data: {
   if (error) {
     console.error(error)
     toast.error("Failed to save notes!")
+    throw error
   }
 }

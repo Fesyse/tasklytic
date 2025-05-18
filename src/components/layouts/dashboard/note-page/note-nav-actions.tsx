@@ -40,9 +40,10 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "@/components/ui/tooltip"
+import { useNoteEditor } from "@/contexts/note-editor-context"
 import { useNote } from "@/hooks/use-note"
+import { cn } from "@/lib/utils"
 import { formatDistance } from "date-fns"
-import { useState } from "react"
 
 const data = [
   [
@@ -109,81 +110,96 @@ const data = [
 
 export function NoteNavActions() {
   const { data: note, isLoading } = useNote()
-  const [isOpen, setIsOpen] = useState(false)
+  const { isSaving, isAutoSaving } = useNoteEditor()
 
   return (
-    <div className="flex items-center gap-2 text-sm">
-      <TooltipProvider>
-        {isLoading || !note ? (
-          <Skeleton className="h-4 w-24" />
-        ) : (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="text-muted-foreground hidden font-medium md:inline-block">
-                Edited{" "}
-                {formatDistance(note.updatedAt, new Date(), {
-                  addSuffix: true
-                })}
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>
-                Edited by <strong>{note.updatedByUserName}</strong> on{" "}
-                {formatDistance(note.updatedAt, new Date(), {
-                  addSuffix: true
-                })}
-              </p>
-              <p>
-                Created by <strong>{note.createdByUserName}</strong> on{" "}
-                {formatDistance(note.createdAt, new Date(), {
-                  addSuffix: true
-                })}
-              </p>
-            </TooltipContent>
-          </Tooltip>
-        )}
-        <Button variant="ghost" size="icon" className="h-7 w-7">
-          <Star />
-        </Button>
-        <Popover open={isOpen} onOpenChange={setIsOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="data-[state=open]:bg-accent h-7 w-7"
+    <>
+      <div className="flex h-7 items-center justify-center text-sm">
+        <button
+          className={cn(
+            "rounded-md px-2 py-1 text-xs transition-opacity duration-200 ease-in-out",
+            {
+              "opacity-0": !isSaving,
+              "opacity-100": isSaving
+            }
+          )}
+        >
+          {isSaving ? "Saving..." : null}
+        </button>
+      </div>
+      <div className="flex h-7 items-center justify-center gap-2 text-sm">
+        <TooltipProvider>
+          {isLoading || !note ? (
+            <Skeleton className="h-4 w-24" />
+          ) : (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="text-muted-foreground hidden font-medium md:inline-block">
+                  Edited{" "}
+                  {formatDistance(note.updatedAt, new Date(), {
+                    addSuffix: true
+                  })}
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>
+                  Edited by <strong>{note.updatedByUserName}</strong> on{" "}
+                  {formatDistance(note.updatedAt, new Date(), {
+                    addSuffix: true
+                  })}
+                </p>
+                <p>
+                  Created by <strong>{note.createdByUserName}</strong> on{" "}
+                  {formatDistance(note.createdAt, new Date(), {
+                    addSuffix: true
+                  })}
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          )}
+          <Button variant="ghost" size="icon" className="h-7 w-7">
+            <Star />
+          </Button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="data-[state=open]:bg-accent h-7 w-7"
+              >
+                <MoreHorizontal />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              className="w-56 overflow-hidden rounded-lg p-0"
+              align="end"
             >
-              <MoreHorizontal />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent
-            className="w-56 overflow-hidden rounded-lg p-0"
-            align="end"
-          >
-            <Sidebar collapsible="none" className="bg-transparent">
-              <SidebarContent>
-                {data.map((group, index) => (
-                  <SidebarGroup
-                    key={index}
-                    className="border-b last:border-none"
-                  >
-                    <SidebarGroupContent className="gap-0">
-                      <SidebarMenu>
-                        {group.map((item, index) => (
-                          <SidebarMenuItem key={index}>
-                            <SidebarMenuButton>
-                              <item.icon /> <span>{item.label}</span>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                        ))}
-                      </SidebarMenu>
-                    </SidebarGroupContent>
-                  </SidebarGroup>
-                ))}
-              </SidebarContent>
-            </Sidebar>
-          </PopoverContent>
-        </Popover>
-      </TooltipProvider>
-    </div>
+              <Sidebar collapsible="none" className="bg-transparent">
+                <SidebarContent>
+                  {data.map((group, index) => (
+                    <SidebarGroup
+                      key={index}
+                      className="border-b last:border-none"
+                    >
+                      <SidebarGroupContent className="gap-0">
+                        <SidebarMenu>
+                          {group.map((item, index) => (
+                            <SidebarMenuItem key={index}>
+                              <SidebarMenuButton>
+                                <item.icon /> <span>{item.label}</span>
+                              </SidebarMenuButton>
+                            </SidebarMenuItem>
+                          ))}
+                        </SidebarMenu>
+                      </SidebarGroupContent>
+                    </SidebarGroup>
+                  ))}
+                </SidebarContent>
+              </Sidebar>
+            </PopoverContent>
+          </Popover>
+        </TooltipProvider>
+      </div>
+    </>
   )
 }

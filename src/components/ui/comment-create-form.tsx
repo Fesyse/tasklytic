@@ -118,8 +118,6 @@ export function CommentCreateForm({
   const onAddComment = React.useCallback(async () => {
     if (!commentValue) return
 
-    console.log("add comment")
-
     commentEditor.tf.reset()
 
     if (discussionId) {
