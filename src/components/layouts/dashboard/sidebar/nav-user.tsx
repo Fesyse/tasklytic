@@ -115,7 +115,7 @@ export function NavUser() {
   )
 }
 
-function UserAvatar({
+export function UserAvatar({
   user,
   isPending
 }: {

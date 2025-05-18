@@ -1,12 +1,18 @@
 import { InvitationsDialog } from "@/components/layouts/dashboard/sidebar/invitations-dialog"
 import { InvitePeopleDialog } from "@/components/layouts/dashboard/sidebar/invite-people-dialog"
+import { useLiveQuery } from "dexie-react-hooks"
 import {
   CalendarIcon,
+  FileIcon,
   HomeIcon,
   InboxIcon,
   SettingsIcon,
   type LucideIcon
 } from "lucide-react"
+import { authClient } from "./auth-client"
+import type { Note } from "./db-client"
+import { getNotes } from "./db-queries"
+import { tryCatch } from "./utils"
 
 export type NavItem =
   | {
@@ -19,20 +25,60 @@ export type NavItem =
       component: React.JSX.Element
       type: "component"
     }
-export type NoteNavItem = NavItem & {
-  emoji: string
+export type NoteNavItem = {
+  id: string
+  title: string
+  url: string
+  icon: string | LucideIcon
+
+  subNotes:
+    | {
+        isLoading: boolean
+        items: NoteNavItem[] | undefined
+      }
+    | undefined
 }
 
 type SidebarNav = {
   navMain: NavItem[]
 
-  privateNotes: NoteNavItem[]
-  sharedNotes?: NoteNavItem[]
+  privateNotes: { isLoading: boolean; items: NoteNavItem[] | undefined }
+  sharedNotes: { isLoading: boolean; items: NoteNavItem[] | undefined }
 
   navSecondary: NavItem[]
 }
 
 export const useSidebarNav = (): SidebarNav => {
+  const { data: organization } = authClient.useActiveOrganization()
+  const result = useLiveQuery(() => {
+    if (!organization?.id) return tryCatch(Promise.resolve([]))
+    return getNotes(organization.id)
+  }, [organization?.id])
+
+  // Helper function to build the note hierarchy
+  const buildNoteHierarchy = (
+    notes: Note[] | undefined,
+    parentNoteId: string | null = null
+  ): NoteNavItem[] => {
+    if (!notes) return []
+
+    // Get all notes with the specified parentNoteId
+    const filteredNotes = notes.filter(
+      (note) => note.parentNoteId === parentNoteId
+    )
+
+    return filteredNotes.map<NoteNavItem>((note) => ({
+      id: note.id,
+      icon: note.emoji ?? FileIcon,
+      title: note.title,
+      url: `/dashboard/note/${note.id}`,
+      subNotes: {
+        isLoading: false,
+        items: buildNoteHierarchy(notes, note.id)
+      }
+    }))
+  }
+
   return {
     navMain: [
       {
@@ -48,14 +94,31 @@ export const useSidebarNav = (): SidebarNav => {
         type: "url"
       }
     ],
-    privateNotes: [],
+    privateNotes: {
+      isLoading: result === undefined || !result.data,
+      items: result?.data
+        ? buildNoteHierarchy(
+            result.data.filter((note) => !note.isPublic),
+            null
+          )
+        : []
+    },
+    sharedNotes: {
+      isLoading: result === undefined || !result.data,
+      items: result?.data
+        ? buildNoteHierarchy(
+            result.data.filter((note) => note.isPublic),
+            null
+          )
+        : []
+    },
     navSecondary: [
       {
-        component: <InvitationsDialog />,
+        component: <InvitationsDialog key="invitations-dialog" />,
         type: "component"
       },
       {
-        component: <InvitePeopleDialog />,
+        component: <InvitePeopleDialog key="invite-people-dialog" />,
         type: "component"
       },
       {

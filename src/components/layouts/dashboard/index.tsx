@@ -10,6 +10,7 @@ export const DashboardLayout = ({ children }: React.PropsWithChildren) => {
       <AppSidebar />
       <SidebarInset className="relative">
         <InnerSidebarTrigger />
+
         {children}
       </SidebarInset>
     </SidebarProvider>

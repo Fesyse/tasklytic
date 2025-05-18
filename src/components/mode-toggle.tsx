@@ -11,6 +11,8 @@ import { cn } from "@/lib/utils"
 import { MoonIcon, SunIcon } from "@radix-ui/react-icons"
 import { useTheme } from "next-themes"
 
+type ThemeOption = "light" | "dark" | "system"
+
 type ModeToggleProps = {
   expanded?: boolean
   iconSize?: number
@@ -22,7 +24,32 @@ export function ModeToggle({
   className,
   ...props
 }: ModeToggleProps) {
-  const { setTheme } = useTheme()
+  const { setTheme, theme } = useTheme()
+
+  const handleThemeChange = (theme: ThemeOption) => {
+    setTheme(theme)
+  }
+
+  const buttonClassName = expanded
+    ? cn(
+        "flex h-auto w-full items-center justify-start gap-3 rounded-sm border-0 px-2 py-1.5",
+        className
+      )
+    : className
+
+  const sunIconClassName = cn(
+    "scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90",
+    {
+      "text-muted-foreground": expanded
+    }
+  )
+
+  const moonIconClassName = cn(
+    "absolute scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0",
+    {
+      "text-muted-foreground": expanded
+    }
+  )
 
   return (
     <DropdownMenu>
@@ -30,50 +57,33 @@ export function ModeToggle({
         <Button
           variant="outline"
           size={expanded ? "default" : "icon"}
-          className={
-            expanded
-              ? cn(
-                  "flex h-auto w-full items-center justify-start gap-3 rounded-sm border-0 px-2 py-1.5",
-                  className
-                )
-              : className
-          }
+          className={buttonClassName}
+          aria-label={`Change theme (current: ${theme || "system"})`}
         >
           <SunIcon
             width={iconSize}
             height={iconSize}
-            className={cn(
-              "scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90",
-              {
-                "text-muted-foreground": expanded
-              }
-            )}
+            className={sunIconClassName}
           />
           <MoonIcon
             width={iconSize}
             height={iconSize}
-            className={cn(
-              "absolute scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0",
-              {
-                "text-muted-foreground": expanded
-              }
-            )}
+            className={moonIconClassName}
           />
           {expanded ? "Change theme" : null}
-          <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align={expanded ? "start" : "end"}
         className="w-[215px]"
       >
-        <DropdownMenuItem onClick={() => setTheme("light")}>
+        <DropdownMenuItem onClick={() => handleThemeChange("light")}>
           Light
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
+        <DropdownMenuItem onClick={() => handleThemeChange("dark")}>
           Dark
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
+        <DropdownMenuItem onClick={() => handleThemeChange("system")}>
           System
         </DropdownMenuItem>
       </DropdownMenuContent>

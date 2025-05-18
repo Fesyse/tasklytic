@@ -12,18 +12,20 @@ import {
   DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog"
-import { SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
+import {
+  SidebarMenuBadge,
+  SidebarMenuButton,
+  SidebarMenuItem
+} from "@/components/ui/sidebar"
 import { useInvitationCount } from "@/hooks/use-invitation-count"
 import { authClient } from "@/lib/auth-client"
 import { api } from "@/trpc/react"
 import { Loader2, MailIcon, RefreshCw, XCircle } from "lucide-react"
-import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "sonner"
 
 export const InvitationsDialog = () => {
   const [open, setOpen] = useState(false)
-  const router = useRouter()
 
   // Use our custom hook to get the invitation count with auto-refresh
   const pendingInvitationsCount = useInvitationCount()
@@ -132,9 +134,7 @@ export const InvitationsDialog = () => {
             <MailIcon />
             <span>Invitations</span>
             {pendingInvitationsCount > 0 && (
-              <Badge variant="outline" className="ml-auto">
-                {pendingInvitationsCount}
-              </Badge>
+              <SidebarMenuBadge>{pendingInvitationsCount}</SidebarMenuBadge>
             )}
           </SidebarMenuButton>
         </SidebarMenuItem>
