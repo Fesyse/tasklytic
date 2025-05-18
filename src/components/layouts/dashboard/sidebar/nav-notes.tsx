@@ -104,7 +104,7 @@ export function NavNotes({
       <SidebarGroup>
         {!isLoading && !notes?.length && type === "shared" ? null : (
           <SidebarGroupLabel>
-            {type === "private" ? "Private Notes" : "Shared Notes"}
+            {type === "private" ? "Private" : "Shared"}
           </SidebarGroupLabel>
         )}
         {!isLoading && !notes?.length && type === "shared" ? null : (
@@ -249,7 +249,14 @@ function Note({
                   onClick={toggleExpanded}
                   className="group/expand-note-button absolute left-2"
                 >
-                  <ChevronDown className="text-muted-foreground relative z-10 size-4 opacity-0 transition-all duration-200 ease-in-out group-hover/sidebar-note-button:opacity-100" />
+                  <ChevronDown
+                    className={cn(
+                      "text-muted-foreground relative z-10 size-4 opacity-0 transition-all duration-200 ease-in-out group-hover/sidebar-note-button:opacity-100",
+                      {
+                        "-rotate-90": !isExpanded
+                      }
+                    )}
+                  />
                   <span className="sr-only">
                     {isExpanded ? "Collapse" : "Expand"}
                   </span>
