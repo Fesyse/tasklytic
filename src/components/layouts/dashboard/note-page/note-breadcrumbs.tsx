@@ -8,6 +8,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator
 } from "@/components/ui/breadcrumb"
+import { Skeleton } from "@/components/ui/skeleton"
 import { useNote } from "@/hooks/use-note"
 import { authClient } from "@/lib/auth-client"
 import { dexieDB, type Note } from "@/lib/db-client"
@@ -90,7 +91,16 @@ export const NoteBreadcrumbs = () => {
   const isLoading = !breadcrumbs || breadcrumbs.length === 0
 
   if (isLoading || !note) {
-    return null // Or return a skeleton loader
+    return (
+      <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
+          <Skeleton className="size-4" />
+          <Skeleton className="h-4 w-24" />
+        </div>
+        <Slash className="text-muted-foreground !size-3 -rotate-15" />
+        <Skeleton className="h-4 w-16" />
+      </div>
+    )
   }
 
   return (
