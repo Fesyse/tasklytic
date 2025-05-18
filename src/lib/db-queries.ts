@@ -19,7 +19,9 @@ export function createNote(data: {
       isPublic: false,
       updatedAt: new Date(),
       updatedByUserId: data.user.id,
+      updatedByUserName: data.user.name,
       createdByUserId: data.user.id,
+      createdByUserName: data.user.name,
       createdAt: new Date(),
       organizationId: data.organization.id,
       parentNoteId: data.noteId ?? null

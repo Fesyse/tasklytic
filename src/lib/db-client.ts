@@ -10,7 +10,9 @@ type Note = {
   updatedAt: Date
   createdAt: Date
   updatedByUserId: string
+  updatedByUserName: string
   createdByUserId: string
+  createdByUserName: string
   isPublic: boolean
   parentNoteId: string | null
 }
@@ -28,7 +30,7 @@ const dexieDB = new Dexie(`${siteConfig.name}Database`) as Dexie & {
 
 dexieDB.version(1).stores({
   notes:
-    "&id, title, emoji, isPublic, organizationId, parentNoteId, updatedByUserId, updatedAt, createdByUserId, createdAt",
+    "&id, title, emoji, isPublic, organizationId, parentNoteId, updatedByUserId, updatedByUserName, updatedAt, createdByUserId, createdByUserName, createdAt",
   blocks: "&id, noteId, content"
 })
 

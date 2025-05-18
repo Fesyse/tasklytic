@@ -1,31 +1,16 @@
 import { useCreateEditor } from "@/components/editor/use-create-editor"
-import { authClient } from "@/lib/auth-client"
 import { dexieDB, type Note } from "@/lib/db-client"
-import { getNoteWithBlocks } from "@/lib/db-queries"
 import { tryCatch } from "@/lib/utils"
-import { useQuery } from "@tanstack/react-query"
 import type { Value } from "@udecode/plate"
 import { notFound, useParams } from "next/navigation"
 import { useEffect } from "react"
 import { toast } from "sonner"
+import { useNote } from "./use-note"
 
 export function useNoteEditor() {
   const { noteId } = useParams<{ noteId: string }>()
-  const { data: organization } = authClient.useActiveOrganization()
 
-  const {
-    data: note,
-    isLoading,
-    isError
-  } = useQuery({
-    queryKey: ["note", noteId, organization?.id],
-    queryFn: async () => {
-      const { data, error } = await getNoteWithBlocks(noteId, organization!.id)
-      if (error) throw error
-      return data
-    },
-    enabled: !!organization?.id
-  })
+  const { data: note, isLoading, isError } = useNote()
 
   const editor = useCreateEditor({
     skipInitialization: true
