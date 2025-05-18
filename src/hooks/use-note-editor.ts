@@ -1,7 +1,9 @@
 import { useCreateEditor } from "@/components/editor/use-create-editor"
+import { authClient } from "@/lib/auth-client"
 import { dexieDB, type Note } from "@/lib/db-client"
 import { tryCatch } from "@/lib/utils"
 import type { Value } from "@udecode/plate"
+import type { User } from "better-auth"
 import { notFound, useParams } from "next/navigation"
 import { useCallback, useEffect, useRef } from "react"
 import { toast } from "sonner"
@@ -19,6 +21,7 @@ export function useNoteEditor({
   const { noteId } = useParams<{ noteId: string }>()
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null)
 
+  const { data: session } = authClient.useSession()
   const { data: note, isLoading, isError } = useNote()
 
   const editor = useCreateEditor({
@@ -55,8 +58,11 @@ export function useNoteEditor({
     const value = editor.children
 
     try {
+      if (!session) return
       setIsSaving(true)
+
       await saveNotesLocally({
+        user: session.user,
         noteId,
         oldValue: note.blocks,
         newValue: value
@@ -102,6 +108,7 @@ export function useNoteEditor({
 }
 
 async function saveNotesLocally(data: {
+  user: User
   noteId: string
   oldValue: Value
   newValue: Value
@@ -121,34 +128,43 @@ async function saveNotesLocally(data: {
     return oldBlock && oldBlock.content !== block.content
   })
 
-  const { error } = await tryCatch(
-    dexieDB.transaction("rw", dexieDB.blocks, () => {
-      dexieDB.blocks.bulkAdd(
-        createdBlocks.map((block) => ({
-          id: block.id as string,
-          noteId: data.noteId,
-          content: block
-        }))
-      )
-
-      dexieDB.blocks.bulkUpdate(
-        updatedBlocks.map((block) => ({
-          key: block.id as string,
-          changes: {
+  const [{ error: blocksError }, { error: noteError }] = await Promise.all([
+    tryCatch(
+      dexieDB.transaction("rw", dexieDB.blocks, () => {
+        dexieDB.blocks.bulkAdd(
+          createdBlocks.map((block) => ({
+            id: block.id as string,
+            noteId: data.noteId,
             content: block
-          }
-        }))
-      )
+          }))
+        )
 
-      dexieDB.blocks.bulkDelete(
-        deletedBlocks.map((block) => block.id as string)
-      )
-    })
-  )
+        dexieDB.blocks.bulkUpdate(
+          updatedBlocks.map((block) => ({
+            key: block.id as string,
+            changes: {
+              content: block
+            }
+          }))
+        )
 
-  if (error) {
-    console.error(error)
+        dexieDB.blocks.bulkDelete(
+          deletedBlocks.map((block) => block.id as string)
+        )
+      })
+    ),
+    tryCatch(
+      dexieDB.notes.update(data.noteId, {
+        updatedByUserId: data.user.id,
+        updatedByUserName: data.user.name,
+        updatedAt: new Date()
+      })
+    )
+  ])
+
+  if (blocksError || noteError) {
+    console.error(blocksError ?? noteError)
     toast.error("Failed to save notes!")
-    throw error
+    throw blocksError ?? noteError
   }
 }

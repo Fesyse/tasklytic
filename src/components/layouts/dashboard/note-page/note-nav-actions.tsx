@@ -41,9 +41,12 @@ import {
   TooltipTrigger
 } from "@/components/ui/tooltip"
 import { useNoteEditor } from "@/contexts/note-editor-context"
-import { useNote } from "@/hooks/use-note"
+import { authClient } from "@/lib/auth-client"
+import { getNote } from "@/lib/db-queries"
+import { useDexieDb } from "@/lib/use-dexie-db"
 import { cn } from "@/lib/utils"
 import { formatDistance } from "date-fns"
+import { useParams } from "next/navigation"
 
 const data = [
   [
@@ -109,7 +112,20 @@ const data = [
 ]
 
 export function NoteNavActions() {
-  const { data: note, isLoading } = useNote()
+  const { noteId } = useParams<{ noteId: string }>()
+  const { data: activeOrganization } = authClient.useActiveOrganization()
+
+  const { data: note, isLoading } = useDexieDb(async () => {
+    if (!activeOrganization) return
+    const { data, error } = await getNote(noteId, activeOrganization.id)
+
+    if (error) {
+      console.error(error)
+      return null
+    }
+
+    return data
+  })
   const { isSaving, isAutoSaving } = useNoteEditor()
 
   return (
