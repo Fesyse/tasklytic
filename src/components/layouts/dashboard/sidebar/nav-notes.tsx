@@ -72,7 +72,7 @@ export function NavNotes({
       return
     }
 
-    toast.success("Note created successfully")
+    toast.success("Note created successfully, redirecting...")
     router.push(`/dashboard/note/${noteId}`)
   }
 
@@ -149,7 +149,7 @@ function Note({ item, level = 0 }: { level?: number; item: NoteNavItem }) {
       return
     }
 
-    toast.success("Note created successfully")
+    toast.success("Note created successfully, redirecting...")
     setIsExpanded(true) // Expand the parent to show the new child
     router.push(`/dashboard/note/${noteId}`)
   }

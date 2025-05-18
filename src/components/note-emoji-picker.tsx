@@ -10,7 +10,7 @@ import { dexieDB, type Note } from "@/lib/db-client"
 import { tryCatch } from "@/lib/utils"
 import { PopoverContent } from "@radix-ui/react-popover"
 import { FileIcon } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { Popover, PopoverTrigger } from "./ui/popover"
 
@@ -18,19 +18,34 @@ export function NoteEmojiPicker({ note }: { note: Note }) {
   const [emoji, setEmoji] = useState(note.emoji)
   const [isPickerOpen, setIsPickerOpen] = useState(false)
 
-  const handleEmojiSelect = async ({ emoji }: { emoji: string }) => {
-    const { error } = await tryCatch(dexieDB.notes.update(note.id, { emoji }))
+  const updateEmoji = useCallback(
+    async (newEmoji: string) => {
+      const { error } = await tryCatch(
+        dexieDB.notes.update(note.id, { emoji: newEmoji })
+      )
 
-    if (error) {
-      toast.error(error.message)
+      if (error) {
+        toast.error(error.message)
+        return false
+      }
+
+      setEmoji(newEmoji)
+      return true
+    },
+    [note.id]
+  )
+
+  const handleEmojiSelect = async ({ emoji: newEmoji }: { emoji: string }) => {
+    const success = await updateEmoji(newEmoji)
+    if (success) {
+      setIsPickerOpen(false)
     }
-
-    setEmoji(emoji)
-    setIsPickerOpen(false)
   }
 
+  // Update document title when emoji or title changes
   useEffect(() => {
-    document.title = (emoji ? `${emoji} ` : "") + note.title
+    const titlePrefix = emoji ? `${emoji} ` : ""
+    document.title = titlePrefix + (note.title || "Untitled")
   }, [emoji, note.title])
 
   return (
@@ -43,6 +58,7 @@ export function NoteEmojiPicker({ note }: { note: Note }) {
                 type="button"
                 className="flex size-[48px] cursor-pointer items-center justify-center"
                 onClick={() => setIsPickerOpen(!isPickerOpen)}
+                aria-label="Select emoji"
               >
                 {emoji ? (
                   <span className="text-5xl">{emoji}</span>

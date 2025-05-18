@@ -30,9 +30,7 @@ export const CreateNoteButton = () => {
           return
         }
 
-        console.log(noteId)
-
-        toast.success("Note created successfully")
+        toast.success("Note created successfully, redirecting...")
         router.push(`/dashboard/note/${noteId}`)
       }}
     >
