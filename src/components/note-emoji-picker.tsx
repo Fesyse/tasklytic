@@ -43,7 +43,7 @@ export function NoteEmojiPicker({ note }: { note: Note }) {
                 {emoji ? (
                   <span className="text-5xl">{emoji}</span>
                 ) : (
-                  <FileIcon className="size-[48px]" />
+                  <FileIcon className="text-muted-foreground size-[48px]" />
                 )}
               </button>
             </PopoverTrigger>
