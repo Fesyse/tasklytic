@@ -10,7 +10,7 @@ import { dexieDB, type Note } from "@/lib/db-client"
 import { tryCatch } from "@/lib/utils"
 import { PopoverContent } from "@radix-ui/react-popover"
 import { FileIcon } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { Popover, PopoverTrigger } from "./ui/popover"
 
@@ -28,6 +28,10 @@ export function NoteEmojiPicker({ note }: { note: Note }) {
     setEmoji(emoji)
     setIsPickerOpen(false)
   }
+
+  useEffect(() => {
+    document.title = (emoji ? `${emoji} ` : "") + note.title
+  }, [emoji, note.title])
 
   return (
     <div className="space-y-2">
