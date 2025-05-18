@@ -176,7 +176,7 @@ function Note({
   setDeletingNoteState: (state: { isOpen: boolean; noteId: string }) => void
 }) {
   const pathname = usePathname()
-  const { isMobile } = useSidebar()
+  const { isMobile, open: sidebarOpen } = useSidebar()
   const router = useRouter()
   const [isActionsOpen, setIsActionsOpen] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
@@ -224,7 +224,11 @@ function Note({
 
   return (
     <div className="flex flex-col">
-      <SidebarMenuItem key={item.id} style={{ marginLeft: level * 6 }}>
+      <SidebarMenuItem
+        key={item.id}
+        style={{ marginLeft: sidebarOpen ? level * 6 : 0 }}
+        className="transition-all duration-200 ease-in-out"
+      >
         <div className="flex w-full items-center">
           <SidebarMenuButton
             isActive={isActive}
