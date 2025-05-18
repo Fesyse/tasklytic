@@ -2,14 +2,17 @@
 
 import { useNoteEditor } from "@/hooks/use-note-editor"
 import { Plate } from "@udecode/plate/react"
+import { useState } from "react"
 import { DndProvider } from "react-dnd"
 import { HTML5Backend } from "react-dnd-html5-backend"
 import { SettingsDialog, SettingsProvider } from "./editor/settings"
+import { NoteEmojiPicker } from "./note-emoji-picker"
 import { NoteTitleInput } from "./note-title-input"
 import { Editor, EditorContainer } from "./ui/editor"
 import { Skeleton } from "./ui/skeleton"
 
 export const NoteEditor = () => {
+  const [isOpen, setIsOpen] = useState(false)
   const { editor, isLoading, note } = useNoteEditor()
 
   return (
@@ -32,7 +35,10 @@ export const NoteEditor = () => {
         </div>
       ) : (
         <>
-          <NoteTitleInput note={note} />
+          <div className="mx-auto mb-12 flex w-full max-w-[44rem] items-center gap-2">
+            <NoteEmojiPicker note={note} />
+            <NoteTitleInput note={note} />
+          </div>
           <DndProvider backend={HTML5Backend}>
             {editor && !isLoading && (
               <Plate editor={editor}>

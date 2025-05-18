@@ -8,8 +8,8 @@ import {
 } from "@udecode/plate-emoji/react"
 import { Smile } from "lucide-react"
 
+import { EmojiPicker } from "./editor-emoji-picker"
 import { emojiCategoryIcons, emojiSearchIcons } from "./emoji-icons"
-import { EmojiPicker } from "./emoji-picker"
 import { EmojiToolbarDropdown } from "./emoji-toolbar-dropdown"
 import { ToolbarButton } from "./toolbar"
 type EmojiDropdownMenuProps = {

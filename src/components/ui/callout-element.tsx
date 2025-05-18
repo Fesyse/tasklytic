@@ -9,8 +9,8 @@ import { PlateElement } from "@udecode/plate/react"
 
 import { Button } from "@/components/ui/button"
 
+import { EmojiPicker } from "./editor-emoji-picker"
 import { emojiCategoryIcons, emojiSearchIcons } from "./emoji-icons"
-import { EmojiPicker } from "./emoji-picker"
 import { EmojiToolbarDropdown } from "./emoji-toolbar-dropdown"
 
 export function CalloutElement({

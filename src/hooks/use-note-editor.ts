@@ -60,6 +60,10 @@ export function useNoteEditor() {
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [noteId, note?.blocks, editor])
 
+  useEffect(() => {
+    if (noteId) localStorage.setItem("last-note-id", noteId)
+  }, [noteId])
+
   if (isError) notFound()
   if (!note) return { editor, isLoading, note: undefined }
 

@@ -293,6 +293,9 @@ importers:
       drizzle-orm:
         specifier: ^0.41.0
         version: 0.41.0(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(@types/pg@8.15.1)(gel@2.1.0)(kysely@0.27.6)(mysql2@3.14.0)(pg@8.15.6)
+      frimousse:
+        specifier: ^0.2.0
+        version: 0.2.0(react@19.1.0)
       html2canvas-pro:
         specifier: ^1.5.11
         version: 1.5.11
@@ -4918,6 +4921,11 @@ packages:
   fresh@2.0.0:
     resolution: {integrity: sha512-Rx/WycZ60HOaqLKAi6cHRKKI7zxWbJ31MhntmtwMoaTeF7XFH9hhBp8vITaMidfljRQ6eYWCKkaTK+ykVJHP2A==}
     engines: {node: '>= 0.8'}
+
+  frimousse@0.2.0:
+    resolution: {integrity: sha512-viSrsVQWKR4Q7xzC0lkx3Wu9i1+IHrth0QXn0nlIIJXpltwUnjkGXSTuoW7WHI5aJ4z49WR8E/pyQizFjlNtTA==}
+    peerDependencies:
+      react: ^18 || ^19
 
   fsevents@2.3.3:
     resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
@@ -12000,6 +12008,10 @@ snapshots:
       react-dom: 19.1.0(react@19.1.0)
 
   fresh@2.0.0: {}
+
+  frimousse@0.2.0(react@19.1.0):
+    dependencies:
+      react: 19.1.0
 
   fsevents@2.3.3:
     optional: true

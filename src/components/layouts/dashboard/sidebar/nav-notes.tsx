@@ -118,7 +118,7 @@ export function NavNotes({
           ) : (
             notes.map((item) => {
               const fullUrl = `${getBaseUrl()}${item.url}`
-              const isActive = pathname.startsWith(fullUrl)
+              const isActive = pathname === item.url
 
               return (
                 <SidebarMenuItem key={item.id}>

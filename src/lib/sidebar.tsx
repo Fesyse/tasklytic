@@ -11,6 +11,7 @@ import {
 } from "lucide-react"
 import { authClient } from "./auth-client"
 import { getNotes } from "./db-queries"
+import { tryCatch } from "./utils"
 
 export type NavItem =
   | {
@@ -41,10 +42,10 @@ type SidebarNav = {
 
 export const useSidebarNav = (): SidebarNav => {
   const { data: organization } = authClient.useActiveOrganization()
-  const result = useLiveQuery(
-    () => getNotes(organization!.id),
-    [organization?.id]
-  )
+  const result = useLiveQuery(() => {
+    if (!organization?.id) return tryCatch(Promise.resolve([]))
+    return getNotes(organization.id)
+  }, [organization?.id])
 
   return {
     navMain: [
