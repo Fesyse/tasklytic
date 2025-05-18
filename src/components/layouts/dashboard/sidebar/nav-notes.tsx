@@ -1,6 +1,16 @@
 "use client"
 
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle
+} from "@/components/ui/alert-dialog"
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -32,6 +42,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
+import { useState } from "react"
 import { toast } from "sonner"
 
 export function NavNotes({
@@ -43,6 +54,14 @@ export function NavNotes({
   notes: NoteNavItem[] | undefined
   isLoading: boolean
 }) {
+  const [deletingNoteState, setDeletingNoteState] = useState<{
+    isOpen: boolean
+    noteId: string
+  }>({
+    isOpen: false,
+    noteId: ""
+  })
+
   const router = useRouter()
   const pathname = usePathname()
   const { isMobile } = useSidebar()
@@ -90,85 +109,123 @@ export function NavNotes({
   }
 
   return (
-    <SidebarGroup>
-      {!isLoading && !notes?.length && type === "shared" ? null : (
-        <SidebarGroupLabel>
-          {type === "private" ? "Private Notes" : "Shared Notes"}
-        </SidebarGroupLabel>
-      )}
-      {!isLoading && !notes?.length && type === "shared" ? null : (
-        <SidebarGroupAction onClick={handleCreateNote}>
-          <PlusIcon className="size-4" />
-        </SidebarGroupAction>
-      )}
-      <SidebarGroupContent>
-        <SidebarMenu>
-          {isLoading || !notes ? (
-            Array.from({ length: 5 }).map((_, i) => (
-              <SidebarMenuItem key={i}>
-                <SidebarMenuSkeleton showIcon />
-              </SidebarMenuItem>
-            ))
-          ) : !notes.length && type === "private" ? (
-            <SidebarMenuItem>
-              <span className="text-muted-foreground ml-2 text-xs">
-                No notes
-              </span>
-            </SidebarMenuItem>
-          ) : (
-            notes.map((item) => {
-              const fullUrl = `${getBaseUrl()}${item.url}`
-              const isActive = pathname === item.url
-
-              return (
-                <SidebarMenuItem key={item.id}>
-                  <SidebarMenuButton asChild isActive={isActive}>
-                    <Link href={item.url} prefetch>
-                      {typeof item.icon === "string" ? (
-                        <span className="">{item.icon}</span>
-                      ) : (
-                        <item.icon />
-                      )}
-                      <span>{item.title.length ? item.title : "Untitled"}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <SidebarMenuAction showOnHover className="cursor-pointer">
-                        <MoreHorizontal />
-                        <span className="sr-only">More</span>
-                      </SidebarMenuAction>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      className="w-56 rounded-lg"
-                      side={isMobile ? "bottom" : "right"}
-                      align={isMobile ? "end" : "start"}
-                    >
-                      <DropdownMenuItem onClick={() => handleCopyLink(fullUrl)}>
-                        <LinkIcon className="text-muted-foreground" />
-                        <span>Copy Link</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => handleOpenInNewTab(fullUrl)}
-                      >
-                        <ArrowUpRight className="text-muted-foreground" />
-                        <span>Open in New Tab</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        onClick={() => handleDeleteNote(item.id)}
-                      >
-                        <Trash2 className="text-muted-foreground" />
-                        <span>Delete</span>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+    <>
+      <SidebarGroup>
+        {!isLoading && !notes?.length && type === "shared" ? null : (
+          <SidebarGroupLabel>
+            {type === "private" ? "Private Notes" : "Shared Notes"}
+          </SidebarGroupLabel>
+        )}
+        {!isLoading && !notes?.length && type === "shared" ? null : (
+          <SidebarGroupAction onClick={handleCreateNote}>
+            <PlusIcon className="size-4" />
+          </SidebarGroupAction>
+        )}
+        <SidebarGroupContent>
+          <SidebarMenu>
+            {isLoading || !notes ? (
+              Array.from({ length: 5 }).map((_, i) => (
+                <SidebarMenuItem key={i}>
+                  <SidebarMenuSkeleton showIcon />
                 </SidebarMenuItem>
-              )
-            })
-          )}
-        </SidebarMenu>
-      </SidebarGroupContent>
-    </SidebarGroup>
+              ))
+            ) : !notes.length && type === "private" ? (
+              <SidebarMenuItem>
+                <span className="text-muted-foreground ml-2 text-xs">
+                  No notes
+                </span>
+              </SidebarMenuItem>
+            ) : (
+              notes.map((item) => {
+                const fullUrl = `${getBaseUrl()}${item.url}`
+                const isActive = pathname === item.url
+
+                return (
+                  <SidebarMenuItem key={item.id}>
+                    <SidebarMenuButton asChild isActive={isActive}>
+                      <Link href={item.url} prefetch>
+                        {typeof item.icon === "string" ? (
+                          <span className="">{item.icon}</span>
+                        ) : (
+                          <item.icon />
+                        )}
+                        <span>
+                          {item.title.length ? item.title : "Untitled"}
+                        </span>
+                      </Link>
+                    </SidebarMenuButton>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <SidebarMenuAction
+                          showOnHover
+                          className="cursor-pointer"
+                        >
+                          <MoreHorizontal />
+                          <span className="sr-only">More</span>
+                        </SidebarMenuAction>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent
+                        className="w-56 rounded-lg"
+                        side={isMobile ? "bottom" : "right"}
+                        align={isMobile ? "end" : "start"}
+                      >
+                        <DropdownMenuItem
+                          onClick={() => handleCopyLink(fullUrl)}
+                        >
+                          <LinkIcon className="text-muted-foreground" />
+                          <span>Copy Link</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleOpenInNewTab(fullUrl)}
+                        >
+                          <ArrowUpRight className="text-muted-foreground" />
+                          <span>Open in New Tab</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={() =>
+                            setDeletingNoteState({
+                              isOpen: true,
+                              noteId: item.id
+                            })
+                          }
+                        >
+                          <Trash2 className="text-muted-foreground" />
+                          <span>Delete</span>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </SidebarMenuItem>
+                )
+              })
+            )}
+          </SidebarMenu>
+        </SidebarGroupContent>
+      </SidebarGroup>
+      <AlertDialog
+        open={deletingNoteState.isOpen}
+        onOpenChange={(value) =>
+          setDeletingNoteState((prev) => ({ ...prev, isOpen: value }))
+        }
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the
+              note and remove it from your notes.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => handleDeleteNote(deletingNoteState.noteId)}
+            >
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   )
 }
