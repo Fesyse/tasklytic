@@ -95,17 +95,15 @@ export const NoteBreadcrumbs = () => {
 
   return (
     <Breadcrumb>
-      <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
-        </BreadcrumbItem>
-
+      <BreadcrumbList className="!gap-0.5 text-xs">
         {breadcrumbs.map((breadcrumb, index) => (
           <React.Fragment key={breadcrumb.id}>
-            <BreadcrumbSeparator>
-              <Slash />
-            </BreadcrumbSeparator>
-            <BreadcrumbItem>
+            {index !== 0 ? (
+              <BreadcrumbSeparator>
+                <Slash className="!size-3 -rotate-15" />
+              </BreadcrumbSeparator>
+            ) : null}
+            <BreadcrumbItem className="hover:bg-muted rounded px-1.5 py-1 transition-colors duration-200 ease-in-out">
               {index === breadcrumbs.length - 1 ? (
                 <BreadcrumbPage className="flex items-center gap-2">
                   {breadcrumb.emoji ? (
