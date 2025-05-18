@@ -15,6 +15,7 @@ import {
   useSidebar
 } from "@/components/ui/sidebar"
 import { useSidebarNav } from "@/lib/sidebar"
+import { AnimatePresence, motion } from "motion/react"
 import { NavNotes } from "./nav-notes"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -27,7 +28,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-2">
             <OrganizationSwitcher />
-            {open ? <SidebarTrigger className="size-8" /> : null}
+            {open ? (
+              <AnimatePresence>
+                <motion.div
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: "auto" }}
+                  exit={{ opacity: 0, width: 0 }}
+                  transition={{ duration: 0.2, delay: 0.1 }}
+                >
+                  <SidebarTrigger className="size-8" />
+                </motion.div>
+              </AnimatePresence>
+            ) : null}
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
