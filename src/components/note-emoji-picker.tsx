@@ -32,19 +32,18 @@ export function NoteEmojiPicker({ note }: { note: Note }) {
   return (
     <div className="space-y-2">
       <div className="flex flex-col gap-2">
-        <input type="hidden" name="icon" required />
         <div className="flex items-center gap-2">
           <Popover open={isPickerOpen} onOpenChange={setIsPickerOpen}>
             <PopoverTrigger asChild>
               <button
                 type="button"
-                className="cursor-pointer"
+                className="flex size-[48px] cursor-pointer items-center justify-center"
                 onClick={() => setIsPickerOpen(!isPickerOpen)}
               >
                 {emoji ? (
-                  <span className="text-6xl">{emoji}</span>
+                  <span className="text-5xl">{emoji}</span>
                 ) : (
-                  <FileIcon className="size-12" />
+                  <FileIcon className="size-[48px]" />
                 )}
               </button>
             </PopoverTrigger>

@@ -125,7 +125,7 @@ export function NavNotes({
                   <SidebarMenuButton asChild isActive={isActive}>
                     <Link href={item.url} prefetch>
                       {typeof item.icon === "string" ? (
-                        <span className="text-2xl">{item.icon}</span>
+                        <span className="">{item.icon}</span>
                       ) : (
                         <item.icon />
                       )}
