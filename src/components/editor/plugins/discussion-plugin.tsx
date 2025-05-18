@@ -246,7 +246,8 @@ export const discussionPlugin = createPlatePlugin({
   options: {
     currentUserId: "alice",
     discussions: discussionsData,
-    users: usersData
+    users: usersData,
+    noteId: "" // This will be set by the note editor component
   }
 })
   .configure({

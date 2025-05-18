@@ -27,6 +27,12 @@ import {
   PencilLineIcon
 } from "lucide-react"
 
+import { commentsPlugin } from "@/components/editor/plugins/comments-plugin"
+import {
+  type TDiscussion,
+  discussionPlugin
+} from "@/components/editor/plugins/discussion-plugin"
+import { suggestionPlugin } from "@/components/editor/plugins/suggestion-plugin"
 import { Button } from "@/components/ui/button"
 import {
   Popover,
@@ -34,13 +40,9 @@ import {
   PopoverContent,
   PopoverTrigger
 } from "@/components/ui/popover"
-import { commentsPlugin } from "@/components/editor/plugins/comments-plugin"
-import {
-  type TDiscussion,
-  discussionPlugin
-} from "@/components/editor/plugins/discussion-plugin"
-import { suggestionPlugin } from "@/components/editor/plugins/suggestion-plugin"
 
+import { useDiscussions } from "@/hooks/use-discussions"
+import { Value } from "@udecode/plate"
 import {
   BlockSuggestionCard,
   isResolvedSuggestion,
@@ -291,6 +293,43 @@ export const BlockComment = ({
   isLast: boolean
 }) => {
   const [editingId, setEditingId] = React.useState<string | null>(null)
+  const noteId = usePluginOption(discussionPlugin, "noteId") || ""
+  const {
+    updateCommentContent,
+    removeComment,
+    resolveDiscussion,
+    removeDiscussion
+  } = useDiscussions(noteId)
+
+  console.log(noteId)
+
+  const handleUpdateComment = React.useCallback(
+    async (id: string, contentRich: Value) => {
+      await updateCommentContent(id, contentRich)
+    },
+    [updateCommentContent]
+  )
+
+  const handleRemoveComment = React.useCallback(
+    async (id: string) => {
+      await removeComment(id)
+    },
+    [removeComment]
+  )
+
+  const handleResolveDiscussion = React.useCallback(
+    async (id: string) => {
+      await resolveDiscussion(id)
+    },
+    [resolveDiscussion]
+  )
+
+  const handleRemoveDiscussion = React.useCallback(
+    async (id: string) => {
+      await removeDiscussion(id)
+    },
+    [removeDiscussion]
+  )
 
   return (
     <React.Fragment key={discussion.id}>
@@ -305,6 +344,10 @@ export const BlockComment = ({
             index={index}
             setEditingId={setEditingId}
             showDocumentContent
+            onUpdateComment={handleUpdateComment}
+            onRemoveComment={handleRemoveComment}
+            onResolveDiscussion={handleResolveDiscussion}
+            onRemoveDiscussion={handleRemoveDiscussion}
           />
         ))}
         <CommentCreateForm discussionId={discussion.id} />
@@ -320,8 +363,8 @@ export const useResolvedDiscussion = (
   blockPath: Path
 ) => {
   const { api, getOption, setOption } = useEditorPlugin(commentsPlugin)
-
-  const discussions = usePluginOption(discussionPlugin, "discussions")
+  const noteId = usePluginOption(discussionPlugin, "noteId") || ""
+  const { discussions } = useDiscussions(noteId)
 
   commentNodes.forEach(([node]) => {
     const id = api.comment.nodeId(node)
@@ -350,25 +393,20 @@ export const useResolvedDiscussion = (
     commentNodes.map(([node]) => api.comment.nodeId(node)).filter(Boolean)
   )
 
-  const resolvedDiscussions = discussions
-    .map((d: TDiscussion) => ({
-      ...d,
-      createdAt: new Date(d.createdAt)
-    }))
-    .filter((item: TDiscussion) => {
-      /** If comment cross blocks just show it in the first block */
-      const commentsPathMap = getOption("uniquePathMap")
-      const firstBlockPath = commentsPathMap.get(item.id)
+  const resolvedDiscussions = discussions.filter((item: TDiscussion) => {
+    /** If comment cross blocks just show it in the first block */
+    const commentsPathMap = getOption("uniquePathMap")
+    const firstBlockPath = commentsPathMap.get(item.id)
 
-      if (!firstBlockPath) return false
-      if (!PathApi.equals(firstBlockPath, blockPath)) return false
+    if (!firstBlockPath) return false
+    if (!PathApi.equals(firstBlockPath, blockPath)) return false
 
-      return (
-        api.comment.has({ id: item.id }) &&
-        commentsIds.has(item.id) &&
-        !item.isResolved
-      )
-    })
+    return (
+      api.comment.has({ id: item.id }) &&
+      commentsIds.has(item.id) &&
+      !item.isResolved
+    )
+  })
 
   return resolvedDiscussions
 }

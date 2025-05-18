@@ -3,7 +3,7 @@
 import * as React from "react"
 
 import { withProps } from "@udecode/cn"
-import { type Value, nanoid, NodeApi } from "@udecode/plate"
+import { type Value, NodeApi } from "@udecode/plate"
 import { AIPlugin } from "@udecode/plate-ai/react"
 import {
   BasicMarksPlugin,
@@ -19,20 +19,22 @@ import { EmojiInputPlugin } from "@udecode/plate-emoji/react"
 import { LinkPlugin } from "@udecode/plate-link/react"
 import { InlineEquationPlugin } from "@udecode/plate-math/react"
 import { MentionInputPlugin, MentionPlugin } from "@udecode/plate-mention/react"
-import { Plate, useEditorRef, usePluginOption } from "@udecode/plate/react"
-import { type CreatePlateEditorOptions, PlateLeaf } from "@udecode/plate/react"
+import {
+  type CreatePlateEditorOptions,
+  Plate,
+  PlateLeaf,
+  useEditorRef,
+  usePluginOption
+} from "@udecode/plate/react"
 import { ArrowUpIcon } from "lucide-react"
 
+import { discussionPlugin } from "@/components/editor/plugins/discussion-plugin"
+import { useCreateEditor } from "@/components/editor/use-create-editor"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import { useDiscussions } from "@/hooks/use-discussions"
+import { authClient } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
-import {
-  type TDiscussion,
-  discussionPlugin
-} from "@/components/editor/plugins/discussion-plugin"
-import { useCreateEditor } from "@/components/editor/use-create-editor"
-
-import type { TComment } from "./comment"
 
 import { AILeaf } from "./ai-leaf"
 import { DateElement } from "./date-element"
@@ -86,13 +88,19 @@ export function CommentCreateForm({
   discussionId?: string
   focusOnMount?: boolean
 }) {
-  const discussions = usePluginOption(discussionPlugin, "discussions")
-
   const editor = useEditorRef()
   const commentId = useCommentId()
   const discussionId = discussionIdProp ?? commentId
+  const noteId = usePluginOption(discussionPlugin, "noteId") || ""
+  const { addComment, addDiscussion } = useDiscussions(noteId)
 
-  const userInfo = usePluginOption(discussionPlugin, "currentUser")
+  const session = authClient.useSession()
+  const userInfo = {
+    id: session.data?.user.id || "",
+    name: session.data?.user.name || "",
+    avatarUrl: session.data?.user.image || ""
+  }
+
   const [commentValue, setCommentValue] = React.useState<Value | undefined>()
   const commentContent = React.useMemo(
     () =>
@@ -110,60 +118,13 @@ export function CommentCreateForm({
   const onAddComment = React.useCallback(async () => {
     if (!commentValue) return
 
+    console.log("add comment")
+
     commentEditor.tf.reset()
 
     if (discussionId) {
-      // Get existing discussion
-      const discussion = discussions.find((d) => d.id === discussionId)
-      if (!discussion) {
-        // Mock creating suggestion
-        const newDiscussion: TDiscussion = {
-          id: discussionId,
-          comments: [
-            {
-              id: nanoid(),
-              contentRich: commentValue,
-              createdAt: new Date(),
-              discussionId,
-              isEdited: false,
-              userId: editor.getOption(discussionPlugin, "currentUserId")
-            }
-          ],
-          createdAt: new Date(),
-          isResolved: false,
-          userId: editor.getOption(discussionPlugin, "currentUserId")
-        }
-
-        editor.setOption(discussionPlugin, "discussions", [
-          ...discussions,
-          newDiscussion
-        ])
-        return
-      }
-
-      // Create reply comment
-      const comment: TComment = {
-        id: nanoid(),
-        contentRich: commentValue,
-        createdAt: new Date(),
-        discussionId,
-        isEdited: false,
-        userId: editor.getOption(discussionPlugin, "currentUserId")
-      }
-
-      // Add reply to discussion comments
-      const updatedDiscussion = {
-        ...discussion,
-        comments: [...discussion.comments, comment]
-      }
-
-      // Filter out old discussion and add updated one
-      const updatedDiscussions = discussions
-        .filter((d) => d.id !== discussionId)
-        .concat(updatedDiscussion)
-
-      editor.setOption(discussionPlugin, "discussions", updatedDiscussions)
-
+      // Add comment to existing discussion
+      await addComment(discussionId, commentValue)
       return
     }
 
@@ -177,32 +138,19 @@ export function CommentCreateForm({
       .map(([node]) => node.text)
       .join("")
 
-    const _discussionId = nanoid()
-    // Mock creating new discussion
-    const newDiscussion: TDiscussion = {
-      id: _discussionId,
-      comments: [
-        {
-          id: nanoid(),
-          contentRich: commentValue,
-          createdAt: new Date(),
-          discussionId: _discussionId,
-          isEdited: false,
-          userId: editor.getOption(discussionPlugin, "currentUserId")
-        }
-      ],
-      createdAt: new Date(),
+    // Get the blockId from the first comment node entry
+    const blockId = commentsNodeEntry[0][1][0].toString()
+
+    // Create new discussion with first comment
+    const newDiscussionId = await addDiscussion(
+      blockId,
       documentContent,
-      isResolved: false,
-      userId: editor.getOption(discussionPlugin, "currentUserId")
-    }
+      commentValue
+    )
 
-    editor.setOption(discussionPlugin, "discussions", [
-      ...discussions,
-      newDiscussion
-    ])
+    if (!newDiscussionId) return
 
-    const id = newDiscussion.id
+    const id = newDiscussionId
 
     commentsNodeEntry.forEach(([, path]) => {
       editor.tf.setNodes(
@@ -213,12 +161,18 @@ export function CommentCreateForm({
       )
       editor.tf.unsetNodes([getDraftCommentKey()], { at: path })
     })
-  }, [commentValue, commentEditor.tf, discussionId, editor, discussions])
+  }, [
+    commentValue,
+    commentEditor.tf,
+    discussionId,
+    editor,
+    addComment,
+    addDiscussion
+  ])
 
   return (
     <div className={cn("flex w-full", className)}>
       <div className="mt-2 mr-1 shrink-0">
-        {/* Replace to your own backend or refer to potion */}
         <Avatar className="size-5">
           <AvatarImage alt={userInfo?.name} src={userInfo?.avatarUrl} />
           <AvatarFallback>{userInfo?.name?.[0]}</AvatarFallback>
@@ -235,7 +189,7 @@ export function CommentCreateForm({
           <EditorContainer variant="comment">
             <Editor
               variant="comment"
-              className="min-h-[25px] grow pt-0.5 pr-8"
+              className="min-h-20 grow pt-0.5 pr-8"
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault()
@@ -248,18 +202,15 @@ export function CommentCreateForm({
             />
 
             <Button
-              size="icon"
+              className="absolute top-1 right-1"
               variant="ghost"
-              className="absolute right-0.5 bottom-0.5 ml-auto shrink-0"
-              disabled={commentContent.trim().length === 0}
-              onClick={(e) => {
-                e.stopPropagation()
+              size="icon"
+              disabled={!commentContent}
+              onClick={() => {
                 onAddComment()
               }}
             >
-              <div className="flex size-6 items-center justify-center rounded-full">
-                <ArrowUpIcon />
-              </div>
+              <ArrowUpIcon className="size-4" />
             </Button>
           </EditorContainer>
         </Plate>

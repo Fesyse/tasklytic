@@ -23,16 +23,39 @@ type Block = {
   content: TElement
 }
 
+type Discussion = {
+  id: string
+  noteId: string
+  blockId: string
+  documentContent?: string
+  createdAt: Date
+  isResolved: boolean
+  userId: string
+}
+
+type Comment = {
+  id: string
+  discussionId: string
+  contentRich: any // Using any for now, but should be Value from @udecode/plate
+  createdAt: Date
+  isEdited: boolean
+  userId: string
+}
+
 const dexieDB = new Dexie(`${siteConfig.name}Database`) as Dexie & {
   notes: EntityTable<Note, "id">
   blocks: EntityTable<Block, "id">
+  discussions: EntityTable<Discussion, "id">
+  comments: EntityTable<Comment, "id">
 }
 
 dexieDB.version(1).stores({
   notes:
     "&id, title, emoji, isPublic, organizationId, parentNoteId, updatedByUserId, updatedByUserName, updatedAt, createdByUserId, createdByUserName, createdAt",
-  blocks: "&id, noteId, content"
+  blocks: "&id, noteId, content",
+  discussions: "&id, noteId, blockId, isResolved, userId, createdAt",
+  comments: "&id, discussionId, userId, createdAt, isEdited"
 })
 
 export { dexieDB }
-export type { Note }
+export type { Comment, Discussion, Note }

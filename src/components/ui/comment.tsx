@@ -5,12 +5,7 @@ import * as React from "react"
 import type { Value } from "@udecode/plate"
 
 import { CommentsPlugin } from "@udecode/plate-comments/react"
-import {
-  Plate,
-  useEditorPlugin,
-  useEditorRef,
-  usePluginOption
-} from "@udecode/plate/react"
+import { Plate, useEditorPlugin } from "@udecode/plate/react"
 import {
   differenceInDays,
   differenceInHours,
@@ -35,8 +30,8 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
-import { discussionPlugin } from "@/components/editor/plugins/discussion-plugin"
 
+import { authClient } from "@/lib/auth-client"
 import { useCommentEditor } from "./comment-create-form"
 import { Editor, EditorContainer } from "./editor"
 
@@ -66,6 +61,7 @@ export interface TComment {
   discussionId: string
   isEdited: boolean
   userId: string
+  userImage?: string
 }
 
 export function Comment(props: {
@@ -77,6 +73,10 @@ export function Comment(props: {
   documentContent?: string
   showDocumentContent?: boolean
   onEditorClick?: () => void
+  onUpdateComment?: (id: string, contentRich: Value) => Promise<void>
+  onResolveDiscussion?: (id: string) => Promise<void>
+  onRemoveComment?: (id: string) => Promise<void>
+  onRemoveDiscussion?: (id: string) => Promise<void>
 }) {
   const {
     comment,
@@ -86,30 +86,34 @@ export function Comment(props: {
     index,
     setEditingId,
     showDocumentContent = false,
-    onEditorClick
+    onEditorClick,
+    onUpdateComment,
+    onResolveDiscussion,
+    onRemoveComment,
+    onRemoveDiscussion
   } = props
 
-  const editor = useEditorRef()
-  const userInfo = usePluginOption(discussionPlugin, "user", comment.userId)
-  const currentUserId = usePluginOption(discussionPlugin, "currentUserId")
+  const session = authClient.useSession()
+  const currentUserId = session.data?.user.id || ""
+  const currentUserName = session.data?.user.name || ""
+
+  // Get user info from auth
+  const userInfo = {
+    id: comment.userId,
+    name: comment.userId === currentUserId ? currentUserName : comment.userId,
+    avatarUrl: comment.userImage
+  }
 
   const resolveDiscussion = async (id: string) => {
-    const updatedDiscussions = editor
-      .getOption(discussionPlugin, "discussions")
-      .map((discussion) => {
-        if (discussion.id === id) {
-          return { ...discussion, isResolved: true }
-        }
-        return discussion
-      })
-    editor.setOption(discussionPlugin, "discussions", updatedDiscussions)
+    if (onResolveDiscussion) {
+      await onResolveDiscussion(id)
+    }
   }
 
   const removeDiscussion = async (id: string) => {
-    const updatedDiscussions = editor
-      .getOption(discussionPlugin, "discussions")
-      .filter((discussion) => discussion.id !== id)
-    editor.setOption(discussionPlugin, "discussions", updatedDiscussions)
+    if (onRemoveDiscussion) {
+      await onRemoveDiscussion(id)
+    }
   }
 
   const updateComment = async (input: {
@@ -118,31 +122,14 @@ export function Comment(props: {
     discussionId: string
     isEdited: boolean
   }) => {
-    const updatedDiscussions = editor
-      .getOption(discussionPlugin, "discussions")
-      .map((discussion) => {
-        if (discussion.id === input.discussionId) {
-          const updatedComments = discussion.comments.map((comment) => {
-            if (comment.id === input.id) {
-              return {
-                ...comment,
-                contentRich: input.contentRich,
-                isEdited: true,
-                updatedAt: new Date()
-              }
-            }
-            return comment
-          })
-          return { ...discussion, comments: updatedComments }
-        }
-        return discussion
-      })
-    editor.setOption(discussionPlugin, "discussions", updatedDiscussions)
+    if (onUpdateComment) {
+      await onUpdateComment(input.id, input.contentRich)
+    }
   }
 
   const { tf } = useEditorPlugin(CommentsPlugin)
 
-  // Replace to your own backend or refer to potion
+  // Check if comment belongs to current user
   const isMyComment = currentUserId === comment.userId
 
   const initialValue = comment.contentRich
@@ -191,12 +178,13 @@ export function Comment(props: {
       onMouseLeave={() => setHovering(false)}
     >
       <div className="relative flex items-center">
-        <Avatar className="size-5">
-          <AvatarImage alt={userInfo?.name} src={userInfo?.avatarUrl} />
-          <AvatarFallback>{userInfo?.name?.[0]}</AvatarFallback>
+        <Avatar className="h-8 w-8 rounded-lg grayscale">
+          <AvatarImage src={userInfo?.avatarUrl} alt={userInfo?.name} />
+          <AvatarFallback className="rounded-lg">
+            {userInfo?.name.slice(0, 2).toUpperCase()}
+          </AvatarFallback>
         </Avatar>
         <h4 className="mx-2 text-sm leading-none font-semibold">
-          {/* Replace to your own backend or refer to potion */}
           {userInfo?.name}
         </h4>
 
@@ -230,6 +218,8 @@ export function Comment(props: {
                 if (discussionLength === 1) {
                   tf.comment.unsetMark({ id: comment.discussionId })
                   void removeDiscussion(comment.discussionId)
+                } else if (onRemoveComment) {
+                  void onRemoveComment(comment.id)
                 }
               }}
               comment={comment}
@@ -264,7 +254,7 @@ export function Comment(props: {
             />
 
             {isEditing && (
-              <div className="ml-auto flex shrink-0 gap-1">
+              <div className="ml-auto flex shrink-0 items-center gap-1">
                 <Button
                   size="icon"
                   variant="ghost"
@@ -318,42 +308,14 @@ export function CommentMoreDropdown(props: CommentMoreDropdownProps) {
     onRemoveComment
   } = props
 
-  const editor = useEditorRef()
-
   const selectedEditCommentRef = React.useRef<boolean>(false)
 
   const onDeleteComment = React.useCallback(() => {
     if (!comment.id)
       return alert("You are operating too quickly, please try again later.")
 
-    // Find and update the discussion
-    const updatedDiscussions = editor
-      .getOption(discussionPlugin, "discussions")
-      .map((discussion) => {
-        if (discussion.id !== comment.discussionId) {
-          return discussion
-        }
-
-        const commentIndex = discussion.comments.findIndex(
-          (c) => c.id === comment.id
-        )
-        if (commentIndex === -1) {
-          return discussion
-        }
-
-        return {
-          ...discussion,
-          comments: [
-            ...discussion.comments.slice(0, commentIndex),
-            ...discussion.comments.slice(commentIndex + 1)
-          ]
-        }
-      })
-
-    // Save back to session storage
-    editor.setOption(discussionPlugin, "discussions", updatedDiscussions)
     onRemoveComment?.()
-  }, [comment.discussionId, comment.id, editor, onRemoveComment])
+  }, [comment.id, onRemoveComment])
 
   const onEditComment = React.useCallback(() => {
     selectedEditCommentRef.current = true

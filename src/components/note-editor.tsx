@@ -1,9 +1,12 @@
 "use client"
 
 import { useNoteEditor } from "@/hooks/use-note-editor"
+import { authClient } from "@/lib/auth-client"
 import { Plate } from "@udecode/plate/react"
+import { useEffect } from "react"
 import { DndProvider } from "react-dnd"
 import { HTML5Backend } from "react-dnd-html5-backend"
+import { discussionPlugin } from "./editor/plugins/discussion-plugin"
 import { SettingsDialog, SettingsProvider } from "./editor/settings"
 import { NoteEmojiPicker } from "./note-emoji-picker"
 import { NoteTitleInput } from "./note-title-input"
@@ -12,6 +15,16 @@ import { Skeleton } from "./ui/skeleton"
 
 export const NoteEditor = () => {
   const { editor, isLoading, note } = useNoteEditor()
+  const session = authClient.useSession()
+  const userId = session.data?.user.id || ""
+
+  // Set the noteId and currentUserId in the discussion plugin when the note is loaded
+  useEffect(() => {
+    if (editor && note?.id) {
+      editor.setOption(discussionPlugin, "noteId", note.id)
+      editor.setOption(discussionPlugin, "currentUserId", userId)
+    }
+  }, [editor, note?.id, userId])
 
   return (
     <SettingsProvider>
