@@ -121,7 +121,7 @@ export function NavNotes({
               const isActive = pathname.startsWith(fullUrl)
 
               return (
-                <SidebarMenuItem key={item.title}>
+                <SidebarMenuItem key={item.id}>
                   <SidebarMenuButton asChild isActive={isActive}>
                     <Link href={item.url} prefetch>
                       {typeof item.icon === "string" ? (
