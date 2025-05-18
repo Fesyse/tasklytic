@@ -10,6 +10,7 @@ import {
   type LucideIcon
 } from "lucide-react"
 import { authClient } from "./auth-client"
+import type { Note } from "./db-client"
 import { getNotes } from "./db-queries"
 import { tryCatch } from "./utils"
 
@@ -29,6 +30,13 @@ export type NoteNavItem = {
   title: string
   url: string
   icon: string | LucideIcon
+
+  subNotes:
+    | {
+        isLoading: boolean
+        items: NoteNavItem[] | undefined
+      }
+    | undefined
 }
 
 type SidebarNav = {
@@ -47,6 +55,30 @@ export const useSidebarNav = (): SidebarNav => {
     return getNotes(organization.id)
   }, [organization?.id])
 
+  // Helper function to build the note hierarchy
+  const buildNoteHierarchy = (
+    notes: Note[] | undefined,
+    parentNoteId: string | null = null
+  ): NoteNavItem[] => {
+    if (!notes) return []
+
+    // Get all notes with the specified parentNoteId
+    const filteredNotes = notes.filter(
+      (note) => note.parentNoteId === parentNoteId
+    )
+
+    return filteredNotes.map<NoteNavItem>((note) => ({
+      id: note.id,
+      icon: note.emoji ?? FileIcon,
+      title: note.title,
+      url: `/dashboard/note/${note.id}`,
+      subNotes: {
+        isLoading: false,
+        items: buildNoteHierarchy(notes, note.id)
+      }
+    }))
+  }
+
   return {
     navMain: [
       {
@@ -64,27 +96,21 @@ export const useSidebarNav = (): SidebarNav => {
     ],
     privateNotes: {
       isLoading: result === undefined || !result.data,
-      items:
-        result?.data
-          ?.filter((note) => !note.isPublic)
-          .map<NoteNavItem>((note) => ({
-            id: note.id,
-            icon: note.emoji ?? FileIcon,
-            title: note.title,
-            url: `/dashboard/note/${note.id}`
-          })) ?? []
+      items: result?.data
+        ? buildNoteHierarchy(
+            result.data.filter((note) => !note.isPublic),
+            null
+          )
+        : []
     },
     sharedNotes: {
       isLoading: result === undefined || !result.data,
-      items:
-        result?.data
-          ?.filter((note) => note.isPublic)
-          .map<NoteNavItem>((note) => ({
-            id: note.id,
-            icon: note.emoji ?? FileIcon,
-            title: note.title,
-            url: `/dashboard/note/${note.id}`
-          })) ?? []
+      items: result?.data
+        ? buildNoteHierarchy(
+            result.data.filter((note) => note.isPublic),
+            null
+          )
+        : []
     },
     navSecondary: [
       {

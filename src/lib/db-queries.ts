@@ -6,7 +6,11 @@ import { createId } from "@/server/db/schema"
 import { dexieDB } from "./db-client"
 import { tryCatch } from "./utils"
 
-export function createNote(data: { user: User; organization: Organization }) {
+export function createNote(data: {
+  user: User
+  organization: Organization
+  noteId?: string
+}) {
   return tryCatch(
     dexieDB.notes.add({
       id: createId(),
@@ -17,7 +21,8 @@ export function createNote(data: { user: User; organization: Organization }) {
       updatedByUserId: data.user.id,
       createdByUserId: data.user.id,
       createdAt: new Date(),
-      organizationId: data.organization.id
+      organizationId: data.organization.id,
+      parentNoteId: data.noteId ?? null
     })
   )
 }

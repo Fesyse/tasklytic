@@ -35,6 +35,7 @@ import type { NoteNavItem } from "@/lib/sidebar"
 import { cn, getBaseUrl } from "@/lib/utils"
 import {
   ArrowUpRight,
+  ChevronDown,
   LinkIcon,
   MoreHorizontal,
   PlusIcon,
@@ -167,17 +168,25 @@ export function NavNotes({
 
 function Note({
   item,
-  setDeletingNoteState
+  setDeletingNoteState,
+  level = 0
 }: {
+  level?: number
   item: NoteNavItem
   setDeletingNoteState: (state: { isOpen: boolean; noteId: string }) => void
 }) {
   const pathname = usePathname()
   const { isMobile } = useSidebar()
-
+  const router = useRouter()
   const [isActionsOpen, setIsActionsOpen] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(false)
+
+  const { data: activeOrganization } = authClient.useActiveOrganization()
+  const { data: session } = authClient.useSession()
+
   const fullUrl = `${getBaseUrl()}${item.url}`
   const isActive = pathname === item.url
+  const hasSubNotes = item.subNotes?.items && item.subNotes.items.length > 0
 
   const handleCopyLink = (url: string) => {
     navigator.clipboard.writeText(url)
@@ -188,73 +197,146 @@ function Note({
     window.open(url, "_blank")
   }
 
-  return (
-    <SidebarMenuItem key={item.id}>
-      <SidebarMenuButton asChild isActive={isActive}>
-        <Link href={item.url} prefetch>
-          {typeof item.icon === "string" ? (
-            <span>{item.icon}</span>
-          ) : (
-            <item.icon />
-          )}
-          <span>{item.title.length ? item.title : "Untitled"}</span>
-        </Link>
-      </SidebarMenuButton>
+  const handleAddChildNote = async () => {
+    if (!activeOrganization || !session) return
 
-      <DropdownMenu open={isActionsOpen} onOpenChange={setIsActionsOpen}>
-        <DropdownMenuTrigger asChild>
-          <SidebarMenuAction
-            showOnHover
-            className="group/menu-action right-6 cursor-pointer"
+    const { error, data: noteId } = await createNote({
+      organization: activeOrganization,
+      user: session.user,
+      noteId: item.id
+    })
+
+    if (error) {
+      toast.error("An error occurred while creating the note")
+      return
+    }
+
+    toast.success("Note created successfully")
+    setIsExpanded(true) // Expand the parent to show the new child
+    router.push(`/dashboard/note/${noteId}`)
+  }
+
+  const toggleExpanded = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsExpanded(!isExpanded)
+  }
+
+  return (
+    <div className="flex flex-col">
+      <SidebarMenuItem key={item.id} style={{ marginLeft: level * 6 }}>
+        <div className="flex w-full items-center">
+          <SidebarMenuButton
+            isActive={isActive}
+            className="group/sidebar-note-button flex-1"
+            asChild
           >
-            <MoreHorizontal
-              className={cn(
-                "text-muted-foreground group-hover/menu-action:text-foreground transition-all duration-200 ease-in-out",
-                isActionsOpen && "text-foreground"
-              )}
-            />
-            <span className="sr-only">More</span>
-          </SidebarMenuAction>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent
-          className="w-56 rounded-lg"
-          side={isMobile ? "bottom" : "right"}
-          align={isMobile ? "end" : "start"}
+            <Link href={item.url} prefetch>
+              <span
+                className={cn({
+                  "transition-all duration-200 ease-in-out group-hover/sidebar-note-button:opacity-0":
+                    hasSubNotes
+                })}
+              >
+                {typeof item.icon === "string" ? (
+                  <span>{item.icon}</span>
+                ) : (
+                  <item.icon className="size-4" />
+                )}
+              </span>
+              {hasSubNotes ? (
+                <button
+                  onClick={toggleExpanded}
+                  className="group/expand-note-button absolute left-2"
+                >
+                  <ChevronDown className="text-muted-foreground relative z-10 size-4 opacity-0 transition-all duration-200 ease-in-out group-hover/sidebar-note-button:opacity-100" />
+                  <span className="sr-only">
+                    {isExpanded ? "Collapse" : "Expand"}
+                  </span>
+                  <span className="group-hover/expand-note-button:bg-muted/50 absolute top-1/2 left-1/2 z-7 size-6 -translate-x-1/2 -translate-y-1/2 rounded transition-all duration-200 ease-in-out"></span>
+                </button>
+              ) : null}
+              <span>{item.title.length ? item.title : "Untitled"}</span>
+            </Link>
+          </SidebarMenuButton>
+        </div>
+
+        <DropdownMenu open={isActionsOpen} onOpenChange={setIsActionsOpen}>
+          <DropdownMenuTrigger asChild>
+            <SidebarMenuAction
+              showOnHover
+              className="group/menu-action right-6 cursor-pointer"
+            >
+              <MoreHorizontal
+                className={cn(
+                  "text-muted-foreground group-hover/menu-action:text-foreground transition-all duration-200 ease-in-out",
+                  isActionsOpen && "text-foreground"
+                )}
+              />
+              <span className="sr-only">More</span>
+            </SidebarMenuAction>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            className="w-56 rounded-lg"
+            side={isMobile ? "bottom" : "right"}
+            align={isMobile ? "end" : "start"}
+          >
+            <DropdownMenuItem onClick={() => handleCopyLink(fullUrl)}>
+              <LinkIcon className="text-muted-foreground" />
+              <span>Copy Link</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleOpenInNewTab(fullUrl)}>
+              <ArrowUpRight className="text-muted-foreground" />
+              <span>Open in New Tab</span>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() =>
+                setDeletingNoteState({
+                  isOpen: true,
+                  noteId: item.id
+                })
+              }
+            >
+              <Trash2 className="text-muted-foreground" />
+              <span>Delete</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <SidebarMenuAction
+          showOnHover
+          className="group/menu-action cursor-pointer"
+          onClick={handleAddChildNote}
         >
-          <DropdownMenuItem onClick={() => handleCopyLink(fullUrl)}>
-            <LinkIcon className="text-muted-foreground" />
-            <span>Copy Link</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleOpenInNewTab(fullUrl)}>
-            <ArrowUpRight className="text-muted-foreground" />
-            <span>Open in New Tab</span>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            onClick={() =>
-              setDeletingNoteState({
-                isOpen: true,
-                noteId: item.id
-              })
-            }
-          >
-            <Trash2 className="text-muted-foreground" />
-            <span>Delete</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-      <SidebarMenuAction
-        showOnHover
-        className="group/menu-action cursor-pointer"
-      >
-        <PlusIcon
-          className={cn(
-            "text-muted-foreground group-hover/menu-action:text-foreground transition-all duration-200 ease-in-out",
-            isActionsOpen && "text-foreground"
+          <PlusIcon
+            className={cn(
+              "text-muted-foreground group-hover/menu-action:text-foreground transition-all duration-200 ease-in-out",
+              isActionsOpen && "text-foreground"
+            )}
+          />
+          <span className="sr-only">Add Child Note</span>
+        </SidebarMenuAction>
+      </SidebarMenuItem>
+
+      {/* Render sub notes */}
+      {hasSubNotes && isExpanded && (
+        <div className="mt-1">
+          {item.subNotes?.isLoading ? (
+            <SidebarMenuItem>
+              <SidebarMenuSkeleton showIcon />
+            </SidebarMenuItem>
+          ) : (
+            item.subNotes?.items?.map((subItem) => (
+              <Note
+                level={level + 1}
+                key={subItem.id}
+                item={subItem}
+                setDeletingNoteState={setDeletingNoteState}
+              />
+            ))
           )}
-        />
-        <span className="sr-only">Add Child Note</span>
-      </SidebarMenuAction>
-    </SidebarMenuItem>
+        </div>
+      )}
+    </div>
   )
 }
