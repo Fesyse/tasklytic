@@ -301,8 +301,6 @@ export const BlockComment = ({
     removeDiscussion
   } = useDiscussions(noteId)
 
-  console.log(noteId)
-
   const handleUpdateComment = React.useCallback(
     async (id: string, contentRich: Value) => {
       await updateCommentContent(id, contentRich)

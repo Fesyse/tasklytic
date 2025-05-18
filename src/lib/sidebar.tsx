@@ -114,11 +114,11 @@ export const useSidebarNav = (): SidebarNav => {
     },
     navSecondary: [
       {
-        component: <InvitationsDialog />,
+        component: <InvitationsDialog key="invitations-dialog" />,
         type: "component"
       },
       {
-        component: <InvitePeopleDialog />,
+        component: <InvitePeopleDialog key="invite-people-dialog" />,
         type: "component"
       },
       {

@@ -15,11 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
-import {
-  SidebarMenuItem,
-  SidebarMenuSkeleton,
-  useSidebar
-} from "@/components/ui/sidebar"
+import { SidebarMenuSkeleton, useSidebar } from "@/components/ui/sidebar"
 import { authClient } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
 
@@ -78,7 +74,7 @@ export function OrganizationSwitcher() {
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
-      <SidebarMenuItem className="grow">
+      <div className="group/menu-item relative grow transition-all duration-200 ease-in-out">
         {activeOrg ? (
           <DropdownMenuTrigger asChild>
             <Button
@@ -102,7 +98,7 @@ export function OrganizationSwitcher() {
         ) : (
           <SidebarMenuSkeleton showIcon className="h-9 w-full p-2" />
         )}
-      </SidebarMenuItem>
+      </div>
       <DropdownMenuContent className="w-[200px]">
         <DropdownMenuLabel>Organizations</DropdownMenuLabel>
         {isLoading ? (
