@@ -12,6 +12,7 @@ type Note = {
   updatedByUserId: string
   createdByUserId: string
   isPublic: boolean
+  parentNoteId: string | null
 }
 
 type Block = {
@@ -27,7 +28,7 @@ const dexieDB = new Dexie(`${siteConfig.name}Database`) as Dexie & {
 
 dexieDB.version(1).stores({
   notes:
-    "&id, title, emoji, isPublic, organizationId, updatedByUserId, updatedAt, createdByUserId, createdAt",
+    "&id, title, emoji, isPublic, organizationId, parentNoteId, updatedByUserId, updatedAt, createdByUserId, createdAt",
   blocks: "&id, noteId, content"
 })
 

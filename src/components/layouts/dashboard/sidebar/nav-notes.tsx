@@ -32,7 +32,7 @@ import {
 import { authClient } from "@/lib/auth-client"
 import { createNote, deleteNote } from "@/lib/db-queries"
 import type { NoteNavItem } from "@/lib/sidebar"
-import { getBaseUrl } from "@/lib/utils"
+import { cn, getBaseUrl } from "@/lib/utils"
 import {
   ArrowUpRight,
   LinkIcon,
@@ -64,17 +64,21 @@ export function NavNotes({
 
   const router = useRouter()
   const pathname = usePathname()
-  const { isMobile } = useSidebar()
   const { data: activeOrganization } = authClient.useActiveOrganization()
   const { data: session } = authClient.useSession()
 
-  const handleCopyLink = (url: string) => {
-    navigator.clipboard.writeText(url)
-    toast.success("Link successfully copied to clipboard")
-  }
+  const handleDeleteNote = async (noteId: string) => {
+    const { error } = await deleteNote(noteId)
 
-  const handleOpenInNewTab = (url: string) => {
-    window.open(url, "_blank")
+    if (error) {
+      toast.error("An error occurred while deleting the note")
+      return
+    }
+
+    toast.success("Note deleted successfully")
+    if (pathname === `/dashboard/note/${noteId}`) {
+      router.push("/dashboard")
+    }
   }
 
   const handleCreateNote = async () => {
@@ -92,20 +96,6 @@ export function NavNotes({
 
     toast.success("Note created successfully")
     router.push(`/dashboard/note/${noteId}`)
-  }
-
-  const handleDeleteNote = async (noteId: string) => {
-    const { error } = await deleteNote(noteId)
-
-    if (error) {
-      toast.error("An error occurred while deleting the note")
-      return
-    }
-
-    toast.success("Note deleted successfully")
-    if (pathname === `/dashboard/note/${noteId}`) {
-      router.push("/dashboard")
-    }
   }
 
   return (
@@ -136,68 +126,13 @@ export function NavNotes({
                 </span>
               </SidebarMenuItem>
             ) : (
-              notes.map((item) => {
-                const fullUrl = `${getBaseUrl()}${item.url}`
-                const isActive = pathname === item.url
-
-                return (
-                  <SidebarMenuItem key={item.id}>
-                    <SidebarMenuButton asChild isActive={isActive}>
-                      <Link href={item.url} prefetch>
-                        {typeof item.icon === "string" ? (
-                          <span className="">{item.icon}</span>
-                        ) : (
-                          <item.icon />
-                        )}
-                        <span>
-                          {item.title.length ? item.title : "Untitled"}
-                        </span>
-                      </Link>
-                    </SidebarMenuButton>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <SidebarMenuAction
-                          showOnHover
-                          className="cursor-pointer"
-                        >
-                          <MoreHorizontal />
-                          <span className="sr-only">More</span>
-                        </SidebarMenuAction>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent
-                        className="w-56 rounded-lg"
-                        side={isMobile ? "bottom" : "right"}
-                        align={isMobile ? "end" : "start"}
-                      >
-                        <DropdownMenuItem
-                          onClick={() => handleCopyLink(fullUrl)}
-                        >
-                          <LinkIcon className="text-muted-foreground" />
-                          <span>Copy Link</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => handleOpenInNewTab(fullUrl)}
-                        >
-                          <ArrowUpRight className="text-muted-foreground" />
-                          <span>Open in New Tab</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          onClick={() =>
-                            setDeletingNoteState({
-                              isOpen: true,
-                              noteId: item.id
-                            })
-                          }
-                        >
-                          <Trash2 className="text-muted-foreground" />
-                          <span>Delete</span>
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </SidebarMenuItem>
-                )
-              })
+              notes.map((item) => (
+                <Note
+                  key={item.id}
+                  item={item}
+                  setDeletingNoteState={setDeletingNoteState}
+                />
+              ))
             )}
           </SidebarMenu>
         </SidebarGroupContent>
@@ -227,5 +162,99 @@ export function NavNotes({
         </AlertDialogContent>
       </AlertDialog>
     </>
+  )
+}
+
+function Note({
+  item,
+  setDeletingNoteState
+}: {
+  item: NoteNavItem
+  setDeletingNoteState: (state: { isOpen: boolean; noteId: string }) => void
+}) {
+  const pathname = usePathname()
+  const { isMobile } = useSidebar()
+
+  const [isActionsOpen, setIsActionsOpen] = useState(false)
+  const fullUrl = `${getBaseUrl()}${item.url}`
+  const isActive = pathname === item.url
+
+  const handleCopyLink = (url: string) => {
+    navigator.clipboard.writeText(url)
+    toast.success("Link successfully copied to clipboard")
+  }
+
+  const handleOpenInNewTab = (url: string) => {
+    window.open(url, "_blank")
+  }
+
+  return (
+    <SidebarMenuItem key={item.id}>
+      <SidebarMenuButton asChild isActive={isActive}>
+        <Link href={item.url} prefetch>
+          {typeof item.icon === "string" ? (
+            <span>{item.icon}</span>
+          ) : (
+            <item.icon />
+          )}
+          <span>{item.title.length ? item.title : "Untitled"}</span>
+        </Link>
+      </SidebarMenuButton>
+
+      <DropdownMenu open={isActionsOpen} onOpenChange={setIsActionsOpen}>
+        <DropdownMenuTrigger asChild>
+          <SidebarMenuAction
+            showOnHover
+            className="group/menu-action right-6 cursor-pointer"
+          >
+            <MoreHorizontal
+              className={cn(
+                "text-muted-foreground group-hover/menu-action:text-foreground transition-all duration-200 ease-in-out",
+                isActionsOpen && "text-foreground"
+              )}
+            />
+            <span className="sr-only">More</span>
+          </SidebarMenuAction>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          className="w-56 rounded-lg"
+          side={isMobile ? "bottom" : "right"}
+          align={isMobile ? "end" : "start"}
+        >
+          <DropdownMenuItem onClick={() => handleCopyLink(fullUrl)}>
+            <LinkIcon className="text-muted-foreground" />
+            <span>Copy Link</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleOpenInNewTab(fullUrl)}>
+            <ArrowUpRight className="text-muted-foreground" />
+            <span>Open in New Tab</span>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onClick={() =>
+              setDeletingNoteState({
+                isOpen: true,
+                noteId: item.id
+              })
+            }
+          >
+            <Trash2 className="text-muted-foreground" />
+            <span>Delete</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <SidebarMenuAction
+        showOnHover
+        className="group/menu-action cursor-pointer"
+      >
+        <PlusIcon
+          className={cn(
+            "text-muted-foreground group-hover/menu-action:text-foreground transition-all duration-200 ease-in-out",
+            isActionsOpen && "text-foreground"
+          )}
+        />
+        <span className="sr-only">Add Child Note</span>
+      </SidebarMenuAction>
+    </SidebarMenuItem>
   )
 }
