@@ -30,7 +30,12 @@ export function createNote(data: {
 }
 
 export function deleteNote(id: string) {
-  return tryCatch(dexieDB.notes.delete(id))
+  return tryCatch(
+    Promise.all([
+      dexieDB.notes.delete(id),
+      dexieDB.notes.where("parentNoteId").equals(id).delete()
+    ])
+  )
 }
 
 export function getNote(id: string, organizationId: string) {

@@ -55,32 +55,9 @@ export function NavNotes({
   notes: NoteNavItem[] | undefined
   isLoading: boolean
 }) {
-  const [deletingNoteState, setDeletingNoteState] = useState<{
-    isOpen: boolean
-    noteId: string
-  }>({
-    isOpen: false,
-    noteId: ""
-  })
-
   const router = useRouter()
-  const pathname = usePathname()
   const { data: activeOrganization } = authClient.useActiveOrganization()
   const { data: session } = authClient.useSession()
-
-  const handleDeleteNote = async (noteId: string) => {
-    const { error } = await deleteNote(noteId)
-
-    if (error) {
-      toast.error("An error occurred while deleting the note")
-      return
-    }
-
-    toast.success("Note deleted successfully")
-    if (pathname === `/dashboard/note/${noteId}`) {
-      router.push("/dashboard")
-    }
-  }
 
   const handleCreateNote = async () => {
     if (!activeOrganization || !session) return
@@ -100,81 +77,42 @@ export function NavNotes({
   }
 
   return (
-    <>
-      <SidebarGroup>
-        {!isLoading && !notes?.length && type === "shared" ? null : (
-          <SidebarGroupLabel>
-            {type === "private" ? "Private" : "Shared"}
-          </SidebarGroupLabel>
-        )}
-        {!isLoading && !notes?.length && type === "shared" ? null : (
-          <SidebarGroupAction onClick={handleCreateNote}>
-            <PlusIcon className="size-4" />
-          </SidebarGroupAction>
-        )}
-        <SidebarGroupContent>
-          <SidebarMenu>
-            {isLoading || !notes ? (
-              Array.from({ length: 5 }).map((_, i) => (
-                <SidebarMenuItem key={i}>
-                  <SidebarMenuSkeleton showIcon />
-                </SidebarMenuItem>
-              ))
-            ) : !notes.length && type === "private" ? (
-              <SidebarMenuItem>
-                <span className="text-muted-foreground ml-2 text-xs">
-                  No notes
-                </span>
+    <SidebarGroup>
+      {!isLoading && !notes?.length && type === "shared" ? null : (
+        <SidebarGroupLabel>
+          {type === "private" ? "Private" : "Shared"}
+        </SidebarGroupLabel>
+      )}
+      {!isLoading && !notes?.length && type === "shared" ? null : (
+        <SidebarGroupAction onClick={handleCreateNote}>
+          <PlusIcon className="size-4" />
+        </SidebarGroupAction>
+      )}
+      <SidebarGroupContent>
+        <SidebarMenu>
+          {isLoading || !notes ? (
+            Array.from({ length: 5 }).map((_, i) => (
+              <SidebarMenuItem key={i}>
+                <SidebarMenuSkeleton showIcon />
               </SidebarMenuItem>
-            ) : (
-              notes.map((item) => (
-                <Note
-                  key={item.id}
-                  item={item}
-                  setDeletingNoteState={setDeletingNoteState}
-                />
-              ))
-            )}
-          </SidebarMenu>
-        </SidebarGroupContent>
-      </SidebarGroup>
-      <AlertDialog
-        open={deletingNoteState.isOpen}
-        onOpenChange={(value) =>
-          setDeletingNoteState((prev) => ({ ...prev, isOpen: value }))
-        }
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the
-              note and remove it from your notes.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => handleDeleteNote(deletingNoteState.noteId)}
-            >
-              Continue
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
+            ))
+          ) : !notes.length && type === "private" ? (
+            <SidebarMenuItem>
+              <span className="text-muted-foreground ml-2 text-xs">
+                No notes
+              </span>
+            </SidebarMenuItem>
+          ) : (
+            notes.map((item) => <Note key={item.id} item={item} />)
+          )}
+        </SidebarMenu>
+      </SidebarGroupContent>
+    </SidebarGroup>
   )
 }
 
-function Note({
-  item,
-  setDeletingNoteState,
-  level = 0
-}: {
-  level?: number
-  item: NoteNavItem
-  setDeletingNoteState: (state: { isOpen: boolean; noteId: string }) => void
-}) {
+function Note({ item, level = 0 }: { level?: number; item: NoteNavItem }) {
+  const [isDeleting, setIsDeleting] = useState(false)
   const pathname = usePathname()
   const { isMobile, open: sidebarOpen } = useSidebar()
   const router = useRouter()
@@ -214,6 +152,20 @@ function Note({
     toast.success("Note created successfully")
     setIsExpanded(true) // Expand the parent to show the new child
     router.push(`/dashboard/note/${noteId}`)
+  }
+
+  const handleDeleteNote = async (noteId: string) => {
+    const { error } = await deleteNote(noteId)
+
+    if (error) {
+      toast.error("An error occurred while deleting the note")
+      return
+    }
+
+    toast.success("Note deleted successfully")
+    if (pathname === `/dashboard/note/${noteId}`) {
+      router.push("/dashboard")
+    }
   }
 
   const toggleExpanded = (e: React.MouseEvent) => {
@@ -301,14 +253,7 @@ function Note({
               <span>Open in New Tab</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() =>
-                setDeletingNoteState({
-                  isOpen: true,
-                  noteId: item.id
-                })
-              }
-            >
+            <DropdownMenuItem onClick={() => setIsDeleting(true)}>
               <Trash2 className="text-muted-foreground" />
               <span>Delete</span>
             </DropdownMenuItem>
@@ -338,16 +283,29 @@ function Note({
             </SidebarMenuItem>
           ) : (
             item.subNotes?.items?.map((subItem) => (
-              <Note
-                level={level + 1}
-                key={subItem.id}
-                item={subItem}
-                setDeletingNoteState={setDeletingNoteState}
-              />
+              <Note level={level + 1} key={subItem.id} item={subItem} />
             ))
           )}
         </div>
       )}
+      <AlertDialog open={isDeleting} onOpenChange={setIsDeleting}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the
+              note {hasSubNotes ? "and all its sub-notes" : ""} from our
+              servers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => handleDeleteNote(item.id)}>
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
