@@ -26,8 +26,6 @@ export function useNoteEditor() {
     Value | undefined
   >()
 
-  console.log("ASDASDASD", previousEditorValue)
-
   useEffect(() => {
     if (note?.blocks && editor) {
       const sortedBlocks = note.blocks.sort(
@@ -63,9 +61,6 @@ export function useNoteEditor() {
           ...block,
           order: index
         }))
-
-      console.log(sortedPreviousEditorValue)
-      console.log(sortedValue)
 
       await saveNotesLocally({
         user: session.user,

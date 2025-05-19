@@ -1,14 +1,16 @@
 "use client"
 
-import { dexieDB, type Note } from "@/lib/db-client"
+import { useNote } from "@/hooks/use-note"
+import { dexieDB } from "@/lib/db-client"
 import { tryCatch } from "@/lib/utils"
 import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
 
 const MAX_TITLE_LENGTH = 25
 
-export const NoteTitleInput = ({ note }: { note: Note }) => {
-  const [title, setTitle] = useState(note.title)
+export const NoteTitleInput = () => {
+  const { data: note } = useNote()
+  const [title, setTitle] = useState(note?.title)
 
   // Handle input changes
   const handleChangeInput = useCallback(
@@ -22,10 +24,9 @@ export const NoteTitleInput = ({ note }: { note: Note }) => {
 
   // Update the note title in the database when the debounced title changes
   useEffect(() => {
-    const updateTitle = async () => {
-      // Don't update if the title hasn't changed
-      if (title === note.title) return
+    if (!note) return
 
+    const updateTitle = async () => {
       const { error } = await tryCatch(dexieDB.notes.update(note.id, { title }))
 
       if (error) {
@@ -34,11 +35,19 @@ export const NoteTitleInput = ({ note }: { note: Note }) => {
     }
 
     updateTitle()
-  }, [title, note.id, note.title])
+  }, [title, note?.id])
 
   useEffect(() => {
+    if (!title) return
+
     document.title = title.length > 0 ? title : "Untitled"
   }, [title])
+
+  useEffect(() => {
+    if (!note) return
+
+    setTitle(note.title)
+  }, [note?.title])
 
   return (
     <input
