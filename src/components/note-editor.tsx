@@ -18,7 +18,7 @@ import { Editor, EditorContainer } from "./ui/editor"
 import { Skeleton } from "./ui/skeleton"
 
 export const NoteEditor = () => {
-  const { setIsChanged } = useNoteEditorContext()
+  const { setIsChanged, isAutoSaving, isSaving } = useNoteEditorContext()
 
   const { editor, isLoading, note } = useNoteEditor()
   const session = authClient.useSession()
@@ -55,6 +55,10 @@ export const NoteEditor = () => {
         ) : (
           <>
             <NoteContentHeader />
+            <div className="text-muted-foreground mx-auto max-w-[44rem] text-right text-sm">
+              {isAutoSaving && <p>Auto-saving...</p>}
+              {isSaving && <p>Saving...</p>}
+            </div>
             <DndProvider backend={HTML5Backend}>
               {editor && !isLoading && (
                 <Plate

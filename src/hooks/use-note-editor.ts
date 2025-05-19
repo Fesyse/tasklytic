@@ -3,6 +3,7 @@ import { useNoteEditorContext } from "@/contexts/note-editor-context"
 import { authClient } from "@/lib/auth-client"
 import { dexieDB } from "@/lib/db-client"
 import { tryCatch } from "@/lib/utils"
+import { useQueryClient } from "@tanstack/react-query"
 import type { Value } from "@udecode/plate"
 import type { User } from "better-auth"
 import { notFound, useParams } from "next/navigation"
@@ -11,11 +12,13 @@ import { toast } from "sonner"
 import { useNote } from "./use-note"
 
 export function useNoteEditor() {
-  const { isChanged, setIsChanged, setIsSaving } = useNoteEditorContext()
-
+  const { isChanged, setIsChanged, setIsSaving, setIsAutoSaving } =
+    useNoteEditorContext()
   const { noteId } = useParams<{ noteId: string }>()
+  const queryClient = useQueryClient()
 
   const { data: session } = authClient.useSession()
+  const { data: organization } = authClient.useActiveOrganization()
   const { data: note, isLoading, isError } = useNote()
 
   const editor = useCreateEditor({
@@ -28,7 +31,7 @@ export function useNoteEditor() {
 
   useEffect(() => {
     if (note?.blocks && editor) {
-      const sortedBlocks = note.blocks.sort(
+      const sortedBlocks = [...note.blocks].sort(
         (a, b) => (a.order as number) - (b.order as number)
       )
 
@@ -40,43 +43,88 @@ export function useNoteEditor() {
     }
   }, [note?.blocks, editor.tf.init])
 
-  const saveNote = useCallback(async () => {
-    if (!note || !editor) return
+  const saveNote = useCallback(
+    async (isAutoSave = false) => {
+      if (!note || !editor) return
 
-    const value = editor.children
+      const value = editor.children
 
-    try {
-      if (!session || !previousEditorValue) return
-      setIsSaving(true)
+      try {
+        if (!session || !previousEditorValue) return
 
-      const sortedPreviousEditorValue = [...previousEditorValue]
-        .sort((a, b) => (a.order as number) - (b.order as number))
-        .map((block, index) => ({
-          ...block,
-          order: index
-        }))
-      const sortedValue = [...value]
-        .sort((a, b) => (a.order as number) - (b.order as number))
-        .map((block, index) => ({
-          ...block,
-          order: index
-        }))
+        if (isAutoSave) {
+          setIsAutoSaving(true)
+        } else {
+          setIsSaving(true)
+        }
 
-      await saveNotesLocally({
-        user: session.user,
-        noteId,
-        oldValue: sortedPreviousEditorValue,
-        newValue: sortedValue
-      })
+        const sortedPreviousEditorValue = [...previousEditorValue]
+          .sort((a, b) => (a.order as number) - (b.order as number))
+          .map((block, index) => ({
+            ...block,
+            order: index
+          }))
+        const sortedValue = [...value]
+          .sort((a, b) => (a.order as number) - (b.order as number))
+          .map((block, index) => ({
+            ...block,
+            order: index
+          }))
 
-      setPreviousEditorValue(sortedValue)
-      setIsSaving(false)
-      setIsChanged(false)
-    } catch (error) {
-      setIsChanged(true)
-      console.error("Failed to save note:", error)
-    }
-  }, [noteId, note, editor, previousEditorValue])
+        await saveNotesLocally({
+          user: session.user,
+          noteId,
+          oldValue: sortedPreviousEditorValue,
+          newValue: sortedValue
+        })
+
+        setPreviousEditorValue(sortedValue)
+
+        // Update React Query cache
+        if (organization?.id) {
+          // Optimistically update the cache
+          queryClient.setQueryData(["note", noteId, organization.id], {
+            ...note,
+            blocks: sortedValue,
+            updatedAt: new Date(),
+            updatedByUserId: session.user.id,
+            updatedByUserName: session.user.name
+          })
+        }
+
+        if (isAutoSave) {
+          setIsAutoSaving(false)
+        } else {
+          setIsSaving(false)
+        }
+
+        setIsChanged(false)
+      } catch (error) {
+        setIsChanged(true)
+        console.error("Failed to save note:", error)
+      }
+    },
+    [
+      noteId,
+      note,
+      editor,
+      previousEditorValue,
+      session,
+      organization?.id,
+      queryClient
+    ]
+  )
+
+  // Add auto-save functionality
+  useEffect(() => {
+    if (!isChanged || isLoading) return
+
+    const autoSaveTimeout = setTimeout(() => {
+      saveNote(true)
+    }, 3000) // Auto-save after 3 seconds of changes
+
+    return () => clearTimeout(autoSaveTimeout)
+  }, [isChanged, isLoading, saveNote])
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
