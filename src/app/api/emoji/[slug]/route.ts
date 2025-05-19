@@ -2,7 +2,7 @@ import { getEmojiSlug } from "@/lib/utils"
 import type { Emoji } from "frimousse"
 import { NextResponse } from "next/server"
 
-const EMOJI_DATA_URL = `https://cdn.jsdelivr.net/npm/emojibase-data@16.0.3`
+export const EMOJI_DATA_URL = `https://cdn.jsdelivr.net/npm/emojibase-data@16.0.3`
 
 export const GET = async (
   request: Request,

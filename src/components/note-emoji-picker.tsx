@@ -8,7 +8,12 @@ import { EmojiPicker } from "./ui/emoji-picker"
 
 import { useNote } from "@/hooks/use-note"
 import { dexieDB } from "@/lib/db-client"
-import { getEmojiSlug, getEmojiUrl, tryCatch } from "@/lib/utils"
+import {
+  getEmojiSlug,
+  getEmojiUrl,
+  getLabelFromSlug,
+  tryCatch
+} from "@/lib/utils"
 import { PopoverContent } from "@radix-ui/react-popover"
 import type { Emoji } from "frimousse"
 import { FileIcon } from "lucide-react"
@@ -73,6 +78,16 @@ export function NoteEmojiPicker() {
       document.head.appendChild(link)
     }
   }, [emoji.label])
+
+  useEffect(() => {
+    console.log("note", note)
+    if (!note?.emoji || !note.emojiSlug) return
+
+    setEmoji({
+      emoji: note.emoji,
+      label: getLabelFromSlug(note.emojiSlug)
+    })
+  }, [note?.emoji, note?.emojiSlug])
 
   return (
     <div className="space-y-2">

@@ -70,6 +70,14 @@ export function getNoteWithBlocks(id: string, organizationId: string) {
   )
 }
 
+export function updateNoteEmoji(data: {
+  id: string
+  emoji: string
+  emojiSlug: string
+}) {
+  return tryCatch(dexieDB.notes.update(data.id, { emoji: data.emoji, emojiSlug: data.emojiSlug }))
+}
+
 // Discussion and Comment queries
 export function createDiscussion(data: {
   noteId: string
