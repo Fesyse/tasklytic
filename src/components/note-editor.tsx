@@ -65,12 +65,12 @@ export const NoteEditor = () => {
                   <Plate
                     editor={editor}
                     onChange={({ value }) => {
-                      if (
-                        note?.blocks &&
+                      if (!note?.blocks) return
+
+                      const hasChanges =
                         JSON.stringify(value) !== JSON.stringify(note.blocks)
-                      ) {
-                        setIsChanged(true)
-                      }
+
+                      setIsChanged(hasChanges)
                     }}
                   >
                     <EditorContainer>
