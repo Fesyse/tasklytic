@@ -44,3 +44,11 @@ export function getBaseUrl() {
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`
   return `http://localhost:${process.env.PORT ?? 3000}`
 }
+
+export function getEmojiSlug(emojiLabel: string) {
+  return emojiLabel.replaceAll(" ", "-").toLowerCase()
+}
+
+export function getEmojiUrl(emojiLabel: string) {
+  return `${getBaseUrl()}/api/emoji/${getEmojiSlug(emojiLabel)}`
+}

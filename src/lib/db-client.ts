@@ -6,6 +6,7 @@ type Note = {
   id: string
   title: string
   emoji?: string
+  emojiSlug?: string
   organizationId: string
   updatedAt: Date
   createdAt: Date
@@ -51,7 +52,7 @@ const dexieDB = new Dexie(`${siteConfig.name}Database`) as Dexie & {
 
 dexieDB.version(1).stores({
   notes:
-    "&id, title, emoji, isPublic, organizationId, parentNoteId, updatedByUserId, updatedByUserName, updatedAt, createdByUserId, createdByUserName, createdAt",
+    "&id, title, emoji, emojiSlug, isPublic, organizationId, parentNoteId, updatedByUserId, updatedByUserName, updatedAt, createdByUserId, createdByUserName, createdAt",
   blocks: "&id, noteId, content",
   discussions: "&id, noteId, blockId, isResolved, userId, createdAt",
   comments: "&id, discussionId, userId, createdAt, isEdited"

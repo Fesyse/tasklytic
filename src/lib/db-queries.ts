@@ -16,6 +16,7 @@ export function createNote(data: {
       id: createId(),
       title: "",
       emoji: undefined,
+      emojiSlug: undefined,
       isPublic: false,
       updatedAt: new Date(),
       updatedByUserId: data.user.id,
