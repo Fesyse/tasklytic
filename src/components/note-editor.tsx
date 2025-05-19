@@ -1,6 +1,9 @@
 "use client"
 
-import { NoteEditorProvider } from "@/contexts/note-editor-context"
+import {
+  NoteEditorContext,
+  useNoteEditorContext
+} from "@/contexts/note-editor-context"
 import { useNoteEditor } from "@/hooks/use-note-editor"
 import { authClient } from "@/lib/auth-client"
 import { Plate } from "@udecode/plate/react"
@@ -16,13 +19,9 @@ import { Editor, EditorContainer } from "./ui/editor"
 import { Skeleton } from "./ui/skeleton"
 
 export const NoteEditor = () => {
-  const [isSaving, setIsSaving] = useState(false)
-  const [isAutoSaving, setIsAutoSaving] = useState(false)
+  const { setIsChanged } = useNoteEditorContext()
 
-  const { editor, isLoading, note } = useNoteEditor({
-    setIsSaving,
-    setIsAutoSaving
-  })
+  const { editor, isLoading, note } = useNoteEditor()
   const session = authClient.useSession()
   const userId = session.data?.user.id || ""
 
@@ -35,9 +34,7 @@ export const NoteEditor = () => {
   }, [editor, note?.id, userId])
 
   return (
-    <NoteEditorProvider
-      value={{ isSaving, isAutoSaving, setIsSaving, setIsAutoSaving }}
-    >
+    <>
       <NoteHeader />
       <div className="mt-44">
         <SettingsProvider>
@@ -59,13 +56,23 @@ export const NoteEditor = () => {
             </div>
           ) : (
             <>
-              <div className="mx-auto mb-12 flex w-full max-w-[44rem] items-center gap-4">
+              <div className="mx-auto mb-12 flex w-full max-w-[50rem] items-center gap-4 px-14">
                 <NoteEmojiPicker note={note} />
                 <NoteTitleInput note={note} />
               </div>
               <DndProvider backend={HTML5Backend}>
                 {editor && !isLoading && (
-                  <Plate editor={editor}>
+                  <Plate
+                    editor={editor}
+                    onChange={({ value }) => {
+                      if (!note?.blocks) return
+
+                      const hasChanges =
+                        JSON.stringify(value) !== JSON.stringify(note.blocks)
+
+                      setIsChanged(hasChanges)
+                    }}
+                  >
                     <EditorContainer>
                       <Editor
                         variant="demo"
@@ -82,6 +89,31 @@ export const NoteEditor = () => {
           )}
         </SettingsProvider>
       </div>
-    </NoteEditorProvider>
+    </>
+  )
+}
+
+export const NoteEditorProvider = ({
+  children
+}: {
+  children: React.ReactNode
+}) => {
+  const [isChanged, setIsChanged] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [isAutoSaving, setIsAutoSaving] = useState(false)
+
+  return (
+    <NoteEditorContext.Provider
+      value={{
+        isChanged,
+        setIsChanged,
+        isSaving,
+        setIsSaving,
+        isAutoSaving,
+        setIsAutoSaving
+      }}
+    >
+      {children}
+    </NoteEditorContext.Provider>
   )
 }

@@ -104,7 +104,7 @@ export const NoteBreadcrumbs = () => {
   }
 
   return (
-    <Breadcrumb>
+    <Breadcrumb className="max-w-lg overflow-hidden">
       <BreadcrumbList className="!gap-0.5 text-xs">
         {breadcrumbs.map((breadcrumb, index) => (
           <React.Fragment key={breadcrumb.id}>
@@ -115,7 +115,7 @@ export const NoteBreadcrumbs = () => {
             ) : null}
             <BreadcrumbItem className="hover:bg-muted rounded px-1.5 py-1 transition-colors duration-200 ease-in-out">
               {index === breadcrumbs.length - 1 ? (
-                <BreadcrumbPage className="flex items-center gap-2">
+                <BreadcrumbPage className="flex items-center gap-2 truncate">
                   {breadcrumb.emoji ? (
                     <span>{breadcrumb.emoji}</span>
                   ) : (
@@ -126,7 +126,10 @@ export const NoteBreadcrumbs = () => {
                   </span>
                 </BreadcrumbPage>
               ) : (
-                <BreadcrumbLink href={`/dashboard/note/${breadcrumb.id}`}>
+                <BreadcrumbLink
+                  href={`/dashboard/note/${breadcrumb.id}`}
+                  className="truncate"
+                >
                   {breadcrumb.title?.length ? breadcrumb.title : "Untitled"}
                 </BreadcrumbLink>
               )}

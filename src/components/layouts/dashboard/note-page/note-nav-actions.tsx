@@ -31,7 +31,8 @@ import {
   SidebarGroupContent,
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem
+  SidebarMenuItem,
+  useSidebar
 } from "@/components/ui/sidebar"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
@@ -40,7 +41,7 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "@/components/ui/tooltip"
-import { useNoteEditor } from "@/contexts/note-editor-context"
+import { useNoteEditorContext } from "@/contexts/note-editor-context"
 import { authClient } from "@/lib/auth-client"
 import { getNote } from "@/lib/db-queries"
 import { useDexieDb } from "@/lib/use-dexie-db"
@@ -112,6 +113,7 @@ const data = [
 ]
 
 export function NoteNavActions() {
+  const { isMobile } = useSidebar()
   const { noteId } = useParams<{ noteId: string }>()
   const { data: activeOrganization } = authClient.useActiveOrganization()
 
@@ -126,23 +128,32 @@ export function NoteNavActions() {
 
     return data
   })
-  const { isSaving, isAutoSaving } = useNoteEditor()
+  const { isSaving, isAutoSaving, isChanged } = useNoteEditorContext()
 
   return (
     <>
-      <div className="flex h-7 items-center justify-center text-sm">
-        <button
-          className={cn(
-            "rounded-md px-2 py-1 text-xs transition-opacity duration-200 ease-in-out",
-            {
-              "opacity-0": !isSaving && !isAutoSaving,
-              "opacity-100": isSaving || isAutoSaving
-            }
-          )}
-        >
-          {isAutoSaving ? "Auto-saving..." : isSaving ? "Saving..." : null}
-        </button>
-      </div>
+      {!isMobile ? (
+        <div className="flex h-7 items-center justify-center text-sm">
+          <button
+            className={cn(
+              "rounded-md px-2 py-1 transition-opacity duration-200 ease-in-out",
+              {
+                "opacity-0": !isSaving && !isAutoSaving && !isChanged,
+                "opacity-50": isChanged,
+                "opacity-100": isSaving || isAutoSaving
+              }
+            )}
+          >
+            {isAutoSaving
+              ? "Auto-saving..."
+              : isSaving
+                ? "Saving..."
+                : isChanged
+                  ? "Unsaved"
+                  : null}
+          </button>
+        </div>
+      ) : null}
       <div className="flex h-7 items-center justify-center gap-2 text-sm">
         <TooltipProvider>
           {isLoading || !note ? (
