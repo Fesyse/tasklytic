@@ -1,4 +1,5 @@
 import { useCreateEditor } from "@/components/editor/use-create-editor"
+import { useNoteEditorContext } from "@/contexts/note-editor-context"
 import { authClient } from "@/lib/auth-client"
 import { dexieDB } from "@/lib/db-client"
 import { tryCatch } from "@/lib/utils"
@@ -9,15 +10,9 @@ import { useCallback, useEffect, useRef } from "react"
 import { toast } from "sonner"
 import { useNote } from "./use-note"
 
-type UseNoteEditorProps = {
-  setIsChanged: React.Dispatch<React.SetStateAction<boolean>>
-  setIsSaving: React.Dispatch<React.SetStateAction<boolean>>
-}
+export function useNoteEditor() {
+  const { isChanged, setIsChanged, setIsSaving } = useNoteEditorContext()
 
-export function useNoteEditor({
-  setIsChanged,
-  setIsSaving
-}: UseNoteEditorProps) {
   const { noteId } = useParams<{ noteId: string }>()
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null)
 

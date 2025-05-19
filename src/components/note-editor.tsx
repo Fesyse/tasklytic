@@ -1,6 +1,9 @@
 "use client"
 
-import { NoteEditorProvider } from "@/contexts/note-editor-context"
+import {
+  NoteEditorContext,
+  useNoteEditorContext
+} from "@/contexts/note-editor-context"
 import { useNoteEditor } from "@/hooks/use-note-editor"
 import { authClient } from "@/lib/auth-client"
 import { Plate } from "@udecode/plate/react"
@@ -16,14 +19,9 @@ import { Editor, EditorContainer } from "./ui/editor"
 import { Skeleton } from "./ui/skeleton"
 
 export const NoteEditor = () => {
-  const [isChanged, setIsChanged] = useState(false)
-  const [isSaving, setIsSaving] = useState(false)
-  const [isAutoSaving, setIsAutoSaving] = useState(false)
+  const { setIsChanged } = useNoteEditorContext()
 
-  const { editor, isLoading, note } = useNoteEditor({
-    setIsSaving,
-    setIsChanged
-  })
+  const { editor, isLoading, note } = useNoteEditor()
   const session = authClient.useSession()
   const userId = session.data?.user.id || ""
 
@@ -36,16 +34,7 @@ export const NoteEditor = () => {
   }, [editor, note?.id, userId])
 
   return (
-    <NoteEditorProvider
-      value={{
-        isSaving,
-        isAutoSaving,
-        setIsSaving,
-        setIsAutoSaving,
-        isChanged,
-        setIsChanged
-      }}
-    >
+    <>
       <NoteHeader />
       <div className="mt-44">
         <SettingsProvider>
@@ -100,6 +89,31 @@ export const NoteEditor = () => {
           )}
         </SettingsProvider>
       </div>
-    </NoteEditorProvider>
+    </>
+  )
+}
+
+export const NoteEditorProvider = ({
+  children
+}: {
+  children: React.ReactNode
+}) => {
+  const [isChanged, setIsChanged] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [isAutoSaving, setIsAutoSaving] = useState(false)
+
+  return (
+    <NoteEditorContext.Provider
+      value={{
+        isChanged,
+        setIsChanged,
+        isSaving,
+        setIsSaving,
+        isAutoSaving,
+        setIsAutoSaving
+      }}
+    >
+      {children}
+    </NoteEditorContext.Provider>
   )
 }

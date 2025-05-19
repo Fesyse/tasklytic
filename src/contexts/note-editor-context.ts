@@ -13,8 +13,6 @@ export const NoteEditorContext = createContext<NoteEditorContextType | null>(
   null
 )
 
-export const NoteEditorProvider = NoteEditorContext.Provider
-
 export const useNoteEditorContext = () => {
   const context = useContext(NoteEditorContext)
   if (!context) {
