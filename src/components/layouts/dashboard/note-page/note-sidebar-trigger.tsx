@@ -4,11 +4,11 @@ import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar"
 import { AnimatePresence, motion } from "motion/react"
 
 export const NoteSidebarTrigger = () => {
-  const { open } = useSidebar()
+  const { open, isMobile } = useSidebar()
 
   return (
     <AnimatePresence>
-      {!open ? (
+      {!open || isMobile ? (
         <motion.div
           initial={{ opacity: 0, width: 0 }}
           animate={{ opacity: 1, width: "auto" }}

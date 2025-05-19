@@ -59,7 +59,7 @@ export const NoteEditor = () => {
             </div>
           ) : (
             <>
-              <div className="mx-auto mb-12 flex w-full max-w-[44rem] items-center gap-4">
+              <div className="mx-auto mb-12 flex w-full max-w-[50rem] items-center gap-4 px-14">
                 <NoteEmojiPicker note={note} />
                 <NoteTitleInput note={note} />
               </div>

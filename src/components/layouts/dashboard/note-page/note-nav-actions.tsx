@@ -31,7 +31,8 @@ import {
   SidebarGroupContent,
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem
+  SidebarMenuItem,
+  useSidebar
 } from "@/components/ui/sidebar"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
@@ -112,6 +113,7 @@ const data = [
 ]
 
 export function NoteNavActions() {
+  const { isMobile } = useSidebar()
   const { noteId } = useParams<{ noteId: string }>()
   const { data: activeOrganization } = authClient.useActiveOrganization()
 
@@ -130,19 +132,21 @@ export function NoteNavActions() {
 
   return (
     <>
-      <div className="flex h-7 items-center justify-center text-sm">
-        <button
-          className={cn(
-            "rounded-md px-2 py-1 text-xs transition-opacity duration-200 ease-in-out",
-            {
-              "opacity-0": !isSaving && !isAutoSaving,
-              "opacity-100": isSaving || isAutoSaving
-            }
-          )}
-        >
-          {isAutoSaving ? "Auto-saving..." : isSaving ? "Saving..." : null}
-        </button>
-      </div>
+      {!isMobile ? (
+        <div className="flex h-7 items-center justify-center text-sm">
+          <button
+            className={cn(
+              "rounded-md px-2 py-1 text-xs transition-opacity duration-200 ease-in-out",
+              {
+                "opacity-0": !isSaving && !isAutoSaving,
+                "opacity-100": isSaving || isAutoSaving
+              }
+            )}
+          >
+            {isAutoSaving ? "Auto-saving..." : isSaving ? "Saving..." : null}
+          </button>
+        </div>
+      ) : null}
       <div className="flex h-7 items-center justify-center gap-2 text-sm">
         <TooltipProvider>
           {isLoading || !note ? (
