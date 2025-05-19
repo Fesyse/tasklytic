@@ -6,6 +6,9 @@ import type { NextConfig } from "next"
 import "./src/env"
 
 const config: NextConfig = {
+  experimental: {
+    useCache: true
+  },
   redirects: async () => [
     {
       source: "/dashboard/calendar",

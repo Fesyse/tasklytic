@@ -4,23 +4,26 @@ import { NextResponse } from "next/server"
 
 const EMOJI_DATA_URL = `https://cdn.jsdelivr.net/npm/emojibase-data@16.0.3`
 
+async function getEmojiData() {
+  "use cache"
+
+  const response = await fetch(`${EMOJI_DATA_URL}/en/data.json`)
+  if (!response.ok) {
+    throw new Error(`Failed to fetch emoji data: ${response.statusText}`)
+  }
+  return response.json() as Promise<Emoji[]>
+}
+
 export const GET = async (
   request: Request,
   { params }: { params: Promise<{ slug: string }> }
 ) => {
   const { slug } = await params
 
-  let json: Emoji[]
+  let emojiData: Emoji[]
 
   try {
-    const response = await fetch(`${EMOJI_DATA_URL}/en/data.json`)
-    if (!response.ok) {
-      return NextResponse.json(
-        { error: `Failed to fetch emoji data: ${response.statusText}` },
-        { status: 500 }
-      )
-    }
-    json = await response.json()
+    emojiData = await getEmojiData()
   } catch (error) {
     return NextResponse.json(
       {
@@ -30,7 +33,7 @@ export const GET = async (
     )
   }
 
-  const emoji = json.find((emoji) => getEmojiSlug(emoji.label) === slug)
+  const emoji = emojiData.find((emoji) => getEmojiSlug(emoji.label) === slug)
 
   if (!emoji) {
     return NextResponse.json({ error: "Not found" }, { status: 404 })
