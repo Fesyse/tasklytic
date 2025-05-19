@@ -6,7 +6,7 @@ import { tryCatch } from "@/lib/utils"
 import type { Value } from "@udecode/plate"
 import type { User } from "better-auth"
 import { notFound, useParams } from "next/navigation"
-import { useCallback, useEffect, useRef } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { useNote } from "./use-note"
 
@@ -14,7 +14,6 @@ export function useNoteEditor() {
   const { isChanged, setIsChanged, setIsSaving } = useNoteEditorContext()
 
   const { noteId } = useParams<{ noteId: string }>()
-  const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   const { data: session } = authClient.useSession()
   const { data: note, isLoading, isError } = useNote()
@@ -23,53 +22,66 @@ export function useNoteEditor() {
     skipInitialization: true
   })
 
+  const [previousEditorValue, setPreviousEditorValue] = useState<
+    Value | undefined
+  >()
+
+  console.log("ASDASDASD", previousEditorValue)
+
   useEffect(() => {
     if (note?.blocks && editor) {
+      const sortedBlocks = note.blocks.sort(
+        (a, b) => (a.order as number) - (b.order as number)
+      )
+
       editor.tf.init({
-        value: note.blocks,
+        value: sortedBlocks,
         autoSelect: "end"
       })
+      setPreviousEditorValue(sortedBlocks)
     }
-  }, [note?.blocks, editor])
-
-  // Clean up auto-save timer when component unmounts
-  useEffect(() => {
-    return () => {
-      if (autoSaveTimerRef.current) {
-        clearTimeout(autoSaveTimerRef.current)
-      }
-    }
-  }, [])
+  }, [note?.blocks, editor.tf.init])
 
   const saveNote = useCallback(async () => {
     if (!note || !editor) return
 
-    // Clear any pending auto-save
-    if (autoSaveTimerRef.current) {
-      clearTimeout(autoSaveTimerRef.current)
-      autoSaveTimerRef.current = null
-    }
-
     const value = editor.children
 
     try {
-      if (!session) return
+      if (!session || !previousEditorValue) return
       setIsSaving(true)
+
+      const sortedPreviousEditorValue = [...previousEditorValue]
+        .sort((a, b) => (a.order as number) - (b.order as number))
+        .map((block, index) => ({
+          ...block,
+          order: index
+        }))
+      const sortedValue = [...value]
+        .sort((a, b) => (a.order as number) - (b.order as number))
+        .map((block, index) => ({
+          ...block,
+          order: index
+        }))
+
+      console.log(sortedPreviousEditorValue)
+      console.log(sortedValue)
 
       await saveNotesLocally({
         user: session.user,
         noteId,
-        oldValue: note.blocks,
-        newValue: value
+        oldValue: sortedPreviousEditorValue,
+        newValue: sortedValue
       })
 
+      setPreviousEditorValue(sortedValue)
       setIsSaving(false)
       setIsChanged(false)
     } catch (error) {
       setIsChanged(true)
       console.error("Failed to save note:", error)
     }
-  }, [noteId, note, editor])
+  }, [noteId, note, editor, previousEditorValue])
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -83,7 +95,7 @@ export function useNoteEditor() {
 
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [noteId, note, editor, saveNote])
+  }, [note, saveNote])
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -136,8 +148,12 @@ async function saveNotesLocally(data: {
 
   const updatedBlocks = data.newValue.filter((block) => {
     const oldBlock = data.oldValue.find((b) => b.id === block.id)
-    return oldBlock && oldBlock.content !== block.content
+    return JSON.stringify(oldBlock) !== JSON.stringify(block)
   })
+
+  console.log("createdBlocks", createdBlocks)
+  console.log("updatedBlocks", updatedBlocks)
+  console.log("deletedBlocks", deletedBlocks)
 
   const [{ error: blocksError }, { error: noteError }] = await Promise.all([
     tryCatch(
@@ -146,7 +162,8 @@ async function saveNotesLocally(data: {
           createdBlocks.map((block) => ({
             id: block.id as string,
             noteId: data.noteId,
-            content: block
+            content: block,
+            order: block.order as number
           }))
         )
 
@@ -154,7 +171,8 @@ async function saveNotesLocally(data: {
           updatedBlocks.map((block) => ({
             key: block.id as string,
             changes: {
-              content: block
+              content: block,
+              order: block.order as number
             }
           }))
         )

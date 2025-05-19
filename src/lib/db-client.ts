@@ -22,6 +22,7 @@ type Block = {
   id: string
   noteId: string
   content: TElement
+  order: number
 }
 
 type Discussion = {
@@ -53,7 +54,7 @@ const dexieDB = new Dexie(`${siteConfig.name}Database`) as Dexie & {
 dexieDB.version(1).stores({
   notes:
     "&id, title, emoji, emojiSlug, isPublic, organizationId, parentNoteId, updatedByUserId, updatedByUserName, updatedAt, createdByUserId, createdByUserName, createdAt",
-  blocks: "&id, noteId, content",
+  blocks: "&id, noteId, content, order",
   discussions: "&id, noteId, blockId, isResolved, userId, createdAt",
   comments: "&id, discussionId, userId, createdAt, isEdited"
 })
