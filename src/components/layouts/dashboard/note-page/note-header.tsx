@@ -9,7 +9,7 @@ export const NoteHeader = () => {
         <NoteSidebarTrigger />
         <NoteBreadcrumbs />
       </div>
-      <div className="flex gap-6 rounded p-1 backdrop-blur-lg">
+      <div className="flex gap-2 rounded p-1 backdrop-blur-lg">
         <NoteNavActions />
       </div>
     </header>

@@ -16,12 +16,13 @@ import { Editor, EditorContainer } from "./ui/editor"
 import { Skeleton } from "./ui/skeleton"
 
 export const NoteEditor = () => {
+  const [isChanged, setIsChanged] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [isAutoSaving, setIsAutoSaving] = useState(false)
 
   const { editor, isLoading, note } = useNoteEditor({
     setIsSaving,
-    setIsAutoSaving
+    setIsChanged
   })
   const session = authClient.useSession()
   const userId = session.data?.user.id || ""
@@ -36,7 +37,14 @@ export const NoteEditor = () => {
 
   return (
     <NoteEditorProvider
-      value={{ isSaving, isAutoSaving, setIsSaving, setIsAutoSaving }}
+      value={{
+        isSaving,
+        isAutoSaving,
+        setIsSaving,
+        setIsAutoSaving,
+        isChanged,
+        setIsChanged
+      }}
     >
       <NoteHeader />
       <div className="mt-44">
@@ -65,7 +73,17 @@ export const NoteEditor = () => {
               </div>
               <DndProvider backend={HTML5Backend}>
                 {editor && !isLoading && (
-                  <Plate editor={editor}>
+                  <Plate
+                    editor={editor}
+                    onChange={({ value }) => {
+                      if (
+                        note?.blocks &&
+                        JSON.stringify(value) !== JSON.stringify(note.blocks)
+                      ) {
+                        setIsChanged(true)
+                      }
+                    }}
+                  >
                     <EditorContainer>
                       <Editor
                         variant="demo"

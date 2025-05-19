@@ -41,7 +41,7 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "@/components/ui/tooltip"
-import { useNoteEditor } from "@/contexts/note-editor-context"
+import { useNoteEditorContext } from "@/contexts/note-editor-context"
 import { authClient } from "@/lib/auth-client"
 import { getNote } from "@/lib/db-queries"
 import { useDexieDb } from "@/lib/use-dexie-db"
@@ -128,7 +128,7 @@ export function NoteNavActions() {
 
     return data
   })
-  const { isSaving, isAutoSaving } = useNoteEditor()
+  const { isSaving, isAutoSaving, isChanged } = useNoteEditorContext()
 
   return (
     <>
@@ -136,14 +136,21 @@ export function NoteNavActions() {
         <div className="flex h-7 items-center justify-center text-sm">
           <button
             className={cn(
-              "rounded-md px-2 py-1 text-xs transition-opacity duration-200 ease-in-out",
+              "rounded-md px-2 py-1 transition-opacity duration-200 ease-in-out",
               {
-                "opacity-0": !isSaving && !isAutoSaving,
+                "opacity-0": !isSaving && !isAutoSaving && !isChanged,
+                "opacity-50": isChanged,
                 "opacity-100": isSaving || isAutoSaving
               }
             )}
           >
-            {isAutoSaving ? "Auto-saving..." : isSaving ? "Saving..." : null}
+            {isAutoSaving
+              ? "Auto-saving..."
+              : isSaving
+                ? "Saving..."
+                : isChanged
+                  ? "Unsaved"
+                  : null}
           </button>
         </div>
       ) : null}

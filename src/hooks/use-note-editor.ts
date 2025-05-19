@@ -1,6 +1,6 @@
 import { useCreateEditor } from "@/components/editor/use-create-editor"
 import { authClient } from "@/lib/auth-client"
-import { dexieDB, type Note } from "@/lib/db-client"
+import { dexieDB } from "@/lib/db-client"
 import { tryCatch } from "@/lib/utils"
 import type { Value } from "@udecode/plate"
 import type { User } from "better-auth"
@@ -10,13 +10,13 @@ import { toast } from "sonner"
 import { useNote } from "./use-note"
 
 type UseNoteEditorProps = {
+  setIsChanged: React.Dispatch<React.SetStateAction<boolean>>
   setIsSaving: React.Dispatch<React.SetStateAction<boolean>>
-  setIsAutoSaving: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export function useNoteEditor({
-  setIsSaving,
-  setIsAutoSaving
+  setIsChanged,
+  setIsSaving
 }: UseNoteEditorProps) {
   const { noteId } = useParams<{ noteId: string }>()
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null)
@@ -67,10 +67,11 @@ export function useNoteEditor({
         oldValue: note.blocks,
         newValue: value
       })
-      setIsSaving(false)
 
-      toast.success("Note saved successfully!")
+      setIsSaving(false)
+      setIsChanged(false)
     } catch (error) {
+      setIsChanged(true)
       console.error("Failed to save note:", error)
     }
   }, [noteId, note, editor])
@@ -89,6 +90,22 @@ export function useNoteEditor({
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [noteId, note, editor, saveNote])
 
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isChanged) {
+        e.preventDefault()
+        e.returnValue =
+          "You have unsaved changes. Are you sure you want to leave?"
+      }
+    }
+
+    window.addEventListener("beforeunload", handleBeforeUnload)
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload)
+    }
+  }, [isChanged])
+
   if (isError) notFound()
   if (!note)
     return {
@@ -98,11 +115,10 @@ export function useNoteEditor({
       saveNote
     }
 
-  const { blocks: _blocks, ...returnNote } = note
   return {
     editor,
     isLoading,
-    note: returnNote as Note,
+    note,
     saveNote
   }
 }

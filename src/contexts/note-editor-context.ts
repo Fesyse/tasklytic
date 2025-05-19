@@ -5,6 +5,8 @@ type NoteEditorContextType = {
   setIsSaving: React.Dispatch<React.SetStateAction<boolean>>
   isAutoSaving: boolean
   setIsAutoSaving: React.Dispatch<React.SetStateAction<boolean>>
+  isChanged: boolean
+  setIsChanged: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export const NoteEditorContext = createContext<NoteEditorContextType | null>(
@@ -13,7 +15,7 @@ export const NoteEditorContext = createContext<NoteEditorContextType | null>(
 
 export const NoteEditorProvider = NoteEditorContext.Provider
 
-export const useNoteEditor = () => {
+export const useNoteEditorContext = () => {
   const context = useContext(NoteEditorContext)
   if (!context) {
     throw new Error("useNoteEditor must be used within a NoteEditorProvider")
