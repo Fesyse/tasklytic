@@ -1,6 +1,8 @@
 "use client"
 
+import { NoteEmojiPicker } from "./note-emoji-picker"
 import { NoteTitleInput } from "./note-title-input"
+import { Button } from "./ui/button"
 
 import { useEmojiData } from "@/hooks/use-emoji-data"
 import { authClient } from "@/lib/auth-client"
@@ -10,76 +12,85 @@ import { useLocalNote } from "@/lib/use-local-note"
 import { getEmojiSlug } from "@/lib/utils"
 import { useQueryClient } from "@tanstack/react-query"
 import { SmilePlus } from "lucide-react"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useState } from "react"
 import { toast } from "sonner"
-import { NoteEmojiPicker } from "./note-emoji-picker"
-import { Button } from "./ui/button"
 
 export const NoteContentHeader = () => {
   const queryClient = useQueryClient()
   const { data: note } = useLocalNote()
   const { data: organization } = authClient.useActiveOrganization()
+  const [isAddingEmoji, setIsAddingEmoji] = useState(false)
 
-  const [emojiQueryTrigger, fireEmojiQuery] = useState(false)
+  const handleAddRandomEmoji = useCallback(async () => {
+    setIsAddingEmoji(true)
+  }, [])
+
   const { data: emojiData } = useEmojiData({
-    enabled: emojiQueryTrigger
+    enabled: isAddingEmoji
   })
 
-  const setRandomEmoji = useCallback(async () => {
-    if (!emojiQueryTrigger || !emojiData || !note || !organization) return
+  // Effect logic moved into a callback that runs when emoji data is available
+  if (isAddingEmoji && emojiData && note && organization) {
+    setIsAddingEmoji(false)
 
     const emoji = emojiData[Math.floor(Math.random() * emojiData.length)]!
-
     const newEmojiData = {
       emoji: emoji.emoji,
       emojiSlug: getEmojiSlug(emoji.label)
     }
 
-    const { error } = await updateNoteEmoji({
+    updateNoteEmoji({
       id: note.id,
       ...newEmojiData
-    })
+    }).then(({ error }) => {
+      if (error) {
+        toast.error("Failed to set emoji")
+        console.error(error)
+        return
+      }
 
-    void queryClient.setQueryData(
-      ["note", note.id, organization.id],
-      (old: Note) => {
-        return {
+      queryClient.setQueryData(
+        ["note", note.id, organization.id],
+        (old: Note) => ({
           ...old,
           ...newEmojiData
-        }
-      }
-    )
-
-    if (error) {
-      toast.error("Failed to set emoji")
-      console.error(error)
-    }
-  }, [emojiQueryTrigger, emojiData, note?.id, organization?.id])
-
-  useEffect(() => {
-    if (!emojiQueryTrigger || !emojiData) return
-
-    setRandomEmoji()
-  }, [emojiQueryTrigger, emojiData, setRandomEmoji])
+        })
+      )
+    })
+  }
 
   return (
     <div className="group relative mx-auto mb-12 flex w-full max-w-[51rem] items-center gap-4 px-15 pt-40">
       <div className="text-muted-foreground absolute bottom-12 left-12 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-        {!note?.emoji ? (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="rounded-xl"
-            onClick={() => fireEmojiQuery(true)}
-          >
-            <SmilePlus />
-            Add icon
-          </Button>
-        ) : null}
+        <EmojiButton
+          hasEmoji={!!note?.emoji}
+          onAddEmoji={handleAddRandomEmoji}
+        />
       </div>
-
       {note?.emoji ? <NoteEmojiPicker /> : null}
       <NoteTitleInput />
     </div>
+  )
+}
+
+// Extracted into a separate component for better readability
+type EmojiButtonProps = {
+  hasEmoji: boolean
+  onAddEmoji: () => void
+}
+
+const EmojiButton = ({ hasEmoji, onAddEmoji }: EmojiButtonProps) => {
+  if (hasEmoji) return null
+
+  return (
+    <Button
+      variant="ghost"
+      size="sm"
+      className="rounded-xl"
+      onClick={onAddEmoji}
+    >
+      <SmilePlus />
+      Add icon
+    </Button>
   )
 }
