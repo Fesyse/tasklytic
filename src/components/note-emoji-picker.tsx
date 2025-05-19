@@ -7,21 +7,29 @@ import {
 import { EmojiPicker } from "./ui/emoji-picker"
 
 import { dexieDB, type Note } from "@/lib/db-client"
-import { tryCatch } from "@/lib/utils"
+import { getEmojiSlug, getEmojiUrl, tryCatch } from "@/lib/utils"
 import { PopoverContent } from "@radix-ui/react-popover"
+import type { Emoji } from "frimousse"
 import { FileIcon } from "lucide-react"
 import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { Popover, PopoverTrigger } from "./ui/popover"
 
 export function NoteEmojiPicker({ note }: { note: Note }) {
-  const [emoji, setEmoji] = useState(note.emoji)
+  const [emoji, setEmoji] = useState<Emoji>({
+    emoji: note.emoji ?? "",
+    label: note.emoji ?? ""
+  })
+
   const [isPickerOpen, setIsPickerOpen] = useState(false)
 
   const updateEmoji = useCallback(
-    async (newEmoji: string) => {
+    async (newEmoji: Emoji) => {
       const { error } = await tryCatch(
-        dexieDB.notes.update(note.id, { emoji: newEmoji })
+        dexieDB.notes.update(note.id, {
+          emoji: newEmoji.emoji,
+          emojiSlug: getEmojiSlug(newEmoji.label)
+        })
       )
 
       if (error) {
@@ -35,18 +43,32 @@ export function NoteEmojiPicker({ note }: { note: Note }) {
     [note.id]
   )
 
-  const handleEmojiSelect = async ({ emoji: newEmoji }: { emoji: string }) => {
-    const success = await updateEmoji(newEmoji)
+  const handleEmojiSelect = async (emoji: Emoji) => {
+    const success = await updateEmoji(emoji)
     if (success) {
       setIsPickerOpen(false)
     }
   }
 
-  // Update document title when emoji or title changes
+  // Update document link[rel~='icon'] when emoji changes
   useEffect(() => {
-    const titlePrefix = emoji ? `${emoji} ` : ""
-    document.title = titlePrefix + (note.title || "Untitled")
-  }, [emoji, note.title])
+    if (!emoji.label.length) return
+
+    const emojiUrl = getEmojiUrl(emoji.label)
+
+    let link = document.querySelector(
+      "link[rel~='icon'][data-emoji='true']"
+    ) as HTMLLinkElement
+    if (link) {
+      link.href = emojiUrl
+    } else {
+      link = document.createElement("link")
+      link.rel = "icon"
+      link.href = emojiUrl
+      link.setAttribute("data-emoji", "true")
+      document.head.appendChild(link)
+    }
+  }, [emoji.label])
 
   return (
     <div className="space-y-2">
@@ -60,8 +82,8 @@ export function NoteEmojiPicker({ note }: { note: Note }) {
                 onClick={() => setIsPickerOpen(!isPickerOpen)}
                 aria-label="Select emoji"
               >
-                {emoji ? (
-                  <span className="text-5xl">{emoji}</span>
+                {emoji.emoji.length > 0 ? (
+                  <span className="text-5xl">{emoji.emoji}</span>
                 ) : (
                   <FileIcon className="text-muted-foreground size-[48px]" />
                 )}
@@ -74,7 +96,7 @@ export function NoteEmojiPicker({ note }: { note: Note }) {
             >
               <EmojiPicker
                 className="h-[300px] w-[256px]"
-                defaultValue={emoji}
+                defaultValue={emoji.emoji}
                 onEmojiSelect={handleEmojiSelect}
               >
                 <EmojiPickerSearch />
