@@ -5,8 +5,6 @@ import { NextResponse } from "next/server"
 export const EMOJI_DATA_URL = `https://cdn.jsdelivr.net/npm/emojibase-data@16.0.3`
 
 async function getEmojiData() {
-  "use cache"
-
   const response = await fetch(`${EMOJI_DATA_URL}/en/data.json`)
   if (!response.ok) {
     throw new Error(`Failed to fetch emoji data: ${response.statusText}`)
@@ -43,7 +41,13 @@ export const GET = async (
     `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="${emoji.label}"><title>${emoji.label}</title><text x="50%" y="50%" font-size="80" text-anchor="middle" dominant-baseline="middle">${emoji.emoji}</text></svg>`.trim(),
     {
-      headers: { "Content-Type": "image/svg+xml" }
+      headers: {
+        "Content-Type": "image/svg+xml",
+        "Cache-Control":
+          "public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400"
+      }
     }
   )
 }
+
+export const runtime = "edge"
