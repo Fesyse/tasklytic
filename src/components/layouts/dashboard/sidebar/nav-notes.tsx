@@ -29,6 +29,7 @@ import {
   SidebarMenuSkeleton,
   useSidebar
 } from "@/components/ui/sidebar"
+import { usePrefetchNotes } from "@/hooks/use-prefetch-notes"
 import { authClient } from "@/lib/auth-client"
 import { createNote, deleteNote } from "@/lib/db-queries"
 import type { NoteNavItem } from "@/lib/sidebar"
@@ -118,6 +119,7 @@ function Note({ item, level = 0 }: { level?: number; item: NoteNavItem }) {
   const router = useRouter()
   const [isActionsOpen, setIsActionsOpen] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
+  const { prefetchNote } = usePrefetchNotes()
 
   const { data: activeOrganization } = authClient.useActiveOrganization()
   const { data: session } = authClient.useSession()
@@ -125,6 +127,22 @@ function Note({ item, level = 0 }: { level?: number; item: NoteNavItem }) {
   const fullUrl = `${getBaseUrl()}${item.url}`
   const isActive = pathname === item.url
   const hasSubNotes = item.subNotes?.items && item.subNotes.items.length > 0
+
+  const handleMouseEnter = () => {
+    // Prefetch note data when hovering over the note item
+    if (item.id) {
+      prefetchNote(item.id)
+    }
+
+    // Also prefetch child notes if they exist
+    if (hasSubNotes && item.subNotes?.items) {
+      item.subNotes.items.forEach((childNote) => {
+        if (childNote.id) {
+          prefetchNote(childNote.id)
+        }
+      })
+    }
+  }
 
   const handleCopyLink = (url: string) => {
     navigator.clipboard.writeText(url)
@@ -180,6 +198,7 @@ function Note({ item, level = 0 }: { level?: number; item: NoteNavItem }) {
         key={item.id}
         style={{ marginLeft: sidebarOpen ? level * 6 : 0 }}
         className="transition-all duration-200 ease-in-out"
+        onMouseEnter={handleMouseEnter}
       >
         <div className="flex w-full items-center">
           <SidebarMenuButton

@@ -13,13 +13,12 @@ import { HTML5Backend } from "react-dnd-html5-backend"
 import { discussionPlugin } from "./editor/plugins/discussion-plugin"
 import { SettingsDialog, SettingsProvider } from "./editor/settings"
 import { NoteHeader } from "./layouts/dashboard/note-page/note-header"
-import { NoteEmojiPicker } from "./note-emoji-picker"
-import { NoteTitleInput } from "./note-title-input"
+import { NoteContentHeader } from "./note-content-header"
 import { Editor, EditorContainer } from "./ui/editor"
 import { Skeleton } from "./ui/skeleton"
 
 export const NoteEditor = () => {
-  const { setIsChanged } = useNoteEditorContext()
+  const { setIsChanged, isAutoSaving, isSaving } = useNoteEditorContext()
 
   const { editor, isLoading, note } = useNoteEditor()
   const session = authClient.useSession()
@@ -36,59 +35,58 @@ export const NoteEditor = () => {
   return (
     <>
       <NoteHeader />
-      <div className="mt-44">
-        <SettingsProvider>
-          {isLoading || !note ? (
-            <div className="space-y-4">
-              {/* Title skeleton */}
-              <Skeleton className="mx-auto h-12 w-3/4 max-w-[44rem]" />
+      <SettingsProvider>
+        {isLoading || !note ? (
+          <div className="space-y-4">
+            {/* Title skeleton */}
+            <Skeleton className="mx-auto h-12 w-3/4 max-w-[44rem]" />
 
-              {/* Editor content skeleton */}
-              <div className="mx-auto max-w-[44rem] space-y-3">
-                <Skeleton className="h-6 w-full" />
-                <Skeleton className="h-6 w-11/12" />
-                <Skeleton className="h-6 w-4/5" />
-                <Skeleton className="h-6 w-9/12" />
-                <Skeleton className="h-6 w-full" />
-                <Skeleton className="h-6 w-3/4" />
-                <Skeleton className="h-6 w-5/6" />
-              </div>
+            {/* Editor content skeleton */}
+            <div className="mx-auto max-w-[44rem] space-y-3">
+              <Skeleton className="h-6 w-full" />
+              <Skeleton className="h-6 w-11/12" />
+              <Skeleton className="h-6 w-4/5" />
+              <Skeleton className="h-6 w-9/12" />
+              <Skeleton className="h-6 w-full" />
+              <Skeleton className="h-6 w-3/4" />
+              <Skeleton className="h-6 w-5/6" />
             </div>
-          ) : (
-            <>
-              <div className="mx-auto mb-12 flex w-full max-w-[50rem] items-center gap-4 px-14">
-                <NoteEmojiPicker note={note} />
-                <NoteTitleInput note={note} />
-              </div>
-              <DndProvider backend={HTML5Backend}>
-                {editor && !isLoading && (
-                  <Plate
-                    editor={editor}
-                    onChange={({ value }) => {
-                      if (!note?.blocks) return
+          </div>
+        ) : (
+          <>
+            <NoteContentHeader />
+            <div className="text-muted-foreground mx-auto max-w-[44rem] text-right text-sm">
+              {isAutoSaving && <p>Auto-saving...</p>}
+              {isSaving && <p>Saving...</p>}
+            </div>
+            <DndProvider backend={HTML5Backend}>
+              {editor && !isLoading && (
+                <Plate
+                  editor={editor}
+                  onChange={({ value }) => {
+                    if (!note?.blocks) return
 
-                      const hasChanges =
-                        JSON.stringify(value) !== JSON.stringify(note.blocks)
+                    const hasChanges =
+                      JSON.stringify(value) !== JSON.stringify(note.blocks)
 
-                      setIsChanged(hasChanges)
-                    }}
-                  >
-                    <EditorContainer>
-                      <Editor
-                        variant="demo"
-                        className="pt-0"
-                        placeholder="Start typing your note here..."
-                      />
-                    </EditorContainer>
+                    setIsChanged(hasChanges)
+                  }}
+                >
+                  <EditorContainer>
+                    <Editor
+                      variant="demo"
+                      className="pt-0"
+                      placeholder="Start typing your note here..."
+                    />
+                  </EditorContainer>
 
-                    <SettingsDialog />
-                  </Plate>
-                )}
-              </DndProvider>
-            </>
-          )}
-        </SettingsProvider>
-      </div>
+                  <SettingsDialog />
+                </Plate>
+              )}
+            </DndProvider>
+          </>
+        )}
+      </SettingsProvider>
     </>
   )
 }

@@ -6,8 +6,14 @@ import {
 
 import { EmojiPicker } from "./ui/emoji-picker"
 
-import { dexieDB, type Note } from "@/lib/db-client"
-import { getEmojiSlug, getEmojiUrl, tryCatch } from "@/lib/utils"
+import { useNote } from "@/hooks/use-note"
+import { dexieDB } from "@/lib/db-client"
+import {
+  getEmojiSlug,
+  getEmojiUrl,
+  getLabelFromSlug,
+  tryCatch
+} from "@/lib/utils"
 import { PopoverContent } from "@radix-ui/react-popover"
 import type { Emoji } from "frimousse"
 import { FileIcon } from "lucide-react"
@@ -15,16 +21,19 @@ import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { Popover, PopoverTrigger } from "./ui/popover"
 
-export function NoteEmojiPicker({ note }: { note: Note }) {
+export function NoteEmojiPicker() {
+  const { data: note } = useNote()
   const [emoji, setEmoji] = useState<Emoji>({
-    emoji: note.emoji ?? "",
-    label: note.emoji ?? ""
+    emoji: note?.emoji ?? "",
+    label: note?.emoji ?? ""
   })
 
   const [isPickerOpen, setIsPickerOpen] = useState(false)
 
   const updateEmoji = useCallback(
     async (newEmoji: Emoji) => {
+      if (!note) return false
+
       const { error } = await tryCatch(
         dexieDB.notes.update(note.id, {
           emoji: newEmoji.emoji,
@@ -40,7 +49,7 @@ export function NoteEmojiPicker({ note }: { note: Note }) {
       setEmoji(newEmoji)
       return true
     },
-    [note.id]
+    [note?.id]
   )
 
   const handleEmojiSelect = async (emoji: Emoji) => {
@@ -69,6 +78,16 @@ export function NoteEmojiPicker({ note }: { note: Note }) {
       document.head.appendChild(link)
     }
   }, [emoji.label])
+
+  useEffect(() => {
+    console.log("note", note)
+    if (!note?.emoji || !note.emojiSlug) return
+
+    setEmoji({
+      emoji: note.emoji,
+      label: getLabelFromSlug(note.emojiSlug)
+    })
+  }, [note?.emoji, note?.emojiSlug])
 
   return (
     <div className="space-y-2">

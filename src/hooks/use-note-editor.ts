@@ -3,73 +3,128 @@ import { useNoteEditorContext } from "@/contexts/note-editor-context"
 import { authClient } from "@/lib/auth-client"
 import { dexieDB } from "@/lib/db-client"
 import { tryCatch } from "@/lib/utils"
+import { useQueryClient } from "@tanstack/react-query"
 import type { Value } from "@udecode/plate"
 import type { User } from "better-auth"
 import { notFound, useParams } from "next/navigation"
-import { useCallback, useEffect, useRef } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { useNote } from "./use-note"
 
 export function useNoteEditor() {
-  const { isChanged, setIsChanged, setIsSaving } = useNoteEditorContext()
-
+  const { isChanged, setIsChanged, setIsSaving, setIsAutoSaving } =
+    useNoteEditorContext()
   const { noteId } = useParams<{ noteId: string }>()
-  const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const queryClient = useQueryClient()
 
   const { data: session } = authClient.useSession()
+  const { data: organization } = authClient.useActiveOrganization()
   const { data: note, isLoading, isError } = useNote()
 
   const editor = useCreateEditor({
     skipInitialization: true
   })
 
+  const [previousEditorValue, setPreviousEditorValue] = useState<
+    Value | undefined
+  >()
+
   useEffect(() => {
     if (note?.blocks && editor) {
+      const sortedBlocks = [...note.blocks].sort(
+        (a, b) => (a.order as number) - (b.order as number)
+      )
+
       editor.tf.init({
-        value: note.blocks,
+        value: sortedBlocks,
         autoSelect: "end"
       })
+      setPreviousEditorValue(sortedBlocks)
     }
-  }, [note?.blocks, editor])
+  }, [note?.blocks, editor.tf.init])
 
-  // Clean up auto-save timer when component unmounts
-  useEffect(() => {
-    return () => {
-      if (autoSaveTimerRef.current) {
-        clearTimeout(autoSaveTimerRef.current)
+  const saveNote = useCallback(
+    async (isAutoSave = false) => {
+      if (!note || !editor) return
+
+      const value = editor.children
+
+      try {
+        if (!session || !previousEditorValue) return
+
+        if (isAutoSave) {
+          setIsAutoSaving(true)
+        } else {
+          setIsSaving(true)
+        }
+
+        const sortedPreviousEditorValue = [...previousEditorValue]
+          .sort((a, b) => (a.order as number) - (b.order as number))
+          .map((block, index) => ({
+            ...block,
+            order: index
+          }))
+        const sortedValue = [...value]
+          .sort((a, b) => (a.order as number) - (b.order as number))
+          .map((block, index) => ({
+            ...block,
+            order: index
+          }))
+
+        await saveNotesLocally({
+          user: session.user,
+          noteId,
+          oldValue: sortedPreviousEditorValue,
+          newValue: sortedValue
+        })
+
+        setPreviousEditorValue(sortedValue)
+
+        // Update React Query cache
+        if (organization?.id) {
+          // Optimistically update the cache
+          queryClient.setQueryData(["note", noteId, organization.id], {
+            ...note,
+            blocks: sortedValue,
+            updatedAt: new Date(),
+            updatedByUserId: session.user.id,
+            updatedByUserName: session.user.name
+          })
+        }
+
+        if (isAutoSave) {
+          setIsAutoSaving(false)
+        } else {
+          setIsSaving(false)
+        }
+
+        setIsChanged(false)
+      } catch (error) {
+        setIsChanged(true)
+        console.error("Failed to save note:", error)
       }
-    }
-  }, [])
+    },
+    [
+      noteId,
+      note,
+      editor,
+      previousEditorValue,
+      session,
+      organization?.id,
+      queryClient
+    ]
+  )
 
-  const saveNote = useCallback(async () => {
-    if (!note || !editor) return
+  // Add auto-save functionality
+  useEffect(() => {
+    if (!isChanged || isLoading) return
 
-    // Clear any pending auto-save
-    if (autoSaveTimerRef.current) {
-      clearTimeout(autoSaveTimerRef.current)
-      autoSaveTimerRef.current = null
-    }
+    const autoSaveTimeout = setTimeout(() => {
+      saveNote(true)
+    }, 3000) // Auto-save after 3 seconds of changes
 
-    const value = editor.children
-
-    try {
-      if (!session) return
-      setIsSaving(true)
-
-      await saveNotesLocally({
-        user: session.user,
-        noteId,
-        oldValue: note.blocks,
-        newValue: value
-      })
-
-      setIsSaving(false)
-      setIsChanged(false)
-    } catch (error) {
-      setIsChanged(true)
-      console.error("Failed to save note:", error)
-    }
-  }, [noteId, note, editor])
+    return () => clearTimeout(autoSaveTimeout)
+  }, [isChanged, isLoading, saveNote])
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -83,7 +138,7 @@ export function useNoteEditor() {
 
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [noteId, note, editor, saveNote])
+  }, [note, saveNote])
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -136,8 +191,12 @@ async function saveNotesLocally(data: {
 
   const updatedBlocks = data.newValue.filter((block) => {
     const oldBlock = data.oldValue.find((b) => b.id === block.id)
-    return oldBlock && oldBlock.content !== block.content
+    return JSON.stringify(oldBlock) !== JSON.stringify(block)
   })
+
+  console.log("createdBlocks", createdBlocks)
+  console.log("updatedBlocks", updatedBlocks)
+  console.log("deletedBlocks", deletedBlocks)
 
   const [{ error: blocksError }, { error: noteError }] = await Promise.all([
     tryCatch(
@@ -146,7 +205,8 @@ async function saveNotesLocally(data: {
           createdBlocks.map((block) => ({
             id: block.id as string,
             noteId: data.noteId,
-            content: block
+            content: block,
+            order: block.order as number
           }))
         )
 
@@ -154,7 +214,8 @@ async function saveNotesLocally(data: {
           updatedBlocks.map((block) => ({
             key: block.id as string,
             changes: {
-              content: block
+              content: block,
+              order: block.order as number
             }
           }))
         )

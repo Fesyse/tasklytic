@@ -49,6 +49,10 @@ export function getEmojiSlug(emojiLabel: string) {
   return emojiLabel.replaceAll(" ", "-").toLowerCase()
 }
 
+export function getLabelFromSlug(emojiSlug: string) {
+  return emojiSlug.replaceAll("-", " ")
+}
+
 export function getEmojiUrl(emojiLabel: string) {
   return `${getBaseUrl()}/api/emoji/${getEmojiSlug(emojiLabel)}`
 }
