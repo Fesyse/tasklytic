@@ -544,7 +544,7 @@ export function SyncProvider({ children }: { children: ReactNode }) {
         syncTimeout = setTimeout(() => {
           syncNow()
           syncTimeout = null
-        }, 3000)
+        }, 60 * 1000)
       }
 
       // Set up hooks for all tables

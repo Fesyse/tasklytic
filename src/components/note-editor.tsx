@@ -55,10 +55,6 @@ export const NoteEditor = () => {
         ) : (
           <>
             <NoteContentHeader />
-            <div className="text-muted-foreground mx-auto max-w-[44rem] text-right text-sm">
-              {isAutoSaving && <p>Auto-saving...</p>}
-              {isSaving && <p>Saving...</p>}
-            </div>
             <DndProvider backend={HTML5Backend}>
               {editor && !isLoading && (
                 <Plate

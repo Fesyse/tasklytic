@@ -231,7 +231,7 @@ export function useNoteEditor() {
 
     const autoSaveTimeout = setTimeout(() => {
       saveNote(true)
-    }, 3000) // Auto-save after 3 seconds of changes
+    }, 60 * 1000) // Auto-save after 60 seconds of changes
 
     return () => clearTimeout(autoSaveTimeout)
   }, [isChanged, isLoading, saveNote])
