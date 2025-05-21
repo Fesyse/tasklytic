@@ -30,7 +30,7 @@ export function useSyncedNoteQueries(noteId: string) {
         // Apply the change locally
         await dexieDB.notes.update(noteId, updatedNote)
 
-        // Trigger immediate sync and invalidate queries
+        // Trigger immediate sync
         await syncNow()
 
         return { data: true, error: null }
@@ -42,7 +42,7 @@ export function useSyncedNoteQueries(noteId: string) {
         }
       }
     },
-    [note, noteId, syncNow, utils]
+    [note, noteId, syncNow]
   )
 
   // Update note's emoji
@@ -62,7 +62,7 @@ export function useSyncedNoteQueries(noteId: string) {
         // Apply the change locally
         await dexieDB.notes.update(noteId, updatedNote)
 
-        // Trigger immediate sync and invalidate queries
+        // Trigger immediate sync
         await syncNow()
 
         return { data: true, error: null }
@@ -74,7 +74,7 @@ export function useSyncedNoteQueries(noteId: string) {
         }
       }
     },
-    [note, noteId, syncNow, utils]
+    [note, noteId, syncNow]
   )
 
   // Create a block in the note
@@ -91,7 +91,7 @@ export function useSyncedNoteQueries(noteId: string) {
           order
         })
 
-        // Trigger immediate sync and invalidate queries
+        // Trigger immediate sync
         await syncNow()
 
         return { data: blockId, error: null }
@@ -103,7 +103,7 @@ export function useSyncedNoteQueries(noteId: string) {
         }
       }
     },
-    [note, noteId, syncNow, utils]
+    [note, noteId, syncNow]
   )
 
   // Update a block in the note
@@ -114,7 +114,7 @@ export function useSyncedNoteQueries(noteId: string) {
           content
         })
 
-        // Trigger immediate sync and invalidate queries
+        // Trigger immediate sync
         await syncNow()
 
         return { data: true, error: null }
@@ -126,7 +126,7 @@ export function useSyncedNoteQueries(noteId: string) {
         }
       }
     },
-    [noteId, syncNow, utils]
+    [noteId, syncNow]
   )
 
   // Delete a block from the note
@@ -135,7 +135,7 @@ export function useSyncedNoteQueries(noteId: string) {
       try {
         await dexieDB.blocks.delete(blockId)
 
-        // Trigger immediate sync and invalidate queries
+        // Trigger immediate sync
         await syncNow()
 
         return { data: true, error: null }
@@ -147,7 +147,7 @@ export function useSyncedNoteQueries(noteId: string) {
         }
       }
     },
-    [noteId, syncNow, utils]
+    [noteId, syncNow]
   )
 
   return {
@@ -201,9 +201,8 @@ export function useSyncedOrganizationNotes(organizationId: string) {
           parentNoteId: parentNoteId ?? null
         })
 
-        // Trigger immediate sync and invalidate queries
+        // Trigger immediate sync
         await syncNow()
-        utils.sync.getNotes.invalidate({ organizationId })
 
         return { data: noteId, error: null }
       } catch (err) {
@@ -214,7 +213,7 @@ export function useSyncedOrganizationNotes(organizationId: string) {
         }
       }
     },
-    [session, organizationId, syncNow, utils]
+    [session, organizationId, syncNow]
   )
 
   // Delete a note
@@ -233,9 +232,8 @@ export function useSyncedOrganizationNotes(organizationId: string) {
           await dexieDB.notes.delete(childNote.id)
         }
 
-        // Trigger immediate sync and invalidate queries
+        // Trigger immediate sync
         await syncNow()
-        utils.sync.getNotes.invalidate({ organizationId })
 
         return { data: true, error: null }
       } catch (err) {
@@ -246,7 +244,7 @@ export function useSyncedOrganizationNotes(organizationId: string) {
         }
       }
     },
-    [organizationId, syncNow, utils]
+    [organizationId, syncNow]
   )
 
   return {
@@ -336,9 +334,8 @@ export function useSyncedDiscussions(noteId: string) {
           userId
         })
 
-        // Trigger immediate sync and invalidate queries
+        // Trigger immediate sync
         await syncNow()
-        utils.sync.getDiscussions.invalidate({ noteId })
 
         return { data: discussionId, error: null }
       } catch (err) {
@@ -349,7 +346,7 @@ export function useSyncedDiscussions(noteId: string) {
         }
       }
     },
-    [noteId, userId, syncNow, utils]
+    [noteId, userId, syncNow]
   )
 
   // Update discussion resolved status
@@ -358,9 +355,8 @@ export function useSyncedDiscussions(noteId: string) {
       try {
         await dexieDB.discussions.update(id, { isResolved })
 
-        // Trigger immediate sync and invalidate queries
+        // Trigger immediate sync
         await syncNow()
-        utils.sync.getDiscussions.invalidate({ noteId })
 
         return { data: true, error: null }
       } catch (err) {
@@ -371,7 +367,7 @@ export function useSyncedDiscussions(noteId: string) {
         }
       }
     },
-    [noteId, syncNow, utils]
+    [noteId, syncNow]
   )
 
   // Delete a discussion
@@ -380,9 +376,8 @@ export function useSyncedDiscussions(noteId: string) {
       try {
         await dexieDB.discussions.delete(id)
 
-        // Trigger immediate sync and invalidate queries
+        // Trigger immediate sync
         await syncNow()
-        utils.sync.getDiscussions.invalidate({ noteId })
 
         return { data: true, error: null }
       } catch (err) {
@@ -393,7 +388,7 @@ export function useSyncedDiscussions(noteId: string) {
         }
       }
     },
-    [noteId, syncNow, utils]
+    [noteId, syncNow]
   )
 
   // Add a comment to a discussion
@@ -417,9 +412,8 @@ export function useSyncedDiscussions(noteId: string) {
           userId
         })
 
-        // Trigger immediate sync and invalidate queries
+        // Trigger immediate sync
         await syncNow()
-        utils.sync.getComments.invalidate({ discussionId })
 
         return { data: commentId, error: null }
       } catch (err) {
@@ -430,7 +424,7 @@ export function useSyncedDiscussions(noteId: string) {
         }
       }
     },
-    [userId, syncNow, utils]
+    [userId, syncNow]
   )
 
   // Update a comment
@@ -453,9 +447,8 @@ export function useSyncedDiscussions(noteId: string) {
           isEdited: true
         })
 
-        // Trigger immediate sync and invalidate queries
+        // Trigger immediate sync
         await syncNow()
-        utils.sync.getComments.invalidate({ discussionId })
 
         return { data: true, error: null }
       } catch (err) {
@@ -466,7 +459,7 @@ export function useSyncedDiscussions(noteId: string) {
         }
       }
     },
-    [syncNow, utils]
+    [syncNow]
   )
 
   // Delete a comment
@@ -486,9 +479,8 @@ export function useSyncedDiscussions(noteId: string) {
 
         await dexieDB.comments.delete(id)
 
-        // Trigger immediate sync and invalidate queries
+        // Trigger immediate sync
         await syncNow()
-        utils.sync.getComments.invalidate({ discussionId })
 
         return { data: true, error: null }
       } catch (err) {
@@ -499,7 +491,7 @@ export function useSyncedDiscussions(noteId: string) {
         }
       }
     },
-    [syncNow, utils]
+    [syncNow]
   )
 
   return {

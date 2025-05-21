@@ -52,6 +52,139 @@ export function SyncProvider({ children }: { children: ReactNode }) {
   const syncBlocksMutation = api.sync.syncBlocks.useMutation()
   const syncDiscussionsMutation = api.sync.syncDiscussions.useMutation()
   const syncCommentsMutation = api.sync.syncComments.useMutation()
+  const utils = api.useUtils()
+
+  // Function to handle initial notes data from server
+  const handleInitialNotes = useCallback(
+    async (serverNotes: any[]) => {
+      try {
+        // Add notes to client DB
+        await dexieDB.transaction("rw", dexieDB.notes, async () => {
+          const notesToAdd = serverNotes.map((note) => ({
+            id: note.id,
+            title: note.title,
+            emoji: note.emoji || undefined,
+            emojiSlug: note.emojiSlug || undefined,
+            organizationId: note.organizationId,
+            updatedAt: note.updatedAt,
+            createdAt: note.createdAt,
+            updatedByUserId: note.updatedByUserId,
+            updatedByUserName: note.updatedByUserName,
+            createdByUserId: note.createdByUserId,
+            createdByUserName: note.createdByUserName,
+            isPublic: note.isPublic,
+            parentNoteId: note.parentNoteId
+          }))
+          await dexieDB.notes.bulkAdd(notesToAdd)
+        })
+
+        // For each note, load blocks and discussions
+        for (const note of serverNotes) {
+          // Load blocks
+          const blockData = await utils.sync.getBlocks.fetch({
+            noteId: note.id
+          })
+          if (blockData && blockData.length > 0) {
+            await dexieDB.transaction("rw", dexieDB.blocks, async () => {
+              const blocksToAdd = blockData.map((block: any) => ({
+                id: block.id,
+                noteId: block.noteId,
+                content: JSON.parse(block.content),
+                order: block.order
+              }))
+              await dexieDB.blocks.bulkAdd(blocksToAdd)
+            })
+          }
+
+          // Load discussions and comments
+          const discussionData = await utils.sync.getDiscussions.fetch({
+            noteId: note.id
+          })
+          if (discussionData && discussionData.length > 0) {
+            await dexieDB.transaction("rw", dexieDB.discussions, async () => {
+              const discussionsToAdd = discussionData.map(
+                (discussion: any) => ({
+                  id: discussion.id,
+                  noteId: discussion.noteId,
+                  blockId: discussion.blockId,
+                  documentContent: discussion.documentContent || undefined,
+                  createdAt: discussion.createdAt,
+                  isResolved: discussion.isResolved,
+                  userId: discussion.userId
+                })
+              )
+              await dexieDB.discussions.bulkAdd(discussionsToAdd)
+            })
+
+            // Load comments for each discussion
+            for (const discussion of discussionData) {
+              const commentData = await utils.sync.getComments.fetch({
+                discussionId: discussion.id
+              })
+              if (commentData && commentData.length > 0) {
+                await dexieDB.transaction("rw", dexieDB.comments, async () => {
+                  const commentsToAdd = commentData.map((comment: any) => ({
+                    id: comment.id,
+                    discussionId: comment.discussionId,
+                    contentRich: JSON.parse(comment.contentRich),
+                    createdAt: comment.createdAt,
+                    isEdited: comment.isEdited,
+                    userId: comment.userId
+                  }))
+                  await dexieDB.comments.bulkAdd(commentsToAdd)
+                })
+              }
+            }
+          }
+        }
+
+        const now = new Date()
+        setLastSyncedAt(now)
+        setIsInitialSyncComplete(true)
+        localStorage.setItem("lastSyncedAt", now.toISOString())
+      } catch (error) {
+        console.error("Error loading initial data:", error)
+      }
+    },
+    [utils]
+  )
+
+  // Check for initial data when organization changes
+  useEffect(() => {
+    const loadInitialData = async () => {
+      if (!isInitialSyncComplete && activeOrganization?.id) {
+        try {
+          // Check if we already have data
+          const orgId = activeOrganization.id
+          const noteCount = await dexieDB.notes
+            .where("organizationId")
+            .equals(orgId)
+            .count()
+
+          if (noteCount === 0) {
+            // Fetch data directly
+            const data = await utils.sync.getNotes.fetch({
+              organizationId: orgId
+            })
+            if (data && data.length > 0) {
+              await handleInitialNotes(data)
+            }
+          } else {
+            // We already have data
+            setIsInitialSyncComplete(true)
+            const lastSyncStr = localStorage.getItem("lastSyncedAt")
+            if (lastSyncStr) {
+              setLastSyncedAt(new Date(lastSyncStr))
+            }
+          }
+        } catch (error) {
+          console.error("Error loading initial data:", error)
+        }
+      }
+    }
+
+    loadInitialData().catch(console.error)
+  }, [activeOrganization?.id, isInitialSyncComplete, handleInitialNotes, utils])
 
   // Sync notes for an organization
   const syncNotes = useCallback(
@@ -348,30 +481,8 @@ export function SyncProvider({ children }: { children: ReactNode }) {
     }
   }, [isInitialSyncComplete, activeOrganization, syncNow])
 
-  // Check for initial data and start periodic sync
+  // Set up periodic sync
   useEffect(() => {
-    const init = async () => {
-      if (!isInitialSyncComplete && activeOrganization?.id) {
-        // Initial data loading is handled by the useQuery hook
-        // If we already have data in the local DB, mark sync as complete
-        const orgId = activeOrganization.id
-        const noteCount = await dexieDB.notes
-          .where("organizationId")
-          .equals(orgId)
-          .count()
-
-        if (noteCount > 0) {
-          setIsInitialSyncComplete(true)
-          const lastSyncStr = localStorage.getItem("lastSyncedAt")
-          if (lastSyncStr) {
-            setLastSyncedAt(new Date(lastSyncStr))
-          }
-        }
-      }
-    }
-
-    init().catch(console.error)
-
     // Set up periodic sync (every 5 minutes)
     const intervalId = setInterval(
       () => {
