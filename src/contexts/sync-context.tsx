@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
   type ReactNode
 } from "react"
@@ -46,6 +47,10 @@ export function SyncProvider({ children }: { children: ReactNode }) {
   const [syncStatus, setSyncStatus] = useState<SyncStatus>("idle")
   const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null)
   const [isInitialSyncComplete, setIsInitialSyncComplete] = useState(false)
+  // Flag to track if changes are from sync operation
+  const [isInternalSyncActive, setIsInternalSyncActive] = useState(false)
+  // Ref to track if sync is currently running (mutex)
+  const syncInProgressRef = useRef(false)
 
   // Get the tRPC hooks for sync operations
   const syncNotesMutation = api.sync.syncNotes.useMutation()
@@ -246,13 +251,30 @@ export function SyncProvider({ children }: { children: ReactNode }) {
 
   // Sync blocks for a note
   const syncBlocks = useCallback(
-    async (noteId: string) => {
+    async (noteId: string, clientBlocksParam?: any[]) => {
       try {
-        // Get blocks from the client
-        const clientBlocks = await dexieDB.blocks
-          .where("noteId")
-          .equals(noteId)
-          .toArray()
+        // Use provided blocks if available, otherwise fetch from DB
+        const clientBlocks =
+          clientBlocksParam ||
+          (await dexieDB.blocks.where("noteId").equals(noteId).toArray())
+
+        // Skip empty syncs to reduce network requests
+        if (clientBlocks.length === 0) {
+          // Just check if there are any blocks on the server that we need
+          const serverBlocksCheck = await utils.sync.getBlocks.fetch({ noteId })
+          if (serverBlocksCheck && serverBlocksCheck.length > 0) {
+            // We need to pull blocks from server
+            const blocksToPut = serverBlocksCheck.map((block) => ({
+              id: block.id,
+              noteId: block.noteId,
+              content: JSON.parse(block.content),
+              order: block.order
+            }))
+
+            await dexieDB.blocks.bulkPut(blocksToPut)
+          }
+          return []
+        }
 
         // Send to server using tRPC mutation
         const serverBlocks = await syncBlocksMutation.mutateAsync({
@@ -290,7 +312,7 @@ export function SyncProvider({ children }: { children: ReactNode }) {
         throw error
       }
     },
-    [syncBlocksMutation]
+    [syncBlocksMutation, utils]
   )
 
   // Sync discussions for a note
@@ -412,17 +434,77 @@ export function SyncProvider({ children }: { children: ReactNode }) {
       return
     }
 
+    // Mutex to prevent concurrent syncs
+    if (syncInProgressRef.current) {
+      console.log("Sync already in progress, skipping duplicate sync")
+      return
+    }
+
+    syncInProgressRef.current = true
     setSyncStatus("syncing")
+    // Set the internal sync flag to prevent hooks from triggering
+    setIsInternalSyncActive(true)
 
     try {
       // Sync notes for the active organization
       const orgId = activeOrganization.id
       const notes = await syncNotes(orgId)
 
-      // For each note, sync blocks and discussions
-      for (const note of notes) {
-        await syncBlocks(note.id)
-        await syncDiscussions(note.id)
+      // Instead of syncing each note's blocks and discussions immediately,
+      // collect all the IDs and do fewer, larger operations
+      if (notes.length > 0) {
+        // Sync all blocks in one batch if possible
+        const noteIds = notes.map((note) => note.id)
+
+        // Only do blocks sync if we have notes to sync
+        if (noteIds.length > 0) {
+          // For each note, get client blocks
+          const allClientBlocks = []
+          for (const noteId of noteIds) {
+            const clientBlocks = await dexieDB.blocks
+              .where("noteId")
+              .equals(noteId)
+              .toArray()
+
+            allClientBlocks.push(...clientBlocks)
+          }
+
+          // Group client blocks by noteId for better handling
+          const blocksByNoteId: { [noteId: string]: any[] } = {}
+          for (const block of allClientBlocks) {
+            const noteId = block.noteId
+            if (noteId) {
+              if (!blocksByNoteId[noteId]) {
+                blocksByNoteId[noteId] = []
+              }
+              blocksByNoteId[noteId].push(block)
+            }
+          }
+
+          // Sync blocks for each note, but limit concurrency
+          const BATCH_SIZE = 3 // Process notes in small batches to avoid too many concurrent requests
+
+          for (let i = 0; i < noteIds.length; i += BATCH_SIZE) {
+            const batch = noteIds.slice(i, i + BATCH_SIZE)
+            const batchPromises = batch.map((noteId) => {
+              const blocksForNote =
+                noteId && blocksByNoteId[noteId] ? blocksByNoteId[noteId] : []
+              return syncBlocks(noteId, blocksForNote)
+            })
+
+            // Wait for this batch to complete before starting the next one
+            await Promise.all(batchPromises)
+          }
+
+          // Now sync discussions with the same batching approach
+          for (let i = 0; i < noteIds.length; i += BATCH_SIZE) {
+            const batch = noteIds.slice(i, i + BATCH_SIZE)
+            const batchPromises = batch.map((noteId) => syncDiscussions(noteId))
+
+            // Wait for this batch to complete before starting the next one
+            await Promise.all(batchPromises)
+          }
+        }
       }
 
       // Update sync status
@@ -434,6 +516,10 @@ export function SyncProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error("Error during sync:", error)
       setSyncStatus("error")
+    } finally {
+      // Always reset the flags when done
+      setIsInternalSyncActive(false)
+      syncInProgressRef.current = false
     }
   }, [session, activeOrganization, syncNotes, syncBlocks, syncDiscussions])
 
@@ -444,6 +530,12 @@ export function SyncProvider({ children }: { children: ReactNode }) {
       let syncTimeout: ReturnType<typeof setTimeout> | null = null
 
       const debouncedSync = () => {
+        // Skip triggering sync if we're already in a sync operation
+        if (isInternalSyncActive) {
+          console.log("Skipping sync hook because internal sync is active")
+          return
+        }
+
         if (syncTimeout) {
           clearTimeout(syncTimeout)
         }
@@ -479,7 +571,7 @@ export function SyncProvider({ children }: { children: ReactNode }) {
         }
       }
     }
-  }, [isInitialSyncComplete, activeOrganization, syncNow])
+  }, [isInitialSyncComplete, activeOrganization, syncNow, isInternalSyncActive])
 
   // Set up periodic sync
   useEffect(() => {

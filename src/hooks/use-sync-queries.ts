@@ -2,9 +2,53 @@ import { useSyncContext } from "@/contexts/sync-context"
 import { authClient } from "@/lib/auth-client"
 import { dexieDB, type Note } from "@/lib/db-client"
 import { createId } from "@/server/db/schema"
-import { api } from "@/trpc/react"
-import { useCallback } from "react"
+import { useCallback, useEffect, useRef } from "react"
 import { useSyncedNote, useSyncedNotes } from "./use-sync"
+
+// Helper for debouncing sync operations
+function useDebouncedSync(syncNow: () => Promise<void>, delay = 2000) {
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const pendingSyncRef = useRef<boolean>(false)
+  const lastSyncTimeRef = useRef<number>(0)
+
+  const debouncedSync = useCallback(() => {
+    // Clear any existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
+
+    // Set pending sync flag
+    pendingSyncRef.current = true
+
+    // Minimum time between syncs to avoid excessive syncing
+    const timeSinceLastSync = Date.now() - lastSyncTimeRef.current
+    const adjustedDelay =
+      timeSinceLastSync < 5000
+        ? Math.max(delay, 5000 - timeSinceLastSync)
+        : delay
+
+    // Create new timeout
+    timeoutRef.current = setTimeout(async () => {
+      if (pendingSyncRef.current) {
+        lastSyncTimeRef.current = Date.now()
+        await syncNow()
+        pendingSyncRef.current = false
+      }
+      timeoutRef.current = null
+    }, adjustedDelay)
+  }, [syncNow, delay])
+
+  // Clean up on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+    }
+  }, [])
+
+  return debouncedSync
+}
 
 /**
  * Hook for working with a single note using the sync layer with tRPC and React Query
@@ -12,7 +56,9 @@ import { useSyncedNote, useSyncedNotes } from "./use-sync"
 export function useSyncedNoteQueries(noteId: string) {
   const { syncNow } = useSyncContext()
   const { note, blocks, isLoading, error, syncStatus } = useSyncedNote(noteId)
-  const utils = api.useUtils()
+
+  // Create a debounced version of the sync function
+  const debouncedSync = useDebouncedSync(syncNow)
 
   // Update the note's title
   const updateNoteTitle = useCallback(
@@ -30,8 +76,8 @@ export function useSyncedNoteQueries(noteId: string) {
         // Apply the change locally
         await dexieDB.notes.update(noteId, updatedNote)
 
-        // Trigger immediate sync
-        await syncNow()
+        // Trigger debounced sync
+        debouncedSync()
 
         return { data: true, error: null }
       } catch (err) {
@@ -42,7 +88,7 @@ export function useSyncedNoteQueries(noteId: string) {
         }
       }
     },
-    [note, noteId, syncNow]
+    [note, noteId, debouncedSync]
   )
 
   // Update note's emoji
@@ -62,8 +108,8 @@ export function useSyncedNoteQueries(noteId: string) {
         // Apply the change locally
         await dexieDB.notes.update(noteId, updatedNote)
 
-        // Trigger immediate sync
-        await syncNow()
+        // Trigger debounced sync
+        debouncedSync()
 
         return { data: true, error: null }
       } catch (err) {
@@ -74,7 +120,7 @@ export function useSyncedNoteQueries(noteId: string) {
         }
       }
     },
-    [note, noteId, syncNow]
+    [note, noteId, debouncedSync]
   )
 
   // Create a block in the note
@@ -91,8 +137,8 @@ export function useSyncedNoteQueries(noteId: string) {
           order
         })
 
-        // Trigger immediate sync
-        await syncNow()
+        // Trigger debounced sync
+        debouncedSync()
 
         return { data: blockId, error: null }
       } catch (err) {
@@ -103,7 +149,7 @@ export function useSyncedNoteQueries(noteId: string) {
         }
       }
     },
-    [note, noteId, syncNow]
+    [note, noteId, debouncedSync]
   )
 
   // Update a block in the note
@@ -114,8 +160,8 @@ export function useSyncedNoteQueries(noteId: string) {
           content
         })
 
-        // Trigger immediate sync
-        await syncNow()
+        // Trigger debounced sync
+        debouncedSync()
 
         return { data: true, error: null }
       } catch (err) {
@@ -126,7 +172,7 @@ export function useSyncedNoteQueries(noteId: string) {
         }
       }
     },
-    [noteId, syncNow]
+    [noteId, debouncedSync]
   )
 
   // Delete a block from the note
@@ -135,8 +181,8 @@ export function useSyncedNoteQueries(noteId: string) {
       try {
         await dexieDB.blocks.delete(blockId)
 
-        // Trigger immediate sync
-        await syncNow()
+        // Trigger debounced sync
+        debouncedSync()
 
         return { data: true, error: null }
       } catch (err) {
@@ -147,7 +193,7 @@ export function useSyncedNoteQueries(noteId: string) {
         }
       }
     },
-    [noteId, syncNow]
+    [noteId, debouncedSync]
   )
 
   return {
@@ -171,7 +217,9 @@ export function useSyncedOrganizationNotes(organizationId: string) {
   const { syncNow } = useSyncContext()
   const { notes, isLoading, error, syncStatus } = useSyncedNotes(organizationId)
   const { data: session } = authClient.useSession()
-  const utils = api.useUtils()
+
+  // Create a debounced version of the sync function
+  const debouncedSync = useDebouncedSync(syncNow)
 
   // Create a new note
   const createNote = useCallback(
@@ -201,8 +249,8 @@ export function useSyncedOrganizationNotes(organizationId: string) {
           parentNoteId: parentNoteId ?? null
         })
 
-        // Trigger immediate sync
-        await syncNow()
+        // Trigger debounced sync
+        debouncedSync()
 
         return { data: noteId, error: null }
       } catch (err) {
@@ -213,7 +261,7 @@ export function useSyncedOrganizationNotes(organizationId: string) {
         }
       }
     },
-    [session, organizationId, syncNow]
+    [session, organizationId, debouncedSync]
   )
 
   // Delete a note
@@ -232,8 +280,8 @@ export function useSyncedOrganizationNotes(organizationId: string) {
           await dexieDB.notes.delete(childNote.id)
         }
 
-        // Trigger immediate sync
-        await syncNow()
+        // Trigger debounced sync
+        debouncedSync()
 
         return { data: true, error: null }
       } catch (err) {
@@ -244,7 +292,7 @@ export function useSyncedOrganizationNotes(organizationId: string) {
         }
       }
     },
-    [organizationId, syncNow]
+    [organizationId, debouncedSync]
   )
 
   return {
@@ -258,14 +306,14 @@ export function useSyncedOrganizationNotes(organizationId: string) {
 }
 
 /**
- * Hook for working with discussions on a note with tRPC and React Query
+ * Hook for working with discussions using the sync layer with tRPC and React Query
  */
 export function useSyncedDiscussions(noteId: string) {
   const { syncNow } = useSyncContext()
-  const { note, blocks } = useSyncedNote(noteId)
   const { data: session } = authClient.useSession()
-  const userId = session?.user?.id || ""
-  const utils = api.useUtils()
+
+  // Create a debounced version of the sync function
+  const debouncedSync = useDebouncedSync(syncNow)
 
   // Get discussions for a note
   const getDiscussions = useCallback(async () => {
@@ -275,22 +323,7 @@ export function useSyncedDiscussions(noteId: string) {
         .equals(noteId)
         .toArray()
 
-      // Get comments for each discussion
-      const discussionsWithComments = await Promise.all(
-        discussions.map(async (discussion) => {
-          const comments = await dexieDB.comments
-            .where("discussionId")
-            .equals(discussion.id)
-            .toArray()
-
-          return {
-            ...discussion,
-            comments
-          }
-        })
-      )
-
-      return { data: discussionsWithComments, error: null }
+      return { data: discussions, error: null }
     } catch (err) {
       console.error("Error getting discussions:", err)
       return {
@@ -300,10 +333,10 @@ export function useSyncedDiscussions(noteId: string) {
     }
   }, [noteId])
 
-  // Create a new discussion
+  // Create a discussion
   const createDiscussion = useCallback(
-    async (blockId: string, documentContent: string, contentRich: any) => {
-      if (!userId) {
+    async (blockId: string, documentContent?: string) => {
+      if (!session?.user) {
         return {
           data: null,
           error: new Error("User not authenticated")
@@ -311,7 +344,6 @@ export function useSyncedDiscussions(noteId: string) {
       }
 
       try {
-        // Create discussion
         const discussionId = createId()
         await dexieDB.discussions.add({
           id: discussionId,
@@ -320,22 +352,11 @@ export function useSyncedDiscussions(noteId: string) {
           documentContent,
           createdAt: new Date(),
           isResolved: false,
-          userId
+          userId: session.user.id
         })
 
-        // Create initial comment
-        const commentId = createId()
-        await dexieDB.comments.add({
-          id: commentId,
-          discussionId,
-          contentRich,
-          createdAt: new Date(),
-          isEdited: false,
-          userId
-        })
-
-        // Trigger immediate sync
-        await syncNow()
+        // Trigger debounced sync
+        debouncedSync()
 
         return { data: discussionId, error: null }
       } catch (err) {
@@ -346,17 +367,19 @@ export function useSyncedDiscussions(noteId: string) {
         }
       }
     },
-    [noteId, userId, syncNow]
+    [noteId, session, debouncedSync]
   )
 
   // Update discussion resolved status
   const updateDiscussionResolved = useCallback(
-    async (id: string, isResolved: boolean) => {
+    async (discussionId: string, isResolved: boolean) => {
       try {
-        await dexieDB.discussions.update(id, { isResolved })
+        await dexieDB.discussions.update(discussionId, {
+          isResolved
+        })
 
-        // Trigger immediate sync
-        await syncNow()
+        // Trigger debounced sync
+        debouncedSync()
 
         return { data: true, error: null }
       } catch (err) {
@@ -367,17 +390,23 @@ export function useSyncedDiscussions(noteId: string) {
         }
       }
     },
-    [noteId, syncNow]
+    [debouncedSync]
   )
 
   // Delete a discussion
   const deleteDiscussion = useCallback(
-    async (id: string) => {
+    async (discussionId: string) => {
       try {
-        await dexieDB.discussions.delete(id)
+        await dexieDB.discussions.delete(discussionId)
 
-        // Trigger immediate sync
-        await syncNow()
+        // Also delete related comments
+        await dexieDB.comments
+          .where("discussionId")
+          .equals(discussionId)
+          .delete()
+
+        // Trigger debounced sync
+        debouncedSync()
 
         return { data: true, error: null }
       } catch (err) {
@@ -388,13 +417,13 @@ export function useSyncedDiscussions(noteId: string) {
         }
       }
     },
-    [noteId, syncNow]
+    [debouncedSync]
   )
 
-  // Add a comment to a discussion
+  // Create a comment
   const createComment = useCallback(
     async (discussionId: string, contentRich: any) => {
-      if (!userId) {
+      if (!session?.user) {
         return {
           data: null,
           error: new Error("User not authenticated")
@@ -409,11 +438,11 @@ export function useSyncedDiscussions(noteId: string) {
           contentRich,
           createdAt: new Date(),
           isEdited: false,
-          userId
+          userId: session.user.id
         })
 
-        // Trigger immediate sync
-        await syncNow()
+        // Trigger debounced sync
+        debouncedSync()
 
         return { data: commentId, error: null }
       } catch (err) {
@@ -424,31 +453,20 @@ export function useSyncedDiscussions(noteId: string) {
         }
       }
     },
-    [userId, syncNow]
+    [session, debouncedSync]
   )
 
   // Update a comment
   const updateComment = useCallback(
-    async (id: string, contentRich: any) => {
+    async (commentId: string, contentRich: any) => {
       try {
-        // Get the discussion ID for the comment
-        const comment = await dexieDB.comments.get(id)
-        if (!comment) {
-          return {
-            data: null,
-            error: new Error("Comment not found")
-          }
-        }
-
-        const discussionId = comment.discussionId
-
-        await dexieDB.comments.update(id, {
+        await dexieDB.comments.update(commentId, {
           contentRich,
           isEdited: true
         })
 
-        // Trigger immediate sync
-        await syncNow()
+        // Trigger debounced sync
+        debouncedSync()
 
         return { data: true, error: null }
       } catch (err) {
@@ -459,28 +477,17 @@ export function useSyncedDiscussions(noteId: string) {
         }
       }
     },
-    [syncNow]
+    [debouncedSync]
   )
 
   // Delete a comment
   const deleteComment = useCallback(
-    async (id: string) => {
+    async (commentId: string) => {
       try {
-        // Get the discussion ID for the comment
-        const comment = await dexieDB.comments.get(id)
-        if (!comment) {
-          return {
-            data: null,
-            error: new Error("Comment not found")
-          }
-        }
+        await dexieDB.comments.delete(commentId)
 
-        const discussionId = comment.discussionId
-
-        await dexieDB.comments.delete(id)
-
-        // Trigger immediate sync
-        await syncNow()
+        // Trigger debounced sync
+        debouncedSync()
 
         return { data: true, error: null }
       } catch (err) {
@@ -491,19 +498,16 @@ export function useSyncedDiscussions(noteId: string) {
         }
       }
     },
-    [syncNow]
+    [debouncedSync]
   )
 
   return {
-    note,
-    blocks,
     getDiscussions,
     createDiscussion,
     updateDiscussionResolved,
     deleteDiscussion,
     createComment,
     updateComment,
-    deleteComment,
-    userId
+    deleteComment
   }
 }
