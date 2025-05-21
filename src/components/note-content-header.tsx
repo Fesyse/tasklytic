@@ -8,9 +8,9 @@ import { useEmojiData } from "@/hooks/use-emoji-data"
 import { useSyncedNoteQueries } from "@/hooks/use-sync-queries"
 import { authClient } from "@/lib/auth-client"
 import type { Note } from "@/lib/db-client"
-import { getEmojiSlug } from "@/lib/utils"
+import { cn, getEmojiSlug } from "@/lib/utils"
 import { useQueryClient } from "@tanstack/react-query"
-import { SmilePlus } from "lucide-react"
+import { SmilePlus, Star } from "lucide-react"
 import { useParams } from "next/navigation"
 import { useCallback, useState } from "react"
 import { toast } from "sonner"
@@ -18,8 +18,10 @@ import { toast } from "sonner"
 export const NoteContentHeader = () => {
   const queryClient = useQueryClient()
   const { noteId } = useParams<{ noteId: string }>()
-  const { note, updateNoteEmoji } = useSyncedNoteQueries(noteId as string)
+  const { note, updateNoteEmoji, updateNoteFavorite } =
+    useSyncedNoteQueries(noteId)
   const { data: organization } = authClient.useActiveOrganization()
+  const { data: session } = authClient.useSession()
   const [isAddingEmoji, setIsAddingEmoji] = useState(false)
 
   const handleAddRandomEmoji = useCallback(async () => {
@@ -29,6 +31,43 @@ export const NoteContentHeader = () => {
   const { data: emojiData } = useEmojiData({
     enabled: isAddingEmoji
   })
+
+  const handleToggleFavorite = useCallback(async () => {
+    if (!note || !organization || !session) return
+
+    const newFavoritedState = !note.isFavorited
+
+    // Use the updateNoteFavorite from useSyncedNoteQueries hook
+    updateNoteFavorite(
+      newFavoritedState,
+      newFavoritedState ? session.user.id : null
+    )
+      .then(({ error }) => {
+        if (error) {
+          toast.error("Failed to update favorite status")
+          console.error(error)
+          return
+        }
+
+        // Optimistically update the cache
+        queryClient.setQueryData(
+          ["note", note.id, organization.id],
+          (old: Note) => ({
+            ...old,
+            isFavorited: newFavoritedState,
+            favoritedByUserId: newFavoritedState ? session.user.id : null
+          })
+        )
+
+        toast.success(
+          newFavoritedState ? "Added to favorites" : "Removed from favorites"
+        )
+      })
+      .catch((error) => {
+        toast.error("Failed to update favorite status")
+        console.error(error)
+      })
+  }, [note, organization, session, updateNoteFavorite, queryClient])
 
   // Effect logic moved into a callback that runs when emoji data is available
   if (isAddingEmoji && emojiData && note && organization) {
@@ -66,11 +105,24 @@ export const NoteContentHeader = () => {
 
   return (
     <div className="group relative mx-auto mb-12 flex w-full max-w-[51rem] items-center gap-4 px-15 pt-40">
-      <div className="text-muted-foreground absolute bottom-12 left-12 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-        <EmojiButton
-          hasEmoji={!!note?.emoji}
-          onAddEmoji={handleAddRandomEmoji}
-        />
+      <div
+        className={cn(
+          "text-muted-foreground absolute bottom-12 left-12 opacity-0 transition-opacity duration-300 group-hover:opacity-100",
+          {
+            "bottom-16": !!note?.emoji
+          }
+        )}
+      >
+        <div className="flex gap-2">
+          <EmojiButton
+            hasEmoji={!!note?.emoji}
+            onAddEmoji={handleAddRandomEmoji}
+          />
+          <FavoriteButton
+            isFavorited={!!note?.isFavorited}
+            onToggleFavorite={handleToggleFavorite}
+          />
+        </div>
       </div>
       {note?.emoji ? <NoteEmojiPicker /> : null}
       <NoteTitleInput />
@@ -94,8 +146,33 @@ const EmojiButton = ({ hasEmoji, onAddEmoji }: EmojiButtonProps) => {
       className="rounded-xl"
       onClick={onAddEmoji}
     >
-      <SmilePlus />
+      <SmilePlus className="mr-1 size-4" />
       Add icon
+    </Button>
+  )
+}
+
+// Favorite button component
+type FavoriteButtonProps = {
+  isFavorited: boolean
+  onToggleFavorite: () => void
+}
+
+const FavoriteButton = ({
+  isFavorited,
+  onToggleFavorite
+}: FavoriteButtonProps) => {
+  return (
+    <Button
+      variant="ghost"
+      size="sm"
+      className="rounded-xl"
+      onClick={onToggleFavorite}
+    >
+      <Star
+        className={`mr-1 size-4 ${isFavorited ? "fill-yellow-400 text-yellow-400" : ""}`}
+      />
+      {isFavorited ? "Remove from favorites" : "Add to favorites"}
     </Button>
   )
 }

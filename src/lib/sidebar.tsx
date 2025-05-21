@@ -42,6 +42,7 @@ export type NoteNavItem = {
 type SidebarNav = {
   navMain: NavItem[]
 
+  favoriteNotes: { isLoading: boolean; items: NoteNavItem[] | undefined }
   privateNotes: { isLoading: boolean; items: NoteNavItem[] | undefined }
   sharedNotes: { isLoading: boolean; items: NoteNavItem[] | undefined }
 
@@ -50,6 +51,7 @@ type SidebarNav = {
 
 export const useSidebarNav = (): SidebarNav => {
   const { data: organization } = authClient.useActiveOrganization()
+  const { data: session } = authClient.useSession()
   const result = useLiveQuery(() => {
     if (!organization?.id) return tryCatch(Promise.resolve([]))
     return getNotes(organization.id)
@@ -94,11 +96,28 @@ export const useSidebarNav = (): SidebarNav => {
         type: "url"
       }
     ],
+    favoriteNotes: {
+      isLoading: result === undefined || !result.data,
+      items: result?.data
+        ? buildNoteHierarchy(
+            result.data.filter(
+              (note) =>
+                note.isFavorited && note.favoritedByUserId === session?.user.id
+            ),
+            null
+          )
+        : []
+    },
     privateNotes: {
       isLoading: result === undefined || !result.data,
       items: result?.data
         ? buildNoteHierarchy(
-            result.data.filter((note) => !note.isPublic),
+            result.data.filter(
+              (note) =>
+                !note.isPublic &&
+                (!note.isFavorited ||
+                  note.favoritedByUserId !== session?.user.id)
+            ),
             null
           )
         : []
@@ -107,7 +126,12 @@ export const useSidebarNav = (): SidebarNav => {
       isLoading: result === undefined || !result.data,
       items: result?.data
         ? buildNoteHierarchy(
-            result.data.filter((note) => note.isPublic),
+            result.data.filter(
+              (note) =>
+                note.isPublic &&
+                (!note.isFavorited ||
+                  note.favoritedByUserId !== session?.user.id)
+            ),
             null
           )
         : []

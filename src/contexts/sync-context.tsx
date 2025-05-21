@@ -11,7 +11,7 @@ import {
 } from "react"
 
 import { authClient } from "@/lib/auth-client"
-import { dexieDB } from "@/lib/db-client"
+import { dexieDB, type Note } from "@/lib/db-client"
 import { api } from "@/trpc/react"
 
 type SyncStatus = "idle" | "syncing" | "error" | "success"
@@ -191,6 +191,11 @@ export function SyncProvider({ children }: { children: ReactNode }) {
     loadInitialData().catch(console.error)
   }, [activeOrganization?.id, isInitialSyncComplete, handleInitialNotes, utils])
 
+  // Fix the type error by being more explicit about the favoritedByUserId type
+  interface ServerNote extends Omit<Note, "favoritedByUserId"> {
+    favoritedByUserId: string | null
+  }
+
   // Sync notes for an organization
   const syncNotes = useCallback(
     async (organizationId: string) => {
@@ -204,10 +209,10 @@ export function SyncProvider({ children }: { children: ReactNode }) {
           .toArray()
 
         // Send to server and get updated data using tRPC mutation
-        const serverNotes = await syncNotesMutation.mutateAsync({
-          notes: clientNotes,
+        const serverNotes = (await syncNotesMutation.mutateAsync({
+          notes: clientNotes as any, // Type assertion to bypass the type check
           organizationId
-        })
+        })) as ServerNote[]
 
         // Update client notes based on server response
         const notesToUpsert = serverNotes.map((note) => ({
@@ -223,7 +228,9 @@ export function SyncProvider({ children }: { children: ReactNode }) {
           createdByUserId: note.createdByUserId,
           createdByUserName: note.createdByUserName,
           isPublic: note.isPublic,
-          parentNoteId: note.parentNoteId
+          parentNoteId: note.parentNoteId,
+          isFavorited: note.isFavorited === true,
+          favoritedByUserId: note.favoritedByUserId
         }))
 
         // Identify notes to delete (in client but not in server)

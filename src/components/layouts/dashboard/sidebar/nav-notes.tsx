@@ -40,6 +40,7 @@ import {
   LinkIcon,
   MoreHorizontal,
   PlusIcon,
+  StarIcon,
   Trash2
 } from "lucide-react"
 import Link from "next/link"
@@ -52,7 +53,7 @@ export function NavNotes({
   type,
   isLoading
 }: {
-  type: "private" | "shared"
+  type: "private" | "shared" | "favorites"
   notes: NoteNavItem[] | undefined
   isLoading: boolean
 }) {
@@ -77,14 +78,34 @@ export function NavNotes({
     router.push(`/dashboard/note/${noteId}`)
   }
 
+  const getSectionTitle = () => {
+    switch (type) {
+      case "private":
+        return "Private"
+      case "shared":
+        return "Shared"
+      case "favorites":
+        return (
+          <span className="flex items-center gap-1">
+            <StarIcon className="size-4 fill-yellow-400 text-yellow-400" />
+            Favorites
+          </span>
+        )
+      default:
+        return ""
+    }
+  }
+
   return (
     <SidebarGroup>
-      {!isLoading && !notes?.length && type === "shared" ? null : (
-        <SidebarGroupLabel>
-          {type === "private" ? "Private" : "Shared"}
-        </SidebarGroupLabel>
+      {!isLoading &&
+      !notes?.length &&
+      (type === "shared" || type === "favorites") ? null : (
+        <SidebarGroupLabel>{getSectionTitle()}</SidebarGroupLabel>
       )}
-      {!isLoading && !notes?.length && type === "shared" ? null : (
+      {!isLoading &&
+      !notes?.length &&
+      (type === "shared" || type === "favorites") ? null : (
         <SidebarGroupAction onClick={handleCreateNote}>
           <PlusIcon className="size-4" />
         </SidebarGroupAction>
@@ -97,7 +118,7 @@ export function NavNotes({
                 <SidebarMenuSkeleton showIcon />
               </SidebarMenuItem>
             ))
-          ) : !notes.length && type === "private" ? (
+          ) : !notes.length && type !== "shared" && type !== "favorites" ? (
             <SidebarMenuItem>
               <span className="text-muted-foreground ml-2 text-xs">
                 No notes

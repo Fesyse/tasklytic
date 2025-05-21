@@ -25,7 +25,9 @@ export function createNote(data: {
       createdByUserName: data.user.name,
       createdAt: new Date(),
       organizationId: data.organization.id,
-      parentNoteId: data.noteId ?? null
+      parentNoteId: data.noteId ?? null,
+      isFavorited: false,
+      favoritedByUserId: null
     })
   )
 }
@@ -75,7 +77,12 @@ export function updateNoteEmoji(data: {
   emoji: string
   emojiSlug: string
 }) {
-  return tryCatch(dexieDB.notes.update(data.id, { emoji: data.emoji, emojiSlug: data.emojiSlug }))
+  return tryCatch(
+    dexieDB.notes.update(data.id, {
+      emoji: data.emoji,
+      emojiSlug: data.emojiSlug
+    })
+  )
 }
 
 // Discussion and Comment queries

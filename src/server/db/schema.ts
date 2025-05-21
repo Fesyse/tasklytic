@@ -435,7 +435,9 @@ export const notes = createTable(
       .references(() => users.id),
     createdByUserName: text("created_by_user_name").notNull(),
     isPublic: boolean("is_public").notNull().default(false),
-    parentNoteId: text("parent_note_id")
+    parentNoteId: text("parent_note_id"),
+    isFavorited: boolean("is_favorited").notNull().default(false),
+    favoritedByUserId: text("favorited_by_user_id").references(() => users.id)
   },
   (table) => ({
     parentNoteIdForeignKey: foreignKey({

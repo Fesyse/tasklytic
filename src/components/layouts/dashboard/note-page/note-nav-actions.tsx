@@ -43,9 +43,14 @@ import {
 } from "@/components/ui/tooltip"
 import { useNoteEditorContext } from "@/contexts/note-editor-context"
 import { useSyncedNoteQueries } from "@/hooks/use-sync-queries"
+import { authClient } from "@/lib/auth-client"
+import type { Note } from "@/lib/db-client"
 import { cn } from "@/lib/utils"
+import { useQueryClient } from "@tanstack/react-query"
 import { formatDistance } from "date-fns"
 import { useParams } from "next/navigation"
+import { useCallback } from "react"
+import { toast } from "sonner"
 
 const data = [
   [
@@ -113,11 +118,51 @@ const data = [
 export function NoteNavActions() {
   const { isMobile } = useSidebar()
   const { noteId } = useParams<{ noteId: string }>()
+  const queryClient = useQueryClient()
+  const { data: organization } = authClient.useActiveOrganization()
+  const { data: session } = authClient.useSession()
 
   // Use the synced note hook instead of direct Dexie queries
-  const { note, isLoading } = useSyncedNoteQueries(noteId)
+  const { note, isLoading, updateNoteFavorite } = useSyncedNoteQueries(noteId)
 
   const { isSaving, isAutoSaving, isChanged } = useNoteEditorContext()
+
+  const handleToggleFavorite = useCallback(async () => {
+    if (!note || !organization || !session) return
+
+    const newFavoritedState = !note.isFavorited
+
+    // Use the updateNoteFavorite from useSyncedNoteQueries hook
+    updateNoteFavorite(
+      newFavoritedState,
+      newFavoritedState ? session.user.id : null
+    )
+      .then(({ error }) => {
+        if (error) {
+          toast.error("Failed to update favorite status")
+          console.error(error)
+          return
+        }
+
+        // Optimistically update the cache
+        queryClient.setQueryData(
+          ["note", note.id, organization.id],
+          (old: Note) => ({
+            ...old,
+            isFavorited: newFavoritedState,
+            favoritedByUserId: newFavoritedState ? session.user.id : null
+          })
+        )
+
+        toast.success(
+          newFavoritedState ? "Added to favorites" : "Removed from favorites"
+        )
+      })
+      .catch((error) => {
+        toast.error("Failed to update favorite status")
+        console.error(error)
+      })
+  }, [note, organization, session, updateNoteFavorite, queryClient])
 
   return (
     <>
@@ -173,9 +218,26 @@ export function NoteNavActions() {
               </TooltipContent>
             </Tooltip>
           )}
-          <Button variant="ghost" size="icon" className="h-7 w-7">
-            <Star />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7"
+                onClick={handleToggleFavorite}
+                disabled={isLoading || !note}
+              >
+                <Star
+                  className={
+                    note?.isFavorited ? "fill-yellow-400 text-yellow-400" : ""
+                  }
+                />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              {note?.isFavorited ? "Remove from favorites" : "Add to favorites"}
+            </TooltipContent>
+          </Tooltip>
           <Popover>
             <PopoverTrigger asChild>
               <Button

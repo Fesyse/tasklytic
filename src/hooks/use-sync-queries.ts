@@ -124,6 +124,39 @@ export function useSyncedNoteQueries(noteId: string) {
     [note, noteId, syncNow]
   )
 
+  // Update note's favorite status
+  const updateNoteFavorite = useCallback(
+    async (isFavorited: boolean, favoritedByUserId: string | null) => {
+      if (!note) return { data: null, error: new Error("Note not found") }
+
+      try {
+        // Create updated note object
+        const updatedNote: Note = {
+          ...note,
+          isFavorited,
+          favoritedByUserId,
+          updatedAt: new Date()
+        }
+
+        // Apply the change locally
+        await dexieDB.notes.update(noteId, updatedNote)
+
+        // Use immediate sync for favorite changes rather than debounced sync
+        // This ensures the changes are pushed to the server immediately
+        await syncNow()
+
+        return { data: true, error: null }
+      } catch (err) {
+        console.error("Error updating note favorite status:", err)
+        return {
+          data: null,
+          error: err instanceof Error ? err : new Error(String(err))
+        }
+      }
+    },
+    [note, noteId, syncNow]
+  )
+
   // Create a block in the note
   const createBlock = useCallback(
     async (content: any, order: number) => {
@@ -205,6 +238,7 @@ export function useSyncedNoteQueries(noteId: string) {
     syncStatus,
     updateNoteTitle,
     updateNoteEmoji,
+    updateNoteFavorite,
     createBlock,
     updateBlock,
     deleteBlock
@@ -247,7 +281,9 @@ export function useSyncedOrganizationNotes(organizationId: string) {
           createdByUserName: session.user.name,
           createdAt: new Date(),
           organizationId,
-          parentNoteId: parentNoteId ?? null
+          parentNoteId: parentNoteId ?? null,
+          isFavorited: false,
+          favoritedByUserId: null
         })
 
         // Trigger debounced sync

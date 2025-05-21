@@ -46,6 +46,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavMain items={sidebarNav.navMain} />
         <NavNotes
+          notes={sidebarNav.favoriteNotes.items}
+          isLoading={sidebarNav.favoriteNotes.isLoading}
+          type="favorites"
+        />
+        <NavNotes
           notes={sidebarNav.privateNotes.items}
           isLoading={sidebarNav.privateNotes.isLoading}
           type="private"
