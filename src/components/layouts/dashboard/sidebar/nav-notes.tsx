@@ -31,9 +31,11 @@ import {
 } from "@/components/ui/sidebar"
 import { usePrefetchNotes } from "@/hooks/use-prefetch-notes"
 import { authClient } from "@/lib/auth-client"
+import { dexieDB, type Note } from "@/lib/db-client"
 import { createNote, deleteNote } from "@/lib/db-queries"
 import type { NoteNavItem } from "@/lib/sidebar"
 import { cn, getBaseUrl } from "@/lib/utils"
+import { useQueryClient } from "@tanstack/react-query"
 import {
   ArrowUpRight,
   ChevronDown,
@@ -41,11 +43,12 @@ import {
   MoreHorizontal,
   PlusIcon,
   StarIcon,
+  StarOffIcon,
   Trash2
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { useState } from "react"
+import { useCallback, useState } from "react"
 import { toast } from "sonner"
 
 export function NavNotes({
@@ -86,7 +89,7 @@ export function NavNotes({
         return "Shared"
       case "favorites":
         return (
-          <span className="flex items-center gap-1">
+          <span className="flex items-center gap-1.5">
             <StarIcon className="size-4 fill-yellow-400 text-yellow-400" />
             Favorites
           </span>
@@ -141,7 +144,7 @@ function Note({ item, level = 0 }: { level?: number; item: NoteNavItem }) {
   const [isActionsOpen, setIsActionsOpen] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
   const { prefetchNote } = usePrefetchNotes()
-
+  const queryClient = useQueryClient()
   const { data: activeOrganization } = authClient.useActiveOrganization()
   const { data: session } = authClient.useSession()
 
@@ -211,6 +214,65 @@ function Note({ item, level = 0 }: { level?: number; item: NoteNavItem }) {
     e.preventDefault()
     e.stopPropagation()
     setIsExpanded(!isExpanded)
+  }
+
+  const updateNoteFavorite = useCallback(
+    async (isFavorited: boolean, favoritedByUserId: string | null) => {
+      if (!item) return { data: null, error: new Error("Note not found") }
+
+      try {
+        await dexieDB.notes.update(item.id, {
+          isFavorited,
+          favoritedByUserId
+        })
+
+        return { data: true, error: null }
+      } catch (err) {
+        console.error("Error updating note favorite status:", err)
+        return {
+          data: null,
+          error: err instanceof Error ? err : new Error(String(err))
+        }
+      }
+    },
+    [item]
+  )
+
+  const handleToggleFavorite = () => {
+    if (!activeOrganization || !session) return
+
+    const newFavoritedState = !item.isFavorited
+
+    // Use the updateNoteFavorite from useSyncedNoteQueries hook
+    updateNoteFavorite(
+      newFavoritedState,
+      newFavoritedState ? session.user.id : null
+    )
+      .then(({ error }) => {
+        if (error) {
+          toast.error("Failed to update favorite status")
+          console.error(error)
+          return
+        }
+
+        // Optimistically update the cache
+        queryClient.setQueryData(
+          ["note", item.id, activeOrganization.id],
+          (old: Note) => ({
+            ...old,
+            isFavorited: newFavoritedState,
+            favoritedByUserId: newFavoritedState ? session.user.id : null
+          })
+        )
+
+        toast.success(
+          newFavoritedState ? "Added to favorites" : "Removed from favorites"
+        )
+      })
+      .catch((error) => {
+        toast.error("Failed to update favorite status")
+        console.error(error)
+      })
   }
 
   return (
@@ -284,6 +346,19 @@ function Note({ item, level = 0 }: { level?: number; item: NoteNavItem }) {
             side={isMobile ? "bottom" : "right"}
             align={isMobile ? "end" : "start"}
           >
+            <DropdownMenuItem onClick={() => handleToggleFavorite()}>
+              {item.isFavorited ? (
+                <StarOffIcon className="text-muted-foreground" />
+              ) : (
+                <StarIcon className="text-muted-foreground" />
+              )}
+              <span>
+                {item.isFavorited
+                  ? "Remove from favorites"
+                  : "Add to favorites"}
+              </span>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => handleCopyLink(fullUrl)}>
               <LinkIcon className="text-muted-foreground" />
               <span>Copy Link</span>

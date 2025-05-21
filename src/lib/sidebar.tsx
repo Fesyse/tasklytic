@@ -30,6 +30,7 @@ export type NoteNavItem = {
   title: string
   url: string
   icon: string | LucideIcon
+  isFavorited: boolean
 
   subNotes:
     | {
@@ -74,6 +75,8 @@ export const useSidebarNav = (): SidebarNav => {
       icon: note.emoji ?? FileIcon,
       title: note.title,
       url: `/dashboard/note/${note.id}`,
+      isFavorited:
+        note.isFavorited || note.favoritedByUserId === session?.user.id,
       subNotes: {
         isLoading: false,
         items: buildNoteHierarchy(notes, note.id)
@@ -100,9 +103,11 @@ export const useSidebarNav = (): SidebarNav => {
       isLoading: result === undefined || !result.data,
       items: result?.data
         ? buildNoteHierarchy(
-            result.data.filter(
-              (note) =>
-                note.isFavorited && note.favoritedByUserId === session?.user.id
+            result.data.filter((note) =>
+              note.parentNoteId === null
+                ? note.isFavorited &&
+                  note.favoritedByUserId === session?.user.id
+                : true
             ),
             null
           )
@@ -112,12 +117,7 @@ export const useSidebarNav = (): SidebarNav => {
       isLoading: result === undefined || !result.data,
       items: result?.data
         ? buildNoteHierarchy(
-            result.data.filter(
-              (note) =>
-                !note.isPublic &&
-                (!note.isFavorited ||
-                  note.favoritedByUserId !== session?.user.id)
-            ),
+            result.data.filter((note) => !note.isPublic),
             null
           )
         : []
@@ -126,12 +126,7 @@ export const useSidebarNav = (): SidebarNav => {
       isLoading: result === undefined || !result.data,
       items: result?.data
         ? buildNoteHierarchy(
-            result.data.filter(
-              (note) =>
-                note.isPublic &&
-                (!note.isFavorited ||
-                  note.favoritedByUserId !== session?.user.id)
-            ),
+            result.data.filter((note) => note.isPublic),
             null
           )
         : []
