@@ -293,7 +293,8 @@ function Note({ item, level = 0 }: { level?: number; item: NoteNavItem }) {
               <span
                 className={cn({
                   "transition-all duration-200 ease-in-out group-hover/sidebar-note-button:opacity-0":
-                    hasSubNotes
+                    hasSubNotes,
+                  "opacity-0": isExpanded
                 })}
               >
                 {typeof item.icon === "string" ? (
@@ -311,7 +312,8 @@ function Note({ item, level = 0 }: { level?: number; item: NoteNavItem }) {
                     className={cn(
                       "text-muted-foreground relative z-10 size-4 opacity-0 transition-all duration-200 ease-in-out group-hover/sidebar-note-button:opacity-100",
                       {
-                        "-rotate-90": !isExpanded
+                        "-rotate-90": !isExpanded,
+                        "opacity-100": isExpanded
                       }
                     )}
                   />
