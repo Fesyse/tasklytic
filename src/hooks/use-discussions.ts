@@ -1,18 +1,7 @@
 import { authClient } from "@/lib/auth-client"
 import { type Comment, type Discussion } from "@/lib/db-client"
-import {
-  createComment,
-  createDiscussion,
-  deleteComment,
-  deleteDiscussion,
-  getComments,
-  getDiscussions,
-  updateComment,
-  updateDiscussionResolved
-} from "@/lib/db-queries"
-import { useDexieDb } from "@/lib/use-dexie-db"
-import { type Value } from "@udecode/plate"
-import { useCallback } from "react"
+import { useCallback, useEffect, useState } from "react"
+import { useSyncedDiscussions } from "./use-sync-queries"
 
 export interface TDiscussionWithComments extends Discussion {
   comments: Comment[]
@@ -20,99 +9,154 @@ export interface TDiscussionWithComments extends Discussion {
 
 export function useDiscussions(noteId: string) {
   const session = authClient.useSession()
-  const userId = session.data?.user.id || ""
   const userName = session.data?.user.name || ""
+  const [discussions, setDiscussions] = useState<TDiscussionWithComments[]>([])
+  const [isLoadingDiscussions, setIsLoadingDiscussions] = useState(true)
 
-  // Get discussions for the note
-  const { data: discussions = [], isLoading: isLoadingDiscussions } =
-    useDexieDb(async () => {
-      const { data: discussionsData } = await getDiscussions(noteId)
-      if (!discussionsData) return []
+  // Use the sync-powered discussions hook
+  const {
+    getDiscussions,
+    createDiscussion,
+    updateDiscussionResolved,
+    deleteDiscussion,
+    createComment,
+    updateComment,
+    deleteComment,
+    userId
+  } = useSyncedDiscussions(noteId)
 
-      // Get comments for each discussion
-      const discussionsWithComments: TDiscussionWithComments[] =
-        await Promise.all(
-          discussionsData.map(async (discussion) => {
-            const { data: commentsData } = await getComments(discussion.id)
-            return {
-              ...discussion,
-              comments: commentsData || []
-            }
-          })
-        )
+  // Load discussions initially and set up automatic updates
+  useEffect(() => {
+    const loadDiscussions = async () => {
+      setIsLoadingDiscussions(true)
+      const { data, error } = await getDiscussions()
+      if (data) {
+        setDiscussions(data)
+      }
+      if (error) {
+        console.error("Error loading discussions:", error)
+      }
+      setIsLoadingDiscussions(false)
+    }
 
-      return discussionsWithComments
-    }, [noteId])
+    loadDiscussions()
+
+    // Set up an interval to periodically refresh discussions
+    const interval = setInterval(loadDiscussions, 5000)
+    return () => clearInterval(interval)
+  }, [getDiscussions])
 
   // Create a new discussion
   const addDiscussion = useCallback(
-    async (blockId: string, documentContent: string, contentRich: Value) => {
-      if (!userId) return null
-
-      // Create the discussion
-      const { data: discussionId } = await createDiscussion({
-        noteId,
+    async (blockId: string, documentContent: string, contentRich: any) => {
+      const { data: discussionId } = await createDiscussion(
         blockId,
         documentContent,
-        userId
-      })
+        contentRich
+      )
 
-      if (!discussionId) return null
-
-      // Create the first comment
-      await createComment({
-        discussionId,
-        contentRich,
-        userId
-      })
+      // Refresh discussions after creating a new one
+      if (discussionId) {
+        const { data } = await getDiscussions()
+        if (data) {
+          setDiscussions(data)
+        }
+      }
 
       return discussionId
     },
-    [noteId, userId]
+    [createDiscussion, getDiscussions]
   )
 
   // Add a comment to a discussion
   const addComment = useCallback(
-    async (discussionId: string, contentRich: Value) => {
-      if (!userId) return null
+    async (discussionId: string, contentRich: any) => {
+      const { data: commentId } = await createComment(discussionId, contentRich)
 
-      const { data: commentId } = await createComment({
-        discussionId,
-        contentRich,
-        userId
-      })
+      // Refresh discussions after adding a comment
+      if (commentId) {
+        const { data } = await getDiscussions()
+        if (data) {
+          setDiscussions(data)
+        }
+      }
 
       return commentId
     },
-    [userId]
+    [createComment, getDiscussions]
   )
 
   // Update a comment
   const updateCommentContent = useCallback(
-    async (commentId: string, contentRich: Value) => {
+    async (commentId: string, contentRich: any) => {
       const { data } = await updateComment(commentId, contentRich)
+
+      // Refresh discussions after updating a comment
+      if (data) {
+        const { data: refreshedData } = await getDiscussions()
+        if (refreshedData) {
+          setDiscussions(refreshedData)
+        }
+      }
+
       return data
     },
-    []
+    [updateComment, getDiscussions]
   )
 
   // Delete a comment
-  const removeComment = useCallback(async (commentId: string) => {
-    const { data } = await deleteComment(commentId)
-    return data
-  }, [])
+  const removeComment = useCallback(
+    async (commentId: string) => {
+      const { data } = await deleteComment(commentId)
+
+      // Refresh discussions after deleting a comment
+      if (data) {
+        const { data: refreshedData } = await getDiscussions()
+        if (refreshedData) {
+          setDiscussions(refreshedData)
+        }
+      }
+
+      return data
+    },
+    [deleteComment, getDiscussions]
+  )
 
   // Resolve a discussion
-  const resolveDiscussion = useCallback(async (discussionId: string) => {
-    const { data } = await updateDiscussionResolved(discussionId, true)
-    return data
-  }, [])
+  const resolveDiscussion = useCallback(
+    async (discussionId: string) => {
+      const { data } = await updateDiscussionResolved(discussionId, true)
+
+      // Refresh discussions after resolving a discussion
+      if (data) {
+        const { data: refreshedData } = await getDiscussions()
+        if (refreshedData) {
+          setDiscussions(refreshedData)
+        }
+      }
+
+      return data
+    },
+    [updateDiscussionResolved, getDiscussions]
+  )
 
   // Delete a discussion
-  const removeDiscussion = useCallback(async (discussionId: string) => {
-    const { data } = await deleteDiscussion(discussionId)
-    return data
-  }, [])
+  const removeDiscussion = useCallback(
+    async (discussionId: string) => {
+      const { data } = await deleteDiscussion(discussionId)
+
+      // Refresh discussions after deleting a discussion
+      if (data) {
+        const { data: refreshedData } = await getDiscussions()
+        if (refreshedData) {
+          setDiscussions(refreshedData)
+        }
+      }
+
+      return data
+    },
+    [deleteDiscussion, getDiscussions]
+  )
 
   return {
     discussions,

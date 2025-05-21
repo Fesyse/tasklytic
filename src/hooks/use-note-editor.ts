@@ -194,10 +194,6 @@ async function saveNotesLocally(data: {
     return JSON.stringify(oldBlock) !== JSON.stringify(block)
   })
 
-  console.log("createdBlocks", createdBlocks)
-  console.log("updatedBlocks", updatedBlocks)
-  console.log("deletedBlocks", deletedBlocks)
-
   const [{ error: blocksError }, { error: noteError }] = await Promise.all([
     tryCatch(
       dexieDB.transaction("rw", dexieDB.blocks, () => {

@@ -42,9 +42,7 @@ import {
   TooltipTrigger
 } from "@/components/ui/tooltip"
 import { useNoteEditorContext } from "@/contexts/note-editor-context"
-import { authClient } from "@/lib/auth-client"
-import { getNote } from "@/lib/db-queries"
-import { useDexieDb } from "@/lib/use-dexie-db"
+import { useSyncedNoteQueries } from "@/hooks/use-sync-queries"
 import { cn } from "@/lib/utils"
 import { formatDistance } from "date-fns"
 import { useParams } from "next/navigation"
@@ -115,19 +113,10 @@ const data = [
 export function NoteNavActions() {
   const { isMobile } = useSidebar()
   const { noteId } = useParams<{ noteId: string }>()
-  const { data: activeOrganization } = authClient.useActiveOrganization()
 
-  const { data: note, isLoading } = useDexieDb(async () => {
-    if (!activeOrganization) return
-    const { data, error } = await getNote(noteId, activeOrganization.id)
+  // Use the synced note hook instead of direct Dexie queries
+  const { note, isLoading } = useSyncedNoteQueries(noteId)
 
-    if (error) {
-      console.error(error)
-      return null
-    }
-
-    return data
-  })
   const { isSaving, isAutoSaving, isChanged } = useNoteEditorContext()
 
   return (

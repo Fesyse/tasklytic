@@ -2,6 +2,7 @@
 
 import { PostHogProvider } from "@/components/providers/posthog-provider"
 import { Toaster } from "@/components/ui/sonner"
+import { SyncProvider } from "@/providers/sync-provider"
 import { TRPCReactProvider } from "@/trpc/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { ThemeProvider } from "next-themes"
@@ -16,10 +17,12 @@ export const Providers = ({ children }: React.PropsWithChildren) => {
         enableSystem
         disableTransitionOnChange
       >
-        <PostHogProvider>
-          <Toaster />
-          <NuqsAdapter>{children}</NuqsAdapter>
-        </PostHogProvider>
+        <SyncProvider>
+          <PostHogProvider>
+            <Toaster />
+            <NuqsAdapter>{children}</NuqsAdapter>
+          </PostHogProvider>
+        </SyncProvider>
         <SpeedInsights />
       </ThemeProvider>
     </TRPCReactProvider>

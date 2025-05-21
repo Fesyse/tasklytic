@@ -21,7 +21,5 @@ client.addListener("error", (err) => {
 
 // Enhanced drizzle client with relations support
 export const db = drizzle(client, {
-  schema,
-  // This ensures the relations are properly loaded
-  logger: env.NODE_ENV === "development"
+  schema
 })
