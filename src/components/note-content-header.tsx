@@ -5,19 +5,20 @@ import { NoteTitleInput } from "./note-title-input"
 import { Button } from "./ui/button"
 
 import { useEmojiData } from "@/hooks/use-emoji-data"
+import { useSyncedNoteQueries } from "@/hooks/use-sync-queries"
 import { authClient } from "@/lib/auth-client"
 import type { Note } from "@/lib/db-client"
-import { updateNoteEmoji } from "@/lib/db-queries"
-import { useLocalNote } from "@/lib/use-local-note"
 import { getEmojiSlug } from "@/lib/utils"
 import { useQueryClient } from "@tanstack/react-query"
 import { SmilePlus } from "lucide-react"
+import { useParams } from "next/navigation"
 import { useCallback, useState } from "react"
 import { toast } from "sonner"
 
 export const NoteContentHeader = () => {
   const queryClient = useQueryClient()
-  const { data: note } = useLocalNote()
+  const { noteId } = useParams<{ noteId: string }>()
+  const { note, updateNoteEmoji } = useSyncedNoteQueries(noteId as string)
   const { data: organization } = authClient.useActiveOrganization()
   const [isAddingEmoji, setIsAddingEmoji] = useState(false)
 
@@ -34,29 +35,33 @@ export const NoteContentHeader = () => {
     setIsAddingEmoji(false)
 
     const emoji = emojiData[Math.floor(Math.random() * emojiData.length)]!
-    const newEmojiData = {
-      emoji: emoji.emoji,
-      emojiSlug: getEmojiSlug(emoji.label)
-    }
+    const emojiSlug = getEmojiSlug(emoji.label)
 
-    updateNoteEmoji({
-      id: note.id,
-      ...newEmojiData
-    }).then(({ error }) => {
-      if (error) {
+    // Use the updateNoteEmoji from useSyncedNoteQueries hook
+    updateNoteEmoji(emoji.emoji, emojiSlug)
+      .then(({ error }) => {
+        if (error) {
+          toast.error("Failed to set emoji")
+          console.error(error)
+          return
+        }
+
+        // Optimistically update the cache
+        queryClient.setQueryData(
+          ["note", note.id, organization.id],
+          (old: Note) => ({
+            ...old,
+            emoji: emoji.emoji,
+            emojiSlug: emojiSlug
+          })
+        )
+
+        toast.success("Emoji added")
+      })
+      .catch((error) => {
         toast.error("Failed to set emoji")
         console.error(error)
-        return
-      }
-
-      queryClient.setQueryData(
-        ["note", note.id, organization.id],
-        (old: Note) => ({
-          ...old,
-          ...newEmojiData
-        })
-      )
-    })
+      })
   }
 
   return (

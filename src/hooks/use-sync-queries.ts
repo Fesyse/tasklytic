@@ -108,8 +108,9 @@ export function useSyncedNoteQueries(noteId: string) {
         // Apply the change locally
         await dexieDB.notes.update(noteId, updatedNote)
 
-        // Trigger debounced sync
-        debouncedSync()
+        // Use immediate sync for emoji changes rather than debounced sync
+        // This ensures the emoji change is pushed to the server immediately
+        await syncNow()
 
         return { data: true, error: null }
       } catch (err) {
@@ -120,7 +121,7 @@ export function useSyncedNoteQueries(noteId: string) {
         }
       }
     },
-    [note, noteId, debouncedSync]
+    [note, noteId, syncNow]
   )
 
   // Create a block in the note

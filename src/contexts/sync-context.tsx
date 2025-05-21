@@ -194,6 +194,8 @@ export function SyncProvider({ children }: { children: ReactNode }) {
   // Sync notes for an organization
   const syncNotes = useCallback(
     async (organizationId: string) => {
+      console.log("[SYNC] Syncing notes for organization", organizationId)
+
       try {
         // Get notes from the client
         const clientNotes = await dexieDB.notes
@@ -249,326 +251,459 @@ export function SyncProvider({ children }: { children: ReactNode }) {
     [syncNotesMutation]
   )
 
-  // Sync blocks for a note
-  const syncBlocks = useCallback(
-    async (noteId: string, clientBlocksParam?: any[]) => {
+  // Sync blocks for multiple notes in a single batch
+  const syncBlocksBatch = useCallback(
+    async (noteIds: string[]) => {
       try {
-        // Use provided blocks if available, otherwise fetch from DB
-        const clientBlocks =
-          clientBlocksParam ||
-          (await dexieDB.blocks.where("noteId").equals(noteId).toArray())
+        if (noteIds.length === 0) return []
+        console.log(`[SYNC] Batch syncing blocks for ${noteIds.length} notes`)
 
-        // Skip empty syncs to reduce network requests
-        if (clientBlocks.length === 0) {
-          // Just check if there are any blocks on the server that we need
-          const serverBlocksCheck = await utils.sync.getBlocks.fetch({ noteId })
-          if (serverBlocksCheck && serverBlocksCheck.length > 0) {
-            // We need to pull blocks from server
-            const blocksToPut = serverBlocksCheck.map((block) => ({
-              id: block.id,
-              noteId: block.noteId,
-              content: JSON.parse(block.content),
-              order: block.order
-            }))
+        // Collect all blocks for all provided notes
+        const allClientBlocks = []
+        for (const noteId of noteIds) {
+          const noteBlocks = await dexieDB.blocks
+            .where("noteId")
+            .equals(noteId)
+            .toArray()
+          allClientBlocks.push(...noteBlocks)
+        }
 
-            await dexieDB.blocks.bulkPut(blocksToPut)
+        // Skip if no blocks
+        if (allClientBlocks.length === 0) {
+          // Check if any server blocks exist
+          let serverBlocksExist = false
+          for (const noteId of noteIds) {
+            const serverBlocksCheck = await utils.sync.getBlocks.fetch({
+              noteId
+            })
+            if (serverBlocksCheck && serverBlocksCheck.length > 0) {
+              serverBlocksExist = true
+              // Pull these blocks
+              const blocksToPut = serverBlocksCheck.map((block) => ({
+                id: block.id,
+                noteId: block.noteId,
+                content: JSON.parse(block.content),
+                order: block.order
+              }))
+              await dexieDB.blocks.bulkPut(blocksToPut)
+            }
           }
           return []
         }
 
-        // Send to server using tRPC mutation
-        const serverBlocks = await syncBlocksMutation.mutateAsync({
-          blocks: clientBlocks,
-          noteId
-        })
+        // To avoid duplicate key violations, we'll sync blocks per note instead of all at once
+        // This is less efficient but more reliable
+        const allServerBlocks = []
 
-        // Update client blocks
-        const blocksToPut = serverBlocks.map((block) => ({
-          id: block.id,
-          noteId: block.noteId,
-          content: JSON.parse(block.content),
-          order: block.order
-        }))
+        // Process one note at a time
+        for (const noteId of noteIds) {
+          const noteBlocks = allClientBlocks.filter(
+            (block) => block.noteId === noteId
+          )
+          if (noteBlocks.length === 0) continue
 
-        // Identify blocks to delete
-        const serverBlockIds = new Set(serverBlocks.map((block) => block.id))
-        const clientBlocksToDelete = clientBlocks
-          .filter((block) => !serverBlockIds.has(block.id))
-          .map((block) => block.id)
+          try {
+            // Send this note's blocks to server
+            const serverBlocksForNote = await syncBlocksMutation.mutateAsync({
+              blocks: noteBlocks,
+              noteId
+            })
 
-        // Apply changes to client DB
-        await dexieDB.transaction("rw", dexieDB.blocks, async () => {
-          if (clientBlocksToDelete.length > 0) {
-            await dexieDB.blocks.bulkDelete(clientBlocksToDelete)
+            allServerBlocks.push(...serverBlocksForNote)
+          } catch (error) {
+            console.error(`Error syncing blocks for note ${noteId}:`, error)
+            // Continue with other notes instead of failing the entire batch
           }
-          if (blocksToPut.length > 0) {
-            await dexieDB.blocks.bulkPut(blocksToPut)
-          }
-        })
+        }
 
-        return blocksToPut
+        // If we have server blocks from any of the notes
+        if (allServerBlocks.length > 0) {
+          // Update client blocks
+          const blocksToPut = allServerBlocks.map((block) => ({
+            id: block.id,
+            noteId: block.noteId,
+            content: JSON.parse(block.content),
+            order: block.order
+          }))
+
+          // Identify blocks to delete (in client but not in server)
+          const serverBlockIds = new Set(
+            allServerBlocks.map((block) => block.id)
+          )
+          const clientBlocksToDelete = allClientBlocks
+            .filter((block) => !serverBlockIds.has(block.id))
+            .map((block) => block.id)
+
+          // Apply changes to client DB in one transaction
+          await dexieDB.transaction("rw", dexieDB.blocks, async () => {
+            if (clientBlocksToDelete.length > 0) {
+              await dexieDB.blocks.bulkDelete(clientBlocksToDelete)
+            }
+            if (blocksToPut.length > 0) {
+              await dexieDB.blocks.bulkPut(blocksToPut)
+            }
+          })
+
+          return blocksToPut
+        }
+
+        return []
       } catch (error) {
-        console.error("Error syncing blocks:", error)
+        console.error("Error batch syncing blocks:", error)
         throw error
       }
     },
     [syncBlocksMutation, utils]
   )
 
-  // Sync discussions for a note
-  const syncDiscussions = useCallback(
-    async (noteId: string) => {
+  // Sync discussions for multiple notes in a single batch
+  const syncDiscussionsBatch = useCallback(
+    async (noteIds: string[]) => {
       try {
-        // Get discussions from the client
-        const clientDiscussions = await dexieDB.discussions
-          .where("noteId")
-          .equals(noteId)
-          .toArray()
-
-        // Send to server using tRPC mutation
-        const serverDiscussions = await syncDiscussionsMutation.mutateAsync({
-          discussions: clientDiscussions,
-          noteId
-        })
-
-        // Update client discussions
-        const discussionsToPut = serverDiscussions.map((discussion) => ({
-          id: discussion.id,
-          noteId: discussion.noteId,
-          blockId: discussion.blockId,
-          documentContent: discussion.documentContent || undefined,
-          createdAt: discussion.createdAt,
-          isResolved: discussion.isResolved,
-          userId: discussion.userId
-        }))
-
-        // Identify discussions to delete
-        const serverDiscussionIds = new Set(
-          serverDiscussions.map((discussion) => discussion.id)
+        if (noteIds.length === 0) return []
+        console.log(
+          `[SYNC] Batch syncing discussions for ${noteIds.length} notes`
         )
-        const clientDiscussionsToDelete = clientDiscussions
-          .filter((discussion) => !serverDiscussionIds.has(discussion.id))
-          .map((discussion) => discussion.id)
 
-        // Apply changes to client DB
-        await dexieDB.transaction("rw", dexieDB.discussions, async () => {
-          if (clientDiscussionsToDelete.length > 0) {
-            await dexieDB.discussions.bulkDelete(clientDiscussionsToDelete)
-          }
-          if (discussionsToPut.length > 0) {
-            await dexieDB.discussions.bulkPut(discussionsToPut)
-          }
-        })
-
-        // For each discussion, sync its comments
-        for (const discussion of discussionsToPut) {
-          await syncComments(discussion.id)
+        // Collect all discussions for all provided notes
+        const allClientDiscussions = []
+        for (const noteId of noteIds) {
+          const noteDiscussions = await dexieDB.discussions
+            .where("noteId")
+            .equals(noteId)
+            .toArray()
+          allClientDiscussions.push(...noteDiscussions)
         }
 
-        return discussionsToPut
+        // Skip if no discussions
+        if (allClientDiscussions.length === 0) {
+          return []
+        }
+
+        // To avoid duplicate key violations, we'll sync discussions per note instead of all at once
+        const allServerDiscussions = []
+
+        // Process one note at a time
+        for (const noteId of noteIds) {
+          const noteDiscussions = allClientDiscussions.filter(
+            (discussion) => discussion.noteId === noteId
+          )
+          if (noteDiscussions.length === 0) continue
+
+          try {
+            // Send this note's discussions to server
+            const serverDiscussionsForNote =
+              await syncDiscussionsMutation.mutateAsync({
+                discussions: noteDiscussions,
+                noteId
+              })
+
+            allServerDiscussions.push(...serverDiscussionsForNote)
+          } catch (error) {
+            console.error(
+              `Error syncing discussions for note ${noteId}:`,
+              error
+            )
+            // Continue with other notes instead of failing the entire batch
+          }
+        }
+
+        // If we have server discussions from any of the notes
+        if (allServerDiscussions.length > 0) {
+          // Update client discussions
+          const discussionsToPut = allServerDiscussions.map((discussion) => ({
+            id: discussion.id,
+            noteId: discussion.noteId,
+            blockId: discussion.blockId,
+            documentContent: discussion.documentContent || undefined,
+            createdAt: discussion.createdAt,
+            isResolved: discussion.isResolved,
+            userId: discussion.userId
+          }))
+
+          // Identify discussions to delete
+          const serverDiscussionIds = new Set(
+            allServerDiscussions.map((discussion) => discussion.id)
+          )
+          const clientDiscussionsToDelete = allClientDiscussions
+            .filter((discussion) => !serverDiscussionIds.has(discussion.id))
+            .map((discussion) => discussion.id)
+
+          // Apply changes to client DB in one transaction
+          await dexieDB.transaction("rw", dexieDB.discussions, async () => {
+            if (clientDiscussionsToDelete.length > 0) {
+              await dexieDB.discussions.bulkDelete(clientDiscussionsToDelete)
+            }
+            if (discussionsToPut.length > 0) {
+              await dexieDB.discussions.bulkPut(discussionsToPut)
+            }
+          })
+
+          // Batch sync all comments for these discussions
+          if (discussionsToPut.length > 0) {
+            const discussionIds = discussionsToPut.map((d) => d.id)
+            if (discussionIds.length > 0) {
+              await syncCommentsBatch(discussionIds)
+            }
+          }
+
+          return discussionsToPut
+        }
+
+        return []
       } catch (error) {
-        console.error("Error syncing discussions:", error)
+        console.error("Error batch syncing discussions:", error)
         throw error
       }
     },
     [syncDiscussionsMutation]
   )
 
-  // Sync comments for a discussion
-  const syncComments = useCallback(
-    async (discussionId: string) => {
+  // Sync comments for multiple discussions in a single batch
+  const syncCommentsBatch = useCallback(
+    async (discussionIds: string[]) => {
       try {
-        // Get comments from the client
-        const clientComments = await dexieDB.comments
-          .where("discussionId")
-          .equals(discussionId)
-          .toArray()
+        if (discussionIds.length === 0) return []
 
-        // Send to server using tRPC mutation
-        const serverComments = await syncCommentsMutation.mutateAsync({
-          comments: clientComments,
-          discussionId
-        })
-
-        // Update client comments
-        const commentsToPut = serverComments.map((comment) => ({
-          id: comment.id,
-          discussionId: comment.discussionId,
-          contentRich: JSON.parse(comment.contentRich),
-          createdAt: comment.createdAt,
-          isEdited: comment.isEdited,
-          userId: comment.userId
-        }))
-
-        // Identify comments to delete
-        const serverCommentIds = new Set(
-          serverComments.map((comment) => comment.id)
+        console.log(
+          `[SYNC] Batch syncing comments for ${discussionIds.length} discussions`
         )
-        const clientCommentsToDelete = clientComments
-          .filter((comment) => !serverCommentIds.has(comment.id))
-          .map((comment) => comment.id)
 
-        // Apply changes to client DB
-        await dexieDB.transaction("rw", dexieDB.comments, async () => {
-          if (clientCommentsToDelete.length > 0) {
-            await dexieDB.comments.bulkDelete(clientCommentsToDelete)
-          }
-          if (commentsToPut.length > 0) {
-            await dexieDB.comments.bulkPut(commentsToPut)
-          }
-        })
+        // Collect all comments for all provided discussions
+        const allClientComments = []
+        for (const discussionId of discussionIds) {
+          const discussionComments = await dexieDB.comments
+            .where("discussionId")
+            .equals(discussionId)
+            .toArray()
+          allClientComments.push(...discussionComments)
+        }
 
-        return commentsToPut
+        // Skip if no comments
+        if (allClientComments.length === 0) {
+          return []
+        }
+
+        // To avoid duplicate key violations, we'll sync comments per discussion instead of all at once
+        const allServerComments = []
+
+        // Process one discussion at a time
+        for (const discussionId of discussionIds) {
+          const discussionComments = allClientComments.filter(
+            (comment) => comment.discussionId === discussionId
+          )
+          if (discussionComments.length === 0) continue
+
+          try {
+            // Send this discussion's comments to server
+            const serverCommentsForDiscussion =
+              await syncCommentsMutation.mutateAsync({
+                comments: discussionComments,
+                discussionId
+              })
+
+            allServerComments.push(...serverCommentsForDiscussion)
+          } catch (error) {
+            console.error(
+              `Error syncing comments for discussion ${discussionId}:`,
+              error
+            )
+            // Continue with other discussions instead of failing the entire batch
+          }
+        }
+
+        // If we have server comments from any of the discussions
+        if (allServerComments.length > 0) {
+          // Update client comments
+          const commentsToPut = allServerComments.map((comment) => ({
+            id: comment.id,
+            discussionId: comment.discussionId,
+            contentRich: JSON.parse(comment.contentRich),
+            createdAt: comment.createdAt,
+            isEdited: comment.isEdited,
+            userId: comment.userId
+          }))
+
+          // Identify comments to delete
+          const serverCommentIds = new Set(
+            allServerComments.map((comment) => comment.id)
+          )
+          const clientCommentsToDelete = allClientComments
+            .filter((comment) => !serverCommentIds.has(comment.id))
+            .map((comment) => comment.id)
+
+          // Apply changes to client DB in one transaction
+          await dexieDB.transaction("rw", dexieDB.comments, async () => {
+            if (clientCommentsToDelete.length > 0) {
+              await dexieDB.comments.bulkDelete(clientCommentsToDelete)
+            }
+            if (commentsToPut.length > 0) {
+              await dexieDB.comments.bulkPut(commentsToPut)
+            }
+          })
+
+          return commentsToPut
+        }
+
+        return []
       } catch (error) {
-        console.error("Error syncing comments:", error)
+        console.error("Error batch syncing comments:", error)
         throw error
       }
     },
     [syncCommentsMutation]
   )
 
-  // Perform full sync
+  // Define sync function (with added throttling)
   const syncNow = useCallback(async () => {
-    if (!session?.user || !activeOrganization?.id) {
-      console.log("No active session or organization, skipping sync")
+    // Prevent overlapping sync operations
+    if (syncStatus === "syncing") {
+      console.log("Sync already in progress, skipping duplicate request")
       return
     }
 
-    // Mutex to prevent concurrent syncs
-    if (syncInProgressRef.current) {
-      console.log("Sync already in progress, skipping duplicate sync")
+    // Throttle sync calls - don't allow more than one sync operation every 3 seconds
+    const now = Date.now()
+    if (lastSyncedAt && now - lastSyncedAt.getTime() < 3000) {
+      console.log("Throttling sync request - too soon after previous sync")
       return
     }
 
-    syncInProgressRef.current = true
     setSyncStatus("syncing")
-    // Set the internal sync flag to prevent hooks from triggering
+    // Set a flag to indicate we're running a sync operation triggered by the app
+    // This helps prevent infinite sync loops
     setIsInternalSyncActive(true)
 
     try {
-      // Sync notes for the active organization
-      const orgId = activeOrganization.id
-      const notes = await syncNotes(orgId)
+      if (activeOrganization?.id) {
+        // First sync the organization's notes
+        try {
+          console.log("[SYNC] Starting sync process")
+          const syncedNotes = await syncNotes(activeOrganization.id)
 
-      // Instead of syncing each note's blocks and discussions immediately,
-      // collect all the IDs and do fewer, larger operations
-      if (notes.length > 0) {
-        // Sync all blocks in one batch if possible
-        const noteIds = notes.map((note) => note.id)
+          // Get all note IDs to sync
+          const noteIds = syncedNotes.map((note) => note.id)
 
-        // Only do blocks sync if we have notes to sync
-        if (noteIds.length > 0) {
-          // For each note, get client blocks
-          const allClientBlocks = []
-          for (const noteId of noteIds) {
-            const clientBlocks = await dexieDB.blocks
-              .where("noteId")
-              .equals(noteId)
-              .toArray()
+          if (noteIds.length > 0) {
+            // Process notes in larger batches for true batched syncing
+            // A batch size of 10-20 is reasonable for batched operations
+            const BATCH_SIZE = 20
 
-            allClientBlocks.push(...clientBlocks)
-          }
+            // Process in chunks to keep request sizes reasonable
+            for (let i = 0; i < noteIds.length; i += BATCH_SIZE) {
+              const batchIds = noteIds.slice(i, i + BATCH_SIZE)
+              console.log(
+                `[SYNC] Processing batch ${Math.floor(i / BATCH_SIZE) + 1} with ${batchIds.length} notes`
+              )
 
-          // Group client blocks by noteId for better handling
-          const blocksByNoteId: { [noteId: string]: any[] } = {}
-          for (const block of allClientBlocks) {
-            const noteId = block.noteId
-            if (noteId) {
-              if (!blocksByNoteId[noteId]) {
-                blocksByNoteId[noteId] = []
-              }
-              blocksByNoteId[noteId].push(block)
+              // Sync blocks and discussions for this batch
+              await syncBlocksBatch(batchIds)
+              await syncDiscussionsBatch(batchIds)
             }
           }
 
-          // Sync blocks for each note, but limit concurrency
-          const BATCH_SIZE = 3 // Process notes in small batches to avoid too many concurrent requests
-
-          for (let i = 0; i < noteIds.length; i += BATCH_SIZE) {
-            const batch = noteIds.slice(i, i + BATCH_SIZE)
-            const batchPromises = batch.map((noteId) => {
-              const blocksForNote =
-                noteId && blocksByNoteId[noteId] ? blocksByNoteId[noteId] : []
-              return syncBlocks(noteId, blocksForNote)
-            })
-
-            // Wait for this batch to complete before starting the next one
-            await Promise.all(batchPromises)
-          }
-
-          // Now sync discussions with the same batching approach
-          for (let i = 0; i < noteIds.length; i += BATCH_SIZE) {
-            const batch = noteIds.slice(i, i + BATCH_SIZE)
-            const batchPromises = batch.map((noteId) => syncDiscussions(noteId))
-
-            // Wait for this batch to complete before starting the next one
-            await Promise.all(batchPromises)
-          }
+          setLastSyncedAt(new Date())
+          setSyncStatus("success")
+          console.log("[SYNC] Sync completed successfully")
+        } catch (error) {
+          setSyncStatus("error")
+          console.error("Error syncing data:", error)
         }
       }
-
-      // Update sync status
-      setSyncStatus("success")
-      const now = new Date()
-      setLastSyncedAt(now)
-      setIsInitialSyncComplete(true)
-      localStorage.setItem("lastSyncedAt", now.toISOString())
-    } catch (error) {
-      console.error("Error during sync:", error)
-      setSyncStatus("error")
     } finally {
-      // Always reset the flags when done
+      // Reset the flag when we're done
       setIsInternalSyncActive(false)
-      syncInProgressRef.current = false
     }
-  }, [session, activeOrganization, syncNotes, syncBlocks, syncDiscussions])
+  }, [
+    syncStatus,
+    lastSyncedAt,
+    activeOrganization?.id,
+    syncNotes,
+    syncBlocksBatch,
+    syncDiscussionsBatch
+  ])
 
   // Setup Dexie DB change listeners to trigger sync
   useEffect(() => {
-    if (isInitialSyncComplete && activeOrganization?.id) {
-      // Define a debounced sync function
+    if (
+      isInitialSyncComplete &&
+      activeOrganization?.id &&
+      !isInternalSyncActive
+    ) {
+      // Create a single debounced sync function with a longer delay (60 seconds)
+      // This will ensure we only sync once even if multiple DB changes happen
       let syncTimeout: ReturnType<typeof setTimeout> | null = null
+      let pendingChanges = false
 
       const debouncedSync = () => {
         // Skip triggering sync if we're already in a sync operation
         if (isInternalSyncActive) {
-          console.log("Skipping sync hook because internal sync is active")
           return
         }
 
+        // Mark that we have pending changes
+        pendingChanges = true
+
+        // Clear existing timeout if any
         if (syncTimeout) {
           clearTimeout(syncTimeout)
         }
 
-        // Wait 3 seconds after last change before syncing
+        // Set new timeout - wait 60 seconds after last change before syncing
         syncTimeout = setTimeout(() => {
-          syncNow()
+          if (pendingChanges) {
+            console.log("Running sync after debounce period")
+            syncNow()
+            pendingChanges = false
+          }
           syncTimeout = null
-        }, 60 * 1000)
+        }, 60 * 1000) // 60 second delay
       }
 
-      // Set up hooks for all tables
-      dexieDB.notes.hook("creating", debouncedSync)
-      dexieDB.notes.hook("updating", debouncedSync)
-      dexieDB.notes.hook("deleting", debouncedSync)
+      // Create one handler for all tables to avoid multiple sync triggers
+      const handleDatabaseChange = () => {
+        debouncedSync()
+      }
 
-      dexieDB.blocks.hook("creating", debouncedSync)
-      dexieDB.blocks.hook("updating", debouncedSync)
-      dexieDB.blocks.hook("deleting", debouncedSync)
+      // Set up hooks for all tables with a single handler
+      dexieDB.notes.hook("creating", handleDatabaseChange)
+      dexieDB.notes.hook("updating", handleDatabaseChange)
+      dexieDB.notes.hook("deleting", handleDatabaseChange)
 
-      dexieDB.discussions.hook("creating", debouncedSync)
-      dexieDB.discussions.hook("updating", debouncedSync)
-      dexieDB.discussions.hook("deleting", debouncedSync)
+      dexieDB.blocks.hook("creating", handleDatabaseChange)
+      dexieDB.blocks.hook("updating", handleDatabaseChange)
+      dexieDB.blocks.hook("deleting", handleDatabaseChange)
 
-      dexieDB.comments.hook("creating", debouncedSync)
-      dexieDB.comments.hook("updating", debouncedSync)
-      dexieDB.comments.hook("deleting", debouncedSync)
+      dexieDB.discussions.hook("creating", handleDatabaseChange)
+      dexieDB.discussions.hook("updating", handleDatabaseChange)
+      dexieDB.discussions.hook("deleting", handleDatabaseChange)
+
+      dexieDB.comments.hook("creating", handleDatabaseChange)
+      dexieDB.comments.hook("updating", handleDatabaseChange)
+      dexieDB.comments.hook("deleting", handleDatabaseChange)
 
       // Clean up on unmount
       return () => {
         if (syncTimeout) {
           clearTimeout(syncTimeout)
         }
+
+        // Unsubscribe from all hooks
+        dexieDB.notes.hook("creating").unsubscribe(handleDatabaseChange)
+        dexieDB.notes.hook("updating").unsubscribe(handleDatabaseChange)
+        dexieDB.notes.hook("deleting").unsubscribe(handleDatabaseChange)
+
+        dexieDB.blocks.hook("creating").unsubscribe(handleDatabaseChange)
+        dexieDB.blocks.hook("updating").unsubscribe(handleDatabaseChange)
+        dexieDB.blocks.hook("deleting").unsubscribe(handleDatabaseChange)
+
+        dexieDB.discussions.hook("creating").unsubscribe(handleDatabaseChange)
+        dexieDB.discussions.hook("updating").unsubscribe(handleDatabaseChange)
+        dexieDB.discussions.hook("deleting").unsubscribe(handleDatabaseChange)
+
+        dexieDB.comments.hook("creating").unsubscribe(handleDatabaseChange)
+        dexieDB.comments.hook("updating").unsubscribe(handleDatabaseChange)
+        dexieDB.comments.hook("deleting").unsubscribe(handleDatabaseChange)
       }
     }
   }, [isInitialSyncComplete, activeOrganization, syncNow, isInternalSyncActive])
