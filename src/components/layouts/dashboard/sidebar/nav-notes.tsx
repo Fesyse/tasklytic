@@ -30,6 +30,7 @@ import {
   useSidebar
 } from "@/components/ui/sidebar"
 import { usePrefetchNotes } from "@/hooks/use-prefetch-notes"
+import { useSync } from "@/hooks/use-sync"
 import { authClient } from "@/lib/auth-client"
 import { dexieDB, type Note } from "@/lib/db-client"
 import { createNote, deleteNote } from "@/lib/db-queries"
@@ -147,6 +148,7 @@ function Note({ item, level = 0 }: { level?: number; item: NoteNavItem }) {
   const queryClient = useQueryClient()
   const { data: activeOrganization } = authClient.useActiveOrganization()
   const { data: session } = authClient.useSession()
+  const { syncNow } = useSync()
 
   const fullUrl = `${getBaseUrl()}${item.url}`
   const isActive = pathname === item.url
@@ -204,6 +206,11 @@ function Note({ item, level = 0 }: { level?: number; item: NoteNavItem }) {
       return
     }
 
+    // Trigger sync to update the server
+    syncNow().catch((error) => {
+      console.error("Error syncing after delete:", error)
+    })
+
     toast.success("Note deleted successfully")
     if (pathname === `/dashboard/note/${noteId}`) {
       router.push("/dashboard")
@@ -254,6 +261,11 @@ function Note({ item, level = 0 }: { level?: number; item: NoteNavItem }) {
           console.error(error)
           return
         }
+
+        // Trigger sync to update the server
+        syncNow().catch((error) => {
+          console.error("Error syncing after toggling favorite:", error)
+        })
 
         // Optimistically update the cache
         queryClient.setQueryData(

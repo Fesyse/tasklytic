@@ -31,8 +31,7 @@ import {
   SidebarGroupContent,
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar
+  SidebarMenuItem
 } from "@/components/ui/sidebar"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
@@ -41,11 +40,9 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "@/components/ui/tooltip"
-import { useNoteEditorContext } from "@/contexts/note-editor-context"
 import { useSyncedNoteQueries } from "@/hooks/use-sync-queries"
 import { authClient } from "@/lib/auth-client"
 import type { Note } from "@/lib/db-client"
-import { cn } from "@/lib/utils"
 import { useQueryClient } from "@tanstack/react-query"
 import { formatDistance } from "date-fns"
 import { useParams } from "next/navigation"
@@ -116,7 +113,6 @@ const data = [
 ]
 
 export function NoteNavActions() {
-  const { isMobile } = useSidebar()
   const { noteId } = useParams<{ noteId: string }>()
   const queryClient = useQueryClient()
   const { data: organization } = authClient.useActiveOrganization()
@@ -124,8 +120,6 @@ export function NoteNavActions() {
 
   // Use the synced note hook instead of direct Dexie queries
   const { note, isLoading, updateNoteFavorite } = useSyncedNoteQueries(noteId)
-
-  const { isSaving, isAutoSaving, isChanged } = useNoteEditorContext()
 
   const handleToggleFavorite = useCallback(async () => {
     if (!note || !organization || !session) return
@@ -165,119 +159,95 @@ export function NoteNavActions() {
   }, [note, organization, session, updateNoteFavorite, queryClient])
 
   return (
-    <>
-      {!isMobile ? (
-        <div className="flex h-7 items-center justify-center text-sm">
-          <button
-            className={cn(
-              "rounded-md px-2 py-1 transition-opacity duration-200 ease-in-out",
-              {
-                "opacity-0": !isSaving && !isAutoSaving && !isChanged,
-                "opacity-50": isChanged,
-                "opacity-100": isSaving || isAutoSaving
-              }
-            )}
-          >
-            {isAutoSaving
-              ? "Auto-saving..."
-              : isSaving
-                ? "Saving..."
-                : isChanged
-                  ? "Unsaved"
-                  : null}
-          </button>
-        </div>
-      ) : null}
-      <div className="flex h-7 items-center justify-center gap-2 text-sm">
-        <TooltipProvider>
-          {isLoading || !note ? (
-            <Skeleton className="h-4 w-24" />
-          ) : (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="text-muted-foreground hidden font-medium md:inline-block">
-                  Edited{" "}
-                  {formatDistance(note.updatedAt, new Date(), {
-                    addSuffix: true
-                  })}
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>
-                  Edited by <strong>{note.updatedByUserName}</strong> on{" "}
-                  {formatDistance(note.updatedAt, new Date(), {
-                    addSuffix: true
-                  })}
-                </p>
-                <p>
-                  Created by <strong>{note.createdByUserName}</strong> on{" "}
-                  {formatDistance(note.createdAt, new Date(), {
-                    addSuffix: true
-                  })}
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          )}
+    <div className="flex h-7 items-center justify-center gap-2 text-sm">
+      <TooltipProvider>
+        {isLoading || !note ? (
+          <Skeleton className="h-4 w-24" />
+        ) : (
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-7 w-7"
-                onClick={handleToggleFavorite}
-                disabled={isLoading || !note}
-              >
-                <Star
-                  className={
-                    note?.isFavorited ? "fill-yellow-400 text-yellow-400" : ""
-                  }
-                />
-              </Button>
+              <div className="text-muted-foreground hidden font-medium md:inline-block">
+                Edited{" "}
+                {formatDistance(note.updatedAt, new Date(), {
+                  addSuffix: true
+                })}
+              </div>
             </TooltipTrigger>
             <TooltipContent>
-              {note?.isFavorited ? "Remove from favorites" : "Add to favorites"}
+              <p>
+                Edited by <strong>{note.updatedByUserName}</strong> on{" "}
+                {formatDistance(note.updatedAt, new Date(), {
+                  addSuffix: true
+                })}
+              </p>
+              <p>
+                Created by <strong>{note.createdByUserName}</strong> on{" "}
+                {formatDistance(note.createdAt, new Date(), {
+                  addSuffix: true
+                })}
+              </p>
             </TooltipContent>
           </Tooltip>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="data-[state=open]:bg-accent h-7 w-7"
-              >
-                <MoreHorizontal />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent
-              className="w-56 overflow-hidden rounded-lg p-0"
-              align="end"
+        )}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7"
+              onClick={handleToggleFavorite}
+              disabled={isLoading || !note}
             >
-              <Sidebar collapsible="none" className="bg-transparent">
-                <SidebarContent>
-                  {data.map((group, index) => (
-                    <SidebarGroup
-                      key={index}
-                      className="border-b last:border-none"
-                    >
-                      <SidebarGroupContent className="gap-0">
-                        <SidebarMenu>
-                          {group.map((item, index) => (
-                            <SidebarMenuItem key={index}>
-                              <SidebarMenuButton>
-                                <item.icon /> <span>{item.label}</span>
-                              </SidebarMenuButton>
-                            </SidebarMenuItem>
-                          ))}
-                        </SidebarMenu>
-                      </SidebarGroupContent>
-                    </SidebarGroup>
-                  ))}
-                </SidebarContent>
-              </Sidebar>
-            </PopoverContent>
-          </Popover>
-        </TooltipProvider>
-      </div>
-    </>
+              <Star
+                className={
+                  note?.isFavorited ? "fill-yellow-400 text-yellow-400" : ""
+                }
+              />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            {note?.isFavorited ? "Remove from favorites" : "Add to favorites"}
+          </TooltipContent>
+        </Tooltip>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="data-[state=open]:bg-accent h-7 w-7"
+            >
+              <MoreHorizontal />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent
+            className="w-56 overflow-hidden rounded-lg p-0"
+            align="end"
+          >
+            <Sidebar collapsible="none" className="bg-transparent">
+              <SidebarContent>
+                {data.map((group, index) => (
+                  <SidebarGroup
+                    key={index}
+                    className="border-b last:border-none"
+                  >
+                    <SidebarGroupContent className="gap-0">
+                      <SidebarMenu>
+                        {group.map((item, index) => (
+                          <SidebarMenuItem key={index}>
+                            <SidebarMenuButton>
+                              <item.icon /> <span>{item.label}</span>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                        ))}
+                      </SidebarMenu>
+                    </SidebarGroupContent>
+                  </SidebarGroup>
+                ))}
+              </SidebarContent>
+            </Sidebar>
+          </PopoverContent>
+        </Popover>
+      </TooltipProvider>
+    </div>
   )
 }

@@ -65,10 +65,6 @@ export function useSync() {
       setSyncStatus(syncServiceRef.current.status)
       setLastSyncedAt(syncServiceRef.current.lastSyncedAt)
 
-      if (result.success) {
-        toast.success("Sync completed successfully")
-      }
-
       return result
     } catch (error) {
       setSyncStatus("error")
