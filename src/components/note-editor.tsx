@@ -4,7 +4,7 @@ import {
   NoteEditorContext,
   useNoteEditorContext
 } from "@/contexts/note-editor-context"
-import { useNoteEditor } from "@/hooks/use-note-editor"
+import { useNoteEditorV2 } from "@/hooks/use-note-editor-v2"
 import { authClient } from "@/lib/auth-client"
 import { Plate } from "@udecode/plate/react"
 import { useEffect, useState } from "react"
@@ -20,7 +20,7 @@ import { Editor, EditorContainer } from "./ui/editor"
 export const NoteEditor = () => {
   const { setIsChanged } = useNoteEditorContext()
 
-  const { editor, isLoading, note } = useNoteEditor()
+  const { editor, isLoading, note } = useNoteEditorV2()
   const session = authClient.useSession()
   const userId = session.data?.user.id || ""
 
