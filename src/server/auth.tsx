@@ -6,10 +6,18 @@ import { siteConfig } from "@/lib/site-config"
 import { getBaseUrl } from "@/lib/utils"
 import { db } from "@/server/db"
 import { resend } from "@/server/resend"
+import {
+  profileImage,
+  UploadThingProvider
+} from "@better-auth-kit/profile-image"
 import { betterAuth } from "better-auth"
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
 import { nextCookies } from "better-auth/next-js"
 import { organization } from "better-auth/plugins/organization"
+import { utApi } from "./uploadthing"
+
+// FIXME: Versions seem to be incompatible
+const provider = new UploadThingProvider(utApi as any)
 
 export const auth = betterAuth({
   emailAndPassword: {
@@ -45,7 +53,22 @@ export const auth = betterAuth({
     provider: "pg"
   }),
   user: {
-    modelName: "users"
+    modelName: "users",
+    changeEmail: {
+      enabled: true,
+      sendChangeEmailVerification: async ({ user, newEmail, url }) => {
+        const { error } = await resend.emails.send({
+          from: siteConfig.emails.noreply,
+          to: newEmail,
+          subject: "Verify your email | Change email - Tasklytic",
+          react: <VerifyEmail url={url} userName={user.name} />
+        })
+
+        if (error) {
+          throw new Error(error.message)
+        }
+      }
+    }
   },
   session: {
     modelName: "sessions"
@@ -114,6 +137,7 @@ export const auth = betterAuth({
           modelName: "invitations"
         }
       }
-    })
+    }),
+    profileImage({ storageProvider: provider })
   ]
 })
