@@ -17,8 +17,9 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { authClient } from "@/lib/auth-client"
-import { fileToImgUrl } from "@/lib/utils"
-import { Pen } from "lucide-react"
+import { uploadFiles } from "@/lib/uploadthing-client"
+import { fileToImgUrl, tryCatch } from "@/lib/utils"
+import { Check, Pen } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
@@ -41,6 +42,9 @@ const profileFormSchema = z.object({
 type ProfileFormValues = z.infer<typeof profileFormSchema>
 
 export function SettingsProfile() {
+  const [isUpdated, setIsUpdated] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [isChangedEmail, setIsChangedEmail] = useState(false)
   const { data: session } = authClient.useSession()
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
@@ -70,26 +74,77 @@ export function SettingsProfile() {
   }, [profileImage])
 
   async function onSubmit(data: ProfileFormValues) {
-    if (data.profileImage) {
-      const { error } = await authClient.profileImage.upload({
-        image: data.profileImage
-      })
+    const isNameChanged = data.name !== session?.user.name
+    const isEmailChanged = data.email !== session?.user.email
+    setIsLoading(true)
 
-      if (error) {
-        toast.error("Failed to upload image")
-        return
-      }
+    const { data: imageUrl, error: imageUploadError } = data.profileImage
+      ? await tryCatch(
+          uploadFiles("profileImageUploader", {
+            files: [data.profileImage]
+          }).then((res) => res[0]?.url)
+        )
+      : { data: undefined, error: undefined }
+
+    if (imageUploadError) {
+      toast.error("Failed to upload image")
+      console.error(imageUploadError)
+      setIsLoading(false)
+      form.reset({
+        profileImage: null,
+        name: session?.user.name,
+        email: session?.user.email
+      })
+      return
     }
 
-    const { error } = await authClient.updateUser({
+    const [updateUserResult, changeEmailResult] = await Promise.all([
+      isNameChanged
+        ? authClient.updateUser({
+            name: data.name,
+            image: imageUrl ?? session?.user.image
+          })
+        : Promise.resolve({ error: null }),
+      isEmailChanged
+        ? authClient.changeEmail({
+            newEmail: data.email,
+            callbackURL: "/dashboard"
+          })
+        : Promise.resolve({ error: null })
+    ])
+    setIsLoading(false)
+
+    if (updateUserResult.error) {
+      toast.error("Failed to update profile")
+      console.error(updateUserResult.error)
+      form.reset({
+        profileImage: null,
+        name: session?.user.name,
+        email: session?.user.email
+      })
+      return
+    }
+
+    if (changeEmailResult.error) {
+      toast.error("Failed to change email")
+      console.error(changeEmailResult.error)
+      form.reset({
+        profileImage: null,
+        name: data.name,
+        email: session?.user.email
+      })
+      return
+    }
+    if ("data" in changeEmailResult) {
+      setIsChangedEmail(true)
+    }
+
+    form.reset({
+      profileImage: null,
       name: data.name,
       email: data.email
     })
-
-    if (error) {
-      toast.error("Failed to update profile")
-      return
-    }
+    setIsUpdated(true)
   }
 
   useEffect(() => {
@@ -107,7 +162,7 @@ export function SettingsProfile() {
           <FormField
             control={form.control}
             name="profileImage"
-            render={({ field: { value, onChange, ...field } }) => (
+            render={({ field: { value: _value, onChange, ...field } }) => (
               <FormItem className="relative size-20 cursor-pointer">
                 <input
                   {...field}
@@ -174,7 +229,17 @@ export function SettingsProfile() {
             </FormItem>
           )}
         />
-        <Button type="submit">Update profile</Button>
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? "Updating..." : "Update profile"}
+          {isUpdated && !isLoading ? (
+            <Check className="animate-scale size-4" />
+          ) : null}
+        </Button>
+        {isChangedEmail ? (
+          <p className="text-muted-foreground text-sm">
+            You will need to verify your new email address.
+          </p>
+        ) : null}
       </form>
     </Form>
   )

@@ -17,21 +17,29 @@ import { Support } from "./components/support"
 type VerifyEmailProps = {
   url?: string
   userName?: string
+  subject?: string
+  type?: "signup" | "change-email"
 }
 
 export default function VerifyEmail({
   url = "https://tasklytic.fesyse.site",
-  userName = "User"
+  userName = "User",
+  type = "signup"
 }: VerifyEmailProps) {
   return (
     <Tailwind config={tailwindConfig}>
       <Html>
         <Head />
-        <Preview>Verify your email | Sign Up - Tasklytic</Preview>
+        <Preview>
+          Verify your email | {type === "signup" ? "Sign Up" : "Change Email"} -
+          Tasklytic
+        </Preview>
         <Body className="bg-background mx-auto my-0 font-sans">
           <Container className="bg-card mx-auto my-10 max-w-md rounded-xl border border-solid border-[#eaeaea] p-8">
             <Heading className="text-foreground mb-6 text-center text-2xl font-bold">
-              Sign Up - Verify your email
+              {type === "signup"
+                ? "Sign Up - Verify your email"
+                : "Change Email - Verify your email"}
             </Heading>
 
             <Text className="text-muted-foreground mb-6 text-base">
