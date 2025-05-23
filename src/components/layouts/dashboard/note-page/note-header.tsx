@@ -1,6 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar"
 import {
   Tooltip,
   TooltipContent,
@@ -11,11 +12,13 @@ import { cn } from "@/lib/utils"
 import { useSyncContext } from "@/providers/sync-provider"
 import { format } from "date-fns"
 import { AlertCircle, CheckCircle, Cloud, Loader } from "lucide-react"
+import { AnimatePresence, motion } from "motion/react"
 import { useEffect, useState } from "react"
 import { NoteBreadcrumbs } from "./note-breadcrumbs"
 import { NoteNavActions } from "./note-nav-actions"
 
 export function NoteHeader() {
+  const { open: sidebarOpen } = useSidebar()
   const { isChanged, isSaving, isAutoSaving } = useNoteEditorContext()
   const { syncStatus, lastSyncedAt, syncNow } = useSyncContext()
   const [timeAgo, setTimeAgo] = useState<string>("")
@@ -69,7 +72,19 @@ export function NoteHeader() {
   }
 
   return (
-    <div className="sticky top-0 z-40 flex h-16 items-center gap-4 px-4 md:px-6">
+    <div className="sticky top-0 z-40 flex h-16 items-center px-4 md:px-6">
+      <AnimatePresence>
+        {!sidebarOpen ? (
+          <motion.div
+            initial={{ opacity: 0, width: 0, marginRight: 0 }}
+            animate={{ opacity: 1, width: "auto", marginRight: 16 }}
+            exit={{ opacity: 0, width: 0, marginRight: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <SidebarTrigger />
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
       <div className="hidden md:block">
         <NoteBreadcrumbs />
       </div>
