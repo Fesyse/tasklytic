@@ -124,7 +124,6 @@ export function useSync() {
           queryClient.invalidateQueries({
             queryKey: ["note", noteId, activeOrganization.id]
           })
-          toast.success("Note synchronized")
         } else {
           toast.error("Failed to fetch note from server")
         }

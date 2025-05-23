@@ -70,7 +70,6 @@ export function NoteEmojiPicker() {
   const handleEmojiSelect = async (emoji: Emoji) => {
     const success = await updateEmoji(emoji)
     if (success) {
-      toast.success("Emoji updated and synced to server")
       setIsPickerOpen(false)
     }
   }

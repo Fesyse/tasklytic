@@ -146,7 +146,9 @@ export function SyncProvider({ children }: { children: ReactNode }) {
         const now = new Date()
         setLastSyncedAt(now)
         setIsInitialSyncComplete(true)
-        localStorage.setItem("lastSyncedAt", now.toISOString())
+        if (typeof window !== "undefined") {
+          localStorage.setItem("lastSyncedAt", now.toISOString())
+        }
       } catch (error) {
         console.error("Error loading initial data:", error)
       }

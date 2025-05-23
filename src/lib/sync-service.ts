@@ -1,6 +1,5 @@
 import { apiVanilla } from "@/trpc/vanilla-client"
 import { TRPCClientError } from "@trpc/client"
-import { toast } from "sonner"
 import { authClient } from "./auth-client"
 import { dexieDB, type Note } from "./db-client"
 import { deleteNotes } from "./db-queries"
@@ -42,7 +41,10 @@ export class SyncService {
     this.api = api
 
     // Initialize service
-    const lastSyncStr = localStorage.getItem("lastSyncedAt")
+    const lastSyncStr =
+      typeof window !== "undefined"
+        ? localStorage.getItem("lastSyncedAt")
+        : null
     if (lastSyncStr) {
       this._lastSyncedAt = new Date(lastSyncStr)
     }
@@ -497,7 +499,9 @@ export class SyncService {
       }
 
       this._lastSyncedAt = new Date()
-      localStorage.setItem("lastSyncedAt", this._lastSyncedAt.toISOString())
+      if (typeof window !== "undefined") {
+        localStorage.setItem("lastSyncedAt", this._lastSyncedAt.toISOString())
+      }
       this._status = "success"
       console.log("[SYNC] Sync completed successfully")
 
@@ -505,7 +509,6 @@ export class SyncService {
     } catch (error) {
       this._status = "error"
       console.error("Error syncing data:", error)
-      toast.error("Sync failed. Please try again.")
       return { success: false, error: error as Error }
     }
   }
