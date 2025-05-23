@@ -17,6 +17,7 @@ import {
 import { apiVanilla } from "@/trpc/vanilla-client"
 import { useQueryClient } from "@tanstack/react-query"
 import { liveQuery } from "dexie"
+import { useParams } from "next/navigation"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 
@@ -24,6 +25,7 @@ import { toast } from "sonner"
  * Hook for interacting with the sync service
  */
 export function useSync() {
+  const { noteId } = useParams<{ noteId: string }>()
   const [syncStatus, setSyncStatus] = useState<SyncStatus>("idle")
   const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null)
   const [isSyncingSpecificNote, setIsSyncingSpecificNote] = useState(false)
@@ -59,7 +61,7 @@ export function useSync() {
     setSyncStatus("syncing")
 
     try {
-      const result = await syncServiceRef.current.syncAll()
+      const result = await syncServiceRef.current.syncAll(noteId)
 
       setSyncStatus(syncServiceRef.current.status)
       setLastSyncedAt(syncServiceRef.current.lastSyncedAt)

@@ -442,7 +442,7 @@ export class SyncService {
   /**
    * Perform a full sync operation
    */
-  public async syncAll(): Promise<SyncResult> {
+  public async syncAll(noteId: string): Promise<SyncResult> {
     if (this._status === "syncing") {
       console.log("Sync already in progress, skipping duplicate request")
       return { success: false, error: new Error("Sync already in progress") }
@@ -479,7 +479,7 @@ export class SyncService {
 
       // Get all note IDs to sync
       const syncedNotes = notesResult.notes || []
-      const noteIds = syncedNotes.map((note) => note.id)
+      const noteIds = [noteId]
 
       if (noteIds.length > 0) {
         // Process notes in larger batches for true batched syncing
