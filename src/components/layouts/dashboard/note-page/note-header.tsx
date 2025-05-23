@@ -69,12 +69,12 @@ export function NoteHeader() {
   }
 
   return (
-    <div className="bg-background sticky top-0 z-40 flex h-16 items-center gap-4 border-b px-4 md:px-6">
+    <div className="sticky top-0 z-40 flex h-16 items-center gap-4 px-4 md:px-6">
       <div className="hidden md:block">
         <NoteBreadcrumbs />
       </div>
 
-      <div className="ml-auto flex items-center gap-2">
+      <div className="ml-auto flex items-center gap-2 rounded px-4 py-2 backdrop-blur-2xl">
         <div className="text-muted-foreground mr-4 flex items-center gap-2 text-sm">
           <span>{statusText}</span>
         </div>

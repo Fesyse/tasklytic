@@ -3,6 +3,7 @@ import { TRPCClientError } from "@trpc/client"
 import { toast } from "sonner"
 import { authClient } from "./auth-client"
 import { dexieDB, type Note } from "./db-client"
+import { deleteNotes } from "./db-queries"
 
 // Types
 export type SyncStatus = "idle" | "syncing" | "error" | "success"
@@ -86,6 +87,7 @@ export class SyncService {
       const clientNotes = await dexieDB.notes
         .where("organizationId")
         .equals(organizationId)
+        .and((note) => !note.isDeleted)
         .toArray()
 
       // Send to server and get updated data
@@ -116,17 +118,9 @@ export class SyncService {
         favoritedByUserId: note.favoritedByUserId
       }))
 
-      // Identify notes to delete (in client but not in server)
-      const serverNoteIds = new Set(serverNotes.map((note) => note.id))
-      const clientNotesToDelete = clientNotes
-        .filter((note) => !serverNoteIds.has(note.id))
-        .map((note) => note.id)
-
       // Apply changes to client DB
       await dexieDB.transaction("rw", dexieDB.notes, async () => {
-        if (clientNotesToDelete.length > 0) {
-          await dexieDB.notes.bulkDelete(clientNotesToDelete)
-        }
+        await deleteNotes(organizationId)
         if (notesToUpsert.length > 0) {
           await dexieDB.notes.bulkPut(notesToUpsert)
         }

@@ -75,6 +75,34 @@ export function useSync() {
     }
   }, [])
 
+  const syncNotes = useCallback(async (): Promise<SyncResult> => {
+    if (syncInProgressRef.current) {
+      toast.info("Sync already in progress")
+      return { success: false, error: new Error("Sync already in progress") }
+    }
+
+    if (!activeOrganization?.id) {
+      return { success: false, error: new Error("No active organization") }
+    }
+
+    try {
+      const result = await syncServiceRef.current.syncNotes(
+        activeOrganization.id
+      )
+
+      setSyncStatus(syncServiceRef.current.status)
+      setLastSyncedAt(syncServiceRef.current.lastSyncedAt)
+
+      return result
+    } catch (error) {
+      setSyncStatus("error")
+      toast.error("Sync failed. Please try again.")
+      return { success: false, error: error as Error }
+    } finally {
+      syncInProgressRef.current = false
+    }
+  }, [])
+
   /**
    * Pull a specific note from the server
    */
@@ -132,6 +160,7 @@ export function useSync() {
     lastSyncedAt,
     isSyncingSpecificNote,
     syncNow,
+    syncNotes,
     pullNoteFromServer
   }
 }

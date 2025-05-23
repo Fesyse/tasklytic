@@ -301,44 +301,12 @@ export function useSyncedOrganizationNotes(organizationId: string) {
     [session, organizationId, debouncedSync]
   )
 
-  // Delete a note
-  const deleteNote = useCallback(
-    async (id: string) => {
-      try {
-        await dexieDB.notes.delete(id)
-
-        // Also delete child notes
-        const childNotes = await dexieDB.notes
-          .where("parentNoteId")
-          .equals(id)
-          .toArray()
-
-        for (const childNote of childNotes) {
-          await dexieDB.notes.delete(childNote.id)
-        }
-
-        // Trigger debounced sync
-        debouncedSync()
-
-        return { data: true, error: null }
-      } catch (err) {
-        console.error("Error deleting note:", err)
-        return {
-          data: null,
-          error: err instanceof Error ? err : new Error(String(err))
-        }
-      }
-    },
-    [organizationId, debouncedSync]
-  )
-
   return {
     notes,
     isLoading,
     error,
     syncStatus,
-    createNote,
-    deleteNote
+    createNote
   }
 }
 

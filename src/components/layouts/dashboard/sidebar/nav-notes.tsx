@@ -148,7 +148,7 @@ function Note({ item, level = 0 }: { level?: number; item: NoteNavItem }) {
   const queryClient = useQueryClient()
   const { data: activeOrganization } = authClient.useActiveOrganization()
   const { data: session } = authClient.useSession()
-  const { syncNow } = useSync()
+  const { syncNotes } = useSync()
 
   const fullUrl = `${getBaseUrl()}${item.url}`
   const isActive = pathname === item.url
@@ -199,7 +199,7 @@ function Note({ item, level = 0 }: { level?: number; item: NoteNavItem }) {
   }
 
   const handleDeleteNote = async (noteId: string) => {
-    const { error } = await deleteNote(noteId)
+    const { error } = await deleteNote(noteId, false)
 
     if (error) {
       toast.error("An error occurred while deleting the note")
@@ -207,7 +207,7 @@ function Note({ item, level = 0 }: { level?: number; item: NoteNavItem }) {
     }
 
     // Trigger sync to update the server
-    syncNow().catch((error) => {
+    syncNotes().catch((error) => {
       console.error("Error syncing after delete:", error)
     })
 
@@ -263,7 +263,7 @@ function Note({ item, level = 0 }: { level?: number; item: NoteNavItem }) {
         }
 
         // Trigger sync to update the server
-        syncNow().catch((error) => {
+        syncNotes().catch((error) => {
           console.error("Error syncing after toggling favorite:", error)
         })
 

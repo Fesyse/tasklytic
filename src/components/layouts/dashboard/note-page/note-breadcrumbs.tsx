@@ -12,7 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { useNote } from "@/hooks/use-note"
 import { authClient } from "@/lib/auth-client"
 import { dexieDB, type Note } from "@/lib/db-client"
-import { tryCatch } from "@/lib/utils"
+import { getNotesByIds } from "@/lib/db-queries"
 import { useLiveQuery } from "dexie-react-hooks"
 import { FileIcon, Slash } from "lucide-react"
 import React, { useEffect, useState } from "react"
@@ -44,6 +44,7 @@ export const NoteBreadcrumbs = () => {
               id: currentNote.parentNoteId,
               organizationId: organization.id
             })
+            .and((note) => !note.isDeleted)
             .first()
 
           // If parent not found, break the loop
@@ -69,9 +70,7 @@ export const NoteBreadcrumbs = () => {
       if (!noteIds.length || !organization) return []
 
       // Get all notes in the breadcrumb trail at once
-      const { data: notes, error } = await tryCatch(
-        dexieDB.notes.where("id").anyOf(noteIds).toArray()
-      )
+      const { data: notes, error } = await getNotesByIds(noteIds)
 
       if (error) {
         console.error("Error fetching breadcrumb notes:", error)
@@ -113,7 +112,7 @@ export const NoteBreadcrumbs = () => {
                 <Slash className="!size-3 -rotate-15" />
               </BreadcrumbSeparator>
             ) : null}
-            <BreadcrumbItem className="hover:bg-muted rounded px-1.5 py-1 transition-colors duration-200 ease-in-out">
+            <BreadcrumbItem className="hover:bg-muted rounded px-1.5 py-1 backdrop-blur-lg transition-colors duration-200 ease-in-out">
               {index === breadcrumbs.length - 1 ? (
                 <BreadcrumbPage className="flex items-center gap-2 truncate">
                   {breadcrumb.emoji ? (
