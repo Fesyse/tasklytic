@@ -95,7 +95,7 @@ export function useNoteEditorV2() {
       })
       setPreviousEditorValue(sortedBlocks)
     }
-  }, [note?.blocks, editor.tf.init, editor])
+  }, [note?.blocks, editor])
 
   // Save note locally and optionally trigger sync
   const saveNote = useCallback(

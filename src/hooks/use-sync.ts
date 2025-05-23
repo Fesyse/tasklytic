@@ -52,7 +52,6 @@ export function useSync() {
    */
   const syncNow = useCallback(async (): Promise<SyncResult> => {
     if (syncInProgressRef.current) {
-      toast.info("Sync already in progress")
       return { success: false, error: new Error("Sync already in progress") }
     }
 
@@ -77,9 +76,10 @@ export function useSync() {
 
   const syncNotes = useCallback(async (): Promise<SyncResult> => {
     if (syncInProgressRef.current) {
-      toast.info("Sync already in progress")
       return { success: false, error: new Error("Sync already in progress") }
     }
+
+    syncInProgressRef.current = true
 
     if (!activeOrganization?.id) {
       return { success: false, error: new Error("No active organization") }

@@ -141,11 +141,14 @@ export function NoteNavActions() {
         // Optimistically update the cache
         queryClient.setQueryData(
           ["note", note.id, organization.id],
-          (old: Note) => ({
-            ...old,
-            isFavorited: newFavoritedState,
-            favoritedByUserId: newFavoritedState ? session.user.id : null
-          })
+          (old: Note | undefined) =>
+            old
+              ? {
+                  ...old,
+                  isFavorited: newFavoritedState,
+                  favoritedByUserId: newFavoritedState ? session.user.id : null
+                }
+              : old
         )
 
         toast.success(

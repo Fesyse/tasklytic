@@ -78,13 +78,13 @@ export function useNoteEditor() {
             if (blockData && blockData.length > 0) {
               // Store blocks in local DB
               await dexieDB.transaction("rw", dexieDB.blocks, async () => {
-                const blocksToAdd = blockData.map((block: any) => ({
+                const blocksToPut = blockData.map((block: any) => ({
                   id: block.id,
                   noteId: block.noteId,
                   content: JSON.parse(block.content),
                   order: block.order
                 }))
-                await dexieDB.blocks.bulkAdd(blocksToAdd)
+                await dexieDB.blocks.bulkPut(blocksToPut) // idempotent upsert
               })
             }
 
@@ -118,7 +118,6 @@ export function useNoteEditor() {
     noteId,
     organization?.id,
     serverFetchAttempted,
-    utils,
     queryClient,
     router,
     syncNow

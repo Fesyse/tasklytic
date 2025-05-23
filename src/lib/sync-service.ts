@@ -510,6 +510,10 @@ export class SyncService {
       this._status = "error"
       console.error("Error syncing data:", error)
       return { success: false, error: error as Error }
+    } finally {
+      setTimeout(() => {
+        this._status = "idle"
+      }, 0)
     }
   }
 
@@ -539,8 +543,8 @@ export class SyncService {
       await dexieDB.notes.put({
         id: serverNote.id,
         title: serverNote.title,
-        emoji: serverNote.emoji || undefined,
-        emojiSlug: serverNote.emojiSlug || undefined,
+        emoji: serverNote.emoji ?? undefined,
+        emojiSlug: serverNote.emojiSlug ?? undefined,
         organizationId: serverNote.organizationId,
         updatedAt: serverNote.updatedAt,
         createdAt: serverNote.createdAt,
@@ -549,7 +553,9 @@ export class SyncService {
         createdByUserId: serverNote.createdByUserId,
         createdByUserName: serverNote.createdByUserName,
         isPublic: serverNote.isPublic,
-        parentNoteId: serverNote.parentNoteId
+        parentNoteId: serverNote.parentNoteId,
+        isFavorited: serverNote.isFavorited,
+        favoritedByUserId: serverNote.favoritedByUserId
       })
 
       // Get blocks for this note
@@ -566,7 +572,7 @@ export class SyncService {
             content: JSON.parse(block.content),
             order: block.order
           }))
-          await dexieDB.blocks.bulkAdd(blocksToAdd)
+          await dexieDB.blocks.bulkPut(blocksToAdd)
         })
       }
 

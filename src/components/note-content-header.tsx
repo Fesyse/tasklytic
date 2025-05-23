@@ -12,7 +12,7 @@ import { cn, getEmojiSlug } from "@/lib/utils"
 import { useQueryClient } from "@tanstack/react-query"
 import { SmilePlus, Star } from "lucide-react"
 import { useParams } from "next/navigation"
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
 
 export const NoteContentHeader = () => {
@@ -70,13 +70,13 @@ export const NoteContentHeader = () => {
   }, [note, organization, session, updateNoteFavorite, queryClient])
 
   // Effect logic moved into a callback that runs when emoji data is available
-  if (isAddingEmoji && emojiData && note && organization) {
-    setIsAddingEmoji(false)
+  useEffect(() => {
+    if (!(isAddingEmoji && emojiData && note && organization)) return
 
+    setIsAddingEmoji(false)
     const emoji = emojiData[Math.floor(Math.random() * emojiData.length)]!
     const emojiSlug = getEmojiSlug(emoji.label)
 
-    // Use the updateNoteEmoji from useSyncedNoteQueries hook
     updateNoteEmoji(emoji.emoji, emojiSlug)
       .then(({ error }) => {
         if (error) {
@@ -101,7 +101,15 @@ export const NoteContentHeader = () => {
         toast.error("Failed to set emoji")
         console.error(error)
       })
-  }
+    // dependencies capture every variable referenced inside the effect
+  }, [
+    isAddingEmoji,
+    emojiData,
+    note,
+    organization,
+    updateNoteEmoji,
+    queryClient
+  ])
 
   return (
     <div className="group relative mx-auto mb-12 flex w-full max-w-[51rem] items-center gap-4 px-15 pt-40">

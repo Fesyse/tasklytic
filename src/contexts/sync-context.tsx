@@ -78,7 +78,9 @@ export function SyncProvider({ children }: { children: ReactNode }) {
             createdByUserId: note.createdByUserId,
             createdByUserName: note.createdByUserName,
             isPublic: note.isPublic,
-            parentNoteId: note.parentNoteId
+            parentNoteId: note.parentNoteId,
+            isFavorited: note.isFavorited,
+            favoritedByUserId: note.favoritedByUserId
           }))
           await dexieDB.notes.bulkAdd(notesToAdd)
         })

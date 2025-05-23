@@ -43,6 +43,10 @@ function useDebouncedSync(syncNow: () => Promise<void>, delay = 2000) {
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current)
+        if (pendingSyncRef.current) {
+          // fire and forget – don't await inside unmount
+          syncNow()
+        }
       }
     }
   }, [])
