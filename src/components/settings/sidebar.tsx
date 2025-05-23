@@ -37,7 +37,7 @@ export function SettingsSidebar() {
   const pathname = usePathname()
 
   return (
-    <SidebarProvider className="bg-noise min-h-full w-auto">
+    <SidebarProvider className="bg-noise min-h-full w-auto border-r">
       <Sidebar collapsible="none" className="bg-inherit">
         <SidebarContent>
           {settingsNav.map((group, index) => (

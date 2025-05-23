@@ -1,90 +1,93 @@
 "use client"
 
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+
 import { Button } from "@/components/ui/button"
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Switch } from "@/components/ui/switch"
-import { useState } from "react"
+import { authClient } from "@/lib/auth-client"
+import { toast } from "sonner"
+
+const profileFormSchema = z.object({
+  name: z.string().min(3).max(20),
+  email: z.string().email()
+})
+
+type ProfileFormValues = z.infer<typeof profileFormSchema>
 
 export function SettingsProfile() {
-  const [username, setUsername] = useState("fesyse")
-  const [supportAccess, setSupportAccess] = useState(false)
+  const { data: session } = authClient.useSession()
+  const form = useForm<ProfileFormValues>({
+    resolver: zodResolver(profileFormSchema),
+    defaultValues: {
+      name: session?.user.name,
+      email: session?.user.email
+    },
+    mode: "onChange"
+  })
+
+  function onSubmit(data: ProfileFormValues) {
+    toast.success("You submitted the following values:", {
+      description: (
+        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+        </pre>
+      )
+    })
+  }
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h3 className="mb-4 text-lg font-medium">Profile Information</h3>
-        <div className="flex flex-col gap-6 md:flex-row">
-          <div className="flex flex-col items-center gap-2">
-            <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-neutral-800 text-4xl font-semibold text-white">
-              <span>F</span>
-            </div>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm">
-                Add photo
-              </Button>
-              <Button variant="ghost" size="sm">
-                Create portrait
-              </Button>
-            </div>
-          </div>
-          <div className="flex-grow space-y-4">
-            <div>
-              <label
-                htmlFor="preferred-name"
-                className="mb-1 block text-sm font-medium"
-              >
-                Preferred name
-              </label>
-              <Input
-                id="preferred-name"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="max-w-md"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <h3 className="mb-4 text-lg font-medium">Email</h3>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-muted-foreground text-sm">fesyse@mail.ru</p>
-            </div>
-            <Button variant="outline">Change email</Button>
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <h3 className="mb-4 text-lg font-medium">Support access</h3>
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="font-medium">
-              Grant Notion support temporary access to your account
-            </p>
-            <p className="text-muted-foreground mt-1 text-sm">
-              Allow support to troubleshoot problems or recover content on your
-              behalf. You can revoke access at any time.
-            </p>
-          </div>
-          <Switch checked={supportAccess} onCheckedChange={setSupportAccess} />
-        </div>
-      </div>
-
-      <div>
-        <h3 className="mb-4 text-lg font-medium">Delete my account</h3>
-        <div>
-          <Button
-            variant="outline"
-            className="border-red-600 text-red-600 hover:border-red-700 hover:bg-red-50 hover:text-red-700"
-          >
-            Delete my account
-          </Button>
-        </div>
-      </div>
-    </div>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Name</FormLabel>
+              <FormControl>
+                <Input placeholder="John Doe" {...field} />
+              </FormControl>
+              <FormDescription>
+                This is your public display name. It can be your real name or a
+                pseudonym.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="john.doe@example.com"
+                  type="email"
+                  {...field}
+                />
+              </FormControl>
+              <FormDescription>
+                This is your public email address.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit">Update profile</Button>
+      </form>
+    </Form>
   )
 }
