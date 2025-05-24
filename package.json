@@ -151,6 +151,7 @@
     "superjson": "^2.2.2",
     "tailwind-merge": "^3.2.0",
     "tailwind-scrollbar-hide": "^2.0.0",
+    "ua-parser-js": "^2.0.3",
     "uploadthing": "7.7.2",
     "use-file-picker": "^2.1.2",
     "vaul": "^1.1.2",

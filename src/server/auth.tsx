@@ -135,3 +135,11 @@ export const auth = betterAuth({
     })
   ]
 })
+
+export type Session = Awaited<ReturnType<typeof auth.api.getSession>>
+export type ActiveSession = Awaited<
+  ReturnType<typeof auth.api.listSessions>
+>[number]
+export type UserAccount = Awaited<
+  ReturnType<typeof auth.api.listUserAccounts>
+>[number]

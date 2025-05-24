@@ -1,4 +1,5 @@
 import { SettingsSecurity } from "@/components/settings/security"
+import { Separator } from "@/components/ui/separator"
 import { type Metadata } from "next"
 
 export const metadata: Metadata = {
@@ -6,5 +7,16 @@ export const metadata: Metadata = {
 }
 
 export default function SettingsSecurityPage() {
-  return <SettingsSecurity />
+  return (
+    <div className="space-y-4">
+      <div className="space-y-1">
+        <h2 className="text-2xl font-bold">Security</h2>
+        <p className="text-muted-foreground text-sm">
+          Manage your security settings
+        </p>
+      </div>
+      <Separator />
+      <SettingsSecurity />
+    </div>
+  )
 }

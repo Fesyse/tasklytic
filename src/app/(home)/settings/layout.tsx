@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Settings"
+  title: "Settings - Profile"
 }
 
 export default function SettingsLayout(props: React.PropsWithChildren) {
