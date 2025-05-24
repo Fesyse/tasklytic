@@ -17,9 +17,10 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { authClient } from "@/lib/auth-client"
-import { uploadFiles } from "@/lib/uploadthing-client"
-import { fileToImgUrl, tryCatch } from "@/lib/utils"
+import { uploadFile } from "@/lib/uploadthing-client"
+import { fileToImgUrl } from "@/lib/utils"
 import { Check, Pen } from "lucide-react"
+import Link from "next/link"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
@@ -45,7 +46,8 @@ export function SettingsProfile() {
   const [isUpdated, setIsUpdated] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isChangedEmail, setIsChangedEmail] = useState(false)
-  const { data: session } = authClient.useSession()
+
+  const { data: session, refetch: refetchSession } = authClient.useSession()
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
@@ -75,15 +77,13 @@ export function SettingsProfile() {
 
   async function onSubmit(data: ProfileFormValues) {
     const isNameChanged = data.name !== session?.user.name
-    const isEmailChanged = data.email !== session?.user.email
+    const isEmailChanged = data.email
+      ? data.email !== session?.user.email
+      : false
     setIsLoading(true)
 
     const { data: imageUrl, error: imageUploadError } = data.profileImage
-      ? await tryCatch(
-          uploadFiles("profileImageUploader", {
-            files: [data.profileImage]
-          }).then((res) => res[0]?.url)
-        )
+      ? await uploadFile(data.profileImage, "profileImageUploader")
       : { data: undefined, error: undefined }
 
     if (imageUploadError) {
@@ -99,9 +99,9 @@ export function SettingsProfile() {
     }
 
     const [updateUserResult, changeEmailResult] = await Promise.all([
-      isNameChanged
+      isNameChanged || imageUrl
         ? authClient.updateUser({
-            name: data.name,
+            name: isNameChanged ? data.name : session?.user.name,
             image: imageUrl ?? session?.user.image
           })
         : Promise.resolve({ error: null }),
@@ -145,6 +145,8 @@ export function SettingsProfile() {
       email: data.email
     })
     setIsUpdated(true)
+    refetchSession()
+    toast.success("Profile successfully updated!")
   }
 
   useEffect(() => {
@@ -210,6 +212,7 @@ export function SettingsProfile() {
           />
         </div>
         <FormField
+          disabled
           control={form.control}
           name="email"
           render={({ field }) => (
@@ -223,21 +226,26 @@ export function SettingsProfile() {
                 />
               </FormControl>
               <FormDescription>
-                This is your public email address.
+                Can&apos;t change your email address, please contact support.
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? "Updating..." : "Update profile"}
+        <div className="flex items-center justify-between">
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? "Updating..." : "Update profile"}
+          </Button>
           {isUpdated && !isLoading ? (
             <Check className="animate-scale size-4" />
           ) : null}
-        </Button>
+        </div>
         {isChangedEmail ? (
           <p className="text-muted-foreground text-sm">
-            You will need to verify your new email address.
+            You will need to verify your new email address.{" "}
+            <Button variant="link" size="sm">
+              <Link href={`mailto:${session?.user.email}`}>Go to inbox</Link>
+            </Button>
           </p>
         ) : null}
       </form>
