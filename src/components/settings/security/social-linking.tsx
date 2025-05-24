@@ -4,9 +4,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Icons } from "@/components/ui/icons"
 import { authClient } from "@/lib/auth-client"
-import { type auth } from "@/server/auth"
 import { AlertCircle, Github, Mail } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 type SocialProvider = "github" | "google"
@@ -17,25 +16,28 @@ type SocialAccount = {
   email?: string
 }
 
-type SocialLinkingProps = {
-  session: NonNullable<Awaited<ReturnType<typeof auth.api.getSession>>>
-  userAccounts: Awaited<ReturnType<typeof auth.api.listUserAccounts>>
-}
-
 const defaultSocialAccounts = [
   { provider: "github", connected: false },
   { provider: "google", connected: false }
 ] as const
 
-export function SocialLinking({ session, userAccounts }: SocialLinkingProps) {
-  const [socialAccounts, setSocialAccounts] = useState<SocialAccount[]>(
-    defaultSocialAccounts.map<SocialAccount>((account) => ({
+export function SocialLinking() {
+  const { data: session } = authClient.useSession()
+  const { data: userAccounts } = authClient.useListUserAccounts()
+
+  const getDefaultSocialAccounts = () => {
+    return defaultSocialAccounts.map<SocialAccount>((account) => ({
       ...account,
-      email: session.user.email,
-      connected: userAccounts.some(
-        (userAccount) => userAccount.provider === account.provider
-      )
+      email: session?.user.email,
+      connected:
+        userAccounts?.some(
+          (userAccount) => userAccount.provider === account.provider
+        ) ?? false
     }))
+  }
+
+  const [socialAccounts, setSocialAccounts] = useState<SocialAccount[]>(
+    getDefaultSocialAccounts()
   )
 
   const handleConnect = async (provider: SocialProvider) => {
@@ -83,6 +85,10 @@ export function SocialLinking({ session, userAccounts }: SocialLinkingProps) {
   const getProviderName = (provider: SocialProvider) => {
     return provider.charAt(0).toUpperCase() + provider.slice(1)
   }
+
+  useEffect(() => {
+    setSocialAccounts(getDefaultSocialAccounts())
+  }, [session, userAccounts])
 
   return (
     <section>

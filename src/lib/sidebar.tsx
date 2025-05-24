@@ -1,12 +1,12 @@
 import { InvitationsDialog } from "@/components/layouts/dashboard/sidebar/invitations-dialog"
 import { InvitePeopleDialog } from "@/components/layouts/dashboard/sidebar/invite-people-dialog"
+import { SettingsDialog } from "@/components/settings"
 import { useLiveQuery } from "dexie-react-hooks"
 import {
   CalendarIcon,
   FileIcon,
   HomeIcon,
   InboxIcon,
-  SettingsIcon,
   type LucideIcon
 } from "lucide-react"
 import { authClient } from "./auth-client"
@@ -128,10 +128,8 @@ export const useSidebarNav = (): SidebarNav => {
         type: "url"
       },
       {
-        title: "Settings",
-        url: "/settings",
-        icon: SettingsIcon,
-        type: "url"
+        component: <SettingsDialog key="settings-dialog" />,
+        type: "component"
       }
     ]
   }

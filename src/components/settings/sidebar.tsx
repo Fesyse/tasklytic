@@ -1,5 +1,3 @@
-"use client"
-
 import {
   Sidebar,
   SidebarContent,
@@ -12,8 +10,7 @@ import {
   SidebarProvider
 } from "@/components/ui/sidebar"
 import { LockIcon, UserIcon } from "lucide-react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+import type { SettingsTab } from "."
 
 const settingsNav = [
   {
@@ -21,21 +18,26 @@ const settingsNav = [
     items: [
       {
         label: "Profile",
+        value: "profile",
         icon: UserIcon,
         href: "/settings"
       },
       {
         label: "Security",
+        value: "security",
         icon: LockIcon,
         href: "/settings/security"
       }
     ]
   }
-]
+] as const
 
-export function SettingsSidebar() {
-  const pathname = usePathname()
+type SettingsSidebarProps = {
+  tab: SettingsTab
+  setTab: React.Dispatch<React.SetStateAction<SettingsTab>>
+}
 
+export function SettingsSidebar({ tab, setTab }: SettingsSidebarProps) {
   return (
     <SidebarProvider className="bg-noise min-h-full w-auto border-r">
       <Sidebar collapsible="none" className="bg-inherit">
@@ -48,12 +50,10 @@ export function SettingsSidebar() {
                   {group.items.map((item, index) => (
                     <SidebarMenuItem key={index}>
                       <SidebarMenuButton
-                        isActive={pathname === item.href}
-                        asChild
+                        isActive={tab === item.value}
+                        onClick={() => setTab(item.value)}
                       >
-                        <Link href={item.href}>
-                          <item.icon /> <span>{item.label}</span>
-                        </Link>
+                        <item.icon /> <span>{item.label}</span>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   ))}
