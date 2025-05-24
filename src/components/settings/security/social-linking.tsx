@@ -9,7 +9,7 @@ import { AlertCircle, Github, Mail } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 
-type SocialProvider = "github" | "google" | "discord"
+type SocialProvider = "github" | "google"
 
 type SocialAccount = {
   provider: SocialProvider

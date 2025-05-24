@@ -67,10 +67,20 @@ export function OrganizationSwitcher() {
       )
       return
     }
-    if (!organizations?.length && !isLoadingOrganizations && !isRefetching) {
+    if (
+      (!organizations?.length && !isLoadingOrganizations && !isRefetching) ||
+      (!activeOrg && !isLoadingActiveOrg)
+    ) {
       router.push("/new-organization")
     }
-  }, [organizations, isLoadingOrganizations, organizationsError, isRefetching])
+  }, [
+    organizations,
+    activeOrg,
+    isLoadingOrganizations,
+    organizationsError,
+    isRefetching,
+    isLoadingActiveOrg
+  ])
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
