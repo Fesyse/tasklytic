@@ -299,8 +299,11 @@ export const AIMenuItems = ({
   }, [menuState])
 
   React.useEffect(() => {
-    if (menuGroups.length > 0 && menuGroups[0].items.length > 0) {
-      setValue(menuGroups[0].items[0].value)
+    if (menuGroups.length > 0 && (menuGroups[0]?.items.length ?? 0) > 0) {
+      const value = menuGroups[0]?.items[0]?.value
+      if (!value) return
+
+      setValue(value)
     }
   }, [menuGroups, setValue])
 

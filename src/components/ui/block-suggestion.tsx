@@ -58,6 +58,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
+import { authClient } from "@/lib/auth-client"
 import { type TComment, Comment, formatCommentDate } from "./comment"
 import { CommentCreateForm } from "./comment-create-form"
 
@@ -108,8 +109,9 @@ export const BlockSuggestionCard = ({
   suggestion: ResolvedSuggestion
 }) => {
   const { api, editor } = useEditorPlugin(SuggestionPlugin)
+  const { data: session } = authClient.useSession()
 
-  const userInfo = usePluginOption(discussionPlugin, "user", suggestion.userId)
+  const userInfo = session?.user
 
   const accept = (suggestion: ResolvedSuggestion) => {
     api.suggestion.withoutSuggestions(() => {
@@ -144,7 +146,7 @@ export const BlockSuggestionCard = ({
         <div className="relative flex items-center">
           {/* Replace to your own backend or refer to potion */}
           <Avatar className="size-5">
-            <AvatarImage alt={userInfo?.name} src={userInfo?.avatarUrl} />
+            <AvatarImage alt={userInfo?.name} src={userInfo?.image as string} />
             <AvatarFallback>{userInfo?.name?.[0]}</AvatarFallback>
           </Avatar>
           <h4 className="mx-2 text-sm leading-none font-semibold">
@@ -429,7 +431,7 @@ export const useResolveSuggestion = (
         }
       })
 
-      if (entries.length === 0) return
+      if (entries.length === 0 || !entries[0]) return
 
       const nodeData = api.suggestion.suggestionData(entries[0][0])
 
