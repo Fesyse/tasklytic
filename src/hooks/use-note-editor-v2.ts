@@ -22,7 +22,7 @@ export function useNoteEditorV2() {
 
   const { isChanged, setIsChanged, setIsSaving, setIsAutoSaving } =
     useNoteEditorContext()
-  const { syncNow, pullNoteFromServer } = useSync()
+  const { syncNow, pullNoteFromServer, isSyncingSpecificNote } = useSync()
 
   const { data: session } = authClient.useSession()
   const { data: organization } = authClient.useActiveOrganization()
@@ -235,17 +235,9 @@ export function useNoteEditorV2() {
   // Only return notFound if server fetch was attempted and failed
   if (isError && serverFetchAttempted) notFound()
 
-  if (!note)
-    return {
-      editor,
-      isLoading: isLoading || isServerFetching,
-      note: undefined,
-      saveNote
-    }
-
   return {
     editor,
-    isLoading: isLoading || isServerFetching,
+    isLoading: isLoading || isServerFetching || isSyncingSpecificNote,
     note,
     saveNote
   }

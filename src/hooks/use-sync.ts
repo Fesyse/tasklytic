@@ -63,7 +63,6 @@ export function useSync() {
     try {
       const result = await syncServiceRef.current.syncAll(noteId)
 
-      setSyncStatus(syncServiceRef.current.status)
       setLastSyncedAt(syncServiceRef.current.lastSyncedAt)
 
       return result
@@ -72,6 +71,7 @@ export function useSync() {
       toast.error("Sync failed. Please try again.")
       return { success: false, error: error as Error }
     } finally {
+      setSyncStatus("idle")
       syncInProgressRef.current = false
     }
   }, [])
@@ -92,7 +92,6 @@ export function useSync() {
         activeOrganization.id
       )
 
-      setSyncStatus(syncServiceRef.current.status)
       setLastSyncedAt(syncServiceRef.current.lastSyncedAt)
 
       return result
@@ -101,6 +100,7 @@ export function useSync() {
       toast.error("Sync failed. Please try again.")
       return { success: false, error: error as Error }
     } finally {
+      setSyncStatus("idle")
       syncInProgressRef.current = false
     }
   }, [])

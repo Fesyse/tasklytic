@@ -619,6 +619,8 @@ export function SyncProvider({ children }: { children: ReactNode }) {
         } catch (error) {
           setSyncStatus("error")
           console.error("Error syncing data:", error)
+        } finally {
+          setSyncStatus("idle")
         }
       }
     } finally {

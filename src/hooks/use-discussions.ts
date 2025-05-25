@@ -45,8 +45,6 @@ export function useDiscussions(noteId: string) {
     return () => clearInterval(interval)
   }, [getDiscussionsWithComments])
 
-  console.log(discussions)
-
   // Create a new discussion
   const addDiscussion = useCallback(
     async (blockId: string, documentContent: string) => {

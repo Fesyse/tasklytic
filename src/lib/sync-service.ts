@@ -156,7 +156,6 @@ export class SyncService {
       // Skip if no blocks
       if (allClientBlocks.length === 0) {
         // Check if any server blocks exist
-        let serverBlocksExist = false
         const blocksToPut = []
 
         for (const noteId of noteIds) {
@@ -164,7 +163,6 @@ export class SyncService {
             noteId
           })
           if (serverBlocksCheck && serverBlocksCheck.length > 0) {
-            serverBlocksExist = true
             // Pull these blocks
             const blocks = serverBlocksCheck.map((block) => ({
               id: block.id,
