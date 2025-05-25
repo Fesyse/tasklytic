@@ -1,5 +1,7 @@
 "use client"
 
+import { $isAutoSaving, $isChanged, $isSaving } from "@/lib/stores/note-editor"
+import { useStore } from "@nanostores/react"
 import {
   ArrowDown,
   ArrowUp,
@@ -41,7 +43,6 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "@/components/ui/tooltip"
-import { useNoteEditorContext } from "@/contexts/note-editor-context"
 import { authClient } from "@/lib/auth-client"
 import { getNote } from "@/lib/db-queries"
 import { useDexieDb } from "@/lib/use-dexie-db"
@@ -128,7 +129,10 @@ export function NoteNavActions() {
 
     return data
   })
-  const { isSaving, isAutoSaving, isChanged } = useNoteEditorContext()
+
+  const isSaving = useStore($isSaving)
+  const isAutoSaving = useStore($isAutoSaving)
+  const isChanged = useStore($isChanged)
 
   return (
     <>

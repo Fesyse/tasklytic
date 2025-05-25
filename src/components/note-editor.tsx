@@ -1,13 +1,15 @@
 "use client"
 
-import {
-  NoteEditorContext,
-  useNoteEditorContext
-} from "@/contexts/note-editor-context"
 import { useNoteEditor } from "@/hooks/use-note-editor"
 import { authClient } from "@/lib/auth-client"
+import {
+  $isAutoSaving,
+  $isSaving,
+  setIsChanged
+} from "@/lib/stores/note-editor"
+import { useStore } from "@nanostores/react"
 import { Plate } from "@udecode/plate/react"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { DndProvider } from "react-dnd"
 import { HTML5Backend } from "react-dnd-html5-backend"
 import { discussionPlugin } from "./editor/plugins/discussion-plugin"
@@ -18,7 +20,8 @@ import { Editor, EditorContainer } from "./ui/editor"
 import { Skeleton } from "./ui/skeleton"
 
 export const NoteEditor = () => {
-  const { setIsChanged, isAutoSaving, isSaving } = useNoteEditorContext()
+  const isAutoSaving = useStore($isAutoSaving)
+  const isSaving = useStore($isSaving)
 
   const { editor, isLoading, note } = useNoteEditor()
   const session = authClient.useSession()
@@ -88,30 +91,5 @@ export const NoteEditor = () => {
         )}
       </SettingsProvider>
     </>
-  )
-}
-
-export const NoteEditorProvider = ({
-  children
-}: {
-  children: React.ReactNode
-}) => {
-  const [isChanged, setIsChanged] = useState(false)
-  const [isSaving, setIsSaving] = useState(false)
-  const [isAutoSaving, setIsAutoSaving] = useState(false)
-
-  return (
-    <NoteEditorContext.Provider
-      value={{
-        isChanged,
-        setIsChanged,
-        isSaving,
-        setIsSaving,
-        isAutoSaving,
-        setIsAutoSaving
-      }}
-    >
-      {children}
-    </NoteEditorContext.Provider>
   )
 }

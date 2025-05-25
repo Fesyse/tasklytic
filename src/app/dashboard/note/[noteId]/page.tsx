@@ -1,6 +1,6 @@
 "use client"
 
-import { NoteEditor, NoteEditorProvider } from "@/components/note-editor"
+import { NoteEditor } from "@/components/note-editor"
 import { usePrefetchNextNotes } from "@/hooks/use-prefetch-next-notes"
 
 export default function NotePage() {
@@ -9,9 +9,7 @@ export default function NotePage() {
 
   return (
     <div className="bg-noise h-screen w-full" data-registry="plate">
-      <NoteEditorProvider>
-        <NoteEditor />
-      </NoteEditorProvider>
+      <NoteEditor />
     </div>
   )
 }

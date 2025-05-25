@@ -1,8 +1,14 @@
 import { useCreateEditor } from "@/components/editor/use-create-editor"
-import { useNoteEditorContext } from "@/contexts/note-editor-context"
 import { authClient } from "@/lib/auth-client"
 import { dexieDB } from "@/lib/db-client"
+import {
+  $isChanged,
+  setIsAutoSaving,
+  setIsChanged,
+  setIsSaving
+} from "@/lib/stores/note-editor"
 import { tryCatch } from "@/lib/utils"
+import { useStore } from "@nanostores/react"
 import { useQueryClient } from "@tanstack/react-query"
 import type { Value } from "@udecode/plate"
 import type { User } from "better-auth"
@@ -12,10 +18,9 @@ import { toast } from "sonner"
 import { useNote } from "./use-note"
 
 export function useNoteEditor() {
-  const { isChanged, setIsChanged, setIsSaving, setIsAutoSaving } =
-    useNoteEditorContext()
   const { noteId } = useParams<{ noteId: string }>()
   const queryClient = useQueryClient()
+  const isChanged = useStore($isChanged)
 
   const { data: session } = authClient.useSession()
   const { data: organization } = authClient.useActiveOrganization()
