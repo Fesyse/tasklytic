@@ -1,6 +1,6 @@
 "use client"
 
-import { NoteEditor, NoteEditorProvider } from "@/components/note-editor"
+import { NoteEditor, NoteEditorProvider } from "@/components/note/note-editor"
 
 export default function NotePage() {
   return (
