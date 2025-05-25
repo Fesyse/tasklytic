@@ -6,8 +6,8 @@ import {
 
 import { EmojiPicker } from "./ui/emoji-picker"
 
-import { useSyncContext } from "@/contexts/sync-context"
 import { useNote } from "@/hooks/use-note"
+import { authClient } from "@/lib/auth-client"
 import { dexieDB } from "@/lib/db-client"
 import {
   getEmojiSlug,
@@ -24,7 +24,7 @@ import { Popover, PopoverTrigger } from "./ui/popover"
 
 export function NoteEmojiPicker() {
   const { data: note } = useNote()
-  const { syncNow } = useSyncContext()
+  const { data: session } = authClient.useSession()
   const [emoji, setEmoji] = useState<Emoji>({
     emoji: note?.emoji ?? "",
     label: note?.emoji ?? ""
@@ -43,7 +43,9 @@ export function NoteEmojiPicker() {
           dexieDB.notes.update(note.id, {
             emoji: newEmoji.emoji,
             emojiSlug: getEmojiSlug(newEmoji.label),
-            updatedAt: new Date() // Make sure we update the timestamp
+            updatedAt: new Date(), // Make sure we update the timestamp,
+            updatedByUserId: session?.user.id,
+            updatedByUserName: session?.user.name
           })
         )
 

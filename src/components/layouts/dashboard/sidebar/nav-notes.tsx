@@ -32,8 +32,8 @@ import {
 import { usePrefetchNotes } from "@/hooks/use-prefetch-notes"
 import { useSync } from "@/hooks/use-sync"
 import { authClient } from "@/lib/auth-client"
-import { dexieDB, type Note } from "@/lib/db-client"
-import { createNote, deleteNote } from "@/lib/db-queries"
+import { type Note } from "@/lib/db-client"
+import { createNote, deleteNote, updateNoteFavorited } from "@/lib/db-queries"
 import type { NoteNavItem } from "@/lib/sidebar"
 import { cn, getBaseUrl } from "@/lib/utils"
 import { useQueryClient } from "@tanstack/react-query"
@@ -225,22 +225,27 @@ function Note({ item, level = 0 }: { level?: number; item: NoteNavItem }) {
 
   const updateNoteFavorite = useCallback(
     async (isFavorited: boolean, favoritedByUserId: string | null) => {
-      if (!item) return { data: null, error: new Error("Note not found") }
-
-      try {
-        await dexieDB.notes.update(item.id, {
-          isFavorited,
-          favoritedByUserId
-        })
-
-        return { data: true, error: null }
-      } catch (err) {
-        console.error("Error updating note favorite status:", err)
+      if (!session?.user) {
         return {
           data: null,
-          error: err instanceof Error ? err : new Error(String(err))
+          error: new Error("User not authenticated")
         }
       }
+      if (!item) return { data: null, error: new Error("Note not found") }
+
+      const { data, error } = await updateNoteFavorited({
+        id: item.id,
+        isFavorited,
+        favoritedByUserId,
+        updatedByUserName: session.user.name,
+        updatedByUserId: session.user.id
+      })
+
+      if (error) {
+        toast.error("Failed to update favorite status")
+        console.error(error)
+      }
+      return { data, error }
     },
     [item]
   )

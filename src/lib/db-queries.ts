@@ -97,11 +97,34 @@ export function updateNoteEmoji(data: {
   id: string
   emoji: string
   emojiSlug: string
+  updatedByUserName: string
+  updatedByUserId: string
 }) {
   return tryCatch(
     dexieDB.notes.update(data.id, {
       emoji: data.emoji,
-      emojiSlug: data.emojiSlug
+      emojiSlug: data.emojiSlug,
+      updatedAt: new Date(),
+      updatedByUserName: data.updatedByUserName,
+      updatedByUserId: data.updatedByUserId
+    })
+  )
+}
+
+export function updateNoteFavorited(data: {
+  id: string
+  isFavorited: boolean
+  favoritedByUserId: string | null
+  updatedByUserName: string
+  updatedByUserId: string
+}) {
+  return tryCatch(
+    dexieDB.notes.update(data.id, {
+      isFavorited: data.isFavorited,
+      favoritedByUserId: data.favoritedByUserId,
+      updatedAt: new Date(),
+      updatedByUserName: data.updatedByUserName,
+      updatedByUserId: data.updatedByUserId
     })
   )
 }

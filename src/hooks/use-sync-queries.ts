@@ -60,6 +60,7 @@ function useDebouncedSync(syncNow: () => Promise<void>, delay = 2000) {
 export function useSyncedNoteQueries(noteId: string) {
   const { syncNow } = useSyncContext()
   const { note, blocks, isLoading, error, syncStatus } = useSyncedNote(noteId)
+  const { data: session } = authClient.useSession()
 
   // Create a debounced version of the sync function
   const debouncedSync = useDebouncedSync(syncNow)
@@ -67,6 +68,12 @@ export function useSyncedNoteQueries(noteId: string) {
   // Update the note's title
   const updateNoteTitle = useCallback(
     async (title: string) => {
+      if (!session?.user) {
+        return {
+          data: null,
+          error: new Error("User not authenticated")
+        }
+      }
       if (!note) return { data: null, error: new Error("Note not found") }
 
       try {
@@ -74,7 +81,9 @@ export function useSyncedNoteQueries(noteId: string) {
         const updatedNote: Note = {
           ...note,
           title,
-          updatedAt: new Date()
+          updatedAt: new Date(),
+          updatedByUserId: session.user.id,
+          updatedByUserName: session.user.name
         }
 
         // Apply the change locally
@@ -98,6 +107,12 @@ export function useSyncedNoteQueries(noteId: string) {
   // Update note's emoji
   const updateNoteEmoji = useCallback(
     async (emoji: string, emojiSlug: string) => {
+      if (!session?.user) {
+        return {
+          data: null,
+          error: new Error("User not authenticated")
+        }
+      }
       if (!note) return { data: null, error: new Error("Note not found") }
 
       try {
@@ -106,7 +121,9 @@ export function useSyncedNoteQueries(noteId: string) {
           ...note,
           emoji,
           emojiSlug,
-          updatedAt: new Date()
+          updatedAt: new Date(),
+          updatedByUserId: session.user.id,
+          updatedByUserName: session.user.name
         }
 
         // Apply the change locally
@@ -131,6 +148,13 @@ export function useSyncedNoteQueries(noteId: string) {
   // Update note's favorite status
   const updateNoteFavorite = useCallback(
     async (isFavorited: boolean, favoritedByUserId: string | null) => {
+      if (!session?.user) {
+        return {
+          data: null,
+          error: new Error("User not authenticated")
+        }
+      }
+
       if (!note) return { data: null, error: new Error("Note not found") }
 
       try {
@@ -139,7 +163,8 @@ export function useSyncedNoteQueries(noteId: string) {
           ...note,
           isFavorited,
           favoritedByUserId,
-          updatedAt: new Date()
+          updatedAt: new Date(),
+          updatedByUserName: session.user.name
         }
 
         // Apply the change locally
