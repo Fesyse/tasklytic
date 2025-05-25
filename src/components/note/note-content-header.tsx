@@ -90,8 +90,6 @@ export const NoteContentHeader = () => {
             emojiSlug: emojiSlug
           })
         )
-
-        toast.success("Emoji added")
       })
       .catch((error) => {
         toast.error("Failed to set emoji")
