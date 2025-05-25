@@ -141,11 +141,7 @@ export function CommentCreateForm({
     if (!blockId) return
 
     // Create new discussion with first comment
-    const newDiscussionId = await addDiscussion(
-      blockId,
-      documentContent,
-      commentValue
-    )
+    const newDiscussionId = await addDiscussion(blockId, documentContent)
 
     if (!newDiscussionId) return
 

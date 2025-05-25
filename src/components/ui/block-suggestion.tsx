@@ -42,23 +42,18 @@ import {
 import { SuggestionPlugin } from "@udecode/plate-suggestion/react"
 import { TablePlugin } from "@udecode/plate-table/react"
 import { TogglePlugin } from "@udecode/plate-toggle/react"
-import {
-  ParagraphPlugin,
-  useEditorPlugin,
-  usePluginOption
-} from "@udecode/plate/react"
+import { ParagraphPlugin, useEditorPlugin } from "@udecode/plate/react"
 import { CheckIcon, XIcon } from "lucide-react"
 
-import {
-  type TDiscussion,
-  discussionPlugin
-} from "@/components/editor/plugins/discussion-plugin"
+import { type TDiscussion } from "@/components/editor/plugins/discussion-plugin"
 import { suggestionPlugin } from "@/components/editor/plugins/suggestion-plugin"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
+import { useDiscussions } from "@/hooks/use-discussions"
 import { authClient } from "@/lib/auth-client"
+import { useParams } from "next/navigation"
 import { type TComment, Comment, formatCommentDate } from "./comment"
 import { CommentCreateForm } from "./comment-create-form"
 
@@ -287,7 +282,8 @@ export const useResolveSuggestion = (
   suggestionNodes: NodeEntry<TElement | TSuggestionText>[],
   blockPath: Path
 ) => {
-  const discussions = usePluginOption(discussionPlugin, "discussions")
+  const { noteId } = useParams<{ noteId: string }>()
+  const { discussions } = useDiscussions(noteId)
 
   const { api, editor, getOption, setOption } =
     useEditorPlugin(suggestionPlugin)

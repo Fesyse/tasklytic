@@ -1,5 +1,6 @@
 import { authClient } from "@/lib/auth-client"
 import { dexieDB, type Note } from "@/lib/db-client"
+import { tryCatch } from "@/lib/utils"
 import { useSyncContext } from "@/providers/sync-provider"
 import { createId } from "@/server/db/schema"
 import { useCallback, useEffect, useRef } from "react"
@@ -351,20 +352,55 @@ export function useSyncedDiscussions(noteId: string) {
 
   // Get discussions for a note
   const getDiscussions = useCallback(async () => {
-    try {
-      const discussions = await dexieDB.discussions
-        .where("noteId")
-        .equals(noteId)
-        .toArray()
+    const { data: discussions, error } = await tryCatch(
+      dexieDB.discussions.where("noteId").equals(noteId).toArray()
+    )
 
-      return { data: discussions, error: null }
-    } catch (err) {
-      console.error("Error getting discussions:", err)
+    if (error) {
+      console.error("Error getting discussions:", error)
       return {
         data: null,
-        error: err instanceof Error ? err : new Error(String(err))
+        error: error instanceof Error ? error : new Error(String(error))
       }
     }
+
+    return { data: discussions, error: null }
+  }, [noteId])
+
+  const getDiscussionsWithComments = useCallback(async () => {
+    const { data: discussions, error: discussionsError } =
+      await getDiscussions()
+
+    if (discussionsError) {
+      return { data: null, error: discussionsError }
+    }
+
+    const { data: discussionsWithComments, error: commentsError } =
+      await tryCatch(
+        Promise.all(
+          discussions.map(async (discussion) => {
+            const comments = await dexieDB.comments
+              .where("discussionId")
+              .equals(discussion.id)
+              .toArray()
+
+            return { ...discussion, comments }
+          })
+        )
+      )
+
+    if (commentsError) {
+      console.error("Error getting discussions with comments:", commentsError)
+      return {
+        data: null,
+        error:
+          commentsError instanceof Error
+            ? commentsError
+            : new Error(String(commentsError))
+      }
+    }
+
+    return { data: discussionsWithComments, error: null }
   }, [noteId])
 
   // Create a discussion
@@ -537,6 +573,7 @@ export function useSyncedDiscussions(noteId: string) {
 
   return {
     getDiscussions,
+    getDiscussionsWithComments,
     createDiscussion,
     updateDiscussionResolved,
     deleteDiscussion,

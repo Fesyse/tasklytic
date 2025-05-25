@@ -9,27 +9,26 @@ export interface TDiscussionWithComments extends Discussion {
 
 export function useDiscussions(noteId: string) {
   const session = authClient.useSession()
-  const userName = session.data?.user.name || ""
+  const userName = session.data?.user.name ?? ""
   const [discussions, setDiscussions] = useState<TDiscussionWithComments[]>([])
   const [isLoadingDiscussions, setIsLoadingDiscussions] = useState(true)
 
   // Use the sync-powered discussions hook
   const {
-    getDiscussions,
+    getDiscussionsWithComments,
     createDiscussion,
     updateDiscussionResolved,
     deleteDiscussion,
     createComment,
     updateComment,
-    deleteComment,
-    userId
+    deleteComment
   } = useSyncedDiscussions(noteId)
 
   // Load discussions initially and set up automatic updates
   useEffect(() => {
     const loadDiscussions = async () => {
       setIsLoadingDiscussions(true)
-      const { data, error } = await getDiscussions()
+      const { data, error } = await getDiscussionsWithComments()
       if (data) {
         setDiscussions(data)
       }
@@ -44,20 +43,21 @@ export function useDiscussions(noteId: string) {
     // Set up an interval to periodically refresh discussions
     const interval = setInterval(loadDiscussions, 5000)
     return () => clearInterval(interval)
-  }, [getDiscussions])
+  }, [getDiscussionsWithComments])
+
+  console.log(discussions)
 
   // Create a new discussion
   const addDiscussion = useCallback(
-    async (blockId: string, documentContent: string, contentRich: any) => {
+    async (blockId: string, documentContent: string) => {
       const { data: discussionId } = await createDiscussion(
         blockId,
-        documentContent,
-        contentRich
+        documentContent
       )
 
       // Refresh discussions after creating a new one
       if (discussionId) {
-        const { data } = await getDiscussions()
+        const { data } = await getDiscussionsWithComments()
         if (data) {
           setDiscussions(data)
         }
@@ -65,7 +65,7 @@ export function useDiscussions(noteId: string) {
 
       return discussionId
     },
-    [createDiscussion, getDiscussions]
+    [createDiscussion, getDiscussionsWithComments]
   )
 
   // Add a comment to a discussion
@@ -75,7 +75,7 @@ export function useDiscussions(noteId: string) {
 
       // Refresh discussions after adding a comment
       if (commentId) {
-        const { data } = await getDiscussions()
+        const { data } = await getDiscussionsWithComments()
         if (data) {
           setDiscussions(data)
         }
@@ -83,7 +83,7 @@ export function useDiscussions(noteId: string) {
 
       return commentId
     },
-    [createComment, getDiscussions]
+    [createComment, getDiscussionsWithComments]
   )
 
   // Update a comment
@@ -93,7 +93,7 @@ export function useDiscussions(noteId: string) {
 
       // Refresh discussions after updating a comment
       if (data) {
-        const { data: refreshedData } = await getDiscussions()
+        const { data: refreshedData } = await getDiscussionsWithComments()
         if (refreshedData) {
           setDiscussions(refreshedData)
         }
@@ -101,7 +101,7 @@ export function useDiscussions(noteId: string) {
 
       return data
     },
-    [updateComment, getDiscussions]
+    [updateComment, getDiscussionsWithComments]
   )
 
   // Delete a comment
@@ -111,7 +111,7 @@ export function useDiscussions(noteId: string) {
 
       // Refresh discussions after deleting a comment
       if (data) {
-        const { data: refreshedData } = await getDiscussions()
+        const { data: refreshedData } = await getDiscussionsWithComments()
         if (refreshedData) {
           setDiscussions(refreshedData)
         }
@@ -119,7 +119,7 @@ export function useDiscussions(noteId: string) {
 
       return data
     },
-    [deleteComment, getDiscussions]
+    [deleteComment, getDiscussionsWithComments]
   )
 
   // Resolve a discussion
@@ -129,7 +129,7 @@ export function useDiscussions(noteId: string) {
 
       // Refresh discussions after resolving a discussion
       if (data) {
-        const { data: refreshedData } = await getDiscussions()
+        const { data: refreshedData } = await getDiscussionsWithComments()
         if (refreshedData) {
           setDiscussions(refreshedData)
         }
@@ -137,7 +137,7 @@ export function useDiscussions(noteId: string) {
 
       return data
     },
-    [updateDiscussionResolved, getDiscussions]
+    [updateDiscussionResolved, getDiscussionsWithComments]
   )
 
   // Delete a discussion
@@ -147,7 +147,7 @@ export function useDiscussions(noteId: string) {
 
       // Refresh discussions after deleting a discussion
       if (data) {
-        const { data: refreshedData } = await getDiscussions()
+        const { data: refreshedData } = await getDiscussionsWithComments()
         if (refreshedData) {
           setDiscussions(refreshedData)
         }
@@ -155,7 +155,7 @@ export function useDiscussions(noteId: string) {
 
       return data
     },
-    [deleteDiscussion, getDiscussions]
+    [deleteDiscussion, getDiscussionsWithComments]
   )
 
   return {
@@ -167,7 +167,6 @@ export function useDiscussions(noteId: string) {
     removeComment,
     resolveDiscussion,
     removeDiscussion,
-    userId,
     userName
   }
 }

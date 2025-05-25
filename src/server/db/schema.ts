@@ -475,9 +475,7 @@ export const discussions = createTable(
     noteId: text("note_id")
       .notNull()
       .references(() => notes.id, { onDelete: "cascade" }),
-    blockId: text("block_id")
-      .notNull()
-      .references(() => blocks.id, { onDelete: "cascade" }),
+    blockId: text("block_id").notNull(),
     documentContent: text("document_content"),
     createdAt: timestamp("created_at").notNull(),
     isResolved: boolean("is_resolved").notNull().default(false),

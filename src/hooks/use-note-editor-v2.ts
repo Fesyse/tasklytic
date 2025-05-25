@@ -16,11 +16,12 @@ import { useSync } from "./use-sync"
  * Enhanced hook for note editing with improved sync capabilities
  */
 export function useNoteEditorV2() {
-  const { isChanged, setIsChanged, setIsSaving, setIsAutoSaving } =
-    useNoteEditorContext()
-  const { noteId } = useParams<{ noteId: string }>()
   const queryClient = useQueryClient()
   const router = useRouter()
+  const { noteId } = useParams<{ noteId: string }>()
+
+  const { isChanged, setIsChanged, setIsSaving, setIsAutoSaving } =
+    useNoteEditorContext()
   const { syncNow, pullNoteFromServer } = useSync()
 
   const { data: session } = authClient.useSession()

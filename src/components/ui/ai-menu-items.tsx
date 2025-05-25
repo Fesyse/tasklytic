@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 
 import { type SlateEditor, NodeApi } from "@udecode/plate"
@@ -72,7 +70,7 @@ Start writing a new paragraph AFTER <Document> ONLY ONE SENTENCE`
     shortcut: "Escape",
     value: "discard",
     onSelect: ({ editor }) => {
-      editor.getTransforms(AIPlugin).ai.undo()
+      editor.getTransforms(AIPlugin).ai?.undo()
       editor.getApi(AIChatPlugin).aiChat.hide()
     }
   },
