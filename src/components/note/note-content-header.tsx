@@ -1,7 +1,7 @@
 "use client"
 
-import { NoteTitleInput } from "@/components/note-title-input"
 import { NoteEmojiPicker } from "@/components/note/note-emoji-picker"
+import { NoteTitleInput } from "@/components/note/note-title-input"
 import { Button } from "@/components/ui/button"
 
 import { useEmojiData } from "@/hooks/use-emoji-data"
