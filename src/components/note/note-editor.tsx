@@ -42,7 +42,7 @@ export const NoteEditor = () => {
                     setIsChanged(hasChanges)
                   }}
                 >
-                  <EditorContainer>
+                  <EditorContainer className="overflow-y-hidden">
                     <Editor
                       variant="demo"
                       className="pt-0"
