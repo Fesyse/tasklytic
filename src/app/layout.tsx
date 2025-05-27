@@ -27,7 +27,7 @@ export default function RootLayout({
   modal: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${geist.variable}`}>
+    <html lang="en" className={`${geist.variable}`} suppressHydrationWarning>
       <head>
         <meta name="apple-mobile-web-app-title" content="Tasklytic" />
         <link rel="icon" href="/icon.svg" sizes="any" type="image/svg+" />
