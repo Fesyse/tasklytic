@@ -13,12 +13,14 @@ import { Icons } from "@/components/ui/icons"
 import { Input } from "@/components/ui/input"
 import { PasswordInput } from "@/components/ui/password-input"
 import { authClient } from "@/lib/auth-client"
+import { verifyRecaptcha } from "@/lib/recaptcha"
 import { cn } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2 } from "lucide-react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Suspense, useMemo, useState } from "react"
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
@@ -62,6 +64,7 @@ function AuthFormContent({
     [invitationId]
   )
 
+  const { executeRecaptcha } = useGoogleReCaptcha()
   const router = useRouter()
   const form = useForm<z.infer<typeof signInSchema | typeof signUpSchema>>({
     resolver: zodResolver(type === "sign-in" ? signInSchema : signUpSchema),
@@ -78,22 +81,37 @@ function AuthFormContent({
       typeof type extends "sign-in" ? typeof signInSchema : typeof signUpSchema
     >
   ) => {
+    if (!executeRecaptcha) return toast.error("Recaptcha is not loaded")
+    setIsLoading(true)
+
+    const { recaptchaData, recaptchaError } = await verifyRecaptcha(
+      executeRecaptcha,
+      type.replace("-", "_")
+    )
+
+    if (recaptchaError) return toast.error(recaptchaError.message)
+    if (!recaptchaData?.success) {
+      toast.error("Seems like you are a bot. Please try again.")
+      setIsLoading(false)
+      return
+    }
+
     if (type === "sign-in") {
-      setIsLoading(true)
-      await authClient.signIn.email({
+      const { data: signInData, error } = await authClient.signIn.email({
         email: data.email,
         password: data.password,
-        callbackURL: "/dashboard",
-        fetchOptions: {
-          onSuccess: () => {
-            toast.success(`Signed in as "${data.name}" successfully!`)
-            router.push("/dashboard")
-          }
-        }
+        callbackURL: "/dashboard"
       })
+
+      if (error) {
+        toast.error(error.message)
+      } else {
+        toast.success(`Signed in as "${signInData.user.name}" successfully!`)
+        router.push("/dashboard")
+      }
+
       setIsLoading(false)
     } else {
-      setIsLoading(true)
       const { data: newUser, error } = await authClient.signUp.email({
         name: data.name,
         email: data.email,

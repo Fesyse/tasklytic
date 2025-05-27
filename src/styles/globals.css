@@ -210,20 +210,14 @@
 }
 
 @layer base {
+  .grecaptcha-badge {
+    visibility: hidden !important;
+  }
   * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply bg-noise bg-background text-foreground;
     letter-spacing: var(--tracking-normal);
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
   }
 }

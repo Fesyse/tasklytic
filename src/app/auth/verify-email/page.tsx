@@ -10,9 +10,7 @@ type VerifyEmailProps = {
 export default async function VerifyEmail({ searchParams }: VerifyEmailProps) {
   const { email } = await searchParams
 
-  if (!email) {
-    notFound()
-  }
+  if (!email) notFound()
 
   return (
     <div className="flex items-center justify-center p-4">
