@@ -19,6 +19,7 @@ import { Loader2 } from "lucide-react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Suspense, useMemo, useState } from "react"
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
@@ -62,6 +63,7 @@ function AuthFormContent({
     [invitationId]
   )
 
+  const { executeRecaptcha } = useGoogleReCaptcha()
   const router = useRouter()
   const form = useForm<z.infer<typeof signInSchema | typeof signUpSchema>>({
     resolver: zodResolver(type === "sign-in" ? signInSchema : signUpSchema),
@@ -78,22 +80,42 @@ function AuthFormContent({
       typeof type extends "sign-in" ? typeof signInSchema : typeof signUpSchema
     >
   ) => {
+    if (!executeRecaptcha) return toast.error("Recaptcha is not loaded")
+    setIsLoading(true)
+
+    const gRecaptchaToken = await executeRecaptcha("sign_up")
+
+    const res = await fetch("/api/recaptcha", {
+      method: "POST",
+      body: JSON.stringify({ gRecaptchaToken }),
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        "Content-Type": "application/json"
+      }
+    }).then((res) => res.json() as Promise<{ success: boolean }>)
+
+    if (!res.success) {
+      toast.error("Seems like you are a bot. Please try again.")
+      setIsLoading(false)
+      return
+    }
+
     if (type === "sign-in") {
-      setIsLoading(true)
-      await authClient.signIn.email({
+      const { data: signInData, error } = await authClient.signIn.email({
         email: data.email,
         password: data.password,
-        callbackURL: "/dashboard",
-        fetchOptions: {
-          onSuccess: () => {
-            toast.success(`Signed in as "${data.name}" successfully!`)
-            router.push("/dashboard")
-          }
-        }
+        callbackURL: "/dashboard"
       })
+
+      if (error) {
+        toast.error(error.message)
+      } else {
+        toast.success(`Signed in as "${signInData.user.name}" successfully!`)
+        router.push("/dashboard")
+      }
+
       setIsLoading(false)
     } else {
-      setIsLoading(true)
       const { data: newUser, error } = await authClient.signUp.email({
         name: data.name,
         email: data.email,
