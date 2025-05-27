@@ -1,29 +1,147 @@
-# Create T3 App
+# Froo
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+A modern, feature-rich web application built with Next.js, React, and TypeScript, featuring a powerful calendar system, rich text editing, and more.
 
-## What's next? How do I make an app with this?
+## 🚀 Features
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+- **Advanced Calendar System**
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+  - Multiple views (Day, Week, Month, Year, Agenda)
+  - Drag and drop event management
+  - User-specific calendars
+  - Customizable working hours
+  - Responsive design
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+- **Rich Text Editor**
 
-## Learn More
+  - Powered by Plate.js
+  - AI-assisted editing
+  - Markdown support
+  - Code blocks with syntax highlighting
+  - Tables, lists, and media embedding
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+- **Modern UI Components**
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+  - Built with Radix UI primitives
+  - Dark mode support
+  - Responsive design
+  - Accessible components
+  - Custom animations
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+- **Advanced Features**
+  - Email integration with React Email
+  - File uploads with UploadThing
+  - Real-time AI capabilities
+  - PDF manipulation
+  - Data visualization with Recharts
 
-## How do I deploy this?
+## 🛠️ Tech Stack
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+- **Framework:** Next.js 15.4 (Canary)
+- **Language:** TypeScript
+- **Database:** PostgreSQL with Drizzle ORM
+- **Styling:** Tailwind CSS
+- **Authentication:** Custom auth system
+- **State Management:** React Query, TanStack
+- **UI Components:** Radix UI, Ariakit
+- **Drag & Drop:** DND Kit
+- **Form Handling:** React Hook Form
+- **Validation:** Zod
+- **API Layer:** tRPC
+- **Package Manager:** pnpm
+
+## 📦 Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- pnpm 10.6.1+
+- PostgreSQL
+
+### Installation
+
+1. Clone the repository:
+   \`\`\`bash
+   git clone https://github.com/yourusername/froo.git
+   cd froo
+   \`\`\`
+
+2. Install dependencies:
+   \`\`\`bash
+   pnpm install
+   \`\`\`
+
+3. Set up your environment variables:
+   \`\`\`bash
+   cp .env.example .env
+   \`\`\`
+
+4. Set up the database:
+   \`\`\`bash
+   pnpm db:setup
+   \`\`\`
+
+5. Start the development server:
+   \`\`\`bash
+   pnpm dev
+   \`\`\`
+
+## 📝 Available Scripts
+
+- \`pnpm dev\` - Start development server with Turbo
+- \`pnpm build\` - Build the production application
+- \`pnpm start\` - Start the production server
+- \`pnpm check\` - Run linting and type checking
+- \`pnpm db:generate\` - Generate database migrations
+- \`pnpm db:push\` - Push database changes
+- \`pnpm db:seed\` - Seed the database
+- \`pnpm email:dev\` - Start email preview server
+- \`pnpm format:write\` - Format code with Prettier
+- \`pnpm lint\` - Lint code with ESLint
+- \`pnpm typecheck\` - Check types with TypeScript
+
+## 🏗️ Project Structure
+
+\`\`\`
+froo/
+├── src/
+│ ├── calendar/ # Calendar module
+│ ├── server/ # Backend API and database
+│ ├── components/ # Shared React components
+│ ├── lib/ # Utility functions
+│ ├── styles/ # Global styles
+│ └── pages/ # Next.js pages
+├── emails/ # Email templates
+├── public/ # Static assets
+├── drizzle/ # Database migrations
+└── ... # Config files
+\`\`\`
+
+## 📚 Documentation
+
+For detailed documentation about specific modules:
+
+- [Calendar Module](./src/calendar/README.md)
+- [API Documentation](./src/server/api/README.md)
+- [Component Library](./src/components/README.md)
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch: \`git checkout -b feature/amazing-feature\`
+3. Commit your changes: \`git commit -m 'Add some amazing feature'\`
+4. Push to the branch: \`git push origin feature/amazing-feature\`
+5. Open a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- [Next.js](https://nextjs.org/)
+- [Radix UI](https://www.radix-ui.com/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Plate](https://platejs.org/)
+- [tRPC](https://trpc.io/)
+- [Drizzle ORM](https://orm.drizzle.team/)
