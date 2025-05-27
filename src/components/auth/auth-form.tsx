@@ -13,6 +13,7 @@ import { Icons } from "@/components/ui/icons"
 import { Input } from "@/components/ui/input"
 import { PasswordInput } from "@/components/ui/password-input"
 import { authClient } from "@/lib/auth-client"
+import { verifyRecaptcha } from "@/lib/recaptcha"
 import { cn } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2 } from "lucide-react"
@@ -83,18 +84,13 @@ function AuthFormContent({
     if (!executeRecaptcha) return toast.error("Recaptcha is not loaded")
     setIsLoading(true)
 
-    const gRecaptchaToken = await executeRecaptcha("sign_up")
+    const { recaptchaData, recaptchaError } = await verifyRecaptcha(
+      executeRecaptcha,
+      type.replace("-", "_")
+    )
 
-    const res = await fetch("/api/recaptcha", {
-      method: "POST",
-      body: JSON.stringify({ gRecaptchaToken }),
-      headers: {
-        Accept: "application/json, text/plain, */*",
-        "Content-Type": "application/json"
-      }
-    }).then((res) => res.json() as Promise<{ success: boolean }>)
-
-    if (!res.success) {
+    if (recaptchaError) return toast.error(recaptchaError.message)
+    if (!recaptchaData?.success) {
       toast.error("Seems like you are a bot. Please try again.")
       setIsLoading(false)
       return

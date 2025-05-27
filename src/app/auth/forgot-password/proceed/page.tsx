@@ -19,7 +19,10 @@ import {
 } from "@/components/ui/form"
 import { PasswordInput } from "@/components/ui/password-input"
 import { authClient } from "@/lib/auth-client"
+import { verifyRecaptcha } from "@/lib/recaptcha"
 import { AlertCircle, CheckCircle, Loader2 } from "lucide-react"
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3"
+import { toast } from "sonner"
 
 const resetPasswordSchema = z
   .object({
@@ -44,6 +47,7 @@ function ForgotPasswordProceedPageContent() {
   const [errorMessage, setErrorMessage] = useState<string>("")
   const token = searchParams.get("token")
 
+  const { executeRecaptcha } = useGoogleReCaptcha()
   const form = useForm<ResetPasswordSchema>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
@@ -70,8 +74,17 @@ function ForgotPasswordProceedPageContent() {
       handleNoTokenError()
       return
     }
+    if (!executeRecaptcha) return toast.error("Recaptcha is not loaded")
 
     setStatus("loading")
+    const { recaptchaData, recaptchaError } = await verifyRecaptcha(
+      executeRecaptcha,
+      "reset_password"
+    )
+
+    if (recaptchaError) return toast.error(recaptchaError.message)
+    if (!recaptchaData?.success)
+      return toast.error("Seems like you are a bot. Please try again.")
 
     try {
       const result = await authClient.resetPassword({
@@ -175,10 +188,12 @@ function ForgotPasswordProceedPageContent() {
               <FormItem>
                 <FormLabel>New Password</FormLabel>
                 <FormControl>
-                  <PasswordInput
-                    placeholder="Enter your new password"
-                    {...field}
-                  />
+                  <div className="relative">
+                    <PasswordInput
+                      placeholder="Enter your new password"
+                      {...field}
+                    />
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -191,10 +206,12 @@ function ForgotPasswordProceedPageContent() {
               <FormItem>
                 <FormLabel>Confirm Password</FormLabel>
                 <FormControl>
-                  <PasswordInput
-                    placeholder="Confirm your new password"
-                    {...field}
-                  />
+                  <div className="relative">
+                    <PasswordInput
+                      placeholder="Confirm your new password"
+                      {...field}
+                    />
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
