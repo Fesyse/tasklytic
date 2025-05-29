@@ -11,8 +11,10 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { authClient } from "@/lib/auth-client"
+import { verifyRecaptcha } from "@/lib/recaptcha"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useState } from "react"
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
@@ -25,21 +27,33 @@ const forgotPasswordSchema = z.object({
 type ForgotPasswordSchema = z.infer<typeof forgotPasswordSchema>
 
 export const ForgotPasswordForm = () => {
+  const { executeRecaptcha } = useGoogleReCaptcha()
   const form = useForm<ForgotPasswordSchema>({
     resolver: zodResolver(forgotPasswordSchema)
   })
   const email = form.watch("email")
-  const [isClicked, setIsClicked] = useState(false)
+  const [isSubmitted, setIsSubmitted] = useState(false)
 
   const onSubmit = async (data: ForgotPasswordSchema) => {
-    setIsClicked(true)
+    if (!executeRecaptcha) return toast.error("Recaptcha is not loaded")
+
+    const { recaptchaData, recaptchaError } = await verifyRecaptcha(
+      executeRecaptcha,
+      "forgot_password"
+    )
+
+    if (recaptchaError) return toast.error(recaptchaError.message)
+    if (!recaptchaData?.success)
+      return toast.error("Seems like you are a bot. Please try again.")
+
+    setIsSubmitted(true)
     const { error } = await authClient.forgetPassword({
       email: data.email,
       redirectTo: "/auth/forgot-password/proceed"
     })
 
     if (error) {
-      setIsClicked(false)
+      setIsSubmitted(false)
       return toast.error(error.message)
     }
   }
@@ -60,7 +74,7 @@ export const ForgotPasswordForm = () => {
             </FormItem>
           )}
         />
-        {!isClicked ? (
+        {!isSubmitted ? (
           <Button className="mt-6 w-full">Send reset instructions</Button>
         ) : (
           <GoToInboxButton
