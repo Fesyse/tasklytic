@@ -54,13 +54,12 @@ import { toast } from "sonner"
 
 export function NavNotes({
   notes,
-  type,
-  isLoading
+  type
 }: {
   type: "private" | "shared" | "favorites"
-  notes: NoteNavItem[] | undefined
-  isLoading: boolean
+  notes: NoteNavItem[]
 }) {
+  const { open } = useSidebar()
   const router = useRouter()
   const { data: activeOrganization } = authClient.useActiveOrganization()
   const { data: session } = authClient.useSession()
@@ -102,31 +101,23 @@ export function NavNotes({
 
   return (
     <SidebarGroup>
-      {!isLoading &&
-      !notes?.length &&
-      (type === "shared" || type === "favorites") ? null : (
+      {!notes?.length && (type === "shared" || type === "favorites") ? null : (
         <SidebarGroupLabel>{getSectionTitle()}</SidebarGroupLabel>
       )}
-      {!isLoading &&
-      !notes?.length &&
-      (type === "shared" || type === "favorites") ? null : (
+      {!notes?.length && (type === "shared" || type === "favorites") ? null : (
         <SidebarGroupAction onClick={handleCreateNote}>
           <PlusIcon className="size-4" />
         </SidebarGroupAction>
       )}
       <SidebarGroupContent>
         <SidebarMenu>
-          {isLoading || !notes ? (
-            Array.from({ length: 5 }).map((_, i) => (
-              <SidebarMenuItem key={i}>
-                <SidebarMenuSkeleton showIcon />
-              </SidebarMenuItem>
-            ))
-          ) : !notes.length && type !== "shared" && type !== "favorites" ? (
+          {!notes.length && type !== "shared" && type !== "favorites" ? (
             <SidebarMenuItem>
-              <span className="text-muted-foreground ml-2 text-xs">
-                No notes
-              </span>
+              {open ? (
+                <span className="text-muted-foreground ml-2 text-xs">
+                  No notes
+                </span>
+              ) : null}
             </SidebarMenuItem>
           ) : (
             notes.map((item) => <Note key={item.id} item={item} />)

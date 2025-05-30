@@ -43,16 +43,26 @@ export type NoteNavItem = {
 type SidebarNav = {
   navMain: NavItem[]
 
-  favoriteNotes: { isLoading: boolean; items: NoteNavItem[] | undefined }
-  privateNotes: { isLoading: boolean; items: NoteNavItem[] | undefined }
-  sharedNotes: { isLoading: boolean; items: NoteNavItem[] | undefined }
-
   navSecondary: NavItem[]
-}
+} & (
+  | {
+      isNotesLoading: true
+      favoriteNotes: undefined
+      privateNotes: undefined
+      sharedNotes: undefined
+    }
+  | {
+      isNotesLoading: false
+      favoriteNotes: NoteNavItem[]
+      privateNotes: NoteNavItem[]
+      sharedNotes: NoteNavItem[]
+    }
+)
 
 export const useSidebarNav = (): SidebarNav => {
   const { data: organization } = authClient.useActiveOrganization()
   const { data: session } = authClient.useSession()
+
   const result = useLiveQuery(() => {
     if (!organization?.id) return tryCatch(Promise.resolve([]))
     return getNotes(organization.id)
@@ -99,38 +109,29 @@ export const useSidebarNav = (): SidebarNav => {
         type: "url"
       }
     ],
-    favoriteNotes: {
-      isLoading: result === undefined || !result.data,
-      items: result?.data
-        ? buildNoteHierarchy(
-            result.data.filter((note) =>
-              note.parentNoteId === null
-                ? note.isFavorited &&
-                  note.favoritedByUserId === session?.user.id
-                : true
-            ),
-            null
-          )
-        : []
-    },
-    privateNotes: {
-      isLoading: result === undefined || !result.data,
-      items: result?.data
-        ? buildNoteHierarchy(
-            result.data.filter((note) => !note.isPublic),
-            null
-          )
-        : []
-    },
-    sharedNotes: {
-      isLoading: result === undefined || !result.data,
-      items: result?.data
-        ? buildNoteHierarchy(
-            result.data.filter((note) => note.isPublic),
-            null
-          )
-        : []
-    },
+    isNotesLoading: result === undefined || !result.data,
+    favoriteNotes: result?.data
+      ? buildNoteHierarchy(
+          result.data.filter((note) =>
+            note.parentNoteId === null
+              ? note.isFavorited && note.favoritedByUserId === session?.user.id
+              : true
+          ),
+          null
+        )
+      : undefined,
+    privateNotes: result?.data
+      ? buildNoteHierarchy(
+          result.data.filter((note) => !note.isPublic),
+          null
+        )
+      : undefined,
+    sharedNotes: result?.data
+      ? buildNoteHierarchy(
+          result.data.filter((note) => note.isPublic),
+          null
+        )
+      : undefined,
     navSecondary: [
       {
         component: <InvitationsDialog key="invitations-dialog" />,
