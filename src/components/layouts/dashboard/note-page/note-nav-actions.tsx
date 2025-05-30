@@ -40,126 +40,109 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "@/components/ui/tooltip"
+import { useToggleFavorite } from "@/hooks/use-note"
 import { useSyncedNoteQueries } from "@/hooks/use-sync-queries"
-import { authClient } from "@/lib/auth-client"
-import type { Note } from "@/lib/db-client"
-import { useQueryClient } from "@tanstack/react-query"
+import { getBaseUrl } from "@/lib/utils"
+import { useEditorState } from "@udecode/plate/react"
 import { formatDistance } from "date-fns"
-import { useParams } from "next/navigation"
-import { useCallback } from "react"
+import { useParams, usePathname } from "next/navigation"
+import { useMemo } from "react"
 import { toast } from "sonner"
 
-const data = [
-  [
-    {
-      label: "Customize Page",
-      icon: Settings2
-    },
-    {
-      label: "Turn into wiki",
-      icon: FileText
-    }
-  ],
-  [
-    {
-      label: "Copy Link",
-      icon: Link
-    },
-    {
-      label: "Duplicate",
-      icon: Copy
-    },
-    {
-      label: "Move to",
-      icon: CornerUpRight
-    },
-    {
-      label: "Move to Trash",
-      icon: Trash2
-    }
-  ],
-  [
-    {
-      label: "Undo",
-      icon: CornerUpLeft
-    },
-    {
-      label: "View analytics",
-      icon: LineChart
-    },
-    {
-      label: "Version History",
-      icon: GalleryVerticalEnd
-    },
-    {
-      label: "Show delete pages",
-      icon: Trash
-    },
-    {
-      label: "Notifications",
-      icon: Bell
-    }
-  ],
-  [
-    {
-      label: "Import",
-      icon: ArrowUp
-    },
-    {
-      label: "Export",
-      icon: ArrowDown
-    }
-  ]
-]
-
 export function NoteNavActions() {
+  const pathname = usePathname()
+  const { undo, redo } = useEditorState()
   const { noteId } = useParams<{ noteId: string }>()
-  const queryClient = useQueryClient()
-  const { data: organization } = authClient.useActiveOrganization()
-  const { data: session } = authClient.useSession()
-
-  // Use the synced note hook instead of direct Dexie queries
   const { note, isLoading, updateNoteFavorite } = useSyncedNoteQueries(noteId)
 
-  const handleToggleFavorite = useCallback(async () => {
-    if (!note || !organization || !session) return
+  const { handleToggleFavorite } = useToggleFavorite({
+    note,
+    updateNoteFavorite
+  })
 
-    const newFavoritedState = !note.isFavorited
+  const copyLink = () => {
+    navigator.clipboard.writeText(`${getBaseUrl()}${pathname}`)
+    toast.success("Link successfully copied to clipboard")
+  }
 
-    // Use the updateNoteFavorite from useSyncedNoteQueries hook
-    updateNoteFavorite(
-      newFavoritedState,
-      newFavoritedState ? session.user.id : null
-    )
-      .then(({ error }) => {
-        if (error) {
-          toast.error("Failed to update favorite status")
-          console.error(error)
-          return
+  const navMemoDeps = [undo, redo, copyLink]
+  const nav = useMemo(
+    () => [
+      [
+        {
+          label: "Customize Page",
+          icon: Settings2
+        },
+        {
+          label: "Turn into wiki",
+          icon: FileText
         }
-
-        // Optimistically update the cache
-        queryClient.setQueryData(
-          ["note", note.id, organization.id],
-          (old: Note | undefined) =>
-            old
-              ? {
-                  ...old,
-                  isFavorited: newFavoritedState,
-                  favoritedByUserId: newFavoritedState ? session.user.id : null
-                }
-              : old
-        )
-
-        toast.success(
-          newFavoritedState ? "Added to favorites" : "Removed from favorites"
-        )
-      })
-      .catch((error) => {
-        toast.error("Failed to update favorite status")
-        console.error(error)
-      })
-  }, [note, organization, session, updateNoteFavorite, queryClient])
+      ],
+      [
+        {
+          label: "Copy Link",
+          icon: Link,
+          action: copyLink,
+          shortcut: "CTRL+SHIFT+C"
+        },
+        {
+          label: "Duplicate",
+          icon: Copy
+        },
+        {
+          label: "Move to",
+          icon: CornerUpRight
+        },
+        {
+          label: "Move to Trash",
+          icon: Trash2
+        }
+      ],
+      [
+        {
+          label: "Undo",
+          icon: CornerUpLeft,
+          action: undo,
+          shortcut: "CTRL+Z"
+        },
+        {
+          label: "Redo",
+          icon: CornerUpRight,
+          action: redo,
+          shortcut: "CTRL+Y"
+        }
+      ],
+      [
+        {
+          label: "View analytics",
+          icon: LineChart
+        },
+        {
+          label: "Version History",
+          icon: GalleryVerticalEnd
+        },
+        {
+          label: "Show delete pages",
+          icon: Trash
+        },
+        {
+          label: "Notifications",
+          icon: Bell
+        }
+      ],
+      [
+        {
+          label: "Import",
+          icon: ArrowUp
+        },
+        {
+          label: "Export",
+          icon: ArrowDown
+        }
+      ]
+    ],
+    navMemoDeps
+  )
 
   return (
     <div className="flex h-7 items-center justify-center gap-2 text-sm">
@@ -228,7 +211,7 @@ export function NoteNavActions() {
           >
             <Sidebar collapsible="none" className="bg-transparent">
               <SidebarContent>
-                {data.map((group, index) => (
+                {nav.map((group, index) => (
                   <SidebarGroup
                     key={index}
                     className="border-b last:border-none"
@@ -237,8 +220,26 @@ export function NoteNavActions() {
                       <SidebarMenu>
                         {group.map((item, index) => (
                           <SidebarMenuItem key={index}>
-                            <SidebarMenuButton>
+                            <SidebarMenuButton
+                              onClick={
+                                "action" in item ? item.action : undefined
+                              }
+                            >
                               <item.icon /> <span>{item.label}</span>
+                              {"shortcut" in item ? (
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <span className="ml-auto max-w-20 text-xs tracking-widest opacity-60">
+                                      {item.shortcut}
+                                    </span>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <span className="ml-auto text-xs tracking-widest opacity-60">
+                                      {item.shortcut}
+                                    </span>
+                                  </TooltipContent>
+                                </Tooltip>
+                              ) : null}
                             </SidebarMenuButton>
                           </SidebarMenuItem>
                         ))}

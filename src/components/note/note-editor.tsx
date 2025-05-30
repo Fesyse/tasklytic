@@ -21,43 +21,41 @@ export const NoteEditor = () => {
   const { editor, isLoading, note } = useNoteEditorV2()
 
   return (
-    <>
-      <NoteHeader />
-      <SettingsProvider>
-        {isLoading || !note ? (
-          <NoteSkeleton />
-        ) : (
-          <>
-            <NoteContentHeader />
-            <DndProvider backend={HTML5Backend}>
-              {editor && !isLoading && (
-                <Plate
-                  editor={editor}
-                  onChange={({ value }) => {
-                    if (!note?.blocks) return
+    <SettingsProvider>
+      {isLoading || !note ? (
+        <NoteSkeleton />
+      ) : (
+        <>
+          <DndProvider backend={HTML5Backend}>
+            {editor && !isLoading && (
+              <Plate
+                editor={editor}
+                onChange={({ value }) => {
+                  if (!note?.blocks) return
 
-                    const hasChanges =
-                      JSON.stringify(value) !== JSON.stringify(note.blocks)
+                  const hasChanges =
+                    JSON.stringify(value) !== JSON.stringify(note.blocks)
 
-                    setIsChanged(hasChanges)
-                  }}
-                >
-                  <EditorContainer className="overflow-y-hidden">
-                    <Editor
-                      variant="demo"
-                      className="pt-0"
-                      placeholder="Start typing your note here..."
-                    />
-                  </EditorContainer>
+                  setIsChanged(hasChanges)
+                }}
+              >
+                <NoteHeader />
+                <NoteContentHeader />
 
-                  <SettingsDialog />
-                </Plate>
-              )}
-            </DndProvider>
-          </>
-        )}
-      </SettingsProvider>
-    </>
+                <EditorContainer className="overflow-y-hidden">
+                  <Editor
+                    variant="demo"
+                    className="pt-0"
+                    placeholder="Start typing your note here..."
+                  />
+                </EditorContainer>
+                <SettingsDialog />
+              </Plate>
+            )}
+          </DndProvider>
+        </>
+      )}
+    </SettingsProvider>
   )
 }
 

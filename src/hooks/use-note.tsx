@@ -1,10 +1,12 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 
 import { authClient } from "@/lib/auth-client"
+import type { Note } from "@/lib/db-client"
 import { getNoteWithBlocks } from "@/lib/db-queries"
 import { useLiveQuery } from "dexie-react-hooks"
 import { useParams } from "next/navigation"
-import { useEffect } from "react"
+import { useCallback, useEffect } from "react"
+import { toast } from "sonner"
 
 export function useNote() {
   const queryClient = useQueryClient()
@@ -40,4 +42,60 @@ export function useNote() {
   }, [liveNote, noteId, organization?.id, queryClient])
 
   return result
+}
+
+export function useToggleFavorite({
+  note,
+  updateNoteFavorite
+}: {
+  note: Note | undefined
+  updateNoteFavorite: (
+    isFavorited: boolean,
+    favoritedByUserId: string | null
+  ) => Promise<{ error: any }>
+}) {
+  const queryClient = useQueryClient()
+  const { data: organization } = authClient.useActiveOrganization()
+  const { data: session } = authClient.useSession()
+
+  const handleToggleFavorite = useCallback(async () => {
+    if (!note || !organization || !session) return
+
+    const newFavoritedState = !note.isFavorited
+
+    updateNoteFavorite(
+      newFavoritedState,
+      newFavoritedState ? session.user.id : null
+    )
+      .then(({ error }) => {
+        if (error) {
+          toast.error("Failed to update favorite status")
+          console.error(error)
+          return
+        }
+
+        // Optimistically update the cache
+        queryClient.setQueryData(
+          ["note", note.id, organization.id],
+          (old: Note | undefined) =>
+            old
+              ? {
+                  ...old,
+                  isFavorited: newFavoritedState,
+                  favoritedByUserId: newFavoritedState ? session.user.id : null
+                }
+              : old
+        )
+
+        toast.success(
+          newFavoritedState ? "Added to favorites" : "Removed from favorites"
+        )
+      })
+      .catch((error) => {
+        toast.error("Failed to update favorite status")
+        console.error(error)
+      })
+  }, [note, organization, session, updateNoteFavorite, queryClient])
+
+  return { handleToggleFavorite }
 }
