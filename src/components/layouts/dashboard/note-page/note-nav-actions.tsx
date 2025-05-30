@@ -46,7 +46,7 @@ import { getBaseUrl } from "@/lib/utils"
 import { useEditorState } from "@udecode/plate/react"
 import { formatDistance } from "date-fns"
 import { useParams, usePathname } from "next/navigation"
-import { useMemo } from "react"
+import { useEffect, useMemo } from "react"
 import { toast } from "sonner"
 
 export function NoteNavActions() {
@@ -143,6 +143,24 @@ export function NoteNavActions() {
     ],
     navMemoDeps
   )
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Check for CTRL+SHIFT+C (case-insensitive)
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        e.shiftKey &&
+        (e.key === "c" || e.key === "C")
+      ) {
+        e.preventDefault()
+        copyLink()
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown)
+    }
+  }, [copyLink])
 
   return (
     <div className="flex h-7 items-center justify-center gap-2 text-sm">
