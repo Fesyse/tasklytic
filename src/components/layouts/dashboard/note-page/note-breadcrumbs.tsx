@@ -112,7 +112,7 @@ export const NoteBreadcrumbs = () => {
                 <Slash className="!size-3 -rotate-15" />
               </BreadcrumbSeparator>
             ) : null}
-            <BreadcrumbItem className="hover:bg-muted rounded px-1.5 py-1 backdrop-blur-lg transition-colors duration-200 ease-in-out">
+            <BreadcrumbItem className="hover:bg-muted rounded px-1.5 py-1 transition-colors duration-200 ease-in-out">
               {index === breadcrumbs.length - 1 ? (
                 <BreadcrumbPage className="flex items-center gap-2 truncate">
                   {breadcrumb.emoji ? (
