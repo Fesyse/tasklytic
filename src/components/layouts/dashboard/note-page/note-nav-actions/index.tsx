@@ -1,8 +1,6 @@
 "use client"
 
 import {
-  ArrowDown,
-  ArrowUp,
   Bell,
   Copy,
   CornerUpLeft,
@@ -15,7 +13,8 @@ import {
   Settings2,
   Star,
   Trash,
-  Trash2
+  Trash2,
+  type LucideIcon
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -48,6 +47,22 @@ import { formatDistance } from "date-fns"
 import { useParams, usePathname } from "next/navigation"
 import { useEffect, useMemo } from "react"
 import { toast } from "sonner"
+import { ExportActionButton } from "./export-action"
+import { ImportActionButton } from "./import-action"
+
+type NoteNavActionsType = (
+  | {
+      label: string
+      icon: LucideIcon
+      shortcut?: string
+      action: () => void
+      type: "action"
+    }
+  | {
+      component: React.FC
+      type: "component"
+    }
+)[][]
 
 export function NoteNavActions() {
   const pathname = usePathname()
@@ -66,16 +81,20 @@ export function NoteNavActions() {
   }
 
   const navMemoDeps = [undo, redo, copyLink]
-  const nav = useMemo(
+  const nav = useMemo<NoteNavActionsType>(
     () => [
       [
         {
           label: "Customize Page",
-          icon: Settings2
+          icon: Settings2,
+          action: () => {},
+          type: "action"
         },
         {
           label: "Turn into wiki",
-          icon: FileText
+          icon: FileText,
+          action: () => {},
+          type: "action"
         }
       ],
       [
@@ -83,19 +102,26 @@ export function NoteNavActions() {
           label: "Copy Link",
           icon: Link,
           action: copyLink,
-          shortcut: "CTRL+SHIFT+C"
+          shortcut: "CTRL+SHIFT+C",
+          type: "action"
         },
         {
           label: "Duplicate",
-          icon: Copy
+          icon: Copy,
+          action: () => {},
+          type: "action"
         },
         {
           label: "Move to",
-          icon: CornerUpRight
+          icon: CornerUpRight,
+          action: () => {},
+          type: "action"
         },
         {
           label: "Move to Trash",
-          icon: Trash2
+          icon: Trash2,
+          action: () => {},
+          type: "action"
         }
       ],
       [
@@ -103,41 +129,51 @@ export function NoteNavActions() {
           label: "Undo",
           icon: CornerUpLeft,
           action: undo,
-          shortcut: "CTRL+Z"
+          shortcut: "CTRL+Z",
+          type: "action"
         },
         {
           label: "Redo",
           icon: CornerUpRight,
           action: redo,
-          shortcut: "CTRL+Y"
+          shortcut: "CTRL+Y",
+          type: "action"
         }
       ],
       [
         {
           label: "View analytics",
-          icon: LineChart
+          icon: LineChart,
+          action: () => {},
+          type: "action"
         },
         {
           label: "Version History",
-          icon: GalleryVerticalEnd
+          icon: GalleryVerticalEnd,
+          action: () => {},
+          type: "action"
         },
         {
           label: "Show delete pages",
-          icon: Trash
+          icon: Trash,
+          action: () => {},
+          type: "action"
         },
         {
           label: "Notifications",
-          icon: Bell
+          icon: Bell,
+          action: () => {},
+          type: "action"
         }
       ],
       [
         {
-          label: "Import",
-          icon: ArrowUp
+          component: ImportActionButton,
+          type: "component"
         },
         {
-          label: "Export",
-          icon: ArrowDown
+          component: ExportActionButton,
+          type: "component"
         }
       ]
     ],
@@ -236,31 +272,35 @@ export function NoteNavActions() {
                   >
                     <SidebarGroupContent className="gap-0">
                       <SidebarMenu>
-                        {group.map((item, index) => (
-                          <SidebarMenuItem key={index}>
-                            <SidebarMenuButton
-                              onClick={
-                                "action" in item ? item.action : undefined
-                              }
-                            >
-                              <item.icon /> <span>{item.label}</span>
-                              {"shortcut" in item ? (
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <span className="ml-auto max-w-20 text-xs tracking-widest opacity-60">
-                                      {item.shortcut}
-                                    </span>
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <span className="ml-auto text-xs tracking-widest opacity-60">
-                                      {item.shortcut}
-                                    </span>
-                                  </TooltipContent>
-                                </Tooltip>
-                              ) : null}
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                        ))}
+                        {group.map((item, index) =>
+                          item.type === "action" ? (
+                            <SidebarMenuItem key={index}>
+                              <SidebarMenuButton
+                                onClick={
+                                  "action" in item ? item.action : undefined
+                                }
+                              >
+                                <item.icon /> <span>{item.label}</span>
+                                {"shortcut" in item ? (
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <span className="ml-auto max-w-20 text-xs tracking-widest opacity-60">
+                                        {item.shortcut}
+                                      </span>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <span className="ml-auto text-xs tracking-widest opacity-60">
+                                        {item.shortcut}
+                                      </span>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                ) : null}
+                              </SidebarMenuButton>
+                            </SidebarMenuItem>
+                          ) : (
+                            <item.component key={index} />
+                          )
+                        )}
                       </SidebarMenu>
                     </SidebarGroupContent>
                   </SidebarGroup>
