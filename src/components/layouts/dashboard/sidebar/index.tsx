@@ -71,7 +71,7 @@ export function AppSidebar({
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent scrollAreaClassName="[&>[data-slot='scroll-area-viewport']>div]:!flex [&>[data-slot='scroll-area-viewport']>div]:flex-col">
         <NavMain items={sidebarNav.navMain} />
         <NavNotes
           notes={sidebarNav.favoriteNotes.items}

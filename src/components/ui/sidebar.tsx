@@ -393,9 +393,10 @@ function SidebarSeparator({
 
 function SidebarContent({
   className,
+  scrollAreaClassName,
   children,
   ...props
-}: React.ComponentProps<"div">) {
+}: React.ComponentProps<"div"> & { scrollAreaClassName?: string }) {
   return (
     <div
       data-slot="sidebar-content"
@@ -406,7 +407,13 @@ function SidebarContent({
       )}
       {...props}
     >
-      <ScrollArea className="max-h-full" scrollBarClassName="w-2">
+      <ScrollArea
+        className={cn(
+          "h-full max-h-full [&>[data-slot='scroll-area-viewport']>div]:h-full",
+          scrollAreaClassName
+        )}
+        scrollBarClassName="w-2"
+      >
         {children}
       </ScrollArea>
     </div>
