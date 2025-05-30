@@ -1,13 +1,10 @@
 "use client"
 
-import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar"
 import { useNoteEditorContext } from "@/contexts/note-editor-context"
-import { AnimatePresence, motion } from "motion/react"
 import { NoteBreadcrumbs } from "./note-breadcrumbs"
 import { NoteNavActions } from "./note-nav-actions"
 
 export function NoteHeader() {
-  const { open: sidebarOpen } = useSidebar()
   const { isChanged, isSaving, isAutoSaving } = useNoteEditorContext()
 
   // Status for display
@@ -20,20 +17,8 @@ export function NoteHeader() {
         : "Saved"
 
   return (
-    <div className="sticky top-0 z-40 flex h-16 items-center px-4 md:px-6">
-      <AnimatePresence>
-        {!sidebarOpen ? (
-          <motion.div
-            initial={{ opacity: 0, width: 0, marginRight: 0 }}
-            animate={{ opacity: 1, width: "auto", marginRight: 16 }}
-            exit={{ opacity: 0, width: 0, marginRight: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            <SidebarTrigger />
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
-      <div className="hidden md:block">
+    <header className="sticky top-0 left-0 flex w-full justify-between gap-6 p-3">
+      <div className="flex shrink items-center gap-2 rounded p-1 backdrop-blur-lg">
         <NoteBreadcrumbs />
       </div>
 
@@ -44,6 +29,6 @@ export function NoteHeader() {
 
         <NoteNavActions />
       </div>
-    </div>
+    </header>
   )
 }
