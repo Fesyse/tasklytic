@@ -9,6 +9,7 @@ import { Loader2 } from "lucide-react"
 import { useParams } from "next/navigation"
 import { useState } from "react"
 
+import { AnimatePresence, motion } from "motion/react"
 import { NoteEmojiButton } from "./emoji-button"
 import { NoteFavoriteButton } from "./favorite-button"
 
@@ -41,11 +42,31 @@ export const NoteContentHeader = () => {
           />
         </div>
       </div>
-      {isAddingEmoji ? (
-        <Loader2 className="text-muted-foreground size-12 animate-spin" />
-      ) : note?.emoji ? (
-        <NoteEmojiPicker />
-      ) : null}
+      <div
+        className={cn("linear relative transition-all duration-200", {
+          "size-12": isAddingEmoji || note?.emoji
+        })}
+      >
+        <AnimatePresence>
+          {isAddingEmoji ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <Loader2 className="text-muted-foreground size-12 animate-spin" />
+            </motion.div>
+          ) : note?.emoji ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <NoteEmojiPicker />
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+      </div>
       <NoteTitleInput />
     </div>
   )
