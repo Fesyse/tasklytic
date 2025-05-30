@@ -101,13 +101,13 @@ export function NavNotes({
 
   return (
     <SidebarGroup>
-      {type === "shared" || type === "favorites" ? null : (
-        <SidebarGroupLabel>{getSectionTitle()}</SidebarGroupLabel>
-      )}
-      {type === "shared" || type === "favorites" ? null : (
-        <SidebarGroupAction onClick={handleCreateNote}>
-          <PlusIcon className="size-4" />
-        </SidebarGroupAction>
+      {!notes.length && (type === "shared" || type === "favorites") ? null : (
+        <>
+          <SidebarGroupLabel>{getSectionTitle()}</SidebarGroupLabel>
+          <SidebarGroupAction onClick={handleCreateNote}>
+            <PlusIcon className="size-4" />
+          </SidebarGroupAction>
+        </>
       )}
       <SidebarGroupContent>
         <SidebarMenu>
