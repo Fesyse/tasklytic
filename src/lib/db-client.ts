@@ -19,6 +19,7 @@ type Note = {
   isFavorited?: boolean
   isDeleted?: boolean
   favoritedByUserId?: string | null
+  cover?: string
 }
 
 type Block = {
@@ -56,7 +57,7 @@ const dexieDB = new Dexie(`${siteConfig.name}Database`) as Dexie & {
 
 dexieDB.version(1).stores({
   notes:
-    "&id, title, emoji, emojiSlug, isPublic, organizationId, parentNoteId, updatedByUserId, updatedByUserName, updatedAt, createdByUserId, createdByUserName, createdAt, isFavorited, favoritedByUserId, [id+organizationId], isDeleted",
+    "&id, title, emoji, emojiSlug, isPublic, organizationId, parentNoteId, updatedByUserId, updatedByUserName, updatedAt, createdByUserId, createdByUserName, createdAt, isFavorited, favoritedByUserId, cover, [id+organizationId], isDeleted",
   blocks: "&id, noteId, content, order",
   discussions: "&id, noteId, blockId, isResolved, userId, createdAt",
   comments: "&id, discussionId, userId, createdAt, isEdited"

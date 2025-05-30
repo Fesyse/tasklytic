@@ -117,7 +117,8 @@ export class SyncService {
         isPublic: note.isPublic,
         parentNoteId: note.parentNoteId,
         isFavorited: note.isFavorited === true,
-        favoritedByUserId: note.favoritedByUserId
+        favoritedByUserId: note.favoritedByUserId,
+        cover: note.cover
       }))
 
       // Apply changes to client DB
@@ -553,7 +554,8 @@ export class SyncService {
         isPublic: serverNote.isPublic,
         parentNoteId: serverNote.parentNoteId,
         isFavorited: serverNote.isFavorited,
-        favoritedByUserId: serverNote.favoritedByUserId
+        favoritedByUserId: serverNote.favoritedByUserId,
+        cover: serverNote.cover
       })
 
       // Get blocks for this note

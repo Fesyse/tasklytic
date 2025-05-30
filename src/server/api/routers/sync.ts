@@ -46,7 +46,8 @@ const updateNoteSchema = z.object({
   isPublic: z.boolean(),
   parentNoteId: z.string().nullable(),
   isFavorited: z.boolean().optional(),
-  favoritedByUserId: z.string().nullable()
+  favoritedByUserId: z.string().nullable(),
+  cover: z.string().optional()
 })
 
 const updateBlockSchema = z.object({
@@ -159,7 +160,8 @@ export const syncRouter = createTRPCRouter({
             isPublic: clientNote.isPublic,
             parentNoteId: clientNote.parentNoteId,
             isFavorited: clientNote.isFavorited ?? false,
-            favoritedByUserId: clientNote.favoritedByUserId ?? null
+            favoritedByUserId: clientNote.favoritedByUserId ?? null,
+            cover: clientNote.cover
           })
         } else {
           // Note exists, check if client has a newer version
@@ -187,7 +189,8 @@ export const syncRouter = createTRPCRouter({
               favoritedByUserId:
                 clientNote.favoritedByUserId ??
                 serverNote.favoritedByUserId ??
-                null
+                null,
+              cover: clientNote.cover
             })
           }
         }

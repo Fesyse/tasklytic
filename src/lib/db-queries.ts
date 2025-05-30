@@ -27,7 +27,8 @@ export function createNote(data: {
       organizationId: data.organization.id,
       parentNoteId: data.noteId ?? null,
       isFavorited: false,
-      favoritedByUserId: null
+      favoritedByUserId: null,
+      cover: undefined
     })
   )
 }
@@ -231,5 +232,21 @@ export function getDiscussionWithComments(id: string) {
 
       return { ...discussion, comments }
     })()
+  )
+}
+
+export function updateNoteCover(data: {
+  id: string
+  cover: string
+  updatedByUserName: string
+  updatedByUserId: string
+}) {
+  return tryCatch(
+    dexieDB.notes.update(data.id, {
+      cover: data.cover,
+      updatedAt: new Date(),
+      updatedByUserName: data.updatedByUserName,
+      updatedByUserId: data.updatedByUserId
+    })
   )
 }

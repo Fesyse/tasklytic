@@ -22,7 +22,10 @@ import { FileIcon } from "lucide-react"
 import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
 
-export function NoteEmojiPicker() {
+type NoteEmojiPickerProps = {
+  size?: number
+}
+export function NoteEmojiPicker({ size = 48 }: NoteEmojiPickerProps) {
   const { data: note } = useNote()
   const { data: session } = authClient.useSession()
   const [emoji, setEmoji] = useState<Emoji>({
@@ -113,15 +116,19 @@ export function NoteEmojiPicker() {
             <PopoverTrigger asChild>
               <button
                 type="button"
-                className="flex size-[48px] cursor-pointer items-center justify-center"
+                className="flex cursor-pointer items-center justify-center"
                 onClick={() => setIsPickerOpen(!isPickerOpen)}
                 disabled={isSaving}
                 aria-label="Select emoji"
+                style={{
+                  width: size,
+                  height: size
+                }}
               >
                 {emoji.emoji.length > 0 ? (
-                  <span className="text-5xl">{emoji.emoji}</span>
+                  <span style={{ fontSize: size }}>{emoji.emoji}</span>
                 ) : (
-                  <FileIcon className="text-muted-foreground size-[48px]" />
+                  <FileIcon className="text-muted-foreground" size={size} />
                 )}
                 {isSaving && (
                   <span className="text-muted-foreground absolute right-0 -bottom-5 left-0 text-center text-xs">

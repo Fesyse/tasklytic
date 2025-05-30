@@ -187,6 +187,45 @@ export function useSyncedNoteQueries(noteId: string) {
     [note, noteId, syncNow]
   )
 
+  // Update note's cover
+  const updateNoteCover = useCallback(
+    async (cover: string | undefined) => {
+      if (!session?.user) {
+        return {
+          data: null,
+          error: new Error("User not authenticated")
+        }
+      }
+      if (!note) return { data: null, error: new Error("Note not found") }
+
+      try {
+        // Create updated note object
+        const updatedNote: Note = {
+          ...note,
+          cover,
+          updatedAt: new Date(),
+          updatedByUserId: session.user.id,
+          updatedByUserName: session.user.name
+        }
+
+        // Apply the change locally
+        await dexieDB.notes.update(noteId, updatedNote)
+
+        // Use immediate sync for cover changes
+        await syncNow()
+
+        return { data: true, error: null }
+      } catch (err) {
+        console.error("Error updating note cover:", err)
+        return {
+          data: null,
+          error: err instanceof Error ? err : new Error(String(err))
+        }
+      }
+    },
+    [note, noteId, syncNow]
+  )
+
   // Create a block in the note
   const createBlock = useCallback(
     async (content: any, order: number) => {
@@ -269,6 +308,7 @@ export function useSyncedNoteQueries(noteId: string) {
     updateNoteTitle,
     updateNoteEmoji,
     updateNoteFavorite,
+    updateNoteCover,
     createBlock,
     updateBlock,
     deleteBlock

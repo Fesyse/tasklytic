@@ -1,17 +1,17 @@
 "use client"
 
-import { NoteEmojiPicker } from "@/components/note/note-emoji-picker"
 import { NoteTitleInput } from "@/components/note/note-title-input"
 
 import { useSyncedNoteQueries } from "@/hooks/use-sync-queries"
 import { cn } from "@/lib/utils"
-import { Loader2 } from "lucide-react"
 import { useParams } from "next/navigation"
 import { useState } from "react"
 
-import { AnimatePresence, motion } from "motion/react"
+import { NoteCover } from "./cover"
+import { NoteCoverButton } from "./cover-button"
 import { NoteEmojiButton } from "./emoji-button"
 import { NoteFavoriteButton } from "./favorite-button"
+import { NoteEmoji } from "./note-emoji"
 
 export const NoteContentHeader = () => {
   const [isAddingEmoji, setIsAddingEmoji] = useState(false)
@@ -20,54 +20,43 @@ export const NoteContentHeader = () => {
     useSyncedNoteQueries(noteId)
 
   return (
-    <div className="group relative mx-auto mb-12 flex w-full max-w-[51rem] items-center gap-4 px-15 pt-40">
+    <>
+      <NoteCover note={note} />
       <div
         className={cn(
-          "text-muted-foreground absolute bottom-12 left-12 opacity-0 transition-opacity duration-300 group-hover:opacity-100",
-          {
-            "bottom-16": !!note?.emoji
-          }
+          "group relative mx-auto flex w-full max-w-[51rem] items-center gap-4 px-15",
+          note?.cover ? "pt-20" : "pt-40"
         )}
       >
-        <div className="flex gap-2">
-          <NoteEmojiButton
-            note={note}
-            updateNoteEmoji={updateNoteEmoji}
-            isAddingEmoji={isAddingEmoji}
-            setIsAddingEmoji={setIsAddingEmoji}
-          />
-          <NoteFavoriteButton
-            note={note}
-            updateNoteFavorite={updateNoteFavorite}
-          />
-        </div>
-      </div>
-      <div
-        className={cn("linear relative transition-all duration-200", {
-          "size-12": isAddingEmoji || note?.emoji
-        })}
-      >
-        <AnimatePresence>
-          {isAddingEmoji ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              <Loader2 className="text-muted-foreground size-12 animate-spin" />
-            </motion.div>
-          ) : note?.emoji ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              <NoteEmojiPicker />
-            </motion.div>
+        <div
+          className={cn("text-muted-foreground absolute bottom-12 left-12", {
+            "bottom-16": note?.emoji && !note?.cover
+          })}
+        >
+          {note?.cover ? (
+            <div className="absolute bottom-[calc(100%+var(--spacing)*4)] left-0 z-10">
+              <NoteEmoji size={84} isAddingEmoji={isAddingEmoji} note={note} />
+            </div>
           ) : null}
-        </AnimatePresence>
+          <div className="flex gap-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+            <NoteEmojiButton
+              note={note}
+              updateNoteEmoji={updateNoteEmoji}
+              isAddingEmoji={isAddingEmoji}
+              setIsAddingEmoji={setIsAddingEmoji}
+            />
+            <NoteCoverButton note={note} />
+            <NoteFavoriteButton
+              note={note}
+              updateNoteFavorite={updateNoteFavorite}
+            />
+          </div>
+        </div>
+        {!note?.cover ? (
+          <NoteEmoji isAddingEmoji={isAddingEmoji} note={note} />
+        ) : null}
+        <NoteTitleInput />
       </div>
-      <NoteTitleInput />
-    </div>
+    </>
   )
 }
