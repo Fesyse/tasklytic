@@ -101,10 +101,10 @@ export function NavNotes({
 
   return (
     <SidebarGroup>
-      {!notes?.length && (type === "shared" || type === "favorites") ? null : (
+      {type === "shared" || type === "favorites" ? null : (
         <SidebarGroupLabel>{getSectionTitle()}</SidebarGroupLabel>
       )}
-      {!notes?.length && (type === "shared" || type === "favorites") ? null : (
+      {type === "shared" || type === "favorites" ? null : (
         <SidebarGroupAction onClick={handleCreateNote}>
           <PlusIcon className="size-4" />
         </SidebarGroupAction>

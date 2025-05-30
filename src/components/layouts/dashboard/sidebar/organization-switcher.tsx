@@ -78,6 +78,24 @@ export function OrganizationSwitcher() {
     }
   }, [organizations, isLoadingOrganizations, organizationsError, isRefetching])
 
+  useEffect(() => {
+    if (isLoadingActiveOrg || activeOrg) return
+
+    const newActiveOrganizationId =
+      activeOrgIdFromLocalStorage ?? organizations?.[0]?.id
+
+    if (!newActiveOrganizationId) return
+
+    authClient.organization.setActive({
+      organizationId: newActiveOrganizationId
+    })
+  }, [
+    activeOrg,
+    activeOrgIdFromLocalStorage,
+    isLoadingOrganizations,
+    organizations
+  ])
+
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <div className="group/menu-item relative grow transition-all duration-200 ease-in-out">
