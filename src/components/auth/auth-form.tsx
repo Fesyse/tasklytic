@@ -12,22 +12,26 @@ import {
 import { Icons } from "@/components/ui/icons"
 import { Input } from "@/components/ui/input"
 import { PasswordInput } from "@/components/ui/password-input"
+import { env } from "@/env"
 import { authClient } from "@/lib/auth-client"
-import { verifyRecaptcha } from "@/lib/recaptcha"
+import { verifyTurnstileToken } from "@/lib/turnstile"
 import { cn } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2 } from "lucide-react"
+import { Turnstile } from "next-turnstile"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Suspense, useMemo, useState } from "react"
-import { useGoogleReCaptcha } from "react-google-recaptcha-v3"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
 
 const signInSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(8)
+  password: z.string().min(8),
+  turnstileToken: z.string({
+    message: "You need to verify that you are human, click checkbox above"
+  })
 })
 
 const signUpSchema = z
@@ -35,7 +39,10 @@ const signUpSchema = z
     name: z.string().min(3),
     email: z.string().email(),
     password: z.string().min(8),
-    confirmPassword: z.string()
+    confirmPassword: z.string(),
+    turnstileToken: z.string({
+      message: "You need to verify that you are human, click checkbox above"
+    })
   })
   .superRefine(({ confirmPassword, password }, ctx) => {
     if (confirmPassword !== password) {
@@ -55,6 +62,9 @@ function AuthFormContent({
   const searchParams = useSearchParams()
   const invitationId = searchParams.get("invitationId")
   const [isLoading, setIsLoading] = useState(false)
+  const [turnstileStatus, setTurnstileStatus] = useState<
+    "success" | "error" | "expired" | "required"
+  >("required")
 
   const signUpCallbackUrl = useMemo(
     () =>
@@ -64,7 +74,6 @@ function AuthFormContent({
     [invitationId]
   )
 
-  const { executeRecaptcha } = useGoogleReCaptcha()
   const router = useRouter()
   const form = useForm<z.infer<typeof signInSchema | typeof signUpSchema>>({
     resolver: zodResolver(type === "sign-in" ? signInSchema : signUpSchema),
@@ -72,7 +81,8 @@ function AuthFormContent({
       email: "",
       password: "",
       name: "",
-      confirmPassword: ""
+      confirmPassword: "",
+      turnstileToken: ""
     }
   })
 
@@ -81,17 +91,14 @@ function AuthFormContent({
       typeof type extends "sign-in" ? typeof signInSchema : typeof signUpSchema
     >
   ) => {
-    if (!executeRecaptcha) return toast.error("Recaptcha is not loaded")
-    setIsLoading(true)
-
-    const { recaptchaData, recaptchaError } = await verifyRecaptcha(
-      executeRecaptcha,
-      type.replace("-", "_")
-    )
-
-    if (recaptchaError) return toast.error(recaptchaError.message)
-    if (!recaptchaData?.success) {
-      toast.error("Seems like you are a bot. Please try again.")
+    if (turnstileStatus !== "success") {
+      toast.error("Please verify you are not a robot")
+      setIsLoading(false)
+      return
+    }
+    const success = await verifyTurnstileToken(data.turnstileToken)
+    if (!success) {
+      toast.error("Security check failed. Please try again.")
       setIsLoading(false)
       return
     }
@@ -215,6 +222,35 @@ function AuthFormContent({
               )}
             />
           )}
+          <FormField
+            name="turnstileToken"
+            render={({ field }) => (
+              <FormItem className="flex justify-center">
+                <Turnstile
+                  siteKey={env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+                  retry="auto"
+                  refreshExpired="auto"
+                  onError={() => {
+                    setTurnstileStatus("error")
+                    toast.error("Security check failed. Please try again.")
+                  }}
+                  onExpire={() => {
+                    setTurnstileStatus("expired")
+                    toast.error("Security check expired. Please verify again.")
+                  }}
+                  onLoad={() => {
+                    setTurnstileStatus("required")
+                  }}
+                  onVerify={(token) => {
+                    console.log(token)
+                    field.onChange(token)
+                    setTurnstileStatus("success")
+                  }}
+                />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? <Loader2 className="size-4 animate-spin" /> : null}
             {type === "sign-in" ? "Sign in" : "Sign up"}
