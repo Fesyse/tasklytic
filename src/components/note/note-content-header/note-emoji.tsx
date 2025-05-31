@@ -33,11 +33,12 @@ export const NoteEmoji: React.FC<NoteEmojiProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            className="p-2"
           >
             <Loader2
               className="text-muted-foreground animate-spin"
-              width={size}
-              height={size}
+              width={size - 8}
+              height={size - 8}
             />
           </motion.div>
         ) : note?.emoji ? (

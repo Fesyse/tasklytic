@@ -555,7 +555,7 @@ export class SyncService {
         parentNoteId: serverNote.parentNoteId,
         isFavorited: serverNote.isFavorited,
         favoritedByUserId: serverNote.favoritedByUserId,
-        cover: serverNote.cover
+        cover: serverNote.cover ?? undefined
       })
 
       // Get blocks for this note
