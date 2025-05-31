@@ -5,7 +5,6 @@ import {
   useCallback,
   useContext,
   useEffect,
-  useRef,
   useState,
   type ReactNode
 } from "react"
@@ -41,7 +40,6 @@ export const useSyncContext = () => useContext(SyncContext)
 
 // Provider component
 export function SyncProvider({ children }: { children: ReactNode }) {
-  const { data: session } = authClient.useSession()
   const { data: activeOrganization } = authClient.useActiveOrganization()
 
   const [syncStatus, setSyncStatus] = useState<SyncStatus>("idle")
@@ -50,7 +48,6 @@ export function SyncProvider({ children }: { children: ReactNode }) {
   // Flag to track if changes are from sync operation
   const [isInternalSyncActive, setIsInternalSyncActive] = useState(false)
   // Ref to track if sync is currently running (mutex)
-  const syncInProgressRef = useRef(false)
 
   // Get the tRPC hooks for sync operations
   const syncNotesMutation = api.sync.syncNotes.useMutation()
