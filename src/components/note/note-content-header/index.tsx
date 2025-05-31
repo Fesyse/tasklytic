@@ -27,7 +27,7 @@ export const NoteContentHeader = () => {
           "group relative mx-auto mb-8 flex w-full max-w-[51rem] items-center px-15",
           {
             "pt-20": note?.cover,
-            "pt-40": !note?.cover,
+            "pt-60": !note?.cover,
             "gap-4": note?.emoji
           }
         )}

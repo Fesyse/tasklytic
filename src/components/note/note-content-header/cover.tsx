@@ -7,8 +7,8 @@ type NoteCoverProps = {
 }
 export const NoteCover: React.FC<NoteCoverProps> = ({ note }) => {
   return note?.cover ? (
-    <div className="relative h-60 bg-red-500">
-      <Image fill src={note.cover} alt="Note cover" className="z-10" />
+    <div className="relative h-60">
+      <Image fill src={note.cover} alt="Note cover" className="" />
     </div>
   ) : null
 }
