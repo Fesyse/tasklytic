@@ -13,8 +13,9 @@ export const NoteCoverButton: React.FC<NoteCoverButtonProps> = ({ note }) => {
   const { updateNoteCover } = useSyncedNoteQueries(noteId)
 
   const handleToggleCover = () => {
-    if (note?.cover) return updateNoteCover(undefined)
-    else return updateNoteCover(`/note-images/solid_red.png`)
+    if (note?.cover) updateNoteCover(undefined)
+    // TODO: make that random image from upslash
+    else updateNoteCover(`/note-images/solid_red.png`)
   }
 
   return (

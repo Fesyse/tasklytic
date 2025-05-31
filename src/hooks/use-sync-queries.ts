@@ -210,7 +210,6 @@ export function useSyncedNoteQueries(noteId: string) {
 
         // Apply the change locally
         await dexieDB.notes.update(noteId, updatedNote)
-
         // Use immediate sync for cover changes
         await syncNow()
 

@@ -86,11 +86,13 @@ export class SyncService {
       console.log("[SYNC] Syncing notes for organization", organizationId)
 
       // Get notes from the client
-      const clientNotes = await dexieDB.notes
-        .where("organizationId")
-        .equals(organizationId)
-        .and((note) => !note.isDeleted)
-        .toArray()
+      const clientNotes = (
+        await dexieDB.notes
+          .where("organizationId")
+          .equals(organizationId)
+          .and((note) => !note.isDeleted)
+          .toArray()
+      ).map((note) => ({ ...note, cover: note?.cover ?? undefined }))
 
       // Send to server and get updated data
       // Since we're using utils instead of direct hooks, we need to use fetch

@@ -26,8 +26,9 @@ export const NoteContentHeader = () => {
         className={cn(
           "group relative mx-auto mb-8 flex w-full max-w-[51rem] items-center px-15",
           {
-            "pt-20": note?.cover,
+            "pt-14": note?.cover && !note?.emoji,
             "pt-60": !note?.cover,
+            "pt-20": note?.cover && note?.emoji,
             "gap-4": note?.emoji
           }
         )}
