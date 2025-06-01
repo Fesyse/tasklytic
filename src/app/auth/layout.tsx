@@ -19,17 +19,6 @@ export default function AuthLayout({
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-xs">{children}</div>
         </div>
-        <div className="text-muted-foreground flex justify-center gap-0.75 text-xs md:justify-start">
-          This site is protected by reCAPTCHA and the Google
-          <a href="https://policies.google.com/privacy" className="underline">
-            Privacy Policy
-          </a>
-          and
-          <a href="https://policies.google.com/terms" className="underline">
-            Terms of Service
-          </a>
-          apply.
-        </div>
       </div>
       <div className="bg-muted bg-noise relative hidden lg:block"></div>
     </div>

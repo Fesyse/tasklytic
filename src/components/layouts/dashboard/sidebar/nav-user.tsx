@@ -32,11 +32,34 @@ export function NavUser() {
   const { data: session, isPending, error } = authClient.useSession()
   const user = session?.user
 
+  const { data: activeOrg, isPending: isLoadingActiveOrg } =
+    authClient.useActiveOrganization()
   const { isMobile } = useSidebar()
   const router = useRouter()
 
   if (error) {
     toast.error("Error fetching user.")
+  }
+
+  const handleSignOut = () => {
+    if (isLoadingActiveOrg || !user)
+      return toast.error("Loading application data, can't sign out right now.")
+
+    if (activeOrg) localStorage.setItem(`activeOrg:${user.id}`, activeOrg.id)
+
+    void authClient.signOut({
+      fetchOptions: {
+        onError: (error) => {
+          toast.error("Error signing out, try again later.", {
+            description: error.error?.message
+          })
+        },
+        onSuccess: () => {
+          toast.success("Signed out successfully!")
+          router.push("/")
+        }
+      }
+    })
   }
 
   return (
@@ -88,23 +111,7 @@ export function NavUser() {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() =>
-                authClient.signOut({
-                  fetchOptions: {
-                    onError: (error) => {
-                      toast.error("Error signing out, try again later.", {
-                        description: error.error?.message
-                      })
-                    },
-                    onSuccess: () => {
-                      toast.success("Signed out successfully!")
-                      router.push("/")
-                    }
-                  }
-                })
-              }
-            >
+            <DropdownMenuItem onClick={handleSignOut}>
               <IconLogout />
               Log out
             </DropdownMenuItem>

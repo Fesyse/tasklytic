@@ -3,7 +3,7 @@
 import { useMutation } from "@tanstack/react-query"
 import { Check, ChevronsUpDown, PlusCircle, Users } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -24,17 +24,23 @@ export function OrganizationSwitcher() {
   const [isOpen, setIsOpen] = useState(false)
   const router = useRouter()
 
-  // Fetch organizations with React Query
   const {
     data: organizations,
     isPending: isLoadingOrganizations,
     error: organizationsError,
     isRefetching
   } = authClient.useListOrganizations()
+  const { data: session } = authClient.useSession()
+  const user = session?.user
 
-  // Fetch active organization with React Query
   const { data: activeOrg, isPending: isLoadingActiveOrg } =
     authClient.useActiveOrganization()
+
+  const activeOrgIdFromLocalStorage = useMemo(() => {
+    if (typeof window === "undefined") return null
+    const activeOrgId = localStorage.getItem(`activeOrg:${user?.id}`)
+    return activeOrgId ? activeOrgId : null
+  }, [user?.id])
 
   // Mutation for switching organizations
   const switchOrgMutation = useMutation({
@@ -75,7 +81,9 @@ export function OrganizationSwitcher() {
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <div className="group/menu-item relative grow transition-all duration-200 ease-in-out">
-        {activeOrg ? (
+        {activeOrg ||
+        activeOrgIdFromLocalStorage ||
+        (!isLoadingActiveOrg && !isLoadingOrganizations) ? (
           <DropdownMenuTrigger asChild>
             <Button
               variant="outline"
@@ -88,7 +96,15 @@ export function OrganizationSwitcher() {
                 }
               >
                 <Users />
-                <span>{activeOrg.name}</span>
+                <span>
+                  {activeOrg
+                    ? activeOrg.name
+                    : (
+                        organizations?.find(
+                          (org) => org.id === activeOrgIdFromLocalStorage
+                        ) ?? organizations?.[0]
+                      )?.name}
+                </span>
               </span>
               {sidebarOpen ? (
                 <ChevronsUpDown className="ml-auto h-4 w-4 shrink-0 opacity-50" />

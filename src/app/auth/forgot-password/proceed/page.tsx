@@ -18,18 +18,21 @@ import {
   FormMessage
 } from "@/components/ui/form"
 import { PasswordInput } from "@/components/ui/password-input"
+import { env } from "@/env"
 import { authClient } from "@/lib/auth-client"
-import { verifyRecaptcha } from "@/lib/recaptcha"
+import { verifyTurnstileToken } from "@/lib/turnstile"
 import { AlertCircle, CheckCircle, Loader2 } from "lucide-react"
-import { useGoogleReCaptcha } from "react-google-recaptcha-v3"
-import { toast } from "sonner"
+import { Turnstile } from "next-turnstile"
 
 const resetPasswordSchema = z
   .object({
     newPassword: z.string().min(8, {
       message: "Password must be at least 8 characters long"
     }),
-    confirmPassword: z.string().min(8)
+    confirmPassword: z.string().min(8),
+    turnstileToken: z.string({
+      message: "You need to verify that you are human, click checkbox above"
+    })
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
     message: "Passwords do not match",
@@ -47,7 +50,9 @@ function ForgotPasswordProceedPageContent() {
   const [errorMessage, setErrorMessage] = useState<string>("")
   const token = searchParams.get("token")
 
-  const { executeRecaptcha } = useGoogleReCaptcha()
+  const [turnstileStatus, setTurnstileStatus] = useState<
+    "success" | "error" | "expired" | "required"
+  >("required")
   const form = useForm<ResetPasswordSchema>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
@@ -74,17 +79,16 @@ function ForgotPasswordProceedPageContent() {
       handleNoTokenError()
       return
     }
-    if (!executeRecaptcha) return toast.error("Recaptcha is not loaded")
 
     setStatus("loading")
-    const { recaptchaData, recaptchaError } = await verifyRecaptcha(
-      executeRecaptcha,
-      "reset_password"
-    )
 
-    if (recaptchaError) return toast.error(recaptchaError.message)
-    if (!recaptchaData?.success)
-      return toast.error("Seems like you are a bot. Please try again.")
+    if (turnstileStatus !== "success") {
+      setErrorMessage("Please verify you are not a robot")
+      setStatus("error")
+      return
+    }
+
+    const success = await verifyTurnstileToken(data.turnstileToken)
 
     try {
       const result = await authClient.resetPassword({
@@ -217,6 +221,41 @@ function ForgotPasswordProceedPageContent() {
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="confirmPassword"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Confirm Password</FormLabel>
+                <Turnstile
+                  siteKey={env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+                  retry="auto"
+                  refreshExpired="auto"
+                  onError={() => {
+                    setTurnstileStatus("error")
+                    setErrorMessage("Security check failed. Please try again.")
+                  }}
+                  onExpire={() => {
+                    setTurnstileStatus("expired")
+                    setErrorMessage(
+                      "Security check expired. Please verify again."
+                    )
+                  }}
+                  onLoad={() => {
+                    setTurnstileStatus("required")
+                    setErrorMessage("")
+                  }}
+                  onVerify={(token) => {
+                    field.onChange(token)
+                    setTurnstileStatus("success")
+                    setErrorMessage("")
+                  }}
+                />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <Button
             className="w-full"
             type="submit"

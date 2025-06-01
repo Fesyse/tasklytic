@@ -23,7 +23,7 @@ export const env = createEnv({
     RESEND_API_KEY: z.string(),
     UPLOADTHING_TOKEN: z.string(),
     OPENAI_API_KEY: z.string(),
-    RECAPTCHA_SECRET_KEY: z.string()
+    TURNSTILE_SECRET_KEY: z.string()
   },
 
   /**
@@ -34,7 +34,7 @@ export const env = createEnv({
   client: {
     NEXT_PUBLIC_POSTHOG_KEY: z.string(),
     NEXT_PUBLIC_POSTHOG_HOST: z.string(),
-    NEXT_PUBLIC_RECAPTCHA_SITE_KEY: z.string()
+    NEXT_PUBLIC_TURNSTILE_SITE_KEY: z.string()
   },
 
   /**
@@ -55,8 +55,8 @@ export const env = createEnv({
     NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
     UPLOADTHING_TOKEN: process.env.UPLOADTHING_TOKEN,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
-    NEXT_PUBLIC_RECAPTCHA_SITE_KEY: process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY,
-    RECAPTCHA_SECRET_KEY: process.env.RECAPTCHA_SECRET_KEY
+    NEXT_PUBLIC_TURNSTILE_SITE_KEY: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
+    TURNSTILE_SECRET_KEY: process.env.TURNSTILE_SECRET_KEY
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
