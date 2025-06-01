@@ -138,14 +138,26 @@ function AuthFormContent({
     }
   }
 
-  const handleSocialSignIn = (provider: "github" | "google") => () => {
-    authClient.signIn.social({
+  const handleSocialSignIn = (provider: "github" | "google") => async () => {
+    setIsLoading(true)
+    const { data, error } = await authClient.signIn.social({
       provider,
       callbackURL: invitationId
         ? `/accept-invitation?id=${invitationId}`
         : "/dashboard",
       newUserCallbackURL: signUpCallbackUrl
     })
+
+    if (error) {
+      return toast.error(error.message)
+    }
+
+    toast.success(
+      !data.redirect
+        ? `You are being redirected to ${provider} to proceed with the sign in`
+        : "Signed in successfully!"
+    )
+    setIsLoading(false)
   }
 
   return (
