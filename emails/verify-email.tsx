@@ -1,3 +1,4 @@
+import { Icons } from "@/components/ui/icons"
 import { tailwindConfig } from "@/styles/tailwind.config"
 import {
   Body,
@@ -29,11 +30,13 @@ export default function VerifyEmail({
         <Head />
         <Preview>Verify your email | Sign Up - Tasklytic</Preview>
         <Body className="bg-background mx-auto my-0 font-sans">
-          <Container className="bg-card mx-auto my-10 max-w-md rounded-xl border border-solid border-[#eaeaea] p-8">
-            <Heading className="text-foreground mb-6 text-center text-2xl font-bold">
-              Sign Up - Verify your email
-            </Heading>
-
+          <Container className="bg-noise bg-card mx-auto my-10 max-w-md rounded-xl border border-solid border-[#eaeaea] p-8">
+            <div className="flex flex-col items-center justify-center">
+              <Icons.icon className="size-12" />
+              <Heading className="text-foreground mb-6 text-center text-2xl font-bold">
+                Sign Up - Verify your email
+              </Heading>
+            </div>
             <Text className="text-muted-foreground mb-6 text-base">
               Hi {userName},
             </Text>
