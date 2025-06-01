@@ -1,6 +1,18 @@
 import type { TailwindConfig } from "@react-email/components"
+import plugin from "tailwindcss/plugin"
 
 export const tailwindConfig: TailwindConfig = {
+  plugins: [
+    plugin(function ({ addUtilities }) {
+      addUtilities({
+        ".bg-noise": {
+          "background-image": "url('https://tasklytic.fesyse.site/noise.png')",
+          "background-size": "96px 96px",
+          "background-repeat": "repeat"
+        }
+      })
+    })
+  ],
   theme: {
     extend: {
       borderRadius: {
