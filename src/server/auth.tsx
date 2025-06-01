@@ -9,7 +9,7 @@ import { resend } from "@/server/resend"
 import { betterAuth } from "better-auth"
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
 import { nextCookies } from "better-auth/next-js"
-import { organization } from "better-auth/plugins/organization"
+import { oAuthProxy, organization } from "better-auth/plugins"
 
 export const auth = betterAuth({
   emailAndPassword: {
@@ -34,11 +34,13 @@ export const auth = betterAuth({
   socialProviders: {
     google: {
       clientId: env.GOOGLE_CLIENT_ID,
-      clientSecret: env.GOOGLE_CLIENT_SECRET
+      clientSecret: env.GOOGLE_CLIENT_SECRET,
+      redirectUri: `${siteConfig.url}/api/auth/callback/google`
     },
     github: {
       clientId: env.GITHUB_CLIENT_ID,
-      clientSecret: env.GITHUB_CLIENT_SECRET
+      clientSecret: env.GITHUB_CLIENT_SECRET,
+      redirectUri: `${siteConfig.url}/api/auth/callback/github`
     }
   },
   database: drizzleAdapter(db, {
@@ -77,6 +79,9 @@ export const auth = betterAuth({
 
   plugins: [
     nextCookies(),
+    oAuthProxy({
+      productionURL: siteConfig.url
+    }),
     organization({
       sendInvitationEmail: async ({ id, email, inviter, organization }) => {
         const recipient = await db.query.users.findFirst({
