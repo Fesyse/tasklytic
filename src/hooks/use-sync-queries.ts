@@ -547,7 +547,8 @@ export function useSyncedDiscussions(noteId: string) {
           contentRich,
           createdAt: new Date(),
           isEdited: false,
-          userId: session.user.id
+          userId: session.user.id,
+          userImage: session.user.image ?? undefined
         })
 
         // Trigger debounced sync

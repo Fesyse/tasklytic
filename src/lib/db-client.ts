@@ -46,6 +46,7 @@ type Comment = {
   createdAt: Date
   isEdited: boolean
   userId: string
+  userImage?: string
 }
 
 const dexieDB = new Dexie(`${siteConfig.name}Database`) as Dexie & {

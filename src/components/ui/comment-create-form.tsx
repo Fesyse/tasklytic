@@ -145,12 +145,12 @@ export function CommentCreateForm({
 
     if (!newDiscussionId) return
 
-    const id = newDiscussionId
+    await addComment(newDiscussionId, commentValue)
 
     commentsNodeEntry.forEach(([, path]) => {
       editor.tf.setNodes(
         {
-          [getCommentKey(id)]: true
+          [getCommentKey(newDiscussionId)]: true
         },
         { at: path, split: true }
       )
