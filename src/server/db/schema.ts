@@ -503,6 +503,7 @@ export const comments = createTable(
     createdAt: timestamp("created_at").notNull(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
     isEdited: boolean("is_edited").notNull().default(false),
+    userImage: text("user_image"),
     userId: text("user_id")
       .notNull()
       .references(() => users.id)

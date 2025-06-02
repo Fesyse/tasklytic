@@ -39,10 +39,6 @@ export function useDiscussions(noteId: string) {
     }
 
     loadDiscussions()
-
-    // Set up an interval to periodically refresh discussions
-    const interval = setInterval(loadDiscussions, 5000)
-    return () => clearInterval(interval)
   }, [getDiscussionsWithComments])
 
   // Create a new discussion
