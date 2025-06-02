@@ -397,7 +397,10 @@ export const syncRouter = createTRPCRouter({
       // 4. Return all merged comments for the discussion
       return merged.map((comment) => ({
         ...comment,
-        contentRich: JSON.parse(comment.contentRich)
+        contentRich:
+          typeof comment.contentRich === "string"
+            ? JSON.parse(comment.contentRich)
+            : comment.contentRich
       }))
     })
 })
