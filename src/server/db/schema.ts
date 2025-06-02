@@ -479,6 +479,7 @@ export const discussions = createTable(
     blockId: text("block_id").notNull(),
     documentContent: text("document_content"),
     createdAt: timestamp("created_at").notNull(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
     isResolved: boolean("is_resolved").notNull().default(false),
     userId: text("user_id")
       .notNull()
@@ -500,6 +501,7 @@ export const comments = createTable(
       .references(() => discussions.id, { onDelete: "cascade" }),
     contentRich: text("content_rich").notNull(), // JSON content stored as text
     createdAt: timestamp("created_at").notNull(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
     isEdited: boolean("is_edited").notNull().default(false),
     userId: text("user_id")
       .notNull()

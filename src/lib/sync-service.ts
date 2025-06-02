@@ -265,12 +265,6 @@ export class SyncService {
           .toArray()
         allClientDiscussions.push(...noteDiscussions)
       }
-
-      // Skip if no discussions
-      if (allClientDiscussions.length === 0) {
-        return { success: true, data: [] }
-      }
-
       // Process one note at a time to avoid duplicate key violations
       const allServerDiscussions = []
 
@@ -303,9 +297,10 @@ export class SyncService {
           id: discussion.id,
           noteId: discussion.noteId,
           blockId: discussion.blockId,
-          documentContent: discussion.documentContent || undefined,
+          documentContent: discussion.documentContent ?? undefined,
+          updatedAt: discussion.updatedAt ?? new Date(),
           createdAt: discussion.createdAt,
-          isResolved: discussion.isResolved,
+          isResolved: Boolean(discussion.isResolved),
           userId: discussion.userId
         }))
 
@@ -327,13 +322,7 @@ export class SyncService {
           }
         })
 
-        // Batch sync all comments for these discussions
-        if (discussionsToPut.length > 0) {
-          const discussionIds = discussionsToPut.map((d) => d.id)
-          if (discussionIds.length > 0) {
-            await this.syncCommentsBatch(discussionIds)
-          }
-        }
+        await this.syncCommentsBatch(allServerDiscussions.map((d) => d.id))
 
         return { success: true, data: discussionsToPut }
       }
@@ -367,11 +356,6 @@ export class SyncService {
         allClientComments.push(...discussionComments)
       }
 
-      // Skip if no comments
-      if (allClientComments.length === 0) {
-        return { success: true, data: [] }
-      }
-
       // Process one discussion at a time to avoid duplicate key violations
       const allServerComments = []
 
@@ -380,7 +364,6 @@ export class SyncService {
         const discussionComments = allClientComments.filter(
           (comment) => comment.discussionId === discussionId
         )
-        if (discussionComments.length === 0) continue
 
         try {
           // Send this discussion's comments to server
@@ -404,12 +387,9 @@ export class SyncService {
       if (allServerComments.length > 0) {
         // Update client comments
         const commentsToPut = allServerComments.map((comment) => ({
-          id: comment.id,
-          discussionId: comment.discussionId,
-          contentRich: JSON.parse(comment.contentRich),
-          createdAt: comment.createdAt,
-          isEdited: comment.isEdited,
-          userId: comment.userId
+          ...comment,
+          updatedAt: comment.updatedAt ?? new Date(),
+          isEdited: Boolean(comment.isEdited)
         }))
 
         // Identify comments to delete

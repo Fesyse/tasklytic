@@ -34,6 +34,7 @@ type Discussion = {
   noteId: string
   blockId: string
   documentContent?: string
+  updatedAt: Date
   createdAt: Date
   isResolved: boolean
   userId: string
@@ -43,6 +44,7 @@ type Comment = {
   id: string
   discussionId: string
   contentRich: any // Using any for now, but should be Value from @udecode/plate
+  updatedAt: Date
   createdAt: Date
   isEdited: boolean
   userId: string
@@ -60,8 +62,8 @@ dexieDB.version(1).stores({
   notes:
     "&id, title, emoji, emojiSlug, isPublic, organizationId, parentNoteId, updatedByUserId, updatedByUserName, updatedAt, createdByUserId, createdByUserName, createdAt, isFavorited, favoritedByUserId, cover, [id+organizationId], isDeleted",
   blocks: "&id, noteId, content, order",
-  discussions: "&id, noteId, blockId, isResolved, userId, createdAt",
-  comments: "&id, discussionId, userId, createdAt, isEdited"
+  discussions: "&id, noteId, blockId, isResolved, userId, updatedAt, createdAt",
+  comments: "&id, discussionId, userId, updatedAt, createdAt, isEdited"
 })
 
 export { dexieDB }

@@ -7,8 +7,6 @@ import {
   discussions,
   notes,
   type Block,
-  type Comment,
-  type Discussion,
   type Note
 } from "@/server/db/schema"
 import { createTRPCRouter, protectedProcedure } from "../trpc"
@@ -62,6 +60,7 @@ const updateDiscussionSchema = z.object({
   noteId: z.string(),
   blockId: z.string(),
   documentContent: z.string().optional(),
+  updatedAt: z.date(),
   createdAt: z.date(),
   isResolved: z.boolean(),
   userId: z.string()
@@ -70,7 +69,8 @@ const updateDiscussionSchema = z.object({
 const updateCommentSchema = z.object({
   id: z.string(),
   discussionId: z.string(),
-  contentRich: z.any(), // Using any for contentRich
+  contentRich: z.any(),
+  updatedAt: z.date(),
   createdAt: z.date(),
   isEdited: z.boolean(),
   userId: z.string()
@@ -111,9 +111,14 @@ export const syncRouter = createTRPCRouter({
   getComments: protectedProcedure
     .input(syncCommentsQuerySchema)
     .query(async ({ ctx, input }) => {
-      return await ctx.db.query.comments.findMany({
-        where: eq(comments.discussionId, input.discussionId)
-      })
+      return (
+        await ctx.db.query.comments.findMany({
+          where: eq(comments.discussionId, input.discussionId)
+        })
+      ).map((comment) => ({
+        ...comment,
+        contentRich: JSON.parse(comment.contentRich)
+      }))
     }),
 
   // SYNC operations - send client changes to server
@@ -292,78 +297,49 @@ export const syncRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { discussions: clientDiscussions, noteId } = input
 
-      // Get existing discussions from the server
+      // Get all server discussions for this note
       const serverDiscussions = await ctx.db.query.discussions.findMany({
         where: eq(discussions.noteId, noteId)
       })
+      const serverMap = new Map(serverDiscussions.map((d) => [d.id, d]))
 
-      const serverDiscussionsMap = new Map<string, Discussion>()
-      serverDiscussions.forEach((discussion) =>
-        serverDiscussionsMap.set(discussion.id, discussion)
-      )
+      // For upserting and for sending back to client
+      const upserts: (typeof discussions.$inferInsert)[] = []
+      const merged: (typeof discussions.$inferInsert)[] = []
 
-      // Find discussions to insert, update, or delete
-      const discussionsToInsert: (typeof discussions.$inferInsert)[] = []
-      const discussionsToUpdate: (typeof discussions.$inferInsert)[] = []
-      const existingDiscussionIds = new Set<string>()
-
-      // Process client discussions
-      for (const clientDiscussion of clientDiscussions) {
-        existingDiscussionIds.add(clientDiscussion.id)
-        const serverDiscussion = serverDiscussionsMap.get(clientDiscussion.id)
-
-        if (!serverDiscussion) {
-          // Discussion doesn't exist on server, create it
-          discussionsToInsert.push({
-            id: clientDiscussion.id,
-            noteId: clientDiscussion.noteId,
-            blockId: clientDiscussion.blockId,
-            documentContent: clientDiscussion.documentContent,
-            createdAt: clientDiscussion.createdAt,
-            isResolved: clientDiscussion.isResolved,
-            userId: clientDiscussion.userId
-          })
+      // 1. Merge client discussions into server
+      for (const client of clientDiscussions) {
+        const server = serverMap.get(client.id)
+        if (!server) {
+          // Not on server, insert
+          upserts.push(client)
+          merged.push(client)
         } else {
-          // Discussion exists, update it
-          discussionsToUpdate.push({
-            id: clientDiscussion.id,
-            noteId: clientDiscussion.noteId,
-            blockId: clientDiscussion.blockId,
-            documentContent: clientDiscussion.documentContent,
-            createdAt: clientDiscussion.createdAt,
-            isResolved: clientDiscussion.isResolved,
-            userId: clientDiscussion.userId
-          })
+          // Both exist, compare updatedAt
+          const clientDate = new Date(client.updatedAt)
+          const serverDate = new Date(server.updatedAt)
+          if (clientDate > serverDate) {
+            // Client is newer, update server
+            upserts.push(client)
+            merged.push(client)
+          } else {
+            // Server is newer or same, keep server
+            merged.push(server)
+          }
+          serverMap.delete(client.id)
         }
       }
 
-      // Find discussions to delete
-      const discussionsToDeleteIds = serverDiscussions
-        .filter((discussion) => !existingDiscussionIds.has(discussion.id))
-        .map((discussion) => discussion.id)
-
-      // Execute operations
-      if (discussionsToInsert.length > 0) {
-        await ctx.db.insert(discussions).values(discussionsToInsert)
+      // 2. Add server-only discussions to merged
+      for (const server of serverMap.values()) {
+        merged.push(server)
       }
 
-      for (const discussion of discussionsToUpdate) {
-        await ctx.db
-          .update(discussions)
-          .set(discussion)
-          .where(eq(discussions.id, discussion.id))
-      }
+      // 3. Upsert to server
+      if (upserts.length > 0) await ctx.db.insert(discussions).values(upserts)
 
-      if (discussionsToDeleteIds.length > 0) {
-        await ctx.db
-          .delete(discussions)
-          .where(inArray(discussions.id, discussionsToDeleteIds))
-      }
-
-      // Return all discussions for the note after the operations
-      return await ctx.db.query.discussions.findMany({
-        where: eq(discussions.noteId, noteId)
-      })
+      // 4. Return all merged discussions for the note
+      return merged
     }),
 
   syncComments: protectedProcedure
@@ -376,77 +352,52 @@ export const syncRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { comments: clientComments, discussionId } = input
 
-      // Get existing comments from the server
+      // Get all server comments for this discussion
       const serverComments = await ctx.db.query.comments.findMany({
         where: eq(comments.discussionId, discussionId)
       })
+      const serverMap = new Map(serverComments.map((c) => [c.id, c]))
 
-      const serverCommentsMap = new Map<string, Comment>()
-      serverComments.forEach((comment) =>
-        serverCommentsMap.set(comment.id, comment)
-      )
+      const upserts: (typeof comments.$inferInsert)[] = []
+      const merged: (typeof comments.$inferInsert)[] = []
 
-      // Find comments to insert, update, or delete
-      const commentsToInsert: (typeof comments.$inferInsert)[] = []
-      const commentsToUpdate: (typeof comments.$inferInsert)[] = []
-      const existingCommentIds = new Set<string>()
-
-      // Process client comments
-      for (const clientComment of clientComments) {
-        existingCommentIds.add(clientComment.id)
-        const serverComment = serverCommentsMap.get(clientComment.id)
-
-        if (!serverComment) {
-          // Comment doesn't exist on server, create it
-          commentsToInsert.push({
-            id: clientComment.id,
-            discussionId: clientComment.discussionId,
-            contentRich: JSON.stringify(clientComment.contentRich), // Convert to string for storage
-            createdAt: clientComment.createdAt,
-            isEdited: clientComment.isEdited,
-            userId: clientComment.userId
-          })
+      // 1. Merge client comments into server
+      for (const client of clientComments) {
+        const server = serverMap.get(client.id)
+        if (!server) {
+          upserts.push(client)
+          merged.push(client)
         } else {
-          // Comment exists, update it (only if client comment has isEdited = true)
-          if (clientComment.isEdited) {
-            commentsToUpdate.push({
-              id: clientComment.id,
-              discussionId: clientComment.discussionId,
-              contentRich: JSON.stringify(clientComment.contentRich), // Convert to string for storage
-              createdAt: clientComment.createdAt,
-              isEdited: clientComment.isEdited,
-              userId: clientComment.userId
-            })
+          const clientDate = new Date(client.updatedAt)
+          const serverDate = new Date(server.updatedAt)
+          if (clientDate > serverDate) {
+            upserts.push(client)
+            merged.push(client)
+          } else {
+            merged.push(server)
           }
+          serverMap.delete(client.id)
         }
       }
 
-      // Find comments to delete
-      const commentsToDeleteIds = serverComments
-        .filter((comment) => !existingCommentIds.has(comment.id))
-        .map((comment) => comment.id)
-
-      // Execute operations
-      if (commentsToInsert.length > 0) {
-        await ctx.db.insert(comments).values(commentsToInsert)
+      // 2. Add server-only comments to merged
+      for (const server of serverMap.values()) {
+        merged.push(server)
       }
 
-      for (const comment of commentsToUpdate) {
-        await ctx.db
-          .update(comments)
-          .set(comment)
-          .where(eq(comments.id, comment.id))
-      }
+      // 3. Upsert to server
+      if (upserts.length > 0)
+        await ctx.db.insert(comments).values(
+          upserts.map((comment) => ({
+            ...comment,
+            contentRich: JSON.stringify(comment.contentRich)
+          }))
+        )
 
-      if (commentsToDeleteIds.length > 0) {
-        await ctx.db
-          .delete(comments)
-          .where(inArray(comments.id, commentsToDeleteIds))
-      }
-
-      // Return all comments for the discussion after the operations
-      return await ctx.db.query.comments.findMany({
-        where: eq(comments.discussionId, discussionId)
-      })
+      // 4. Return all merged comments for the discussion
+      return merged.map((comment) => ({
+        ...comment,
+        contentRich: JSON.parse(comment.contentRich)
+      }))
     })
 })

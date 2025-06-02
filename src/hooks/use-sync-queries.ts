@@ -459,6 +459,7 @@ export function useSyncedDiscussions(noteId: string) {
           noteId,
           blockId,
           documentContent,
+          updatedAt: new Date(),
           createdAt: new Date(),
           isResolved: false,
           userId: session.user.id
@@ -545,6 +546,7 @@ export function useSyncedDiscussions(noteId: string) {
           id: commentId,
           discussionId,
           contentRich,
+          updatedAt: new Date(),
           createdAt: new Date(),
           isEdited: false,
           userId: session.user.id,
