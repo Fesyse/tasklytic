@@ -28,8 +28,11 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@/emails/*": ["./emails/*"]
-    }
+      "$/*": ["./emails/*"]
+    },
+
+    // Tests
+    "types": ["vitest/globals"]
   },
   "include": [
     "next-env.d.ts",
