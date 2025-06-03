@@ -2,12 +2,15 @@ import react from "@vitejs/plugin-react"
 import * as path from "path"
 import { defineConfig } from "vitest/config"
 
+const cwd = process.cwd()
+
 export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "src"),
-      $: path.resolve(__dirname, "emails")
+      "@": path.resolve(cwd, "src"),
+      $: path.resolve(cwd, "emails"),
+      testing: path.resolve(cwd, "testing")
     }
   },
   test: {
@@ -19,6 +22,13 @@ export default defineConfig({
     },
     globals: true,
     environment: "happy-dom",
-    setupFiles: ["./setup-tests.ts"]
+    setupFiles: ["./testing/setup-tests.ts"],
+    browser: {
+      instances: [
+        {
+          browser: "firefox"
+        }
+      ]
+    }
   }
 })

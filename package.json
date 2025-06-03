@@ -22,7 +22,8 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "ui": "pnpm dlx shadcn@latest",
-    "test": "vitest -c ./testing/vite.config.ts"
+    "vitest": "vitest -c ./testing/vite.config.ts",
+    "playwright": "exec playwright test"
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.3.22",
@@ -100,6 +101,7 @@
     "@udecode/plate-media": "^48.0.0",
     "@udecode/plate-mention": "^48.0.0",
     "@udecode/plate-node-id": "^48.0.0",
+    "@udecode/plate-playwright": "^48.0.0",
     "@udecode/plate-reset-node": "^48.0.0",
     "@udecode/plate-resizable": "^48.0.0",
     "@udecode/plate-select": "^48.0.0",
@@ -132,6 +134,7 @@
     "nuqs": "^2.4.3",
     "pdf-lib": "^1.17.1",
     "pg": "^8.15.6",
+    "playwright": "^1.52.0",
     "posthog-js": "^1.240.6",
     "react": "^19.1.0",
     "react-aria-components": "^1.8.0",
@@ -161,6 +164,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
+    "@playwright/test": "^1.52.0",
     "@tailwindcss/postcss": "^4.1.6",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",

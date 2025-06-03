@@ -99,6 +99,7 @@ import { TableElement } from "@/components/ui/table-element"
 import { TableRowElement } from "@/components/ui/table-row-element"
 import { TocElement } from "@/components/ui/toc-element"
 import { ToggleElement } from "@/components/ui/toggle-element"
+import { PlaywrightPlugin } from "@udecode/plate-playwright"
 import { FloatingToolbarPlugin } from "./plugins/floating-toolbar-plugin"
 
 export const viewComponents = {
@@ -185,7 +186,14 @@ export const useCreateEditor = (
         },
         ...override
       },
-      plugins: [...copilotPlugins, ...editorPlugins, FloatingToolbarPlugin],
+      plugins: [
+        ...copilotPlugins,
+        ...editorPlugins,
+        FloatingToolbarPlugin,
+        PlaywrightPlugin.configure({
+          enabled: process.env.NODE_ENV === "test"
+        })
+      ],
       value: defaultValue,
       ...options
     },

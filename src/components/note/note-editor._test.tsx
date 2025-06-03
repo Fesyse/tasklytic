@@ -1,12 +1,27 @@
 import type { Note } from "@/lib/db-client"
 import type { Block } from "@/server/db/schema"
-import { act, render, screen, waitFor } from "@testing-library/react"
+import type {
+  ReadonlyURLSearchParams,
+  usePathname,
+  useSearchParams
+} from "next/navigation"
+import {
+  act,
+  render,
+  screen,
+  waitFor
+} from "tests/config/react-testing-lib-utils"
 import { vi } from "vitest"
 import { NoteEditor, NoteEditorProvider } from "./note-editor"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import type React from "react"
 
-// Mock the context and hooks related to syncing
+// Mocks
+vi.mock("next/navigation", () => ({
+  usePathname: vi.fn(() => "/dashboard/note/1") satisfies typeof usePathname,
+  useSearchParams: vi.fn(
+    () => new URLSearchParams() as ReadonlyURLSearchParams
+  ) satisfies typeof useSearchParams,
+  useParams: vi.fn(() => ({ noteId: "1" }))
+}))
 vi.mock("@/hooks/use-note-editor-v2", () => ({
   useNoteEditorV2: () => ({
     editor: { tf: { init: vi.fn() } },
@@ -27,7 +42,6 @@ vi.mock("@/hooks/use-note-editor-v2", () => ({
     } satisfies Note & { blocks: Block[] }
   })
 }))
-
 vi.mock("@/env", () => ({
   env: {
     NODE_ENV: "mock-env-variable",
@@ -51,7 +65,6 @@ vi.mock("@/env", () => ({
     TURNSTILE_SECRET_KEY: "mock-env-variable"
   }
 }))
-
 vi.mock("@/contexts/note-editor-context", async (importOriginal) => {
   const actual = await importOriginal()
   return Object.assign({}, actual, {
@@ -65,13 +78,6 @@ vi.mock("@/contexts/note-editor-context", async (importOriginal) => {
     })
   })
 })
-
-const createWrapper = (): React.FC<React.PropsWithChildren> => {
-  const queryClient = new QueryClient()
-  return ({ children }) => (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  )
-}
 
 describe("NoteEditor syncing", () => {
   it("renders the editor and shows synced state", () => {
