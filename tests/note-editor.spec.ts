@@ -1,15 +1,15 @@
+import type { Comment, Discussion, Note } from "@/lib/db-client"
+import { siteConfig } from "@/lib/site-config"
+import type { Block } from "@/server/db/schema"
 import { expect, test } from "@playwright/test"
+import type { Dexie, EntityTable } from "dexie"
 import SuperJSON from "superjson"
 
 // Add a TypeScript declaration for window.dexieDB for Playwright context
 // (This is only for type safety in the test file)
 declare global {
   interface Window {
-    dexieDB?: {
-      notes: {
-        get: (id: string) => Promise<any>
-      }
-    }
+    Dexie?: Dexie
   }
 }
 
@@ -28,7 +28,6 @@ test("syncs all notes and verifies local Dexie DB", async ({ page }) => {
   )
 
   const responseText = await syncResponse.text()
-  console.log("Full syncResponse.text():\n", responseText)
 
   // SuperJSON responses, especially when streamed/batched, can be tricky.
   // We need to find the specific JSON object that represents the actual result
@@ -83,7 +82,7 @@ test("syncs all notes and verifies local Dexie DB", async ({ page }) => {
   // SuperJSON will handle the internal `json` and `meta` fields.
   const deserializedResponse = SuperJSON.deserialize(tRPCResultJson) as any
 
-  let notes: any[] = []
+  let notes: Note[] = []
   // Look for the actual data, which can be at `deserializedResponse.result.data`
   // or directly at the top level if it's the final return value.
   // Given the `json[2][0][0].data[0]` path, it's likely just an array here
@@ -92,10 +91,9 @@ test("syncs all notes and verifies local Dexie DB", async ({ page }) => {
   // If the `syncNotes` procedure returns `Array<Note>`, then `deserializedResponse` might directly be that array.
   // However, if the tRPC link still wraps it, it might be `deserializedResponse.result.data`.
   // Let's try the common tRPC client output format:
+
   if (deserializedResponse.result?.data) {
     notes = deserializedResponse.result.data
-  } else if (Array.isArray(deserializedResponse)) {
-    notes = deserializedResponse // If the procedure returns an array directly
   } else if (
     deserializedResponse[2] &&
     deserializedResponse[2][0] &&
@@ -107,6 +105,8 @@ test("syncs all notes and verifies local Dexie DB", async ({ page }) => {
     // It's possible that `deserializedResponse` itself is the outer wrapper and
     // the notes are at `deserializedResponse[2][0][0].data[0]`
     notes = deserializedResponse[2][0][0]
+  } else if (Array.isArray(deserializedResponse)) {
+    notes = deserializedResponse
   }
 
   if (!notes || notes.length === 0) {
@@ -117,30 +117,59 @@ test("syncs all notes and verifies local Dexie DB", async ({ page }) => {
     throw new Error("Failed to extract notes from tRPC response.")
   }
 
+  console.log(`Got "${notes.length}" notes, testing for syncing...`)
+
   expect(notes.length).toBeGreaterThan(0) // Ensure some notes were found
 
   await page.addScriptTag({
     url: "https://unpkg.com/dexie/dist/dexie.js"
   })
+  await page.addScriptTag({
+    content: `window.Dexie = Dexie`
+  })
   // For each note, check it's in the local Dexie DB
-  const allNotesExist = await page.evaluate(async (notes) => {
-    // Use the globally exposed dexieDB as mentioned in the comment above
-    if (!window.dexieDB) {
-      throw new Error("dexieDB not exposed on window - see comment above test")
-    }
-
-    const results = []
-    for (const note of notes) {
-      try {
-        const found = await window.dexieDB.notes.get(note.id)
-        results.push(!!found)
-      } catch (error) {
-        console.error(`Error checking note ${note.id}:`, error)
-        results.push(false)
+  const allNotesExist = await page.evaluate(
+    async ({ notes, siteConfig }) => {
+      if (!window.Dexie) {
+        throw new Error(
+          "dexieDB not exposed on window - see comment above test"
+        )
       }
-    }
-    return results.every((exists) => exists)
-  }, notes)
+
+      // Dexie is a class, but TypeScript may not recognize it as constructable if the type is not correct.
+      // We can use 'any' to bypass the type error for test code.
+      const dexieDB = new (window as any).Dexie(
+        `${siteConfig.name}Database`
+      ) as Dexie & {
+        notes: EntityTable<Note, "id">
+        blocks: EntityTable<Block, "id">
+        discussions: EntityTable<Discussion, "id">
+        comments: EntityTable<Comment, "id">
+      }
+
+      dexieDB.version(1).stores({
+        notes:
+          "&id, title, emoji, emojiSlug, isPublic, organizationId, parentNoteId, updatedByUserId, updatedByUserName, updatedAt, createdByUserId, createdByUserName, createdAt, isFavorited, favoritedByUserId, cover, [id+organizationId], isDeleted",
+        blocks: "&id, noteId, content, order",
+        discussions:
+          "&id, noteId, blockId, isResolved, userId, updatedAt, createdAt",
+        comments: "&id, discussionId, userId, updatedAt, createdAt, isEdited"
+      })
+
+      const results = []
+      for (const note of notes) {
+        try {
+          const found = await dexieDB.notes.get(note.id)
+          results.push(!!found)
+        } catch (error) {
+          console.error(`Error checking note ${note.id}:`, error)
+          results.push(false)
+        }
+      }
+      return results.every((exists) => exists)
+    },
+    { notes, siteConfig }
+  )
 
   expect(allNotesExist).toBe(true)
 })

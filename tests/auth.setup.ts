@@ -38,7 +38,6 @@ setup("authenticate", async ({ browser, page }) => {
   }
 
   const betterAuthCookies = [betterAuthDataCookie, betterAuthTokenCookie]
-  console.log(JSON.stringify(betterAuthCookies))
 
   // Create a new context and set the cookie with all required fields
   const browserContext = await browser.newContext()
