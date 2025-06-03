@@ -1,5 +1,6 @@
 "use client"
 
+import { Turnstile } from "@/components/turnstile"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -10,11 +11,9 @@ import {
   FormMessage
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { env } from "@/env"
 import { authClient } from "@/lib/auth-client"
 import { verifyTurnstileToken } from "@/lib/turnstile"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Turnstile } from "next-turnstile"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
@@ -80,12 +79,6 @@ export const ForgotPasswordForm = () => {
           render={({ field }) => (
             <FormItem>
               <Turnstile
-                sandbox={
-                  process.env.NODE_ENV === "development" ? "pass" : undefined
-                }
-                siteKey={env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
-                retry="auto"
-                refreshExpired="auto"
                 onError={() => {
                   setTurnstileStatus("error")
                   toast.error("Security check failed. Please try again.")

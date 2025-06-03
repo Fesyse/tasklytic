@@ -1,5 +1,6 @@
 "use client"
 
+import { Turnstile } from "@/components/turnstile"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -12,13 +13,11 @@ import {
 import { Icons } from "@/components/ui/icons"
 import { Input } from "@/components/ui/input"
 import { PasswordInput } from "@/components/ui/password-input"
-import { env } from "@/env"
 import { authClient } from "@/lib/auth-client"
 import { verifyTurnstileToken } from "@/lib/turnstile"
 import { cn } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2 } from "lucide-react"
-import { Turnstile } from "next-turnstile"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Suspense, useMemo, useState } from "react"
@@ -227,12 +226,6 @@ function AuthFormContent({
             render={({ field }) => (
               <FormItem className="flex justify-center">
                 <Turnstile
-                  sandbox={
-                    process.env.NODE_ENV === "development" ? "pass" : undefined
-                  }
-                  siteKey={env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
-                  retry="auto"
-                  refreshExpired="auto"
                   onError={(error) => {
                     console.log(error)
                     setTurnstileStatus("error")
