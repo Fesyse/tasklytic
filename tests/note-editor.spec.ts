@@ -1,35 +1,9 @@
 import type { Comment, Discussion, Note } from "@/lib/db-client"
 import { siteConfig } from "@/lib/site-config"
 import type { Block } from "@/server/db/schema"
-import { expect, test, type Page } from "@playwright/test"
+import { expect, test } from "@playwright/test"
 import type { Dexie, EntityTable } from "dexie"
-import * as fs from "fs"
-import * as path from "path"
 import SuperJSON from "superjson"
-
-const createScreenshot = async (page: Page) => {
-  const screenshot = await page.screenshot()
-  const screenshotFileName = path.join(
-    process.cwd(),
-    "tests",
-    "temp",
-    `${crypto.randomUUID()}.png`
-  )
-  fs.writeFileSync(screenshotFileName, screenshot)
-}
-
-const login = async (page: Page) => {
-  await page.waitForTimeout(5000)
-  await page.$('iframe[src*="captcha"]')
-
-  await page.fill('input[name="email"]', process.env.TESTING_LOGIN_EMAIL!)
-  await page.fill('input[name="password"]', process.env.TESTING_LOGIN_PASSWORD!)
-  await page.click('button[type="submit"]')
-
-  await createScreenshot(page)
-
-  await page.waitForURL(`/dashboard`)
-}
 
 // Add a TypeScript declaration for window.dexieDB for Playwright context
 // (This is only for type safety in the test file)
@@ -48,8 +22,7 @@ declare global {
  *   if (typeof window !== "undefined") window.dexieDB = dexieDB;
  */
 test("syncs all notes and verifies local Dexie DB", async ({ page }) => {
-  await page.goto(`/auth/sign-in`)
-  await login(page)
+  await page.goto(`/dashboard`)
 
   // Intercept the syncNotes tRPC request and wait for it
   const syncResponse = await page.waitForResponse(
@@ -155,8 +128,8 @@ test("syncs all notes and verifies local Dexie DB", async ({ page }) => {
   })
   // For each note, check it's in the local Dexie DB
   const check = await page.evaluate(
-    async ({ notes }) => {
-      const dexieDB = new Dexie("${siteConfig.name}Database") as Dexie & {
+    async ({ notes, siteConfig }) => {
+      const dexieDB = new Dexie(`${siteConfig.name}Database`) as Dexie & {
         notes: EntityTable<Note, "id">
         blocks: EntityTable<Block, "id">
         discussions: EntityTable<Discussion, "id">

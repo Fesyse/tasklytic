@@ -51,3 +51,4 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 temp
+playwright/.auth
