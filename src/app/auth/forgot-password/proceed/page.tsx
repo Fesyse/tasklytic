@@ -235,9 +235,7 @@ function ForgotPasswordProceedPageContent() {
                 <FormLabel>Confirm Password</FormLabel>
                 <Turnstile
                   sandbox={
-                    window.location.host.includes("localhost")
-                      ? "pass"
-                      : undefined
+                    process.env.NODE_ENV === "development" ? "pass" : undefined
                   }
                   siteKey={env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
                   retry="auto"
