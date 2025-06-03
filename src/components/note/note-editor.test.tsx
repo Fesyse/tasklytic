@@ -1,13 +1,30 @@
+import type { Note } from "@/lib/db-client"
+import type { Block } from "@/server/db/schema"
 import { act, render, screen, waitFor } from "@testing-library/react"
 import { vi } from "vitest"
 import { NoteEditor, NoteEditorProvider } from "./note-editor"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import type React from "react"
 
 // Mock the context and hooks related to syncing
 vi.mock("@/hooks/use-note-editor-v2", () => ({
   useNoteEditorV2: () => ({
     editor: { tf: { init: vi.fn() } },
     isLoading: false,
-    note: { blocks: [{ id: 1, content: "test", order: 0 }] }
+    note: {
+      id: "1",
+      title: "Test",
+      isPublic: false,
+      organizationId: "IRI7jcAlgVQtnLbdb6P0a2BHeaDKGbda",
+      parentNoteId: null,
+      updatedByUserName: "Fesyse",
+      updatedByUserId: "OJP4ED0vcr1nojvLbP7me5H9609WMvNY",
+      updatedAt: new Date(),
+      createdByUserName: "Fesyse",
+      createdByUserId: "OJP4ED0vcr1nojvLbP7me5H9609WMvNY",
+      createdAt: new Date(),
+      blocks: [{ id: "1", noteId: "1", content: "test", order: 0 }]
+    } satisfies Note & { blocks: Block[] }
   })
 }))
 
@@ -48,6 +65,13 @@ vi.mock("@/contexts/note-editor-context", async (importOriginal) => {
     })
   })
 })
+
+const createWrapper = (): React.FC<React.PropsWithChildren> => {
+  const queryClient = new QueryClient()
+  return ({ children }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  )
+}
 
 describe("NoteEditor syncing", () => {
   it("renders the editor and shows synced state", () => {
