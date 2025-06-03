@@ -228,10 +228,9 @@ function ForgotPasswordProceedPageContent() {
           />
           <FormField
             control={form.control}
-            name="confirmPassword"
+            name="turnstileToken"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Confirm Password</FormLabel>
                 <Turnstile
                   onError={() => {
                     setTurnstileStatus("error")

@@ -13,7 +13,7 @@ export function Turnstile({
 }: TurnstileProps) {
   return (
     <CloudflareTurnstile
-      sandbox={process.env.NODE_ENV === "development" ? "pass" : undefined}
+      sandbox={process.env.NODE_ENV !== "production" ? "pass" : undefined}
       siteKey={env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
       retry={retry}
       refreshExpired={refreshExpired}
