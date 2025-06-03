@@ -1,8 +1,4 @@
-import type { Comment, Discussion, Note } from "@/lib/db-client"
-import { siteConfig } from "@/lib/site-config"
-import type { Block } from "@/server/db/schema"
 import { expect, test } from "@playwright/test"
-import type { Dexie, EntityTable } from "dexie"
 import SuperJSON from "superjson"
 
 // Add a TypeScript declaration for window.dexieDB for Playwright context
@@ -127,34 +123,26 @@ test("syncs all notes and verifies local Dexie DB", async ({ page }) => {
     url: "https://unpkg.com/dexie/dist/dexie.js"
   })
   // For each note, check it's in the local Dexie DB
-  const check = await page.evaluate(
-    async ({ notes, siteConfig }) => {
-      const dexieDB = new Dexie(`${siteConfig.name}Database`) as Dexie & {
-        notes: EntityTable<Note, "id">
-        blocks: EntityTable<Block, "id">
-        discussions: EntityTable<Discussion, "id">
-        comments: EntityTable<Comment, "id">
+  const allNotesExist = await page.evaluate(async (notes) => {
+    // Use the globally exposed dexieDB as mentioned in the comment above
+    if (!window.dexieDB) {
+      throw new Error("dexieDB not exposed on window - see comment above test")
+    }
+
+    const results = []
+    for (const note of notes) {
+      try {
+        const found = await window.dexieDB.notes.get(note.id)
+        results.push(!!found)
+      } catch (error) {
+        console.error(`Error checking note ${note.id}:`, error)
+        results.push(false)
       }
+    }
+    return results.every((exists) => exists)
+  }, notes)
 
-      dexieDB.version(1).stores({
-        notes:
-          "&id, title, emoji, emojiSlug, isPublic, organizationId, parentNoteId, updatedByUserId, updatedByUserName, updatedAt, createdByUserId, createdByUserName, createdAt, isFavorited, favoritedByUserId, cover, [id+organizationId], isDeleted",
-        blocks: "&id, noteId, content, order",
-        discussions:
-          "&id, noteId, blockId, isResolved, userId, updatedAt, createdAt",
-        comments: "&id, discussionId, userId, updatedAt, createdAt, isEdited"
-      })
-
-      for (const note of notes) {
-        const clientNote = await dexieDB.notes.get(note.id)
-        if (!clientNote) return false
-      }
-
-      return true
-    },
-    { notes, siteConfig }
-  )
-  expect(check).toBe(true)
+  expect(allNotesExist).toBe(true)
 })
 
 // 2. Syncing a note page (blocks, discussions, comments)
