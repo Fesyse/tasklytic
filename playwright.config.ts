@@ -6,7 +6,7 @@ import { fileURLToPath } from "url"
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-dotenv.config({ path: path.resolve(__dirname, ".test.env") })
+dotenv.config({ path: path.resolve(__dirname, ".env") })
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -39,7 +39,8 @@ export default defineConfig({
       name: "chromium",
       use: {
         ...devices["Desktop Chrome"],
-        storageState: "playwright/.auth/session.json"
+        storageState: "playwright/.auth/session.json",
+        video: "on"
       },
       dependencies: ["setup"]
     }

@@ -74,4 +74,4 @@ const createDexieDB = () => {
 const dexieDB = createDexieDB()
 
 export { createDexieDB, dexieDB }
-export type { Comment, Discussion, Note }
+export type { Block, Comment, Discussion, Note }

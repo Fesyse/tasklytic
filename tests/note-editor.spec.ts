@@ -1,6 +1,7 @@
 import type { Comment, Discussion, Note } from "@/lib/db-client"
 import { siteConfig } from "@/lib/site-config"
 import type { Block } from "@/server/db/schema"
+import type { Page } from "@playwright/test"
 import { expect, test } from "@playwright/test"
 import type { Dexie, EntityTable } from "dexie"
 import { extractTrpcResultFromSuperjsonResponse } from "./config/playwright-utils"
@@ -10,6 +11,7 @@ import { extractTrpcResultFromSuperjsonResponse } from "./config/playwright-util
 declare global {
   interface Window {
     Dexie?: Dexie
+    dexieDB?: any
   }
 }
 
@@ -204,3 +206,297 @@ test("syncs all notes and verifies local Dexie DB already with some notes in loc
 
   expect(allNotesExist).toBe(true)
 })
+
+// Helper to mock tRPC syncNotes endpoint
+async function mockTrpcRoute(page: Page, method: string, responseData: any[]) {
+  await page.route(`**/api/trpc/${method}?batch=1`, (route) => {
+    route.fulfill({
+      status: 200,
+      body: JSON.stringify([
+        {
+          result: {
+            data: { json: responseData },
+            meta: { values: {} }
+          }
+        }
+      ]),
+      headers: { "Content-Type": "application/json" }
+    })
+  })
+}
+
+// --- SYNC TESTS FOR ALL MAJOR SCENARIOS ---
+
+test("syncs when client has no notes, server has notes", async ({ page }) => {
+  await page.goto(`/dashboard`)
+
+  await page.addScriptTag({ url: "https://unpkg.com/dexie/dist/dexie.js" })
+  await page.addScriptTag({
+    content: `window.Dexie = Dexie; if (!window.dexieDB) { window.dexieDB = new Dexie('${siteConfig.name}Database'); window.dexieDB.version(1).stores({ notes: '&id, title, emoji, emojiSlug, isPublic, organizationId, parentNoteId, updatedByUserId, updatedByUserName, updatedAt, createdByUserId, createdByUserName, createdAt, isFavorited, favoritedByUserId, cover, [id+organizationId], isDeleted', blocks: '&id, noteId, content, order', discussions: '&id, noteId, blockId, isResolved, userId, updatedAt, createdAt', comments: '&id, discussionId, userId, updatedAt, createdAt, isEdited' }) }`
+  })
+  await page.evaluate(() => window.dexieDB.notes.clear())
+  // Mock server to return notes
+  await mockTrpcRoute(page, "sync.syncNotes", [
+    {
+      id: "1",
+      title: "Server Note",
+      organizationId: "org1",
+      updatedAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+      updatedByUserId: "u1",
+      updatedByUserName: "User 1",
+      createdByUserId: "u1",
+      createdByUserName: "User 1",
+      isPublic: false,
+      parentNoteId: null
+    }
+  ])
+  const notes = await page.evaluate(() => window.dexieDB.notes.toArray())
+  expect(notes.length).toBe(1)
+  expect(notes[0].title).toBe("Server Note")
+})
+
+test("syncs when client has some notes, server has all notes", async ({
+  page
+}) => {
+  await page.goto(`/dashboard`)
+
+  await page.addScriptTag({ url: "https://unpkg.com/dexie/dist/dexie.js" })
+  await page.addScriptTag({
+    content: `window.Dexie = Dexie; if (!window.dexieDB) { window.dexieDB = new Dexie('${siteConfig.name}Database'); window.dexieDB.version(1).stores({ notes: '&id, title, emoji, emojiSlug, isPublic, organizationId, parentNoteId, updatedByUserId, updatedByUserName, updatedAt, createdByUserId, createdByUserName, createdAt, isFavorited, favoritedByUserId, cover, [id+organizationId], isDeleted', blocks: '&id, noteId, content, order', discussions: '&id, noteId, blockId, isResolved, userId, updatedAt, createdAt', comments: '&id, discussionId, userId, updatedAt, createdAt, isEdited' }); }`
+  })
+  await page.evaluate(() =>
+    window.dexieDB.notes.bulkPut([
+      {
+        id: "1",
+        title: "Note 1",
+        organizationId: "org1",
+        updatedAt: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        updatedByUserId: "u1",
+        updatedByUserName: "User 1",
+        createdByUserId: "u1",
+        createdByUserName: "User 1",
+        isPublic: false,
+        parentNoteId: null
+      }
+    ])
+  )
+  // Mock server to return all notes
+  await mockTrpcRoute(page, "sync.syncNotes", [
+    {
+      id: "1",
+      title: "Note 1",
+      organizationId: "org1",
+      updatedAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+      updatedByUserId: "u1",
+      updatedByUserName: "User 1",
+      createdByUserId: "u1",
+      createdByUserName: "User 1",
+      isPublic: false,
+      parentNoteId: null
+    },
+    {
+      id: "2",
+      title: "Note 2",
+      organizationId: "org1",
+      updatedAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+      updatedByUserId: "u2",
+      updatedByUserName: "User 2",
+      createdByUserId: "u2",
+      createdByUserName: "User 2",
+      isPublic: false,
+      parentNoteId: null
+    }
+  ])
+  const notes = await page.evaluate(() => window.dexieDB.notes.toArray())
+  expect(notes.length).toBe(2)
+})
+
+test("syncs when client has old data, server has newer data", async ({
+  page
+}) => {
+  await page.goto(`/dashboard`)
+
+  await page.addScriptTag({ url: "https://unpkg.com/dexie/dist/dexie.js" })
+  await page.addScriptTag({
+    content: `window.Dexie = Dexie; if (!window.dexieDB) { window.dexieDB = new Dexie('${siteConfig.name}Database'); window.dexieDB.version(1).stores({ notes: '&id, title, emoji, emojiSlug, isPublic, organizationId, parentNoteId, updatedByUserId, updatedByUserName, updatedAt, createdByUserId, createdByUserName, createdAt, isFavorited, favoritedByUserId, cover, [id+organizationId], isDeleted', blocks: '&id, noteId, content, order', discussions: '&id, noteId, blockId, isResolved, userId, updatedAt, createdAt', comments: '&id, discussionId, userId, updatedAt, createdAt, isEdited' }); }`
+  })
+  await page.evaluate(() =>
+    window.dexieDB.notes.bulkPut([
+      {
+        id: "1",
+        title: "Old Note",
+        organizationId: "org1",
+        updatedAt: new Date("2020-01-01").toISOString(),
+        createdAt: new Date("2020-01-01").toISOString(),
+        updatedByUserId: "u1",
+        updatedByUserName: "User 1",
+        createdByUserId: "u1",
+        createdByUserName: "User 1",
+        isPublic: false,
+        parentNoteId: null
+      }
+    ])
+  )
+  // Mock server to return newer notes
+  await mockTrpcRoute(page, "sync.syncNotes", [
+    {
+      id: "1",
+      title: "New Note",
+      organizationId: "org1",
+      updatedAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+      updatedByUserId: "u1",
+      updatedByUserName: "User 1",
+      createdByUserId: "u1",
+      createdByUserName: "User 1",
+      isPublic: false,
+      parentNoteId: null
+    }
+  ])
+  const note = await page.evaluate(() => window.dexieDB.notes.get("1"))
+  expect(note.title).toBe("New Note")
+  expect(new Date(note.updatedAt).getFullYear()).toBeGreaterThan(2020)
+})
+
+test("syncs when server has old data, client has newer data", async ({
+  page
+}) => {
+  await page.goto(`/dashboard`)
+
+  await page.addScriptTag({ url: "https://unpkg.com/dexie/dist/dexie.js" })
+  await page.addScriptTag({
+    content: `window.Dexie = Dexie; if (!window.dexieDB) { window.dexieDB = new Dexie('${siteConfig.name}Database'); window.dexieDB.version(1).stores({ notes: '&id, title, emoji, emojiSlug, isPublic, organizationId, parentNoteId, updatedByUserId, updatedByUserName, updatedAt, createdByUserId, createdByUserName, createdAt, isFavorited, favoritedByUserId, cover, [id+organizationId], isDeleted', blocks: '&id, noteId, content, order', discussions: '&id, noteId, blockId, isResolved, userId, updatedAt, createdAt', comments: '&id, discussionId, userId, updatedAt, createdAt, isEdited' }); }`
+  })
+  await page.evaluate(() =>
+    window.dexieDB.notes.bulkPut([
+      {
+        id: "1",
+        title: "New Note",
+        organizationId: "org1",
+        updatedAt: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        updatedByUserId: "u1",
+        updatedByUserName: "User 1",
+        createdByUserId: "u1",
+        createdByUserName: "User 1",
+        isPublic: false,
+        parentNoteId: null
+      }
+    ])
+  )
+  // Mock server to return old notes
+  await mockTrpcRoute(page, "sync.syncNotes", [
+    {
+      id: "1",
+      title: "Old Note",
+      organizationId: "org1",
+      updatedAt: new Date("2020-01-01").toISOString(),
+      createdAt: new Date("2020-01-01").toISOString(),
+      updatedByUserId: "u1",
+      updatedByUserName: "User 1",
+      createdByUserId: "u1",
+      createdByUserName: "User 1",
+      isPublic: false,
+      parentNoteId: null
+    }
+  ])
+  const note = await page.evaluate(() => window.dexieDB.notes.get("1"))
+  expect(note.title).toBe("Old Note")
+  expect(new Date(note.updatedAt).getFullYear()).toBe(2020)
+})
+
+test("syncs when server has some notes, client has all notes", async ({
+  page
+}) => {
+  await page.goto(`/dashboard`)
+
+  await page.addScriptTag({ url: "https://unpkg.com/dexie/dist/dexie.js" })
+  await page.addScriptTag({
+    content: `window.Dexie = Dexie; if (!window.dexieDB) { window.dexieDB = new Dexie('${siteConfig.name}Database'); window.dexieDB.version(1).stores({ notes: '&id, title, emoji, emojiSlug, isPublic, organizationId, parentNoteId, updatedByUserId, updatedByUserName, updatedAt, createdByUserId, createdByUserName, createdAt, isFavorited, favoritedByUserId, cover, [id+organizationId], isDeleted', blocks: '&id, noteId, content, order', discussions: '&id, noteId, blockId, isResolved, userId, updatedAt, createdAt', comments: '&id, discussionId, userId, updatedAt, createdAt, isEdited' }); }`
+  })
+  await page.evaluate(() =>
+    window.dexieDB.notes.bulkPut([
+      {
+        id: "1",
+        title: "Note 1",
+        organizationId: "org1",
+        updatedAt: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        updatedByUserId: "u1",
+        updatedByUserName: "User 1",
+        createdByUserId: "u1",
+        createdByUserName: "User 1",
+        isPublic: false,
+        parentNoteId: null
+      },
+      {
+        id: "2",
+        title: "Note 2",
+        organizationId: "org1",
+        updatedAt: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        updatedByUserId: "u1",
+        updatedByUserName: "User 1",
+        createdByUserId: "u1",
+        createdByUserName: "User 1",
+        isPublic: false,
+        parentNoteId: null
+      }
+    ])
+  )
+  // Mock server to return only some notes
+  await mockTrpcRoute(page, "sync.syncNotes", [
+    {
+      id: "1",
+      title: "Note 1",
+      organizationId: "org1",
+      updatedAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+      updatedByUserId: "u1",
+      updatedByUserName: "User 1",
+      createdByUserId: "u1",
+      createdByUserName: "User 1",
+      isPublic: false,
+      parentNoteId: null
+    }
+  ])
+  const notes = await page.evaluate(() => window.dexieDB.notes.toArray())
+  expect(notes.length).toBe(1)
+  expect(notes[0].id).toBe("1")
+})
+
+test("syncs when server has no notes, client has notes", async ({ page }) => {
+  await page.goto(`/dashboard`)
+
+  await page.addScriptTag({ url: "https://unpkg.com/dexie/dist/dexie.js" })
+  await page.addScriptTag({
+    content: `window.Dexie = Dexie; if (!window.dexieDB) { window.dexieDB = new Dexie('${siteConfig.name}Database'); window.dexieDB.version(1).stores({ notes: '&id, title, emoji, emojiSlug, isPublic, organizationId, parentNoteId, updatedByUserId, updatedByUserName, updatedAt, createdByUserId, createdByUserName, createdAt, isFavorited, favoritedByUserId, cover, [id+organizationId], isDeleted', blocks: '&id, noteId, content, order', discussions: '&id, noteId, blockId, isResolved, userId, updatedAt, createdAt', comments: '&id, discussionId, userId, updatedAt, createdAt, isEdited' }); }`
+  })
+  await page.evaluate(() =>
+    window.dexieDB.notes.bulkPut([
+      {
+        id: "1",
+        title: "Note 1",
+        organizationId: "org1",
+        updatedAt: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        updatedByUserId: "u1",
+        updatedByUserName: "User 1",
+        createdByUserId: "u1",
+        createdByUserName: "User 1",
+        isPublic: false,
+        parentNoteId: null
+      }
+    ])
+  )
+  // Mock server to return no notes
+  await mockTrpcRoute(page, "sync.syncNotes", [])
+  const notes = await page.evaluate(() => window.dexieDB.notes.toArray())
+  expect(notes.length).toBe(0)
+})
+
+// --- END SYNC TESTS ---
