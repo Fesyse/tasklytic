@@ -39,8 +39,7 @@ export default defineConfig({
       name: "chromium",
       use: {
         ...devices["Desktop Chrome"],
-        storageState: "playwright/.auth/session.json",
-        video: "on"
+        storageState: "playwright/.auth/session.json"
       },
       dependencies: ["setup"]
     }

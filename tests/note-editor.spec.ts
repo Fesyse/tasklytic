@@ -4,6 +4,7 @@ import type { Block } from "@/server/db/schema"
 import type { Page } from "@playwright/test"
 import { expect, test } from "@playwright/test"
 import type { Dexie, EntityTable } from "dexie"
+import type { ArgumentsType } from "vitest"
 import { extractTrpcResultFromSuperjsonResponse } from "./config/playwright-utils"
 
 // Add a TypeScript declaration for window.dexieDB for Playwright context
@@ -120,29 +121,6 @@ test("syncs all notes and verifies local Dexie DB already with some notes in loc
   await page.goto(`/dashboard`)
 
   // Intercept the syncNotes tRPC request and wait for it
-  const syncResponse = await page.waitForResponse(
-    (resp) =>
-      resp.url().includes("/api/trpc/sync.syncNotes") &&
-      resp.request().method() === "POST"
-  )
-
-  const responseText = await syncResponse.text()
-  const { deserializedResponse, tRPCResultJson } =
-    extractTrpcResultFromSuperjsonResponse(responseText)
-
-  let notes: Note[] = []
-  if (deserializedResponse.result?.data) {
-    notes = deserializedResponse.result.data
-  } else if (
-    deserializedResponse[2] &&
-    deserializedResponse[2][0] &&
-    deserializedResponse[2][0][0] &&
-    Array.isArray(deserializedResponse[2][0][0])
-  ) {
-    notes = deserializedResponse[2][0][0]
-  } else if (Array.isArray(deserializedResponse)) {
-    notes = deserializedResponse
-  }
 
   if (!notes || notes.length === 0) {
     console.error("Notes array is empty or not found after deserialization.", {
@@ -223,6 +201,43 @@ async function mockTrpcRoute(page: Page, method: string, responseData: any[]) {
       headers: { "Content-Type": "application/json" }
     })
   })
+  const { data } = await waitForTrpcResponse(
+    page,
+    (resp) =>
+      resp.url().includes(`/api/trpc/${method}`) &&
+      resp.request().method() === "POST"
+  )
+  return data
+}
+
+async function waitForTrpcResponse(
+  page: Page,
+  urlOrPredicate: ArgumentsType<Page["waitForResponse"]>[0]
+) {
+  const syncResponse = await page.waitForResponse(urlOrPredicate)
+
+  const responseText = await syncResponse.text()
+
+  const { deserializedResponse } =
+    extractTrpcResultFromSuperjsonResponse(responseText)
+  console.log(deserializedResponse)
+
+  let data: unknown = []
+  if (deserializedResponse.result?.data) {
+    data = deserializedResponse.result.data
+  } else if (deserializedResponse[0]?.result?.data?.json) {
+    data = deserializedResponse[0].result.data?.json
+  } else if (
+    deserializedResponse[2] &&
+    deserializedResponse[2][0] &&
+    deserializedResponse[2][0][0] &&
+    Array.isArray(deserializedResponse[2][0][0])
+  ) {
+    data = deserializedResponse[2][0][0]
+  }
+  console.log("EXTRACTED DATA", data)
+
+  return { data }
 }
 
 // --- SYNC TESTS FOR ALL MAJOR SCENARIOS ---

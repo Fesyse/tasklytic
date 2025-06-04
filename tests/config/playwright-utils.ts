@@ -26,25 +26,38 @@ export const createScreenshot = async (page: Page) => {
 export function extractTrpcResultFromSuperjsonResponse(responseText: string) {
   const jsonLines = responseText.split("\n").filter(Boolean)
   let tRPCResultJson: any = null
-  for (const line of jsonLines) {
-    try {
-      const parsedLine = JSON.parse(line)
-      if (parsedLine.json && parsedLine.meta) {
-        if (
-          Array.isArray(parsedLine.json) &&
-          parsedLine.json[2] &&
-          parsedLine.json[2][0] &&
-          parsedLine.json[2][0][0]
-        ) {
-          tRPCResultJson = parsedLine
-        } else if (parsedLine.result?.data) {
-          tRPCResultJson = parsedLine
+  if (!jsonLines.length) return { deserializedResponse: null, tRPCResultJson }
+
+  if (jsonLines.length > 1) {
+    for (const line of jsonLines) {
+      try {
+        const parsedLine = JSON.parse(line)
+        if (parsedLine.json && parsedLine.meta) {
+          if (
+            Array.isArray(parsedLine.json) &&
+            parsedLine.json[2] &&
+            parsedLine.json[2][0] &&
+            parsedLine.json[2][0][0]
+          ) {
+            tRPCResultJson = parsedLine
+          } else if (parsedLine.result?.data) {
+            tRPCResultJson = parsedLine
+          }
         }
+      } catch {
+        continue
       }
-    } catch {
-      continue
+    }
+  } else {
+    const parsedLine = JSON.parse(jsonLines[0]!)
+
+    if (parsedLine?.result?.data) {
+      tRPCResultJson = parsedLine.result.data
+    } else if (parsedLine[0]?.result?.data?.json) {
+      tRPCResultJson = parsedLine[0].result.data.json
     }
   }
+
   if (!tRPCResultJson) {
     throw new Error(
       "Could not find the main tRPC result JSON object in the response."
