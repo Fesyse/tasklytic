@@ -4,7 +4,7 @@ import type { User } from "better-auth"
 
 import { createId } from "@/server/db/schema"
 import { dexieDB } from "./db-client"
-import { tryCatch } from "./utils"
+import { tryCatch, type Result } from "./utils"
 
 export function createNote(data: {
   user: User
@@ -25,33 +25,57 @@ export function createNote(data: {
       createdByUserName: data.user.name,
       createdAt: new Date(),
       organizationId: data.organization.id,
-      parentNoteId: data.noteId ?? null
+      parentNoteId: data.noteId ?? null,
+      isFavorited: false,
+      favoritedByUserId: null,
+      cover: undefined
     })
   )
 }
 
-export function deleteNote(id: string) {
+export function deleteNote(
+  id: string,
+  strict = true
+): Promise<Result<void, Error>> {
   return tryCatch(
-    Promise.all([
-      dexieDB.notes.delete(id),
-      dexieDB.notes.where("parentNoteId").equals(id).delete()
-    ])
+    strict
+      ? Promise.all([
+          dexieDB.notes.delete(id),
+          dexieDB.notes.where("parentNoteId").equals(id).delete()
+        ]).then(() => undefined)
+      : dexieDB.notes.update(id, { isDeleted: true }).then(() => undefined)
   )
 }
 
 export function getNote(id: string, organizationId: string) {
   return tryCatch(
-    dexieDB.notes.where({ id, organizationId: organizationId }).first()
+    dexieDB.notes
+      .where({ id, organizationId: organizationId })
+      .and((note) => !note.isDeleted)
+      .first()
   )
 }
 
+export function getNotesByIds(noteIds: string[]) {
+  return tryCatch(
+    dexieDB.notes
+      .where("id")
+      .anyOf(noteIds)
+      .and((note) => !note.isDeleted)
+      .toArray()
+  )
+}
 export function getBlocks(noteId: string) {
   return tryCatch(dexieDB.blocks.where("noteId").equals(noteId).toArray())
 }
 
 export function getNotes(organizationId: string) {
   return tryCatch(
-    dexieDB.notes.where("organizationId").equals(organizationId).toArray()
+    dexieDB.notes
+      .where("organizationId")
+      .equals(organizationId)
+      .and((note) => !note.isDeleted)
+      .toArray()
   )
 }
 
@@ -74,8 +98,56 @@ export function updateNoteEmoji(data: {
   id: string
   emoji: string
   emojiSlug: string
+  updatedByUserName: string
+  updatedByUserId: string
 }) {
-  return tryCatch(dexieDB.notes.update(data.id, { emoji: data.emoji, emojiSlug: data.emojiSlug }))
+  return tryCatch(
+    dexieDB.notes.update(data.id, {
+      emoji: data.emoji,
+      emojiSlug: data.emojiSlug,
+      updatedAt: new Date(),
+      updatedByUserName: data.updatedByUserName,
+      updatedByUserId: data.updatedByUserId
+    })
+  )
+}
+
+export function updateNoteFavorited(data: {
+  id: string
+  isFavorited: boolean
+  favoritedByUserId: string | null
+  updatedByUserName: string
+  updatedByUserId: string
+}) {
+  return tryCatch(
+    dexieDB.notes.update(data.id, {
+      isFavorited: data.isFavorited,
+      favoritedByUserId: data.favoritedByUserId,
+      updatedAt: new Date(),
+      updatedByUserName: data.updatedByUserName,
+      updatedByUserId: data.updatedByUserId
+    })
+  )
+}
+
+export async function deleteNotes(organizationId: string, ids?: string[]) {
+  if (!ids) {
+    const notes = await dexieDB.notes
+      .where("organizationId")
+      .equals(organizationId)
+      .and((note) => !!note.isDeleted)
+      .toArray()
+    ids = notes.map((note) => note.id)
+
+    if (!ids.length) return
+  }
+
+  return tryCatch(
+    Promise.all([
+      dexieDB.notes.bulkDelete(ids),
+      dexieDB.blocks.where("noteId").anyOf(ids).delete()
+    ])
+  )
 }
 
 // Discussion and Comment queries
@@ -160,5 +232,21 @@ export function getDiscussionWithComments(id: string) {
 
       return { ...discussion, comments }
     })()
+  )
+}
+
+export function updateNoteCover(data: {
+  id: string
+  cover: string
+  updatedByUserName: string
+  updatedByUserId: string
+}) {
+  return tryCatch(
+    dexieDB.notes.update(data.id, {
+      cover: data.cover,
+      updatedAt: new Date(),
+      updatedByUserName: data.updatedByUserName,
+      updatedByUserId: data.updatedByUserId
+    })
   )
 }

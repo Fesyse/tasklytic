@@ -1,5 +1,6 @@
 "use client"
 
+import { Turnstile } from "@/components/turnstile"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -12,13 +13,11 @@ import {
 import { Icons } from "@/components/ui/icons"
 import { Input } from "@/components/ui/input"
 import { PasswordInput } from "@/components/ui/password-input"
-import { env } from "@/env"
 import { authClient } from "@/lib/auth-client"
 import { verifyTurnstileToken } from "@/lib/turnstile"
 import { cn } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2 } from "lucide-react"
-import { Turnstile } from "next-turnstile"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Suspense, useMemo, useState } from "react"
@@ -92,13 +91,13 @@ function AuthFormContent({
     >
   ) => {
     if (turnstileStatus !== "success") {
-      toast.error("Please verify you are not a robot")
+      toast.error("Verify you are not bot, by clicking on checkbox")
       setIsLoading(false)
       return
     }
     const success = await verifyTurnstileToken(data.turnstileToken)
     if (!success) {
-      toast.error("Security check failed. Please try again.")
+      toast.error("Seems like you are bot, try again later.")
       setIsLoading(false)
       return
     }
@@ -227,10 +226,8 @@ function AuthFormContent({
             render={({ field }) => (
               <FormItem className="flex justify-center">
                 <Turnstile
-                  siteKey={env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
-                  retry="auto"
-                  refreshExpired="auto"
-                  onError={() => {
+                  onError={(error) => {
+                    console.log(error)
                     setTurnstileStatus("error")
                     toast.error("Security check failed. Please try again.")
                   }}

@@ -16,14 +16,9 @@ const config: NextConfig = {
   images: {
     remotePatterns: [
       {
-        hostname: "tasklytic.fesyse.site",
-        protocol: "https",
-        pathname: "/_next/**"
-      },
-      {
         hostname: "ik.imagekit.io",
         protocol: "https",
-        pathname: "**"
+        pathname: "/lrigu76hy/tailark/night-background.jpg"
       }
     ]
   },

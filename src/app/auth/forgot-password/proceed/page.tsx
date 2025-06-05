@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 
 import { AuthHeader } from "@/components/auth/auth-header"
+import { Turnstile } from "@/components/turnstile"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
@@ -18,11 +19,10 @@ import {
   FormMessage
 } from "@/components/ui/form"
 import { PasswordInput } from "@/components/ui/password-input"
-import { env } from "@/env"
 import { authClient } from "@/lib/auth-client"
 import { verifyTurnstileToken } from "@/lib/turnstile"
 import { AlertCircle, CheckCircle, Loader2 } from "lucide-react"
-import { Turnstile } from "next-turnstile"
+import { toast } from "sonner"
 
 const resetPasswordSchema = z
   .object({
@@ -90,6 +90,11 @@ function ForgotPasswordProceedPageContent() {
 
     const success = await verifyTurnstileToken(data.turnstileToken)
 
+    if (!success) {
+      toast.error("Seems like you are bot, try again later.")
+      setStatus("error")
+      return
+    }
     try {
       const result = await authClient.resetPassword({
         newPassword: data.newPassword,
@@ -223,14 +228,10 @@ function ForgotPasswordProceedPageContent() {
           />
           <FormField
             control={form.control}
-            name="confirmPassword"
+            name="turnstileToken"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Confirm Password</FormLabel>
                 <Turnstile
-                  siteKey={env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
-                  retry="auto"
-                  refreshExpired="auto"
                   onError={() => {
                     setTurnstileStatus("error")
                     setErrorMessage("Security check failed. Please try again.")

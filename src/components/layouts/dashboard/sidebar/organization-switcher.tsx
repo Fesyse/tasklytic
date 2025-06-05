@@ -17,7 +17,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { SidebarMenuSkeleton, useSidebar } from "@/components/ui/sidebar"
 import { authClient } from "@/lib/auth-client"
-import { cn } from "@/lib/utils"
+import { dexieDB } from "@/lib/db-client"
+import { cn, tryCatch } from "@/lib/utils"
 
 export function OrganizationSwitcher() {
   const { open: sidebarOpen } = useSidebar()
@@ -45,10 +46,24 @@ export function OrganizationSwitcher() {
   // Mutation for switching organizations
   const switchOrgMutation = useMutation({
     mutationFn: async (organizationId: string) => {
-      const { error } = await authClient.organization.setActive({
-        organizationId
-      })
-      if (error) throw error
+      const { error: organizationError } =
+        await authClient.organization.setActive({
+          organizationId
+        })
+      if (organizationError) throw organizationError
+
+      const { error: dexieError } = await tryCatch(
+        Promise.all([
+          dexieDB.comments.clear(),
+          dexieDB.discussions.clear(),
+          dexieDB.blocks.clear(),
+          dexieDB.notes.clear()
+        ])
+      )
+
+      if (dexieError) throw dexieDB
+
+      return { skipToast: false }
     },
     onError: (error) => {
       console.error("Error switching organization:", error)
@@ -63,6 +78,8 @@ export function OrganizationSwitcher() {
   const isLoading = isLoadingOrganizations || isLoadingActiveOrg
 
   const switchOrganization = async (orgId: string) => {
+    if (orgId === activeOrg?.id) return
+
     await switchOrgMutation.mutateAsync(orgId)
   }
 
@@ -77,6 +94,24 @@ export function OrganizationSwitcher() {
       router.push("/new-organization")
     }
   }, [organizations, isLoadingOrganizations, organizationsError, isRefetching])
+
+  useEffect(() => {
+    if (isLoadingActiveOrg || activeOrg) return
+
+    const newActiveOrganizationId =
+      activeOrgIdFromLocalStorage ?? organizations?.[0]?.id
+
+    if (!newActiveOrganizationId) return
+
+    authClient.organization.setActive({
+      organizationId: newActiveOrganizationId
+    })
+  }, [
+    activeOrg,
+    activeOrgIdFromLocalStorage,
+    isLoadingOrganizations,
+    organizations
+  ])
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>

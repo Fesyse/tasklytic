@@ -1,5 +1,6 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { users } from "@/server/db/schema"
+import { kv } from "@/server/kv"
 import { eq } from "drizzle-orm"
 import { z } from "zod"
 
@@ -11,6 +12,16 @@ export const userRouter = createTRPCRouter({
       })
     )
     .query(async ({ input, ctx }) => {
+      const cacheKey = `user:email:${input.email}`
+      const cachedUser = await kv.get(cacheKey)
+
+      if (cachedUser) {
+        console.log(`[TRPC] User cache hit for email: ${input.email}`)
+        return cachedUser
+      }
+
+      console.log(`[TRPC] User cache miss for email: ${input.email}`)
+
       const user = await ctx.db
         .select({
           id: users.id,
@@ -22,6 +33,13 @@ export const userRouter = createTRPCRouter({
         .where(eq(users.email, input.email))
         .limit(1)
 
-      return user[0] || null
+      const result = user[0] ?? null
+
+      if (result) {
+        // Cache the user data for 10 minutes (600 seconds)
+        await kv.set(cacheKey, result, { ex: 600 })
+      }
+
+      return result
     })
 })

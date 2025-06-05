@@ -7,7 +7,10 @@ export function getRecentlyAccessedNotes(limit: number = 10): string[] {
   if (typeof window === "undefined") return []
 
   try {
-    const recentNotesJson = localStorage.getItem("recentlyAccessedNotes")
+    const recentNotesJson =
+      typeof window !== "undefined"
+        ? localStorage.getItem("recentlyAccessedNotes")
+        : null
     if (!recentNotesJson) return []
 
     const recentNotes = JSON.parse(recentNotesJson) as string[]
@@ -25,7 +28,10 @@ export function trackNoteAccess(noteId: string): void {
   if (typeof window === "undefined") return
 
   try {
-    const recentNotesJson = localStorage.getItem("recentlyAccessedNotes")
+    const recentNotesJson =
+      typeof window !== "undefined"
+        ? localStorage.getItem("recentlyAccessedNotes")
+        : null
     const recentNotes = recentNotesJson
       ? (JSON.parse(recentNotesJson) as string[])
       : []
@@ -36,7 +42,12 @@ export function trackNoteAccess(noteId: string): void {
     // Add the noteId to the beginning of the list
     const updatedNotes = [noteId, ...filteredNotes].slice(0, 20) // Keep only the 20 most recent
 
-    localStorage.setItem("recentlyAccessedNotes", JSON.stringify(updatedNotes))
+    if (typeof window !== "undefined") {
+      localStorage.setItem(
+        "recentlyAccessedNotes",
+        JSON.stringify(updatedNotes)
+      )
+    }
   } catch (error) {
     console.error("Error tracking note access:", error)
   }

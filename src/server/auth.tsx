@@ -1,6 +1,6 @@
-import InviteToOrganizationEmail from "@/emails/invite-to-organization-email"
-import ResetPasswordEmail from "@/emails/reset-password-email"
-import VerifyEmail from "@/emails/verify-email"
+import InviteToOrganizationEmail from "$/invite-to-organization-email"
+import ResetPasswordEmail from "$/reset-password-email"
+import VerifyEmail from "$/verify-email"
 import { env } from "@/env"
 import { siteConfig } from "@/lib/site-config"
 import { getBaseUrl } from "@/lib/utils"
@@ -48,7 +48,11 @@ export const auth = betterAuth({
     modelName: "users"
   },
   session: {
-    modelName: "sessions"
+    modelName: "sessions",
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60 // Cache duration in seconds
+    }
   },
   account: {
     modelName: "accounts"
@@ -117,3 +121,5 @@ export const auth = betterAuth({
     })
   ]
 })
+
+export type Session = typeof auth.$Infer.Session

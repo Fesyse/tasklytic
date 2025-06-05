@@ -42,22 +42,18 @@ import {
 import { SuggestionPlugin } from "@udecode/plate-suggestion/react"
 import { TablePlugin } from "@udecode/plate-table/react"
 import { TogglePlugin } from "@udecode/plate-toggle/react"
-import {
-  ParagraphPlugin,
-  useEditorPlugin,
-  usePluginOption
-} from "@udecode/plate/react"
+import { ParagraphPlugin, useEditorPlugin } from "@udecode/plate/react"
 import { CheckIcon, XIcon } from "lucide-react"
 
-import {
-  type TDiscussion,
-  discussionPlugin
-} from "@/components/editor/plugins/discussion-plugin"
+import { type TDiscussion } from "@/components/editor/plugins/discussion-plugin"
 import { suggestionPlugin } from "@/components/editor/plugins/suggestion-plugin"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
+import { useDiscussions } from "@/hooks/use-discussions"
+import { authClient } from "@/lib/auth-client"
+import { useParams } from "next/navigation"
 import { type TComment, Comment, formatCommentDate } from "./comment"
 import { CommentCreateForm } from "./comment-create-form"
 
@@ -108,8 +104,9 @@ export const BlockSuggestionCard = ({
   suggestion: ResolvedSuggestion
 }) => {
   const { api, editor } = useEditorPlugin(SuggestionPlugin)
+  const { data: session } = authClient.useSession()
 
-  const userInfo = usePluginOption(discussionPlugin, "user", suggestion.userId)
+  const userInfo = session?.user
 
   const accept = (suggestion: ResolvedSuggestion) => {
     api.suggestion.withoutSuggestions(() => {
@@ -144,7 +141,7 @@ export const BlockSuggestionCard = ({
         <div className="relative flex items-center">
           {/* Replace to your own backend or refer to potion */}
           <Avatar className="size-5">
-            <AvatarImage alt={userInfo?.name} src={userInfo?.avatarUrl} />
+            <AvatarImage alt={userInfo?.name} src={userInfo?.image as string} />
             <AvatarFallback>{userInfo?.name?.[0]}</AvatarFallback>
           </Avatar>
           <h4 className="mx-2 text-sm leading-none font-semibold">
@@ -285,7 +282,8 @@ export const useResolveSuggestion = (
   suggestionNodes: NodeEntry<TElement | TSuggestionText>[],
   blockPath: Path
 ) => {
-  const discussions = usePluginOption(discussionPlugin, "discussions")
+  const { noteId } = useParams<{ noteId: string }>()
+  const { discussions } = useDiscussions(noteId)
 
   const { api, editor, getOption, setOption } =
     useEditorPlugin(suggestionPlugin)
@@ -429,7 +427,7 @@ export const useResolveSuggestion = (
         }
       })
 
-      if (entries.length === 0) return
+      if (entries.length === 0 || !entries[0]) return
 
       const nodeData = api.suggestion.suggestionData(entries[0][0])
 

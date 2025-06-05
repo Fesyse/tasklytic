@@ -1,5 +1,6 @@
 import { InvitationsDialog } from "@/components/layouts/dashboard/sidebar/invitations-dialog"
 import { InvitePeopleDialog } from "@/components/layouts/dashboard/sidebar/invite-people-dialog"
+import { useSyncContext } from "@/providers/sync-provider"
 import { useLiveQuery } from "dexie-react-hooks"
 import {
   CalendarIcon,
@@ -30,6 +31,7 @@ export type NoteNavItem = {
   title: string
   url: string
   icon: string | LucideIcon
+  isFavorited: boolean
 
   subNotes:
     | {
@@ -42,14 +44,27 @@ export type NoteNavItem = {
 type SidebarNav = {
   navMain: NavItem[]
 
-  privateNotes: { isLoading: boolean; items: NoteNavItem[] | undefined }
-  sharedNotes: { isLoading: boolean; items: NoteNavItem[] | undefined }
-
   navSecondary: NavItem[]
-}
+} & (
+  | {
+      isNotesLoading: true
+      favoriteNotes: undefined
+      privateNotes: undefined
+      sharedNotes: undefined
+    }
+  | {
+      isNotesLoading: false
+      favoriteNotes: NoteNavItem[]
+      privateNotes: NoteNavItem[]
+      sharedNotes: NoteNavItem[]
+    }
+)
 
 export const useSidebarNav = (): SidebarNav => {
+  const { syncStatus } = useSyncContext()
   const { data: organization } = authClient.useActiveOrganization()
+  const { data: session } = authClient.useSession()
+
   const result = useLiveQuery(() => {
     if (!organization?.id) return tryCatch(Promise.resolve([]))
     return getNotes(organization.id)
@@ -72,12 +87,17 @@ export const useSidebarNav = (): SidebarNav => {
       icon: note.emoji ?? FileIcon,
       title: note.title,
       url: `/dashboard/note/${note.id}`,
+      isFavorited:
+        note.isFavorited || note.favoritedByUserId === session?.user.id,
       subNotes: {
         isLoading: false,
         items: buildNoteHierarchy(notes, note.id)
       }
     }))
   }
+
+  const isNotesLoading =
+    result === undefined || !result.data || syncStatus === "syncing"
 
   return {
     navMain: [
@@ -94,24 +114,29 @@ export const useSidebarNav = (): SidebarNav => {
         type: "url"
       }
     ],
-    privateNotes: {
-      isLoading: result === undefined || !result.data,
-      items: result?.data
-        ? buildNoteHierarchy(
-            result.data.filter((note) => !note.isPublic),
-            null
-          )
-        : []
-    },
-    sharedNotes: {
-      isLoading: result === undefined || !result.data,
-      items: result?.data
-        ? buildNoteHierarchy(
-            result.data.filter((note) => note.isPublic),
-            null
-          )
-        : []
-    },
+    isNotesLoading,
+    favoriteNotes: result?.data
+      ? buildNoteHierarchy(
+          result.data.filter((note) =>
+            note.parentNoteId === null
+              ? note.isFavorited && note.favoritedByUserId === session?.user.id
+              : true
+          ),
+          null
+        )
+      : undefined,
+    privateNotes: result?.data
+      ? buildNoteHierarchy(
+          result.data.filter((note) => !note.isPublic),
+          null
+        )
+      : undefined,
+    sharedNotes: result?.data
+      ? buildNoteHierarchy(
+          result.data.filter((note) => note.isPublic),
+          null
+        )
+      : undefined,
     navSecondary: [
       {
         component: <InvitationsDialog key="invitations-dialog" />,

@@ -1,22 +1,18 @@
-import { authClient } from "./auth-client"
-
+import { useSyncedNoteQueries } from "@/hooks/use-sync-queries"
 import { useParams } from "next/navigation"
-import { getNote } from "./db-queries"
-import { useDexieDb } from "./use-dexie-db"
 
+/**
+ * Hook that loads a note from the client DB with server synchronization
+ * This is a wrapper around useSyncedNoteQueries to maintain backward compatibility
+ */
 export function useLocalNote() {
   const { noteId } = useParams<{ noteId: string }>()
-  const { data: activeOrganization } = authClient.useActiveOrganization()
+  const { note, isLoading, error } = useSyncedNoteQueries(noteId)
 
-  return useDexieDb(async () => {
-    if (!activeOrganization) return undefined
-    const { data, error } = await getNote(noteId, activeOrganization.id)
-
-    if (error) {
-      console.error(error)
-      return
-    }
-
-    return data
-  }, [activeOrganization?.id, noteId])
+  // Return in the same format as before for backward compatibility
+  return {
+    data: note,
+    isLoading,
+    error
+  }
 }

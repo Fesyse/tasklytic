@@ -56,14 +56,14 @@ export const InvitePeopleForm = () => {
   const checkUserExists = useCallback(
     async (email: string) => {
       try {
-        const result = await utils.users.getByEmail.fetch({ email })
+        const result = await utils.user.getByEmail.fetch({ email })
         return result
       } catch (error) {
         console.error("Error checking user:", error)
         return null
       }
     },
-    [utils.users.getByEmail.fetch]
+    [utils.user.getByEmail.fetch]
   )
 
   // Handle adding an email to the invite list

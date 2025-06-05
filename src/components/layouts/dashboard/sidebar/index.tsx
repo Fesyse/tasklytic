@@ -8,9 +8,12 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuItem,
+  SidebarMenuSkeleton,
   SidebarTrigger,
   useSidebar
 } from "@/components/ui/sidebar"
@@ -71,18 +74,36 @@ export function AppSidebar({
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent scrollAreaClassName="[&>[data-slot='scroll-area-viewport']>div]:!flex [&>[data-slot='scroll-area-viewport']>div]:flex-col">
         <NavMain items={sidebarNav.navMain} />
-        <NavNotes
-          notes={sidebarNav.privateNotes.items}
-          isLoading={sidebarNav.privateNotes.isLoading}
-          type="private"
-        />
-        <NavNotes
-          notes={sidebarNav.sharedNotes.items}
-          isLoading={sidebarNav.sharedNotes.isLoading}
-          type="shared"
-        />
+        {sidebarNav.isNotesLoading ? (
+          // {true ? (
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {Array.from({ length: 20 }).map((_, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ delay: i * 0.1 }}
+                  >
+                    <SidebarMenuItem>
+                      <SidebarMenuSkeleton showIcon />
+                    </SidebarMenuItem>
+                  </motion.div>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ) : (
+          <>
+            <NavNotes notes={sidebarNav.favoriteNotes} type="favorites" />
+            <NavNotes notes={sidebarNav.privateNotes} type="private" />
+            <NavNotes notes={sidebarNav.sharedNotes} type="shared" />
+          </>
+        )}
         <NavSecondary items={sidebarNav.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

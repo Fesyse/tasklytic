@@ -23,6 +23,10 @@ export const env = createEnv({
     RESEND_API_KEY: z.string(),
     UPLOADTHING_TOKEN: z.string(),
     OPENAI_API_KEY: z.string(),
+    UNSPLASH_ACCESS_KEY: z.string(),
+    UNSPLASH_SECRET_KEY: z.string(),
+    KV_REST_API_URL: z.string(),
+    KV_REST_API_TOKEN: z.string(),
     TURNSTILE_SECRET_KEY: z.string()
   },
 
@@ -55,6 +59,10 @@ export const env = createEnv({
     NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
     UPLOADTHING_TOKEN: process.env.UPLOADTHING_TOKEN,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    UNSPLASH_ACCESS_KEY: process.env.UNSPLASH_ACCESS_KEY,
+    UNSPLASH_SECRET_KEY: process.env.UNSPLASH_SECRET_KEY,
+    KV_REST_API_TOKEN: process.env.KV_REST_API_TOKEN,
+    KV_REST_API_URL: process.env.KV_REST_API_URL,
     NEXT_PUBLIC_TURNSTILE_SITE_KEY: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
     TURNSTILE_SECRET_KEY: process.env.TURNSTILE_SECRET_KEY
   },

@@ -2,11 +2,13 @@ import {
   EmojiPickerContent,
   EmojiPickerFooter,
   EmojiPickerSearch
-} from "./ui/emoji-picker"
+} from "@/components/ui/emoji-picker"
 
-import { EmojiPicker } from "./ui/emoji-picker"
+import { EmojiPicker } from "@/components/ui/emoji-picker"
 
+import { Popover, PopoverTrigger } from "@/components/ui/popover"
 import { useNote } from "@/hooks/use-note"
+import { authClient } from "@/lib/auth-client"
 import { dexieDB } from "@/lib/db-client"
 import {
   getEmojiSlug,
@@ -19,35 +21,53 @@ import type { Emoji } from "frimousse"
 import { FileIcon } from "lucide-react"
 import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
-import { Popover, PopoverTrigger } from "./ui/popover"
 
-export function NoteEmojiPicker() {
+type NoteEmojiPickerProps = {
+  size?: number
+}
+export function NoteEmojiPicker({ size = 48 }: NoteEmojiPickerProps) {
   const { data: note } = useNote()
+  const { data: session } = authClient.useSession()
   const [emoji, setEmoji] = useState<Emoji>({
     emoji: note?.emoji ?? "",
     label: note?.emoji ?? ""
   })
 
   const [isPickerOpen, setIsPickerOpen] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
 
   const updateEmoji = useCallback(
     async (newEmoji: Emoji) => {
       if (!note) return false
+      setIsSaving(true)
 
-      const { error } = await tryCatch(
-        dexieDB.notes.update(note.id, {
-          emoji: newEmoji.emoji,
-          emojiSlug: getEmojiSlug(newEmoji.label)
-        })
-      )
+      try {
+        const { error } = await tryCatch(
+          dexieDB.notes.update(note.id, {
+            emoji: newEmoji.emoji,
+            emojiSlug: getEmojiSlug(newEmoji.label),
+            updatedAt: new Date(), // Make sure we update the timestamp,
+            updatedByUserId: session?.user.id,
+            updatedByUserName: session?.user.name
+          })
+        )
 
-      if (error) {
-        toast.error(error.message)
+        if (error) {
+          toast.error(error.message)
+          setIsSaving(false)
+          return false
+        }
+
+        setEmoji(newEmoji)
+
+        setIsSaving(false)
+        return true
+      } catch (err) {
+        console.error("Failed to update emoji:", err)
+        toast.error("Failed to update emoji")
+        setIsSaving(false)
         return false
       }
-
-      setEmoji(newEmoji)
-      return true
     },
     [note?.id]
   )
@@ -80,7 +100,6 @@ export function NoteEmojiPicker() {
   }, [emoji.label])
 
   useEffect(() => {
-    console.log("note", note)
     if (!note?.emoji || !note.emojiSlug) return
 
     setEmoji({
@@ -97,14 +116,24 @@ export function NoteEmojiPicker() {
             <PopoverTrigger asChild>
               <button
                 type="button"
-                className="flex size-[48px] cursor-pointer items-center justify-center"
+                className="flex cursor-pointer items-center justify-center"
                 onClick={() => setIsPickerOpen(!isPickerOpen)}
+                disabled={isSaving}
                 aria-label="Select emoji"
+                style={{
+                  width: size,
+                  height: size
+                }}
               >
                 {emoji.emoji.length > 0 ? (
-                  <span className="text-5xl">{emoji.emoji}</span>
+                  <span style={{ fontSize: size }}>{emoji.emoji}</span>
                 ) : (
-                  <FileIcon className="text-muted-foreground size-[48px]" />
+                  <FileIcon className="text-muted-foreground" size={size} />
+                )}
+                {isSaving && (
+                  <span className="text-muted-foreground absolute right-0 -bottom-5 left-0 text-center text-xs">
+                    Saving...
+                  </span>
                 )}
               </button>
             </PopoverTrigger>

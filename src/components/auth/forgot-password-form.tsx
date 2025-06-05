@@ -1,5 +1,6 @@
 "use client"
 
+import { Turnstile } from "@/components/turnstile"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -10,11 +11,9 @@ import {
   FormMessage
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { env } from "@/env"
 import { authClient } from "@/lib/auth-client"
 import { verifyTurnstileToken } from "@/lib/turnstile"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Turnstile } from "next-turnstile"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
@@ -60,7 +59,7 @@ export const ForgotPasswordForm = () => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
           name="email"
@@ -78,11 +77,8 @@ export const ForgotPasswordForm = () => {
           control={form.control}
           name="turnstileToken"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="flex justify-center">
               <Turnstile
-                siteKey={env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
-                retry="auto"
-                refreshExpired="auto"
                 onError={() => {
                   setTurnstileStatus("error")
                   toast.error("Security check failed. Please try again.")
@@ -104,13 +100,9 @@ export const ForgotPasswordForm = () => {
           )}
         />
         {!isSubmitted ? (
-          <Button className="mt-6 w-full">Send reset instructions</Button>
+          <Button className="w-full">Send reset instructions</Button>
         ) : (
-          <GoToInboxButton
-            variant="outline"
-            className="mt-6 w-full"
-            email={email}
-          />
+          <GoToInboxButton variant="outline" className="w-full" email={email} />
         )}
       </form>
     </Form>

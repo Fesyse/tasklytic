@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils"
 
-type AuthHeaderProps = React.ComponentProps<"button"> & {
+type AuthHeaderProps = React.ComponentProps<"div"> & {
   title: string
   description?: string
 }

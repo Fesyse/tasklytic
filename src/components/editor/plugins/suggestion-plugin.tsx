@@ -13,7 +13,6 @@ import {
 } from "@udecode/plate-suggestion"
 import { toTPlatePlugin } from "@udecode/plate/react"
 
-import { discussionPlugin } from "@/components/editor/plugins/discussion-plugin"
 import { BlockSuggestion } from "@/components/ui/block-suggestion"
 
 export type SuggestionConfig = ExtendConfig<
@@ -27,7 +26,7 @@ export type SuggestionConfig = ExtendConfig<
 
 export const suggestionPlugin = toTPlatePlugin<SuggestionConfig>(
   BaseSuggestionPlugin,
-  ({ editor }) => ({
+  () => ({
     handlers: {
       // unset active suggestion when clicking outside of suggestion
       onClick: ({ api, event, setOption, type }) => {
@@ -71,7 +70,6 @@ export const suggestionPlugin = toTPlatePlugin<SuggestionConfig>(
     },
     options: {
       activeId: null,
-      currentUserId: editor.getOption(discussionPlugin, "currentUserId"),
       hoverId: null,
       uniquePathMap: new Map()
     },
