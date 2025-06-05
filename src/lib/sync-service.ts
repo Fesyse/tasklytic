@@ -2,7 +2,6 @@ import { apiVanilla } from "@/trpc/vanilla-client"
 import { TRPCClientError } from "@trpc/client"
 import { authClient } from "./auth-client"
 import { dexieDB, type Note } from "./db-client"
-import { deleteNotes } from "./db-queries"
 
 // Types
 export type SyncStatus = "idle" | "syncing" | "error" | "success"
@@ -125,10 +124,17 @@ export class SyncService {
 
       // Apply changes to client DB
       await dexieDB.transaction("rw", dexieDB.notes, async () => {
-        await deleteNotes(organizationId)
         if (notesToUpsert.length > 0) {
           await dexieDB.notes.bulkPut(notesToUpsert)
         }
+
+        // Optionally, delete notes that no longer exist on the server
+        const serverNoteIds = new Set(serverNotes.map((note) => note.id))
+        await dexieDB.notes
+          .where("organizationId")
+          .equals(organizationId)
+          .and((note) => !serverNoteIds.has(note.id))
+          .delete()
       })
 
       return { success: true, notes: notesToUpsert }
@@ -210,13 +216,24 @@ export class SyncService {
 
       // If we have server blocks from any of the notes
       if (allServerBlocks.length > 0) {
-        // Update client blocks
-        const blocksToPut = allServerBlocks.map((block) => ({
-          id: block.id,
-          noteId: block.noteId,
-          content: JSON.parse(block.content),
-          order: block.order
-        }))
+        // Update client blocks, filtering out any with invalid keys
+        const blocksToPut = allServerBlocks
+          .filter((block) => {
+            if (!block.id || !block.noteId) {
+              console.error(
+                "Skipping block due to missing id or noteId:",
+                block
+              )
+              return false
+            }
+            return true
+          })
+          .map((block) => ({
+            id: block.id,
+            noteId: block.noteId,
+            content: JSON.parse(block.content),
+            order: block.order
+          }))
 
         // Identify blocks to delete (in client but not in server)
         const serverBlockIds = new Set(allServerBlocks.map((block) => block.id))
@@ -292,17 +309,28 @@ export class SyncService {
 
       // If we have server discussions from any of the notes
       if (allServerDiscussions.length > 0) {
-        // Update client discussions
-        const discussionsToPut = allServerDiscussions.map((discussion) => ({
-          id: discussion.id,
-          noteId: discussion.noteId,
-          blockId: discussion.blockId,
-          documentContent: discussion.documentContent ?? undefined,
-          updatedAt: discussion.updatedAt ?? new Date(),
-          createdAt: discussion.createdAt,
-          isResolved: Boolean(discussion.isResolved),
-          userId: discussion.userId
-        }))
+        // Update client discussions, filtering out any with invalid keys
+        const discussionsToPut = allServerDiscussions
+          .filter((discussion) => {
+            if (!discussion.id || !discussion.noteId || !discussion.blockId) {
+              console.error(
+                "Skipping discussion due to missing id, noteId, or blockId:",
+                discussion
+              )
+              return false
+            }
+            return true
+          })
+          .map((discussion) => ({
+            id: discussion.id,
+            noteId: discussion.noteId,
+            blockId: discussion.blockId,
+            documentContent: discussion.documentContent ?? undefined,
+            updatedAt: discussion.updatedAt ?? new Date(),
+            createdAt: discussion.createdAt ?? new Date(),
+            isResolved: Boolean(discussion.isResolved),
+            userId: discussion.userId
+          }))
 
         // Identify discussions to delete
         const serverDiscussionIds = new Set(
@@ -387,9 +415,14 @@ export class SyncService {
       if (allServerComments.length > 0) {
         // Update client comments
         const commentsToPut = allServerComments.map((comment) => ({
-          ...comment,
+          id: comment.id,
+          discussionId: comment.discussionId,
+          contentRich: comment.contentRich,
+          createdAt: comment.createdAt ?? new Date(),
+          userId: comment.userId,
           updatedAt: comment.updatedAt ?? new Date(),
-          isEdited: Boolean(comment.isEdited)
+          isEdited: Boolean(comment.isEdited),
+          userImage: comment.userImage ?? undefined
         }))
 
         // Identify comments to delete

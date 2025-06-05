@@ -1,5 +1,6 @@
 import { InvitationsDialog } from "@/components/layouts/dashboard/sidebar/invitations-dialog"
 import { InvitePeopleDialog } from "@/components/layouts/dashboard/sidebar/invite-people-dialog"
+import { useSyncContext } from "@/providers/sync-provider"
 import { useLiveQuery } from "dexie-react-hooks"
 import {
   CalendarIcon,
@@ -60,6 +61,7 @@ type SidebarNav = {
 )
 
 export const useSidebarNav = (): SidebarNav => {
+  const { syncStatus } = useSyncContext()
   const { data: organization } = authClient.useActiveOrganization()
   const { data: session } = authClient.useSession()
 
@@ -94,6 +96,9 @@ export const useSidebarNav = (): SidebarNav => {
     }))
   }
 
+  const isNotesLoading =
+    result === undefined || !result.data || syncStatus === "syncing"
+
   return {
     navMain: [
       {
@@ -109,7 +114,7 @@ export const useSidebarNav = (): SidebarNav => {
         type: "url"
       }
     ],
-    isNotesLoading: result === undefined || !result.data,
+    isNotesLoading,
     favoriteNotes: result?.data
       ? buildNoteHierarchy(
           result.data.filter((note) =>

@@ -82,6 +82,7 @@ export function useSync() {
     }
 
     syncInProgressRef.current = true
+    setSyncStatus("syncing")
 
     if (!activeOrganization?.id) {
       return { success: false, error: new Error("No active organization") }
@@ -115,6 +116,7 @@ export function useSync() {
       }
 
       setIsSyncingSpecificNote(true)
+      setSyncStatus("syncing")
 
       try {
         const result = await syncServiceRef.current.pullNoteFromServer(
@@ -133,9 +135,11 @@ export function useSync() {
         return result
       } catch (error) {
         toast.error("Error syncing note from server")
+        setSyncStatus("error")
         return { success: false, error: error as Error }
       } finally {
         setIsSyncingSpecificNote(false)
+        setSyncStatus("idle")
       }
     },
     [activeOrganization?.id, queryClient]
