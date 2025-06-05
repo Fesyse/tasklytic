@@ -1,3 +1,4 @@
+import LanguageSelector from "@/components/language-selector"
 import { ModeToggle } from "@/components/mode-toggle"
 import { Icons } from "@/components/ui/icons"
 import { siteConfig } from "@/lib/site-config"
@@ -180,6 +181,7 @@ export function Footer() {
             </svg>
           </Link>
           <ModeToggle className="rounded-full" />
+          <LanguageSelector className="rounded-full" />
         </div>
         <span className="text-muted-foreground block text-center text-sm">
           {" "}

@@ -1,5 +1,19 @@
 {
   "HomePage": {
-    "title": "Hello world!"
+    "HeroSection": {
+      "announcement": "We are in beta!",
+      "title": "Improve your discipline, improve your life with",
+      "description": "Develop ironclad self-discipline with our habit-tracking and goal-setting app. Break down your goals, track your progress, and stay motivated with personalized reminders and insights.",
+      "start": "Start for free",
+      "pricing": "Pricing"
+    },
+    "CompaniesSection": {
+      "hover": "Meet Our Customers"
+    },
+    "IntegrationsSection": {
+      "title": "Integrate with your favorite tools",
+      "description": "Connect seamlessly with popular platforms and services to enhance your workflow.",
+      "start": "Get started"
+    }
   }
 }

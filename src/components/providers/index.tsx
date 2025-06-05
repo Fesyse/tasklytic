@@ -10,10 +10,10 @@ import { NuqsAdapter } from "nuqs/adapters/next/app"
 
 export const Providers = ({
   children,
-  testing = false
-}: React.PropsWithChildren & { testing?: boolean }) => {
+  locale = "en"
+}: React.PropsWithChildren & { locale?: string }) => {
   return (
-    <NextIntlClientProvider>
+    <NextIntlClientProvider locale={locale}>
       <TRPCReactProvider>
         <ThemeProvider
           attribute="class"
@@ -21,17 +21,10 @@ export const Providers = ({
           enableSystem
           disableTransitionOnChange
         >
-          {testing ? (
-            <>
-              <Toaster />
-              <NuqsAdapter>{children}</NuqsAdapter>
-            </>
-          ) : (
-            <PostHogProvider>
-              <Toaster />
-              <NuqsAdapter>{children}</NuqsAdapter>
-            </PostHogProvider>
-          )}
+          <PostHogProvider>
+            <Toaster />
+            <NuqsAdapter>{children}</NuqsAdapter>
+          </PostHogProvider>
           <SpeedInsights />
         </ThemeProvider>
       </TRPCReactProvider>
