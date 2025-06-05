@@ -15,5 +15,10 @@
       "description": "Connect seamlessly with popular platforms and services to enhance your workflow.",
       "start": "Get started"
     }
+  },
+  "ModeToggle": {
+    "dark": "Dark",
+    "light": "Light",
+    "system": "System"
   }
 }

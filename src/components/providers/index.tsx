@@ -1,5 +1,3 @@
-"use client"
-
 import { PostHogProvider } from "@/components/providers/posthog-provider"
 import { Toaster } from "@/components/ui/sonner"
 import { TRPCReactProvider } from "@/trpc/react"
@@ -8,12 +6,9 @@ import { NextIntlClientProvider } from "next-intl"
 import { ThemeProvider } from "next-themes"
 import { NuqsAdapter } from "nuqs/adapters/next/app"
 
-export const Providers = ({
-  children,
-  locale = "en"
-}: React.PropsWithChildren & { locale?: string }) => {
+export const Providers = ({ children }: React.PropsWithChildren) => {
   return (
-    <NextIntlClientProvider locale={locale}>
+    <NextIntlClientProvider>
       <TRPCReactProvider>
         <ThemeProvider
           attribute="class"

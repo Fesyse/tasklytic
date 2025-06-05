@@ -22,9 +22,7 @@ export default function LanguageSelector({
   const [isPending, startTransition] = useTransition()
 
   function onChange(locale: string) {
-    startTransition(() => {
-      setUserLocale(locale)
-    })
+    startTransition(() => setUserLocale(locale))
   }
 
   return (

@@ -41,7 +41,7 @@ export default async function RootLayout({
         <link rel="icon" href="/favicon.ico" sizes="32x32" />
       </head>
       <body>
-        <Providers locale={locale}>
+        <Providers>
           {children}
           {modal}
         </Providers>
