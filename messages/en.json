@@ -16,6 +16,34 @@
       "start": "Get started"
     }
   },
+  "HomeHeader": {
+    "Nav": {
+      "features": "Features",
+      "solution": "Solution",
+      "pricing": "Pricing",
+      "about": "About"
+    },
+
+    "Login": {
+      "login": "Login",
+      "sign-up": "Sign up",
+      "start": "Get started",
+      "go-to-dashboard": "Go to dashboard",
+      "short-go-to-dashboard": "Dashboard"
+    }
+  },
+  "HomeFooter": {
+    "Nav": {
+      "features": "Features",
+      "solution": "Solution",
+      "customers": "Customers",
+      "pricing": "Pricing",
+      "help": "Help",
+      "about": "About"
+    },
+
+    "rights": "All rights reserved"
+  },
   "ModeToggle": {
     "dark": "Dark",
     "light": "Light",

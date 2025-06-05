@@ -16,6 +16,34 @@
       "start": "Начать"
     }
   },
+  "HomeHeader": {
+    "Nav": {
+      "features": "Возможности",
+      "solution": "Решение",
+      "pricing": "Цены",
+      "about": "О нас"
+    },
+
+    "Login": {
+      "login": "Войти",
+      "sign-up": "Регистрация",
+      "start": "Начать",
+      "go-to-dashboard": "Перейти в дашборд",
+      "short-go-to-dashboard": "Дашборд"
+    }
+  },
+  "HomeFooter": {
+    "Nav": {
+      "features": "Возможности",
+      "solution": "Решение",
+      "customers": "Клиенты",
+      "pricing": "Цены",
+      "help": "Помощь",
+      "about": "О нас"
+    },
+
+    "rights": "Все права защищены"
+  },
   "ModeToggle": {
     "dark": "Тёмная",
     "light": "Светлая",
