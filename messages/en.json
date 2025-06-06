@@ -264,6 +264,10 @@
         },
         "placeholder": "Type / to get started",
         "Elements": {
+          "CodeBlockCombobox": {
+            "searchLanguage": "Search language...",
+            "noLanguageFallback": "No language found."
+          },
           "DateElement": {
             "today": "Today",
             "yesterday": "Yesterday",

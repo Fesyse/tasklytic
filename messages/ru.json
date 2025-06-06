@@ -264,6 +264,10 @@
         },
         "placeholder": "Напишите / чтобы начать",
         "Elements": {
+          "CodeBlockCombobox": {
+            "searchLanguage": "Найти язык...",
+            "noLanguageFallback": "Язык не найден."
+          },
           "DateElement": {
             "today": "Сегодня",
             "yesterday": "Вчера",
