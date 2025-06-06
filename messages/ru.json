@@ -264,6 +264,11 @@
         },
         "placeholder": "Напишите / чтобы начать",
         "Elements": {
+          "DateElement": {
+            "today": "Сегодня",
+            "yesterday": "Вчера",
+            "tomorrow": "Завтра"
+          },
           "SlashInputElement": {
             "groups": {
               "AI": {

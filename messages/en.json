@@ -264,6 +264,11 @@
         },
         "placeholder": "Type / to get started",
         "Elements": {
+          "DateElement": {
+            "today": "Today",
+            "yesterday": "Yesterday",
+            "tomorrow": "Tomorrow"
+          },
           "SlashInputElement": {
             "groups": {
               "AI": {
