@@ -3,7 +3,6 @@ import "@/styles/globals.css"
 import { Providers } from "@/components/providers"
 import { siteConfig } from "@/lib/site-config"
 import { type Metadata } from "next"
-import { getLocale } from "next-intl/server"
 import { Geist } from "next/font/google"
 
 export const metadata: Metadata = {
@@ -27,14 +26,8 @@ export default async function RootLayout({
   children: React.ReactNode
   modal: React.ReactNode
 }>) {
-  const locale = await getLocale()
-
   return (
-    <html
-      lang={locale}
-      className={`${geist.variable}`}
-      suppressHydrationWarning
-    >
+    <html className={`${geist.variable}`} suppressHydrationWarning>
       <head>
         <meta name="apple-mobile-web-app-title" content="Tasklytic" />
         <link rel="icon" href="/icon.svg" sizes="any" type="image/svg+" />

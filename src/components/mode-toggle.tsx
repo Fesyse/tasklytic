@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
 import { MoonIcon, SunIcon } from "@radix-ui/react-icons"
-import { useTranslations } from "next-intl"
 import { useTheme } from "next-themes"
 
 type ThemeOption = "light" | "dark" | "system"
@@ -25,7 +24,7 @@ export function ModeToggle({
   className,
   ...props
 }: ModeToggleProps) {
-  const t = useTranslations("ModeToggle")
+  // const t = useTranslations("ModeToggle")
   const { setTheme, theme } = useTheme()
 
   const handleThemeChange = (theme: ThemeOption) => {
@@ -80,13 +79,16 @@ export function ModeToggle({
         className="w-[215px]"
       >
         <DropdownMenuItem onClick={() => handleThemeChange("light")}>
-          {t("light")}
+          {/* {t("light")} */}
+          Light
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => handleThemeChange("dark")}>
-          {t("dark")}
+          {/* {t("dark")} */}
+          Dark
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => handleThemeChange("system")}>
-          {t("system")}
+          {/* {t("system")} */}
+          System
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
