@@ -228,7 +228,33 @@
           "editedBy": "Edited by",
           "createdBy": "Created by"
         },
-        "toggleFavorite": "{isFavorited, select, true {Remove from} other {Add to}} favorites"
+        "toggleFavorite": "{isFavorited, select, true {Remove from} other {Add to}} favorites",
+        "NoteNavActions": {
+          "customizePage": "Customize Page",
+          "turnIntoWiki": "Turn into wiki",
+          "copyLink": "Copy Link",
+          "duplicate": "Duplicate",
+          "moveTo": "Move to",
+          "moveToTrash": "Move to Trash",
+          "undo": "Undo",
+          "redo": "Redo",
+          "viewAnalytics": "View analytics",
+          "versionHistory": "Version History",
+          "showDeletePages": "Show delete pages",
+          "notifications": "Notifications",
+          "Import": {
+            "import": "Import",
+            "html": "Import from HTML",
+            "markdown": "Import from Markdown"
+          },
+          "Export": {
+            "export": "Export",
+            "html": "Export as HTML",
+            "pdf": "Export as PDF",
+            "image": "Export as Image",
+            "markdown": "Export as Markdown"
+          }
+        }
       }
     }
   }

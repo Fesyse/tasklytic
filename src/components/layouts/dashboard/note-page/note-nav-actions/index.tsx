@@ -65,9 +65,9 @@ type NoteNavActionsType = (
 )[][]
 
 export function NoteNavActions() {
+  const t = useTranslations("Dashboard.NoteEditor.Header")
   const format = useFormatter()
   const now = useNow()
-  const t = useTranslations("Dashboard.NoteEditor.Header")
 
   const pathname = usePathname()
   const { undo, redo } = useEditorState()
@@ -89,13 +89,13 @@ export function NoteNavActions() {
     () => [
       [
         {
-          label: "Customize Page",
+          label: t("NoteNavActions.customizePage"),
           icon: Settings2,
           action: () => {},
           type: "action"
         },
         {
-          label: "Turn into wiki",
+          label: t("NoteNavActions.turnIntoWiki"),
           icon: FileText,
           action: () => {},
           type: "action"
@@ -103,26 +103,26 @@ export function NoteNavActions() {
       ],
       [
         {
-          label: "Copy Link",
+          label: t("NoteNavActions.copyLink"),
           icon: Link,
           action: copyLink,
           shortcut: "CTRL+SHIFT+C",
           type: "action"
         },
         {
-          label: "Duplicate",
+          label: t("NoteNavActions.duplicate"),
           icon: Copy,
           action: () => {},
           type: "action"
         },
         {
-          label: "Move to",
+          label: t("NoteNavActions.moveTo"),
           icon: CornerUpRight,
           action: () => {},
           type: "action"
         },
         {
-          label: "Move to Trash",
+          label: t("NoteNavActions.moveToTrash"),
           icon: Trash2,
           action: () => {},
           type: "action"
@@ -130,14 +130,14 @@ export function NoteNavActions() {
       ],
       [
         {
-          label: "Undo",
+          label: t("NoteNavActions.undo"),
           icon: CornerUpLeft,
           action: undo,
           shortcut: "CTRL+Z",
           type: "action"
         },
         {
-          label: "Redo",
+          label: t("NoteNavActions.redo"),
           icon: CornerUpRight,
           action: redo,
           shortcut: "CTRL+Y",
@@ -146,25 +146,25 @@ export function NoteNavActions() {
       ],
       [
         {
-          label: "View analytics",
+          label: t("NoteNavActions.viewAnalytics"),
           icon: LineChart,
           action: () => {},
           type: "action"
         },
         {
-          label: "Version History",
+          label: t("NoteNavActions.versionHistory"),
           icon: GalleryVerticalEnd,
           action: () => {},
           type: "action"
         },
         {
-          label: "Show delete pages",
+          label: t("NoteNavActions.showDeletePages"),
           icon: Trash,
           action: () => {},
           type: "action"
         },
         {
-          label: "Notifications",
+          label: t("NoteNavActions.notifications"),
           icon: Bell,
           action: () => {},
           type: "action"
