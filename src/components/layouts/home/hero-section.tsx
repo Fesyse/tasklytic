@@ -4,7 +4,7 @@ import { SparklesText } from "@/components/ui/sparkles-text"
 import { TextEffect } from "@/components/ui/text-effect"
 import { siteConfig } from "@/lib/site-config"
 import { ArrowRight } from "lucide-react"
-import { getTranslations } from "next-intl/server"
+import { useTranslations } from "next-intl"
 import Image from "next/image"
 import Link from "next/link"
 
@@ -28,8 +28,8 @@ const transitionVariants = {
   }
 }
 
-export async function HeroSection() {
-  const t = await getTranslations("HomePage.HeroSection")
+export function HeroSection() {
+  const t = useTranslations("HomePage.HeroSection")
 
   return (
     <>

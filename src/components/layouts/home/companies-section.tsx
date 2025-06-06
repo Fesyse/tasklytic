@@ -1,9 +1,9 @@
 import { ChevronRight } from "lucide-react"
-import { getTranslations } from "next-intl/server"
+import { useTranslations } from "next-intl"
 import Link from "next/link"
 
-export const CompaniesSection = async () => {
-  const t = await getTranslations("HomePage.CompaniesSection")
+export const CompaniesSection = () => {
+  const t = useTranslations("HomePage.CompaniesSection")
   return (
     <section className="bg-background bg-noise relative pt-16 pb-16 md:pb-32">
       <div

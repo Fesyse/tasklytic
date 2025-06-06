@@ -10,11 +10,11 @@ import {
 import { Button } from "@/components/ui/button"
 import { Icons } from "@/components/ui/icons"
 import { cn } from "@/lib/utils"
-import { getTranslations } from "next-intl/server"
+import { useTranslations } from "next-intl"
 import Link from "next/link"
 
-export default async function IntegrationsSection() {
-  const t = await getTranslations("HomePage.IntegrationsSection")
+export default function IntegrationsSection() {
+  const t = useTranslations("HomePage.IntegrationsSection")
 
   return (
     <section className="relative">

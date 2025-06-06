@@ -2,7 +2,7 @@ import LanguageSelector from "@/components/language-selector"
 import { ModeToggle } from "@/components/mode-toggle"
 import { Icons } from "@/components/ui/icons"
 import { siteConfig } from "@/lib/site-config"
-import { getTranslations } from "next-intl/server"
+import { useTranslations } from "next-intl"
 import Link from "next/link"
 
 const links = [
@@ -32,8 +32,8 @@ const links = [
   }
 ] as const
 
-export async function Footer() {
-  const t = await getTranslations("HomeFooter")
+export function Footer() {
+  const t = useTranslations("HomeFooter")
 
   return (
     <footer className="py-16 md:py-32">
