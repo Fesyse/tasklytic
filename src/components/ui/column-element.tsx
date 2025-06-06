@@ -26,6 +26,7 @@ import {
   TooltipTrigger
 } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
+import { useTranslations } from "next-intl"
 
 export const ColumnElement = withHOC(
   ResizableProvider,
@@ -86,6 +87,10 @@ export const ColumnElement = withHOC(
 )
 
 const ColumnDragHandle = React.memo(function ColumnDragHandle() {
+  const t = useTranslations(
+    "Dashboard.Note.Editor.Elements.Draggable.ColumnDragHandle"
+  )
+
   return (
     <TooltipProvider>
       <Tooltip>
@@ -101,7 +106,7 @@ const ColumnDragHandle = React.memo(function ColumnDragHandle() {
           </Button>
         </TooltipTrigger>
 
-        <TooltipContent>Drag to move column</TooltipContent>
+        <TooltipContent>{t("handleTooltip")}</TooltipContent>
       </Tooltip>
     </TooltipProvider>
   )

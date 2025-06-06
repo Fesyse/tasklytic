@@ -264,6 +264,9 @@
         },
         "placeholder": "Напишите / чтобы начать",
         "Elements": {
+          "TocElement": {
+            "noHeadingsFallback": "Создайте заголовок, чтобы отобразить оглавление."
+          },
           "TableElement": {
             "Tooltips": {
               "backgroundColor": "Цвет фона",
@@ -297,6 +300,12 @@
             "today": "Сегодня",
             "yesterday": "Вчера",
             "tomorrow": "Завтра"
+          },
+          "Draggable": {
+            "handleTooltip": "Зажмите для перемещения",
+            "ColumnDragHandle": {
+              "handleTooltip": "Зажмите для перемещения колонки"
+            }
           },
           "SlashInputElement": {
             "groups": {

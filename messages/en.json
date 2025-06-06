@@ -264,6 +264,9 @@
         },
         "placeholder": "Type / to get started",
         "Elements": {
+          "TocElement": {
+            "noHeadingsFallback": "Create a heading to display the table of contents."
+          },
           "TableElement": {
             "Tooltips": {
               "backgroundColor": "Background color",
@@ -297,6 +300,12 @@
             "today": "Today",
             "yesterday": "Yesterday",
             "tomorrow": "Tomorrow"
+          },
+          "Draggable": {
+            "handleTooltip": "Drag to move",
+            "ColumnDragHandle": {
+              "handleTooltip": "Drag to move column"
+            }
           },
           "SlashInputElement": {
             "groups": {
