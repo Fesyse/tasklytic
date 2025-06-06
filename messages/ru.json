@@ -264,6 +264,31 @@
         },
         "placeholder": "Напишите / чтобы начать",
         "Elements": {
+          "TableElement": {
+            "Tooltips": {
+              "backgroundColor": "Цвет фона",
+              "mergeCells": "Объединить ячейки",
+              "splitCells": "Разделить ячейки",
+              "cellBorders": "Границы ячеек",
+              "deleteTable": "Удалить таблицу",
+              "insertRowBefore": "Вставить строку перед",
+              "insertRowAfter": "Вставить строку после",
+              "deleteRow": "Удалить строку",
+              "insertColumnBefore": "Вставить столбец перед",
+              "insertColumnAfter": "Вставить столбец после",
+              "deleteColumn": "Удалить столбец"
+            },
+            "BorderButtons": {
+              "topBorder": "Верхняя граница",
+              "rightBorder": "Правая граница",
+              "bottomBorder": "Нижняя граница",
+              "leftBorder": "Левая граница",
+              "noBorder": "Без границы",
+              "allBorders": "Внешние границы"
+            },
+            "colorsLabel": "Цвета",
+            "clearColor": "Очистить"
+          },
           "CodeBlockCombobox": {
             "searchLanguage": "Найти язык...",
             "noLanguageFallback": "Язык не найден."

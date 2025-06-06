@@ -264,6 +264,31 @@
         },
         "placeholder": "Type / to get started",
         "Elements": {
+          "TableElement": {
+            "Tooltips": {
+              "backgroundColor": "Background color",
+              "mergeCells": "Merge cells",
+              "splitCells": "Split cells",
+              "cellBorders": "Cell borders",
+              "deleteTable": "Delete table",
+              "insertRowBefore": "Insert row before",
+              "insertRowAfter": "Insert row after",
+              "deleteRow": "Delete row",
+              "insertColumnBefore": "Insert column before",
+              "insertColumnAfter": "Insert column after",
+              "deleteColumn": "Delete column"
+            },
+            "BorderButtons": {
+              "topBorder": "Top border",
+              "rightBorder": "Right border",
+              "bottomBorder": "Bottom border",
+              "leftBorder": "Left border",
+              "noBorder": "No border",
+              "allBorders": "Outside borders"
+            },
+            "colorsLabel": "Colors",
+            "clearColor": "Clear"
+          },
           "CodeBlockCombobox": {
             "searchLanguage": "Search language...",
             "noLanguageFallback": "No language found."
