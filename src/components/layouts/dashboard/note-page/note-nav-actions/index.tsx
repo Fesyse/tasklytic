@@ -43,7 +43,7 @@ import { useToggleFavorite } from "@/hooks/use-note"
 import { useSyncedNoteQueries } from "@/hooks/use-sync-queries"
 import { getBaseUrl } from "@/lib/utils"
 import { useEditorState } from "@udecode/plate/react"
-import { formatDistance } from "date-fns"
+import { useFormatter, useNow, useTranslations } from "next-intl"
 import { useParams, usePathname } from "next/navigation"
 import { useEffect, useMemo } from "react"
 import { toast } from "sonner"
@@ -65,6 +65,10 @@ type NoteNavActionsType = (
 )[][]
 
 export function NoteNavActions() {
+  const format = useFormatter()
+  const now = useNow()
+  const t = useTranslations("Dashboard.NoteEditor.Header")
+
   const pathname = usePathname()
   const { undo, redo } = useEditorState()
   const { noteId } = useParams<{ noteId: string }>()
@@ -207,24 +211,17 @@ export function NoteNavActions() {
           <Tooltip>
             <TooltipTrigger asChild>
               <div className="text-muted-foreground hidden font-medium md:inline-block">
-                Edited{" "}
-                {formatDistance(note.updatedAt, new Date(), {
-                  addSuffix: true
-                })}
+                {t("edited")} {format.relativeTime(note.updatedAt, now)}
               </div>
             </TooltipTrigger>
             <TooltipContent>
               <p>
-                Edited by <strong>{note.updatedByUserName}</strong> on{" "}
-                {formatDistance(note.updatedAt, new Date(), {
-                  addSuffix: true
-                })}
+                {t("editedBy")} <strong>{note.updatedByUserName}</strong>{" "}
+                {format.relativeTime(note.updatedAt, now)}
               </p>
               <p>
-                Created by <strong>{note.createdByUserName}</strong> on{" "}
-                {formatDistance(note.createdAt, new Date(), {
-                  addSuffix: true
-                })}
+                {t("createdBy")} <strong>{note.createdByUserName}</strong>{" "}
+                {format.relativeTime(note.updatedAt, now)}
               </p>
             </TooltipContent>
           </Tooltip>

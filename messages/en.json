@@ -214,6 +214,17 @@
           "refresh": "Refresh invitations"
         }
       }
+    },
+    "NoteEditor": {
+      "Header": {
+        "saved": "Saved",
+        "saving": "Saving...",
+        "autoSaving": "Auto-saving...",
+        "unsaved": "Unsaved changes",
+        "edited": "Edited",
+        "editedBy": "Edited by",
+        "createdBy": "Created by"
+      }
     }
   }
 }

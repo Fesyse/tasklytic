@@ -1,20 +1,22 @@
 "use client"
 
 import { useNoteEditorContext } from "@/contexts/note-editor-context"
+import { useTranslations } from "next-intl"
 import { NoteBreadcrumbs } from "./note-breadcrumbs"
 import { NoteNavActions } from "./note-nav-actions"
 
 export function NoteHeader() {
   const { isChanged, isSaving, isAutoSaving } = useNoteEditorContext()
+  const t = useTranslations("Dashboard.NoteEditor.Header")
 
   // Status for display
   const statusText = isSaving
-    ? "Saving..."
+    ? t("saving")
     : isAutoSaving
-      ? "Auto-saving..."
+      ? t("autoSaving")
       : isChanged
-        ? "Unsaved changes"
-        : "Saved"
+        ? t("unsaved")
+        : t("saved")
 
   return (
     <header className="sticky top-0 left-0 z-10">
