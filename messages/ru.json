@@ -262,7 +262,51 @@
           "toggleCover": "{hasCover, select, true {Убрать} other {Добавить}} обложку",
           "toggleFavorite": "{isFavorited, select, true {Удалить из избранного} other {Добавить в избранное}}"
         },
-        "placeholder": "Напишите / чтобы начать"
+        "placeholder": "Напишите / чтобы начать",
+        "Elements": {
+          "SlashInputElement": {
+            "groups": {
+              "AI": {
+                "label": "ИИ",
+                "items": {
+                  "ai": "ИИ"
+                }
+              },
+              "BasicBlocks": {
+                "label": "Базовые блоки",
+                "items": {
+                  "text": "Текст",
+                  "heading1": "Заголовок 1",
+                  "heading2": "Заголовок 2",
+                  "heading3": "Заголовок 3",
+                  "bulletedList": "Маркированный список",
+                  "numberedList": "Нумерованный список",
+                  "todoList": "Список дел",
+                  "toggle": "Переключатель",
+                  "codeBlock": "Блок кода",
+                  "table": "Таблица",
+                  "blockquote": "Цитата",
+                  "callout": "Выделение"
+                }
+              },
+              "AdvancedBlocks": {
+                "label": "Расширенные блоки",
+                "items": {
+                  "toc": "Содержание",
+                  "threeColumns": "3 колонки",
+                  "equation": "Уравнение"
+                }
+              },
+              "Inline": {
+                "label": "Встроенные элементы",
+                "items": {
+                  "date": "Дата",
+                  "inlineEquation": "Встроенное уравнение"
+                }
+              }
+            }
+          }
+        }
       }
     }
   }

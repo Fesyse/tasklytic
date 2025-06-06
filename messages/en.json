@@ -262,7 +262,51 @@
           "toggleCover": "{hasCover, select, true {Remove} other {Add}} cover",
           "toggleFavorite": "{isFavorited, select, true {Remove from} other {Add to}} favorites"
         },
-        "placeholder": "Type / to get started"
+        "placeholder": "Type / to get started",
+        "Elements": {
+          "SlashInputElement": {
+            "groups": {
+              "AI": {
+                "label": "AI",
+                "items": {
+                  "ai": "AI"
+                }
+              },
+              "BasicBlocks": {
+                "label": "Basic blocks",
+                "items": {
+                  "text": "Text",
+                  "heading1": "Heading 1",
+                  "heading2": "Heading 2",
+                  "heading3": "Heading 3",
+                  "bulletedList": "Bulleted list",
+                  "numberedList": "Numbered list",
+                  "todoList": "To-do list",
+                  "toggle": "Toggle",
+                  "codeBlock": "Code Block",
+                  "table": "Table",
+                  "blockquote": "Blockquote",
+                  "callout": "Callout"
+                }
+              },
+              "AdvancedBlocks": {
+                "label": "Advanced blocks",
+                "items": {
+                  "toc": "Table of contents",
+                  "threeColumns": "3 columns",
+                  "equation": "Equation"
+                }
+              },
+              "Inline": {
+                "label": "Inline",
+                "items": {
+                  "date": "Date",
+                  "inlineEquation": "Inline Equation"
+                }
+              }
+            }
+          }
+        }
       }
     }
   }
