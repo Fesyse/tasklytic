@@ -168,6 +168,12 @@
   },
   "Dashboard": {
     "Sidebar": {
+      "OrganizationSwitcher": {
+        "organizations": "Организации",
+        "loadingOrganizationsFallback": "Загрузка...",
+        "noOrganizationsFallback": "Нет организаций",
+        "createOrganizationButton": "Создать организацию"
+      },
       "MainNav": {
         "quickCreateTooltip": "Создать",
         "quickCreateButton": "Создать",

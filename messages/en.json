@@ -168,6 +168,12 @@
   },
   "Dashboard": {
     "Sidebar": {
+      "OrganizationSwitcher": {
+        "organizations": "Organizations",
+        "loadingOrganizationsFallback": "Loading...",
+        "noOrganizationsFallback": "No organizations",
+        "createOrganizationButton": "Create organization"
+      },
       "MainNav": {
         "quickCreateTooltip": "Quick Create",
         "quickCreateButton": "Quick Create",
