@@ -215,7 +215,7 @@
         }
       }
     },
-    "NoteEditor": {
+    "Note": {
       "Header": {
         "SavedState": {
           "saved": "Сохранено",
@@ -255,6 +255,14 @@
             "markdown": "Экспорт как Markdown"
           }
         }
+      },
+      "Editor": {
+        "ContentHeader": {
+          "addIcon": "Добавить иконку",
+          "toggleCover": "{hasCover, select, true {Убрать} other {Добавить}} обложку",
+          "toggleFavorite": "{isFavorited, select, true {Удалить из избранного} other {Добавить в избранное}}"
+        },
+        "placeholder": "Напишите / чтобы начать"
       }
     }
   }

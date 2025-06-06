@@ -7,7 +7,7 @@ import { NoteNavActions } from "./note-nav-actions"
 
 export function NoteHeader() {
   const { isChanged, isSaving, isAutoSaving } = useNoteEditorContext()
-  const t = useTranslations("Dashboard.NoteEditor.Header.SavedState")
+  const t = useTranslations("Dashboard.Note.Header.SavedState")
 
   // Status for display
   const statusText = isSaving

@@ -215,7 +215,7 @@
         }
       }
     },
-    "NoteEditor": {
+    "Note": {
       "Header": {
         "SavedState": {
           "saved": "Saved",
@@ -255,6 +255,14 @@
             "markdown": "Export as Markdown"
           }
         }
+      },
+      "Editor": {
+        "ContentHeader": {
+          "addIcon": "Add icon",
+          "toggleCover": "{hasCover, select, true {Remove} other {Add}} cover",
+          "toggleFavorite": "{isFavorited, select, true {Remove from} other {Add to}} favorites"
+        },
+        "placeholder": "Type / to get started"
       }
     }
   }

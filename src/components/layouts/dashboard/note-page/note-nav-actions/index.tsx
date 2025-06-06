@@ -65,7 +65,7 @@ type NoteNavActionsType = (
 )[][]
 
 export function NoteNavActions() {
-  const t = useTranslations("Dashboard.NoteEditor.Header")
+  const t = useTranslations("Dashboard.Note.Header")
   const format = useFormatter()
   const now = useNow()
 

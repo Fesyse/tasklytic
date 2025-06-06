@@ -6,6 +6,7 @@ import type { Note } from "@/lib/db-client"
 import { getEmojiSlug } from "@/lib/utils"
 import { useQueryClient } from "@tanstack/react-query"
 import { SmilePlus } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { useCallback, useEffect } from "react"
 import { toast } from "sonner"
 
@@ -22,6 +23,7 @@ export const NoteEmojiButton = ({
   isAddingEmoji,
   setIsAddingEmoji
 }: EmojiButtonProps) => {
+  const t = useTranslations("Dashboard.Note.Editor.ContentHeader")
   const { data: organization } = authClient.useActiveOrganization()
   const queryClient = useQueryClient()
 
@@ -83,7 +85,7 @@ export const NoteEmojiButton = ({
       onClick={handleAddRandomEmoji}
     >
       <SmilePlus className="mr-1 size-4" />
-      Add icon
+      {t("addIcon")}
     </Button>
   )
 }

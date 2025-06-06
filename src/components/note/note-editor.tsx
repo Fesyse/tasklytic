@@ -11,11 +11,13 @@ import {
 } from "@/contexts/note-editor-context"
 import { useNoteEditorV2 } from "@/hooks/use-note-editor-v2"
 import { Plate } from "@udecode/plate/react"
+import { useTranslations } from "next-intl"
 import { useState } from "react"
 import { DndProvider } from "react-dnd"
 import { HTML5Backend } from "react-dnd-html5-backend"
 
 export const NoteEditor = () => {
+  const t = useTranslations("Dashboard.Note.Editor")
   const { setIsChanged } = useNoteEditorContext()
 
   const { editor, isLoading, note } = useNoteEditorV2()
@@ -46,7 +48,7 @@ export const NoteEditor = () => {
                   <Editor
                     variant="demo"
                     className="pt-0"
-                    placeholder="Start typing your note here..."
+                    placeholder={t("placeholder")}
                   />
                 </EditorContainer>
                 <SettingsDialog />

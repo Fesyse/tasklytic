@@ -23,7 +23,7 @@ import { useTranslations } from "next-intl"
 type ImportType = "html" | "markdown"
 
 export function ImportActionButton(props: DropdownMenuProps) {
-  const t = useTranslations("Dashboard.NoteEditor.Header.NoteNavActions.Import")
+  const t = useTranslations("Dashboard.Note.Header.NoteNavActions.Import")
   const editor = useEditorRef()
   const [open, setOpen] = React.useState(false)
 

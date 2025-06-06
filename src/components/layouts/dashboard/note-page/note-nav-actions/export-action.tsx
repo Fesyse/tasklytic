@@ -131,7 +131,7 @@ const siteUrl = "https://platejs.org"
 const lowlight = createLowlight(all)
 
 export function ExportActionButton(props: DropdownMenuProps) {
-  const t = useTranslations("Dashboard.NoteEditor.Header.NoteNavActions.Export")
+  const t = useTranslations("Dashboard.Note.Header.NoteNavActions.Export")
   const { data: note } = useNote()
   const editor = useEditorRef()
   const [open, setOpen] = React.useState(false)
