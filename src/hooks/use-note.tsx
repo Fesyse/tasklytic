@@ -86,10 +86,6 @@ export function useToggleFavorite({
                 }
               : old
         )
-
-        toast.success(
-          newFavoritedState ? "Added to favorites" : "Removed from favorites"
-        )
       })
       .catch((error) => {
         toast.error("Failed to update favorite status")

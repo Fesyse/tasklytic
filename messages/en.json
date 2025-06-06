@@ -217,13 +217,18 @@
     },
     "NoteEditor": {
       "Header": {
-        "saved": "Saved",
-        "saving": "Saving...",
-        "autoSaving": "Auto-saving...",
-        "unsaved": "Unsaved changes",
-        "edited": "Edited",
-        "editedBy": "Edited by",
-        "createdBy": "Created by"
+        "SavedState": {
+          "saved": "Saved",
+          "saving": "Saving...",
+          "autoSaving": "Auto-saving...",
+          "unsaved": "Unsaved changes"
+        },
+        "EditedState": {
+          "edited": "Edited",
+          "editedBy": "Edited by",
+          "createdBy": "Created by"
+        },
+        "toggleFavorite": "{isFavorite, select, true {Remove from} other {Add to}} favorites"
       }
     }
   }

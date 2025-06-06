@@ -211,16 +211,19 @@ export function NoteNavActions() {
           <Tooltip>
             <TooltipTrigger asChild>
               <div className="text-muted-foreground hidden font-medium md:inline-block">
-                {t("edited")} {format.relativeTime(note.updatedAt, now)}
+                {t("EditedState.edited")}{" "}
+                {format.relativeTime(note.updatedAt, now)}
               </div>
             </TooltipTrigger>
             <TooltipContent>
               <p>
-                {t("editedBy")} <strong>{note.updatedByUserName}</strong>{" "}
+                {t("EditedState.editedBy")}{" "}
+                <strong>{note.updatedByUserName}</strong>{" "}
                 {format.relativeTime(note.updatedAt, now)}
               </p>
               <p>
-                {t("createdBy")} <strong>{note.createdByUserName}</strong>{" "}
+                {t("EditedState.createdBy")}{" "}
+                <strong>{note.createdByUserName}</strong>{" "}
                 {format.relativeTime(note.updatedAt, now)}
               </p>
             </TooltipContent>
@@ -243,7 +246,9 @@ export function NoteNavActions() {
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            {note?.isFavorited ? "Remove from favorites" : "Add to favorites"}
+            {t("toggleFavorite", {
+              isFavorited: note?.isFavorited ? "true" : "false"
+            })}
           </TooltipContent>
         </Tooltip>
         <Popover>

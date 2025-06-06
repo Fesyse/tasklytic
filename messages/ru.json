@@ -217,13 +217,18 @@
     },
     "NoteEditor": {
       "Header": {
-        "saved": "Сохранено",
-        "saving": "Сохранение...",
-        "autoSaving": "Автосохранение...",
-        "unsaved": "Несохраненные изменения",
-        "edited": "Изменено",
-        "editedBy": "Измененный",
-        "createdBy": "Созданный"
+        "SavedState": {
+          "saved": "Сохранено",
+          "saving": "Сохранение...",
+          "autoSaving": "Автосохранение...",
+          "unsaved": "Несохраненные изменения"
+        },
+        "EditedState": {
+          "edited": "Изменено",
+          "editedBy": "Измененный",
+          "createdBy": "Созданный"
+        },
+        "toggleFavorite": "{isFavorited, select, true {Удалить из избранного} other {Добавить в избранное}}"
       }
     }
   }
