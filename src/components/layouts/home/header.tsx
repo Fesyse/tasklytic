@@ -9,6 +9,7 @@ import { siteConfig } from "@/lib/site-config"
 import { cn } from "@/lib/utils"
 import { Menu, X } from "lucide-react"
 import { useTranslations } from "next-intl"
+import NextLink from "next/link"
 import React from "react"
 
 const menuItems = [
@@ -132,11 +133,11 @@ export const Header = () => {
                   </>
                 ) : (
                   <Button asChild variant="outline" size="sm">
-                    <Link href="/dashboard">
+                    <NextLink href="/dashboard">
                       {isScrolled
                         ? t("Login.short-go-to-dashboard")
                         : t("Login.go-to-dashboard")}
-                    </Link>
+                    </NextLink>
                   </Button>
                 )}
               </div>

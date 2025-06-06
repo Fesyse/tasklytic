@@ -228,7 +228,7 @@
           "editedBy": "Edited by",
           "createdBy": "Created by"
         },
-        "toggleFavorite": "{isFavorite, select, true {Remove from} other {Add to}} favorites"
+        "toggleFavorite": "{isFavorited, select, true {Remove from} other {Add to}} favorites"
       }
     }
   }
