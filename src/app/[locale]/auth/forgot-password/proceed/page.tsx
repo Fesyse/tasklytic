@@ -19,9 +19,11 @@ import {
   FormMessage
 } from "@/components/ui/form"
 import { PasswordInput } from "@/components/ui/password-input"
+import { Skeleton } from "@/components/ui/skeleton"
 import { authClient } from "@/lib/auth-client"
 import { verifyTurnstileToken } from "@/lib/turnstile"
 import { AlertCircle, CheckCircle, Loader2 } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 
 const resetPasswordSchema = z
@@ -61,11 +63,11 @@ function ForgotPasswordProceedPageContent() {
     }
   })
 
+  const t = useTranslations("Auth.ForgotPasswordProceed")
+
   const handleNoTokenError = () => {
     setStatus("error")
-    setErrorMessage(
-      "Reset token is missing. Please try the password reset process again."
-    )
+    setErrorMessage(t("resetTokenMissingError"))
   }
 
   useEffect(() => {
@@ -83,7 +85,7 @@ function ForgotPasswordProceedPageContent() {
     setStatus("loading")
 
     if (turnstileStatus !== "success") {
-      setErrorMessage("Please verify you are not a robot")
+      setErrorMessage(t("notRobotError"))
       setStatus("error")
       return
     }
@@ -91,7 +93,7 @@ function ForgotPasswordProceedPageContent() {
     const success = await verifyTurnstileToken(data.turnstileToken)
 
     if (!success) {
-      toast.error("Seems like you are bot, try again later.")
+      toast.error(t("botDetectedError"))
       setStatus("error")
       return
     }
@@ -103,9 +105,7 @@ function ForgotPasswordProceedPageContent() {
 
       if (result.error) {
         setStatus("error")
-        setErrorMessage(
-          result.error.message || "Failed to reset password. Please try again."
-        )
+        setErrorMessage(result.error.message || t("resetPasswordFailedError"))
         return
       }
 
@@ -118,9 +118,7 @@ function ForgotPasswordProceedPageContent() {
     } catch (error) {
       setStatus("error")
       setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : "An unexpected error occurred. Please try again."
+        error instanceof Error ? error.message : t("unexpectedError")
       )
     }
   }
@@ -129,25 +127,22 @@ function ForgotPasswordProceedPageContent() {
     return (
       <>
         <AuthHeader
-          title="Password Reset Successful"
-          description="Your password has been reset successfully."
+          title={t("successTitle")}
+          description={t("successDescription")}
         />
         <Alert
           variant="default"
           className="mt-6 border-green-200 bg-green-50 text-green-800"
         >
           <CheckCircle className="h-5 w-5 text-green-600" />
-          <AlertTitle>Success!</AlertTitle>
-          <AlertDescription>
-            Your password has been reset. You will be redirected to the sign-in
-            page shortly.
-          </AlertDescription>
+          <AlertTitle>{t("successShortTitle")}</AlertTitle>
+          <AlertDescription>{t("successRedirectMessage")}</AlertDescription>
         </Alert>
         <Button
           className="mt-6 w-full"
           onClick={() => router.push("/auth/sign-in")}
         >
-          Go to Sign In
+          {t("goToSignInButton")}
         </Button>
       </>
     )
@@ -157,19 +152,19 @@ function ForgotPasswordProceedPageContent() {
     return (
       <>
         <AuthHeader
-          title="Invalid Password Reset"
-          description="We couldn't process your password reset request."
+          title={t("invalidResetTitle")}
+          description={t("invalidResetDescription")}
         />
         <Alert variant="destructive" className="mt-6">
           <AlertCircle className="h-5 w-5" />
-          <AlertTitle>Error</AlertTitle>
+          <AlertTitle>{t("errorAlertTitle")}</AlertTitle>
           <AlertDescription>{errorMessage}</AlertDescription>
         </Alert>
         <Button
           className="mt-6 w-full"
           onClick={() => router.push("/auth/forgot-password")}
         >
-          Try Again
+          {t("tryAgainButton")}
         </Button>
       </>
     )
@@ -178,13 +173,13 @@ function ForgotPasswordProceedPageContent() {
   return (
     <>
       <AuthHeader
-        title="Reset your password"
-        description="Enter your new password below"
+        title={t("resetPasswordTitle")}
+        description={t("resetPasswordDescription")}
       />
       {status === "error" && (
         <Alert variant="destructive" className="mb-6">
           <AlertCircle className="h-5 w-5" />
-          <AlertTitle>Error</AlertTitle>
+          <AlertTitle>{t("errorAlertTitle")}</AlertTitle>
           <AlertDescription>{errorMessage}</AlertDescription>
         </Alert>
       )}
@@ -195,11 +190,11 @@ function ForgotPasswordProceedPageContent() {
             name="newPassword"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>New Password</FormLabel>
+                <FormLabel>{t("newPasswordLabel")}</FormLabel>
                 <FormControl>
                   <div className="relative">
                     <PasswordInput
-                      placeholder="Enter your new password"
+                      placeholder={t("newPasswordPlaceholder")}
                       {...field}
                     />
                   </div>
@@ -213,11 +208,11 @@ function ForgotPasswordProceedPageContent() {
             name="confirmPassword"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Confirm Password</FormLabel>
+                <FormLabel>{t("confirmPasswordLabel")}</FormLabel>
                 <FormControl>
                   <div className="relative">
                     <PasswordInput
-                      placeholder="Confirm your new password"
+                      placeholder={t("confirmPasswordPlaceholder")}
                       {...field}
                     />
                   </div>
@@ -230,17 +225,15 @@ function ForgotPasswordProceedPageContent() {
             control={form.control}
             name="turnstileToken"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="flex justify-center">
                 <Turnstile
                   onError={() => {
                     setTurnstileStatus("error")
-                    setErrorMessage("Security check failed. Please try again.")
+                    setErrorMessage(t("turnstileError"))
                   }}
                   onExpire={() => {
                     setTurnstileStatus("expired")
-                    setErrorMessage(
-                      "Security check expired. Please verify again."
-                    )
+                    setErrorMessage(t("turnstileExpired"))
                   }}
                   onLoad={() => {
                     setTurnstileStatus("required")
@@ -249,27 +242,25 @@ function ForgotPasswordProceedPageContent() {
                   onVerify={(token) => {
                     field.onChange(token)
                     setTurnstileStatus("success")
-                    setErrorMessage("")
                   }}
                 />
-                <FormMessage />
+                <FormMessage>
+                  {turnstileStatus === "error" || turnstileStatus === "expired"
+                    ? errorMessage
+                    : null}
+                </FormMessage>
               </FormItem>
             )}
           />
-
           <Button
-            className="w-full"
             type="submit"
+            className="w-full"
             disabled={status === "loading"}
           >
-            {status === "loading" ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Resetting password...
-              </>
-            ) : (
-              "Reset Password"
+            {status === "loading" && (
+              <Loader2 className="mr-2 size-4 animate-spin" />
             )}
+            {t("resetPasswordTitle")}
           </Button>
         </form>
       </Form>
@@ -278,22 +269,25 @@ function ForgotPasswordProceedPageContent() {
 }
 
 function PasswordResetSkeleton() {
+  const t = useTranslations("Auth.ForgotPasswordProceed")
+
   return (
     <>
-      <div className="space-y-2">
-        <div className="bg-muted h-8 w-2/3 animate-pulse rounded-md"></div>
-        <div className="bg-muted h-4 w-full animate-pulse rounded-md opacity-70"></div>
-      </div>
-      <div className="mt-6 space-y-4">
+      <AuthHeader
+        title={t("resetPasswordTitle")}
+        description={t("resetPasswordDescription")}
+      />
+      <div className="space-y-4">
         <div className="space-y-2">
-          <div className="bg-muted h-5 w-1/4 animate-pulse rounded-md"></div>
-          <div className="bg-muted h-10 w-full animate-pulse rounded-md"></div>
+          <Skeleton className="h-4 w-24" />
+          <Skeleton className="h-10 w-full" />
         </div>
         <div className="space-y-2">
-          <div className="bg-muted h-5 w-1/3 animate-pulse rounded-md"></div>
-          <div className="bg-muted h-10 w-full animate-pulse rounded-md"></div>
+          <Skeleton className="h-4 w-24" />
+          <Skeleton className="h-10 w-full" />
         </div>
-        <div className="bg-muted h-10 w-full animate-pulse rounded-md"></div>
+        <Skeleton className="h-10 w-32" />
+        <Skeleton className="h-10 w-full" />
       </div>
     </>
   )

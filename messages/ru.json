@@ -48,5 +48,72 @@
     "dark": "Тёмная",
     "light": "Светлая",
     "system": "Системная"
+  },
+  "Auth": {
+    "signIn": "Войти",
+    "signUp": "Регистрация",
+    "VerifyEmail": {
+      "checkEmailTitle": "Проверьте вашу почту",
+      "verificationLinkDescription": "Мы отправили ссылку для подтверждения на вашу почту. Пожалуйста, перейдите по ссылке, чтобы подтвердить ваш аккаунт."
+    },
+    "ForgotPassword": {
+      "title": "Забыли пароль",
+      "description": "Пожалуйста, заполните форму ниже, чтобы восстановить ваш аккаунт",
+      "Fields": {
+        "email": "Почта",
+        "emailPlaceholder": "Введите вашу почту"
+      },
+      "submit": "Отправить инструкции по сбросу"
+    },
+    "SignIn": {
+      "title": "Войти",
+      "description": "Введите вашу почту ниже, чтобы войти в аккаунт",
+      "Fields": {
+        "email": "Почта",
+        "password": "Пароль",
+        "forgotPassword": "Забыли пароль?"
+      }
+    },
+    "SignUp": {
+      "title": "Регистрация",
+      "description": "Введите вашу почту ниже, чтобы создать новый аккаунт",
+      "Fields": {
+        "name": "Логин",
+        "email": "Почта",
+        "password": "Пароль",
+        "confirmPassword": "Подтвердите пароль"
+      }
+    },
+    "continueWith": "Или продолжить с",
+    "socialProvider": "Войти с помощью {provider}",
+    "accountExist": "Уже есть аккаунт?",
+    "accountDoesntExist": "Ещё нет аккаунта?",
+    "ForgotPasswordProceed": {
+      "passwordLengthError": "Пароль должен содержать не менее 8 символов",
+      "turnstileRequiredError": "Необходимо подтвердить, что вы не робот, установите флажок выше",
+      "passwordsMatchError": "Пароли не совпадают",
+      "resetTokenMissingError": "Отсутствует токен сброса. Пожалуйста, повторите процедуру сброса пароля.",
+      "notRobotError": "Пожалуйста, подтвердите, что вы не робот",
+      "botDetectedError": "Похоже, вы бот, попробуйте позже.",
+      "resetPasswordFailedError": "Не удалось сбросить пароль. Пожалуйста, попробуйте снова.",
+      "unexpectedError": "Произошла непредвиденная ошибка. Пожалуйста, попробуйте снова.",
+      "successTitle": "Пароль успешно сброшен",
+      "successShortTitle": "Success!",
+      "successDescription": "Ваш пароль был успешно сброшен.",
+      "successRedirectMessage": "Ваш пароль сброшен. Вы будете перенаправлены на страницу входа в ближайшее время.",
+      "goToSignInButton": "Перейти ко входу",
+      "invalidResetTitle": "Неверный сброс пароля",
+      "invalidResetDescription": "Не удалось обработать ваш запрос на сброс пароля.",
+      "errorAlertTitle": "Ошибка",
+      "tryAgainButton": "Повторить попытку",
+      "resetPasswordTitle": "Сбросить ваш пароль",
+      "resetPasswordDescription": "Введите ваш новый пароль ниже",
+      "newPasswordLabel": "Новый пароль",
+      "newPasswordPlaceholder": "Введите ваш новый пароль",
+      "confirmPasswordLabel": "Подтвердите пароль",
+      "confirmPasswordPlaceholder": "Подтвердите ваш новый пароль",
+      "turnstileError": "Проверка безопасности не удалась. Пожалуйста, попробуйте снова.",
+      "turnstileExpired": "Срок действия проверки безопасности истек. Пожалуйста, проверьте еще раз."
+    }
   }
 }

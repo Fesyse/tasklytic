@@ -3,12 +3,12 @@
 import { Button } from "@/components/ui/button"
 import { Icons } from "@/components/ui/icons"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Link } from "@/i18n/routing"
 import { authClient } from "@/lib/auth-client"
 import { siteConfig } from "@/lib/site-config"
 import { cn } from "@/lib/utils"
 import { Menu, X } from "lucide-react"
 import { useTranslations } from "next-intl"
-import Link from "next/link"
 import React from "react"
 
 const menuItems = [

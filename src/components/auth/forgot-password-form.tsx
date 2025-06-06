@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input"
 import { authClient } from "@/lib/auth-client"
 import { verifyTurnstileToken } from "@/lib/turnstile"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useTranslations } from "next-intl"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
@@ -30,6 +31,7 @@ const forgotPasswordSchema = z.object({
 type ForgotPasswordSchema = z.infer<typeof forgotPasswordSchema>
 
 export const ForgotPasswordForm = () => {
+  const t = useTranslations("Auth.ForgotPassword")
   const form = useForm<ForgotPasswordSchema>({
     resolver: zodResolver(forgotPasswordSchema)
   })
@@ -65,9 +67,9 @@ export const ForgotPasswordForm = () => {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>{t("Fields.email")}</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your email" {...field} />
+                <Input placeholder={t("Fields.emailPlaceholder")} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -100,7 +102,7 @@ export const ForgotPasswordForm = () => {
           )}
         />
         {!isSubmitted ? (
-          <Button className="w-full">Send reset instructions</Button>
+          <Button className="w-full">{t("submit")}</Button>
         ) : (
           <GoToInboxButton variant="outline" className="w-full" email={email} />
         )}

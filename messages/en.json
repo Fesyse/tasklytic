@@ -48,5 +48,72 @@
     "dark": "Dark",
     "light": "Light",
     "system": "System"
+  },
+  "Auth": {
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "VerifyEmail": {
+      "checkEmailTitle": "Check your email",
+      "verificationLinkDescription": "We've sent a verification link to your email address. Please click the link to verify your account."
+    },
+    "ForgotPassword": {
+      "title": "Forgot password",
+      "description": "Please fill out form below to recover your account",
+      "Fields": {
+        "email": "Email",
+        "emailPlaceholder": "Enter your email"
+      },
+      "submit": "Send reset instructions"
+    },
+    "SignIn": {
+      "title": "Sign in",
+      "description": "Enter your email below to sign in to your account",
+      "Fields": {
+        "email": "Email",
+        "password": "Password",
+        "forgotPassword": "Forgot password?"
+      }
+    },
+    "SignUp": {
+      "title": "Sign up",
+      "description": "Enter your email below to create new account",
+      "Fields": {
+        "name": "Name",
+        "email": "Email",
+        "password": "Password",
+        "confirmPassword": "Confirm password"
+      }
+    },
+    "continueWith": "Or continue with",
+    "socialProvider": "Sign in with {provider}",
+    "accountExist": "Already have an account?",
+    "accountDoesntExist": "Don't have an account?",
+    "ForgotPasswordProceed": {
+      "passwordLengthError": "Password must be at least 8 characters long",
+      "turnstileRequiredError": "You need to verify that you are human, click checkbox above",
+      "passwordsMatchError": "Passwords do not match",
+      "resetTokenMissingError": "Reset token is missing. Please try the password reset process again.",
+      "notRobotError": "Please verify you are not a robot",
+      "botDetectedError": "Seems like you are bot, try again later.",
+      "resetPasswordFailedError": "Failed to reset password. Please try again.",
+      "unexpectedError": "An unexpected error occurred. Please try again.",
+      "successTitle": "Password Reset Successful",
+      "successShortTitle": "Success!",
+      "successDescription": "Your password has been reset successfully.",
+      "successRedirectMessage": "Your password has been reset. You will be redirected to the sign-in page shortly.",
+      "goToSignInButton": "Go to Sign In",
+      "invalidResetTitle": "Invalid Password Reset",
+      "invalidResetDescription": "We couldn't process your password reset request.",
+      "errorAlertTitle": "Error",
+      "tryAgainButton": "Try Again",
+      "resetPasswordTitle": "Reset your password",
+      "resetPasswordDescription": "Enter your new password below",
+      "newPasswordLabel": "New Password",
+      "newPasswordPlaceholder": "Enter your new password",
+      "confirmPasswordLabel": "Confirm Password",
+      "confirmPasswordPlaceholder": "Confirm your new password",
+      "turnstileError": "Security check failed. Please try again.",
+      "turnstileExpired": "Security check expired. Please verify again."
+    }
   }
 }
