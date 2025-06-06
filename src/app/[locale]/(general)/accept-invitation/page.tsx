@@ -12,6 +12,7 @@ import {
 import { authClient } from "@/lib/auth-client"
 import { useQuery } from "@tanstack/react-query"
 import { CheckCircle2, Loader2, XCircle } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Suspense, useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -21,6 +22,7 @@ function AcceptInvitationPageContent() {
   const searchParams = useSearchParams()
   const invitationId = searchParams.get("id")
   const isNewUser = searchParams.get("isNewUser") === "1"
+  const t = useTranslations("AcceptInvitation")
 
   const [error, setError] = useState<string>()
   const [success, setSuccess] = useState(false)
@@ -144,8 +146,8 @@ function AcceptInvitationPageContent() {
       <div className="flex min-h-[80vh] flex-col items-center justify-center">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <CardTitle>Organization Invitation</CardTitle>
-            <CardDescription>Loading invitation details...</CardDescription>
+            <CardTitle>{t("title")}</CardTitle>
+            <CardDescription>{t("loadingDetails")}</CardDescription>
           </CardHeader>
           <CardContent className="flex justify-center py-8">
             <Loader2 className="text-primary h-10 w-10 animate-spin" />
@@ -161,10 +163,10 @@ function AcceptInvitationPageContent() {
       <div className="flex min-h-[80vh] flex-col items-center justify-center">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <CardTitle className="text-destructive">Error</CardTitle>
-            <CardDescription>
-              There was a problem with this invitation
-            </CardDescription>
+            <CardTitle className="text-destructive">
+              {t("errorTitle")}
+            </CardTitle>
+            <CardDescription>{t("errorMessage")}</CardDescription>
           </CardHeader>
           <CardContent className="py-6 text-center">
             <XCircle className="text-destructive mx-auto mb-4 h-12 w-12" />
@@ -176,7 +178,7 @@ function AcceptInvitationPageContent() {
               className="w-full"
               onClick={() => router.push("/dashboard")}
             >
-              Return to Dashboard
+              {t("returnToDashboard")}
             </Button>
           </CardFooter>
         </Card>
@@ -190,16 +192,12 @@ function AcceptInvitationPageContent() {
       <div className="flex min-h-[80vh] flex-col items-center justify-center">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <CardTitle className="text-primary">Invitation Accepted</CardTitle>
-            <CardDescription>
-              You have successfully joined the organization
-            </CardDescription>
+            <CardTitle className="text-primary">{t("acceptedTitle")}</CardTitle>
+            <CardDescription>{t("acceptedMessage")}</CardDescription>
           </CardHeader>
           <CardContent className="py-6 text-center">
             <CheckCircle2 className="text-primary mx-auto mb-4 h-12 w-12" />
-            <p className="text-muted-foreground text-sm">
-              Redirecting you to the dashboard...
-            </p>
+            <p className="text-muted-foreground text-sm">{t("redirecting")}</p>
           </CardContent>
         </Card>
       </div>
@@ -211,25 +209,25 @@ function AcceptInvitationPageContent() {
     <div className="flex min-h-[80vh] flex-col items-center justify-center">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle>Organization Invitation</CardTitle>
+          <CardTitle>{t("title")}</CardTitle>
           <CardDescription>
-            You have been invited to join{" "}
-            {invitation?.organizationName || "an organization"}
+            {t("invitedToJoin")}{" "}
+            {invitation?.organizationName || t("anOrganization")}
           </CardDescription>
         </CardHeader>
         <CardContent className="py-6">
           <div className="space-y-4 text-center">
             <p className="text-muted-foreground text-sm">
-              You were invited by{" "}
+              {t("invitedBy")}{" "}
               <span className="font-medium">
-                {invitation?.inviterEmail || "a team member"}
+                {invitation?.inviterEmail || t("aTeamMember")}
               </span>{" "}
-              to join their organization.
+              {t("toJoinOrganization")}
             </p>
             <p className="text-sm">
-              Role:{" "}
+              {t("role")}{" "}
               <span className="font-medium capitalize">
-                {invitation?.role || "Member"}
+                {invitation?.role || t("memberRole")}
               </span>
             </p>
           </div>
@@ -242,10 +240,11 @@ function AcceptInvitationPageContent() {
           >
             {accepting ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Accepting...
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />{" "}
+                {t("acceptingButton")}
               </>
             ) : (
-              "Accept Invitation"
+              t("acceptButton")
             )}
           </Button>
           <Button
@@ -256,10 +255,11 @@ function AcceptInvitationPageContent() {
           >
             {rejecting ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Rejecting...
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />{" "}
+                {t("rejectingButton")}
               </>
             ) : (
-              "Reject Invitation"
+              t("rejectButton")
             )}
           </Button>
         </CardFooter>
