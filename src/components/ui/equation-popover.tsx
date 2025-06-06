@@ -20,6 +20,7 @@ import { CornerDownLeftIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { PopoverContent } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
+import { useTranslations } from "next-intl"
 
 const EquationInput = createPrimitiveComponent(TextareaAutosize)({
   propsHook: useEquationInput
@@ -36,6 +37,7 @@ const EquationPopoverContent = ({
   open: boolean
   setOpen: (open: boolean) => void
 } & TextareaAutosizeProps) => {
+  const t = useTranslations("Dashboard.Note.Editor.Elements.EquationElement")
   const editor = useEditorRef()
   const readOnly = useReadOnly()
   const element = useElement<TEquationElement>()
@@ -76,7 +78,7 @@ const EquationPopoverContent = ({
       />
 
       <Button variant="secondary" className="px-3" onClick={onClose}>
-        Done <CornerDownLeftIcon className="size-3.5" />
+        {t("done")} <CornerDownLeftIcon className="size-3.5" />
       </Button>
     </PopoverContent>
   )

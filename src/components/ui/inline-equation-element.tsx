@@ -16,12 +16,15 @@ import { RadicalIcon } from "lucide-react"
 import { Popover, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 
+import { useTranslations } from "next-intl"
 import { EquationPopoverContent } from "./equation-popover"
 
 export function InlineEquationElement(
   props: PlateElementProps<TEquationElement>
 ) {
   const element = props.element
+
+  const t = useTranslations("Dashboard.Note.Editor.Elements.EquationElement")
   const katexRef = React.useRef<HTMLDivElement | null>(null)
   const selected = useSelected()
   const isCollapsed = useEditorSelector(
@@ -82,7 +85,7 @@ export function InlineEquationElement(
             {element.texExpression.length === 0 && (
               <span>
                 <RadicalIcon className="mr-1 inline-block h-[19px] w-4 py-[1.5px] align-text-bottom" />
-                New equation
+                {t("newEquationPlaceholder")}
               </span>
             )}
           </div>

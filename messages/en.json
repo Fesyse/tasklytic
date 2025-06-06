@@ -264,6 +264,11 @@
         },
         "placeholder": "Type / to get started",
         "Elements": {
+          "EquationElement": {
+            "done": "Done",
+            "newEquationPlaceholder": "New equation",
+            "addTextEquation": "Add a Tex equation"
+          },
           "TocElement": {
             "noHeadingsFallback": "Create a heading to display the table of contents."
           },

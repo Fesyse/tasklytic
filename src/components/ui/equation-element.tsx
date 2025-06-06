@@ -12,9 +12,11 @@ import { RadicalIcon } from "lucide-react"
 import { Popover, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 
+import { useTranslations } from "next-intl"
 import { EquationPopoverContent } from "./equation-popover"
 
 export function EquationElement(props: PlateElementProps<TEquationElement>) {
+  const t = useTranslations("Dashboard.Note.Editor.Elements.EquationElement")
   const selected = useSelected()
   const [open, setOpen] = React.useState(selected)
   const katexRef = React.useRef<HTMLDivElement | null>(null)
@@ -55,7 +57,7 @@ export function EquationElement(props: PlateElementProps<TEquationElement>) {
             ) : (
               <div className="text-muted-foreground flex h-7 w-full items-center gap-2 text-sm whitespace-nowrap">
                 <RadicalIcon className="text-muted-foreground/80 size-6" />
-                <div>Add a Tex equation</div>
+                <div>{t("addTextEquation")}</div>
               </div>
             )}
           </div>
