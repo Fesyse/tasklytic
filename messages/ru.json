@@ -165,5 +165,37 @@
     "previousStepButton": "Предыдущий шаг",
     "createOrganizationButton": "Создать организацию",
     "creatingOrganizationButton": "Создание организации..."
+  },
+  "Dashboard": {
+    "Sidebar": {
+      "MainNav": {
+        "quickCreateTooltip": "Создать",
+        "quickCreateButton": "Создать",
+        "inbox": "Входящие",
+        "home": "Дашборд"
+      },
+      "NavSecondary": {
+        "invitations": "Приглашения",
+        "invitePeople": "Пригласить людей",
+        "calendar": "Календарь",
+        "settings": "Настройки"
+      },
+      "InvitationsDialog": {
+        "title": "Приглашения в организацию",
+        "description": "Просмотр и управление приглашениями в организацию",
+        "errorFallback": "Ошибка загрузки приглашений",
+        "noInvitationsFallback": "У вас нет ожидающих приглашений",
+        "Invitation": {
+          "organization": "Организация",
+          "unknownInviter": "Неизвестно",
+          "member": "Участник",
+          "decline": "Отклонить",
+          "rejectingFallback": "Отклонение...",
+          "accept": "Принять",
+          "acceptingFallback": "Принятие...",
+          "refresh": "Обновить приглашения"
+        }
+      }
+    }
   }
 }

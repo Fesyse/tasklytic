@@ -9,6 +9,7 @@ import {
   SettingsIcon,
   type LucideIcon
 } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { authClient } from "./auth-client"
 import type { Note } from "./db-client"
 import { getNotes } from "./db-queries"
@@ -60,6 +61,7 @@ type SidebarNav = {
 )
 
 export const useSidebarNav = (): SidebarNav => {
+  const t = useTranslations("Dashboard.Sidebar")
   const { data: organization } = authClient.useActiveOrganization()
   const { data: session } = authClient.useSession()
 
@@ -99,13 +101,13 @@ export const useSidebarNav = (): SidebarNav => {
   return {
     navMain: [
       {
-        title: "Home",
+        title: t("MainNav.home"),
         url: "/dashboard",
         icon: HomeIcon,
         type: "url"
       },
       {
-        title: "Inbox",
+        title: t("MainNav.inbox"),
         url: "/dashboard/inbox",
         icon: InboxIcon,
         type: "url"
@@ -144,13 +146,13 @@ export const useSidebarNav = (): SidebarNav => {
         type: "component"
       },
       {
-        title: "Calendar",
+        title: t("NavSecondary.calendar"),
         url: "/dashboard/calendar",
         icon: CalendarIcon,
         type: "url"
       },
       {
-        title: "Settings",
+        title: t("NavSecondary.settings"),
         url: "/settings",
         icon: SettingsIcon,
         type: "url"

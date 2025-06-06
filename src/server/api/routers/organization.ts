@@ -12,7 +12,17 @@ export const organizationRouter = createTRPCRouter({
       console.log(
         `[TRPC] Invitations cache hit for user: ${ctx.session.user.email}`
       )
-      return cachedInvitations
+      return cachedInvitations as {
+        id: string
+        email: string
+        status: string
+        expiresAt: Date
+        organizationId: string
+        role: string | null
+        inviterId: string
+        organizationName: string
+        inviterEmail: string
+      }[]
     }
 
     console.log(

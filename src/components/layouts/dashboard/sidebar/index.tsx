@@ -77,7 +77,6 @@ export function AppSidebar({
       <SidebarContent scrollAreaClassName="[&>[data-slot='scroll-area-viewport']>div]:!flex [&>[data-slot='scroll-area-viewport']>div]:flex-col">
         <NavMain items={sidebarNav.navMain} />
         {sidebarNav.isNotesLoading ? (
-          // {true ? (
           <SidebarGroup>
             <SidebarGroupContent>
               <SidebarMenu>

@@ -21,10 +21,12 @@ import { useInvitationCount } from "@/hooks/use-invitation-count"
 import { authClient } from "@/lib/auth-client"
 import { api } from "@/trpc/react"
 import { Loader2, MailIcon, RefreshCw, XCircle } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { useState } from "react"
 import { toast } from "sonner"
 
 export const InvitationsDialog = () => {
+  const t = useTranslations("Dashboard.Sidebar")
   const [open, setOpen] = useState(false)
 
   // Use our custom hook to get the invitation count with auto-refresh
@@ -132,7 +134,7 @@ export const InvitationsDialog = () => {
         <SidebarMenuItem>
           <SidebarMenuButton>
             <MailIcon />
-            <span>Invitations</span>
+            <span>{t("NavSecondary.invitations")}</span>
             {pendingInvitationsCount > 0 && (
               <SidebarMenuBadge>{pendingInvitationsCount}</SidebarMenuBadge>
             )}
@@ -141,9 +143,9 @@ export const InvitationsDialog = () => {
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Organization Invitations</DialogTitle>
+          <DialogTitle>{t("InvitationsDialog.title")}</DialogTitle>
           <DialogDescription>
-            View and manage your organization invitations
+            {t("InvitationsDialog.description")}
           </DialogDescription>
         </DialogHeader>
 
@@ -155,13 +157,13 @@ export const InvitationsDialog = () => {
           <div className="py-6 text-center">
             <XCircle className="text-destructive mx-auto mb-2 h-8 w-8" />
             <p className="text-muted-foreground text-sm">
-              Error loading invitations
+              {t("InvitationsDialog.errorFallback")}
             </p>
           </div>
         ) : invitations?.length === 0 ? (
           <div className="py-6 text-center">
             <p className="text-muted-foreground text-sm">
-              You don't have any pending invitations
+              {t("InvitationsDialog.noInvitationsFallback")}
             </p>
           </div>
         ) : (
@@ -176,18 +178,21 @@ export const InvitationsDialog = () => {
                   <CardContent className="px-4 pt-4">
                     <div className="space-y-2">
                       <div className="font-medium">
-                        {invitation.organizationName || "Organization"}
+                        {invitation.organizationName ??
+                          t("InvitationsDialog.Invitation.organization")}
                       </div>
                       <p className="text-muted-foreground text-sm">
                         Invited by:{" "}
                         <span className="font-medium">
-                          {invitation.inviterEmail || "Unknown"}
+                          {invitation.inviterEmail ??
+                            t("InvitationsDialog.Invitation.unknownInviter")}
                         </span>
                       </p>
                       <p className="text-sm">
                         Role:{" "}
                         <Badge variant="outline" className="capitalize">
-                          {invitation.role || "Member"}
+                          {invitation.role ??
+                            t("InvitationsDialog.Invitation.member")}
                         </Badge>
                       </p>
                     </div>
@@ -203,10 +208,10 @@ export const InvitationsDialog = () => {
                       {processingInvitations[invitation.id]?.rejecting ? (
                         <>
                           <Loader2 className="mr-2 h-3 w-3 animate-spin" />
-                          Rejecting...
+                          {t("InvitationsDialog.Invitation.rejectingFallback")}
                         </>
                       ) : (
-                        "Decline"
+                        t("InvitationsDialog.Invitation.decline")
                       )}
                     </Button>
                     <Button
@@ -218,10 +223,10 @@ export const InvitationsDialog = () => {
                       {processingInvitations[invitation.id]?.accepting ? (
                         <>
                           <Loader2 className="mr-2 h-3 w-3 animate-spin" />
-                          Accepting...
+                          {t("InvitationsDialog.Invitation.acceptingFallback")}
                         </>
                       ) : (
-                        "Accept"
+                        t("InvitationsDialog.Invitation.accept")
                       )}
                     </Button>
                   </CardFooter>
@@ -236,7 +241,7 @@ export const InvitationsDialog = () => {
             size="icon"
             onClick={handleRefresh}
             disabled={isLoading || isRefetching}
-            title="Refresh invitations"
+            title={t("InvitationsDialog.Invitation.refresh")}
           >
             <RefreshCw
               className={`h-4 w-4 ${isRefetching ? "animate-spin" : ""}`}

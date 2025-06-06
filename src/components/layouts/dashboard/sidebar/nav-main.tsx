@@ -17,11 +17,13 @@ import {
   SidebarMenuItem
 } from "@/components/ui/sidebar"
 import type { NavItem } from "@/lib/sidebar"
+import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { CreateNoteButton } from "./create-note-button"
 
 export function NavMain({ items }: { items: NavItem[] }) {
+  const t = useTranslations("Dashboard.Sidebar.MainNav")
   const pathname = usePathname()
 
   return (
@@ -32,11 +34,11 @@ export function NavMain({ items }: { items: NavItem[] }) {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton
-                  tooltip="Quick Create"
+                  tooltip={t("quickCreateTooltip")}
                   className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear"
                 >
                   <IconCirclePlusFilled />
-                  <span>Quick Create</span>
+                  <span>{t("quickCreateButton")}</span>
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
@@ -51,7 +53,7 @@ export function NavMain({ items }: { items: NavItem[] }) {
               variant="outline"
             >
               <IconMail />
-              <span className="sr-only">Inbox</span>
+              <span className="sr-only">{t("inbox")}</span>
             </Button>
           </SidebarMenuItem>
         </SidebarMenu>

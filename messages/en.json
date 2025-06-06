@@ -165,5 +165,37 @@
     "previousStepButton": "Previous Step",
     "createOrganizationButton": "Create Organization",
     "creatingOrganizationButton": "Creating Organization..."
+  },
+  "Dashboard": {
+    "Sidebar": {
+      "MainNav": {
+        "quickCreateTooltip": "Quick Create",
+        "quickCreateButton": "Quick Create",
+        "inbox": "Inbox",
+        "home": "Home"
+      },
+      "NavSecondary": {
+        "invitations": "Invitations",
+        "invitePeople": "Invite people",
+        "calendar": "Calendar",
+        "settings": "Settings"
+      },
+      "InvitationsDialog": {
+        "title": "Organization Invitations",
+        "description": "View and manage your organization invitations",
+        "errorFallback": "Error loading invitations",
+        "noInvitationsFallback": "You don't have any pending invitations",
+        "Invitation": {
+          "organization": "Organization",
+          "unknownInviter": "Unknown",
+          "member": "Member",
+          "decline": "Decline",
+          "rejectingFallback": "Rejecting...",
+          "accept": "Accept",
+          "acceptingFallback": "Accepting...",
+          "refresh": "Refresh invitations"
+        }
+      }
+    }
   }
 }
