@@ -465,19 +465,19 @@ export function ExportActionButton(props: DropdownMenuProps) {
 
       <DropdownMenuContent align="start">
         <DropdownMenuGroup>
-          <DropdownMenuItem onSelect={exportToHtml}>
+          <DropdownMenuItem className="gap-4" onSelect={exportToHtml}>
             {t("html")}
             <CodeXml className="ml-auto" />
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={exportToPdf}>
+          <DropdownMenuItem className="gap-4" onSelect={exportToPdf}>
             {t("pdf")}
             <FileText className="ml-auto" />
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={exportToImage}>
+          <DropdownMenuItem className="gap-4" onSelect={exportToImage}>
             {t("image")}
             <Image className="ml-auto" />
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={exportToMarkdown}>
+          <DropdownMenuItem className="gap-4" onSelect={exportToMarkdown}>
             {t("markdown")}
             <Heading1 className="ml-auto" />
           </DropdownMenuItem>

@@ -262,7 +262,7 @@ export function NoteNavActions() {
             </Button>
           </PopoverTrigger>
           <PopoverContent
-            className="w-56 overflow-hidden rounded-lg p-0"
+            className="overflow-hidden rounded-lg p-0"
             align="end"
           >
             <Sidebar collapsible="none" className="bg-transparent">
