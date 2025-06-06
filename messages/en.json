@@ -174,11 +174,23 @@
         "noOrganizationsFallback": "No organizations",
         "createOrganizationButton": "Create organization"
       },
-      "MainNav": {
+      "NavMain": {
         "quickCreateTooltip": "Quick Create",
         "quickCreateButton": "Quick Create",
         "inbox": "Inbox",
         "home": "Home"
+      },
+      "NavNotes": {
+        "privateNotesLabel": "Private",
+        "favoriteNotesLabel": "Favorite",
+        "sharedNotesLabel": "Shared",
+        "noNotesFallback": "No notes",
+        "Actions": {
+          "toggleFavorite": "{isFavorite, select, true {Remove from} other {Add to}} favorites",
+          "copyLink": "Copy link",
+          "openInNewTab": "Open in new tab",
+          "delete": "Delete"
+        }
       },
       "NavSecondary": {
         "invitations": "Invitations",

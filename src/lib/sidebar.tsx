@@ -101,13 +101,13 @@ export const useSidebarNav = (): SidebarNav => {
   return {
     navMain: [
       {
-        title: t("MainNav.home"),
+        title: t("NavMain.home"),
         url: "/dashboard",
         icon: HomeIcon,
         type: "url"
       },
       {
-        title: t("MainNav.inbox"),
+        title: t("NavMain.inbox"),
         url: "/dashboard/inbox",
         icon: InboxIcon,
         type: "url"

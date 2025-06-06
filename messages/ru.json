@@ -174,11 +174,23 @@
         "noOrganizationsFallback": "Нет организаций",
         "createOrganizationButton": "Создать организацию"
       },
-      "MainNav": {
+      "NavMain": {
         "quickCreateTooltip": "Создать",
         "quickCreateButton": "Создать",
         "inbox": "Входящие",
         "home": "Дашборд"
+      },
+      "NavNotes": {
+        "privateNotesLabel": "Личные",
+        "favoriteNotesLabel": "Избранное",
+        "sharedNotesLabel": "Общие",
+        "noNotesFallback": "Нет заметок",
+        "Actions": {
+          "toggleFavorite": "{isFavorite, select, true {Удалить из избранного} other {Добавить в избранное}}",
+          "copyLink": "Копировать ссылку",
+          "openInNewTab": "Открыть в новой вкладке",
+          "delete": "Удалить"
+        }
       },
       "NavSecondary": {
         "invitations": "Приглашения",

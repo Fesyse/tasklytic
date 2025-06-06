@@ -47,6 +47,7 @@ import {
   StarOffIcon,
   Trash2
 } from "lucide-react"
+import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useCallback, useState } from "react"
@@ -59,6 +60,8 @@ export function NavNotes({
   type: "private" | "shared" | "favorites"
   notes: NoteNavItem[]
 }) {
+  const t = useTranslations("Dashboard.Sidebar.NavNotes")
+
   const { open } = useSidebar()
   const router = useRouter()
   const { data: activeOrganization } = authClient.useActiveOrganization()
@@ -84,14 +87,14 @@ export function NavNotes({
   const getSectionTitle = () => {
     switch (type) {
       case "private":
-        return "Private"
+        return t("privateNotesLabel")
       case "shared":
-        return "Shared"
+        return t("sharedNotesLabel")
       case "favorites":
         return (
           <span className="flex items-center gap-1.5">
             <StarIcon className="size-4 fill-yellow-400 text-yellow-400" />
-            Favorites
+            {t("favoriteNotesLabel")}
           </span>
         )
       default:
@@ -129,6 +132,7 @@ export function NavNotes({
 }
 
 function Note({ item, level = 0 }: { level?: number; item: NoteNavItem }) {
+  const t = useTranslations("Dashboard.Sidebar.NavNotes.Actions")
   const [isDeleting, setIsDeleting] = useState(false)
   const pathname = usePathname()
   const { isMobile, open: sidebarOpen } = useSidebar()
@@ -363,24 +367,24 @@ function Note({ item, level = 0 }: { level?: number; item: NoteNavItem }) {
                 <StarIcon className="text-muted-foreground" />
               )}
               <span>
-                {item.isFavorited
-                  ? "Remove from favorites"
-                  : "Add to favorites"}
+                {t("toggleFavorite", {
+                  isFavorite: item?.isFavorited ? "true" : "false"
+                })}
               </span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => handleCopyLink(fullUrl)}>
               <LinkIcon className="text-muted-foreground" />
-              <span>Copy Link</span>
+              <span>{t("copyLink")}</span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => handleOpenInNewTab(fullUrl)}>
               <ArrowUpRight className="text-muted-foreground" />
-              <span>Open in New Tab</span>
+              <span>{t("openInNewTab")}</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => setIsDeleting(true)}>
               <Trash2 className="text-muted-foreground" />
-              <span>Delete</span>
+              <span>{t("delete")}</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

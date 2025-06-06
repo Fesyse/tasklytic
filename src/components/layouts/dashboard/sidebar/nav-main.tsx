@@ -23,7 +23,7 @@ import { usePathname } from "next/navigation"
 import { CreateNoteButton } from "./create-note-button"
 
 export function NavMain({ items }: { items: NavItem[] }) {
-  const t = useTranslations("Dashboard.Sidebar.MainNav")
+  const t = useTranslations("Dashboard.Sidebar.NavMain")
   const pathname = usePathname()
 
   return (
