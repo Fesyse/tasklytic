@@ -395,8 +395,80 @@
                 }
               }
             }
+          },
+          "AIMenu": {
+            "placeholder": "Спросите ИИ о чем угодно...",
+            "editingState": "Редактирование...",
+            "thinkingState": "Размышление...",
+            "stop": "Остановить",
+            "items": {
+              "accept": "Принять",
+              "continueWriting": "Продолжить писать",
+              "discard": "Отклонить",
+              "emojify": "Добавить эмодзи",
+              "explain": "Объяснить",
+              "fixSpellingGrammar": "Исправить орфографию и грамматику",
+              "generateMarkdownSample": "Сгенерировать пример Markdown",
+              "generateMdxSample": "Сгенерировать пример MDX",
+              "improveWriting": "Улучшить написание",
+              "insertBelow": "Вставить ниже",
+              "makeLonger": "Сделать длиннее",
+              "makeShorter": "Сделать короче",
+              "replaceSelection": "Заменить выделение",
+              "simplifyLanguage": "Упростить язык",
+              "addSummary": "Добавить краткое содержание",
+              "tryAgain": "Попробовать снова",
+              "prompts": {
+                "continueWritingEmpty": "<Document>\n{editor}\n</Document>\nНачать новый абзац ПОСЛЕ <Document> ТОЛЬКО ОДНО ПРЕДЛОЖЕНИЕ",
+                "continueWritingNonEmpty": "Продолжить писать ПОСЛЕ <Block> ТОЛЬКО ОДНО ПРЕДЛОЖЕНИЕ. НЕ ПОВТОРЯЙТЕ ТЕКСТ.",
+                "emojify": "Добавить эмодзи",
+                "explainDefault": "Объяснить {editor}",
+                "explainSelecting": "Объяснить",
+                "fixSpellingGrammar": "Исправить орфографию и грамматику",
+                "generateMarkdownSample": "Сгенерировать пример Markdown",
+                "generateMdxSample": "Сгенерировать пример MDX",
+                "improveWriting": "Улучшить написание",
+                "makeLonger": "Сделать длиннее",
+                "makeShorter": "Сделать короче",
+                "simplifyLanguage": "Упростить язык",
+                "addSummaryDefault": "Резюмировать {editor}",
+                "addSummarySelecting": "Резюмировать"
+              }
+            }
           }
         }
+      }
+    },
+    "Blocks": {
+      "Columns": {
+        "threeColumns": "Три колонки"
+      },
+      "Callout": {
+        "callout": "Выноска",
+        "defaultEmoji": "\uD83D\uDCE2"
+      },
+      "Image": {
+        "image": "Изображение",
+        "addViaLink": "Добавить по ссылке",
+        "pasteImageLink": "Вставьте ссылку на изображение...",
+        "uploadImage": "Загрузить изображение"
+      },
+      "Link": {
+        "link": "Ссылка",
+        "text": "Текст",
+        "url": "URL",
+        "openInNewTab": "Открыть в новой вкладке",
+        "cancel": "Отмена",
+        "save": "Сохранить"
+      },
+      "Table": {
+        "table": "Таблица",
+        "columns": "Столбцы",
+        "rows": "Строки"
+      },
+      "Toggle": {
+        "toggle": "Переключатель",
+        "emptyPlaceholder": "Пустой переключатель"
       }
     }
   }

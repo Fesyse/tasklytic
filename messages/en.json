@@ -396,8 +396,80 @@
                 }
               }
             }
+          },
+          "AIMenu": {
+            "placeholder": "Ask AI anything...",
+            "editingState": "Editing...",
+            "thinkingState": "Thinking...",
+            "stop": "Stop",
+            "items": {
+              "accept": "Accept",
+              "continueWriting": "Continue writing",
+              "discard": "Discard",
+              "emojify": "Emojify",
+              "explain": "Explain",
+              "fixSpellingGrammar": "Fix spelling & grammar",
+              "generateMarkdownSample": "Generate Markdown sample",
+              "generateMdxSample": "Generate MDX sample",
+              "improveWriting": "Improve writing",
+              "insertBelow": "Insert below",
+              "makeLonger": "Make longer",
+              "makeShorter": "Make shorter",
+              "replaceSelection": "Replace selection",
+              "simplifyLanguage": "Simplify language",
+              "addSummary": "Add a summary",
+              "tryAgain": "Try again",
+              "prompts": {
+                "continueWritingEmpty": "<Document>\n{editor}\n</Document>\nStart writing a new paragraph AFTER <Document> ONLY ONE SENTENCE",
+                "continueWritingNonEmpty": "Continue writing AFTER <Block> ONLY ONE SENTENCE. DONT REPEAT THE TEXT.",
+                "emojify": "Emojify",
+                "explainDefault": "Explain {editor}",
+                "explainSelecting": "Explain",
+                "fixSpellingGrammar": "Fix spelling and grammar",
+                "generateMarkdownSample": "Generate a markdown sample",
+                "generateMdxSample": "Generate a mdx sample",
+                "improveWriting": "Improve the writing",
+                "makeLonger": "Make longer",
+                "makeShorter": "Make shorter",
+                "simplifyLanguage": "Simplify the language",
+                "addSummaryDefault": "Summarize {editor}",
+                "addSummarySelecting": "Summarize"
+              }
+            }
           }
         }
+      }
+    },
+    "Blocks": {
+      "Columns": {
+        "threeColumns": "Three columns"
+      },
+      "Callout": {
+        "callout": "Callout",
+        "defaultEmoji": "\uD83D\uDCE2"
+      },
+      "Image": {
+        "image": "Image",
+        "addViaLink": "Add via link",
+        "pasteImageLink": "Paste the image link...",
+        "uploadImage": "Upload image"
+      },
+      "Link": {
+        "link": "Link",
+        "text": "Text",
+        "url": "URL",
+        "openInNewTab": "Open in new tab",
+        "cancel": "Cancel",
+        "save": "Save"
+      },
+      "Table": {
+        "table": "Table",
+        "columns": "Columns",
+        "rows": "Rows"
+      },
+      "Toggle": {
+        "toggle": "Toggle",
+        "emptyPlaceholder": "Empty toggle"
       }
     }
   }
