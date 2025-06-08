@@ -24,11 +24,13 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { authClient } from "@/lib/auth-client"
 import type { User } from "better-auth"
 import { HomeIcon, SettingsIcon, UserIcon } from "lucide-react"
+import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
 export function NavUser() {
+  const t = useTranslations("Dashboard.Sidebar.NavUser")
   const { data: session, isPending, error } = authClient.useSession()
   const user = session?.user
 
@@ -100,20 +102,20 @@ export function NavUser() {
               <DropdownMenuItem asChild>
                 <Link href="/settings">
                   <SettingsIcon />
-                  Settings
+                  {t("settings")}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href="/home">
                   <HomeIcon />
-                  Home
+                  {t("homePage")}
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleSignOut}>
               <IconLogout />
-              Log out
+              {t("logout")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

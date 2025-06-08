@@ -45,6 +45,8 @@
     "rights": "Все права защищены"
   },
   "ModeToggle": {
+    "label": "Поменять тему",
+
     "dark": "Тёмная",
     "light": "Светлая",
     "system": "Системная"
@@ -197,6 +199,11 @@
         "invitePeople": "Пригласить людей",
         "calendar": "Календарь",
         "settings": "Настройки"
+      },
+      "NavUser": {
+        "settings": "Настройки",
+        "homePage": "Главная страница",
+        "logout": "Выйти"
       },
       "InvitationsDialog": {
         "title": "Приглашения в организацию",

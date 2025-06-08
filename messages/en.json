@@ -45,6 +45,8 @@
     "rights": "All rights reserved"
   },
   "ModeToggle": {
+    "label": "Change theme",
+
     "dark": "Dark",
     "light": "Light",
     "system": "System"
@@ -197,6 +199,11 @@
         "invitePeople": "Invite people",
         "calendar": "Calendar",
         "settings": "Settings"
+      },
+      "NavUser": {
+        "settings": "Settings",
+        "homePage": "Home page",
+        "logout": "Logout"
       },
       "InvitationsDialog": {
         "title": "Organization Invitations",

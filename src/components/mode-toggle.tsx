@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
 import { MoonIcon, SunIcon } from "@radix-ui/react-icons"
+import { SunMoonIcon } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useTheme } from "next-themes"
 
@@ -72,7 +73,7 @@ export function ModeToggle({
             height={iconSize}
             className={moonIconClassName}
           />
-          {expanded ? "Change theme" : null}
+          {expanded ? t("label") : null}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
@@ -80,13 +81,13 @@ export function ModeToggle({
         className="w-[215px]"
       >
         <DropdownMenuItem onClick={() => handleThemeChange("light")}>
-          {t("light")}
+          <SunIcon /> {t("light")}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => handleThemeChange("dark")}>
-          {t("dark")}
+          <MoonIcon /> {t("dark")}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => handleThemeChange("system")}>
-          {t("system")}
+          <SunMoonIcon /> {t("system")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
