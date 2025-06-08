@@ -32,6 +32,7 @@ import {
 import { cn } from "@/lib/utils"
 
 import { authClient } from "@/lib/auth-client"
+import { useTranslations } from "next-intl"
 import { useCommentEditor } from "./comment-create-form"
 import { Editor, EditorContainer } from "./editor"
 
@@ -199,8 +200,9 @@ export function Comment(props: {
           <div className="absolute top-0 right-0 flex space-x-1">
             {index === 0 && (
               <Button
+                size="smallIcon"
                 variant="ghost"
-                className="text-muted-foreground h-6 p-1"
+                className="text-muted-foreground"
                 onClick={onResolveComment}
                 type="button"
               >
@@ -308,6 +310,7 @@ export function CommentMoreDropdown(props: CommentMoreDropdownProps) {
     onRemoveComment
   } = props
 
+  const t = useTranslations("Dashboard.Note.Editor.Elements.CommentElement")
   const selectedEditCommentRef = React.useRef<boolean>(false)
 
   const onDeleteComment = React.useCallback(() => {
@@ -333,7 +336,11 @@ export function CommentMoreDropdown(props: CommentMoreDropdownProps) {
       modal={false}
     >
       <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-        <Button variant="ghost" className={cn("text-muted-foreground h-6 p-1")}>
+        <Button
+          size="smallIcon"
+          variant="ghost"
+          className={cn("text-muted-foreground")}
+        >
           <MoreHorizontalIcon className="size-4" />
         </Button>
       </DropdownMenuTrigger>
@@ -351,11 +358,11 @@ export function CommentMoreDropdown(props: CommentMoreDropdownProps) {
         <DropdownMenuGroup>
           <DropdownMenuItem onClick={onEditComment}>
             <PencilIcon className="size-4" />
-            Edit comment
+            {t("edit")}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={onDeleteComment}>
             <TrashIcon className="size-4" />
-            Delete comment
+            {t("delete")}
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>

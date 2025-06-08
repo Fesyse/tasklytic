@@ -34,6 +34,7 @@ import { useDiscussions } from "@/hooks/use-discussions"
 import { authClient } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
 
+import { useTranslations } from "next-intl"
 import { useParams } from "next/navigation"
 import { AILeaf } from "./ai-leaf"
 import { DateElement } from "./date-element"
@@ -87,6 +88,7 @@ export function CommentCreateForm({
   discussionId?: string
   focusOnMount?: boolean
 }) {
+  const t = useTranslations("Dashboard.Note.Editor.Elements.CommentElement")
   const editor = useEditorRef()
   const commentId = useCommentId()
   const discussionId = discussionIdProp ?? commentId
@@ -191,7 +193,7 @@ export function CommentCreateForm({
                   onAddComment()
                 }
               }}
-              placeholder="Reply..."
+              placeholder={t("reply")}
               autoComplete="off"
               autoFocus={autoFocus}
             />

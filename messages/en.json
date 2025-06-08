@@ -271,6 +271,11 @@
         },
         "placeholder": "Type / to get started",
         "Elements": {
+          "CommentElement": {
+            "reply": "Reply...",
+            "edit": "Edit",
+            "delete": "Delete"
+          },
           "LinkFloatingToolbar": {
             "textToDesplay": "Text to desplay",
             "pasteLink": "Paste link",

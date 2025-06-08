@@ -271,6 +271,11 @@
         },
         "placeholder": "Напишите / чтобы начать",
         "Elements": {
+          "CommentElement": {
+            "reply": "Ответить...",
+            "edit": "Редактировать",
+            "delete": "Удалить"
+          },
           "LinkFloatingToolbar": {
             "textToDesplay": "Текст для отображения",
             "pasteLink": "Вставьтессылку",
