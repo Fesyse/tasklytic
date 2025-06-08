@@ -271,6 +271,11 @@
         },
         "placeholder": "Type / to get started",
         "Elements": {
+          "LinkFloatingToolbar": {
+            "textToDesplay": "Text to desplay",
+            "pasteLink": "Paste link",
+            "editLink": "Edit link"
+          },
           "FloatingToolbarButtons": {
             "aiCommands": "AI commands",
             "askAI": "Ask ai",

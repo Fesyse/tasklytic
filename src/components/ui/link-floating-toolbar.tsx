@@ -28,6 +28,7 @@ import { ExternalLink, Link, Text, Unlink } from "lucide-react"
 
 import { buttonVariants } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
+import { useTranslations } from "next-intl"
 
 const popoverVariants = cva(
   "z-50 w-auto rounded-md border bg-popover p-1 text-popover-foreground shadow-md outline-hidden"
@@ -42,6 +43,9 @@ export function LinkFloatingToolbar({
 }: {
   state?: LinkFloatingToolbarState
 }) {
+  const t = useTranslations(
+    "Dashboard.Note.Editor.Elements.LinkFloatingToolbar"
+  )
   const activeCommentId = usePluginOption({ key: "comment" }, "activeId")
   const activeSuggestionId = usePluginOption({ key: "suggestion" }, "activeId")
 
@@ -101,7 +105,7 @@ export function LinkFloatingToolbar({
 
         <FloatingLinkUrlInput
           className={inputVariants()}
-          placeholder="Paste link"
+          placeholder={t("pasteLink")}
           data-plate-focus
         />
       </div>
@@ -112,7 +116,7 @@ export function LinkFloatingToolbar({
         </div>
         <input
           className={inputVariants()}
-          placeholder="Text to display"
+          placeholder={t("textToDesplay")}
           data-plate-focus
           {...textInputProps}
         />
@@ -129,7 +133,7 @@ export function LinkFloatingToolbar({
         type="button"
         {...editButtonProps}
       >
-        Edit link
+        {t("editLink")}
       </button>
 
       <Separator orientation="vertical" />
