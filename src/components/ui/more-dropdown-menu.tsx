@@ -25,16 +25,20 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 
+import { useTranslations } from "next-intl"
 import { ToolbarButton } from "./toolbar"
 
 export function MoreDropdownMenu(props: DropdownMenuProps) {
+  const t = useTranslations(
+    "Dashboard.Note.Editor.Elements.FloatingToolbarButtons.Insert"
+  )
   const editor = useEditorRef()
   const [open, setOpen] = React.useState(false)
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen} modal={false} {...props}>
       <DropdownMenuTrigger asChild>
-        <ToolbarButton pressed={open} tooltip="Insert">
+        <ToolbarButton pressed={open} tooltip={t("label")}>
           <MoreHorizontalIcon />
         </ToolbarButton>
       </DropdownMenuTrigger>
@@ -52,7 +56,7 @@ export function MoreDropdownMenu(props: DropdownMenuProps) {
             }}
           >
             <KeyboardIcon />
-            Keyboard input
+            {t("keyboardInput")}
           </DropdownMenuItem>
 
           <DropdownMenuItem
@@ -64,8 +68,7 @@ export function MoreDropdownMenu(props: DropdownMenuProps) {
             }}
           >
             <SuperscriptIcon />
-            Superscript
-            {/* (⌘+,) */}
+            {t("superscript")}
           </DropdownMenuItem>
           <DropdownMenuItem
             onSelect={() => {
@@ -76,8 +79,7 @@ export function MoreDropdownMenu(props: DropdownMenuProps) {
             }}
           >
             <SubscriptIcon />
-            Subscript
-            {/* (⌘+.) */}
+            {t("subscript")}
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>

@@ -272,6 +272,7 @@
         "placeholder": "Напишите / чтобы начать",
         "Elements": {
           "FloatingToolbarButtons": {
+            "aiCommands": "Команды ИИ",
             "askAI": "Спросить ИИ",
             "bold": "Жирный",
             "italic": "Курсив",
@@ -279,7 +280,15 @@
             "strikethrough": "Зачеркнутый",
             "code": "Код",
             "markAsEquation": "Отметить как уравнение",
-            "link": "Ссылка"
+            "link": "Ссылка",
+            "comment": "Комментарий",
+            "suggestionEdits": "{isSuggesting, select, true {Отключить предложения} other {Предлагаемые правки}}",
+            "Insert": {
+              "label": "Вставить",
+              "keyboardInput": "Ввод с клавиатуры",
+              "superscript": "Верхний индекс",
+              "subscript": "Нижний индекс"
+            }
           },
           "TurnIntoDropdownMenu": {
             "turnInto": "Превратить в",

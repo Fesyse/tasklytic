@@ -272,6 +272,7 @@
         "placeholder": "Type / to get started",
         "Elements": {
           "FloatingToolbarButtons": {
+            "aiCommands": "AI commands",
             "askAI": "Ask ai",
             "bold": "Bold",
             "italic": "Italic",
@@ -279,7 +280,16 @@
             "strikethrough": "Strikethrough",
             "code": "Code",
             "markAsEquation": "Mark as equation",
-            "link": "Link"
+            "link": "Link",
+            "comment": "Comment",
+            "suggestionEdits": "{isSuggesting, select, true {Turn off suggesting} other {Suggestion edits}}",
+            "Insert": {
+              "label": "Insert",
+
+              "keyboardInput": "Keyboard input",
+              "superscript": "Superscript",
+              "subscript": "Subscript"
+            }
           },
           "TurnIntoDropdownMenu": {
             "turnInto": "Turn into",
