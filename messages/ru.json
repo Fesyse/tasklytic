@@ -271,6 +271,32 @@
         },
         "placeholder": "Напишите / чтобы начать",
         "Elements": {
+          "FloatingToolbarButtons": {
+            "askAI": "Спросить ИИ",
+            "bold": "Жирный",
+            "italic": "Курсив",
+            "underline": "Подчеркнутый",
+            "strikethrough": "Зачеркнутый",
+            "code": "Код",
+            "markAsEquation": "Отметить как уравнение",
+            "link": "Ссылка"
+          },
+          "TurnIntoDropdownMenu": {
+            "turnInto": "Превратить в",
+            "items": {
+              "text": "Текст",
+              "heading1": "Заголовок 1",
+              "heading2": "Заголовок 2",
+              "heading3": "Заголовок 3",
+              "bulletedList": "Маркированный список",
+              "numberedList": "Нумерованный список",
+              "todoList": "Список дел",
+              "toggleList": "Сворачиваемый список",
+              "code": "Код",
+              "quote": "Цитата",
+              "threeColumns": "3 колонки"
+            }
+          },
           "EquationElement": {
             "done": "Готово",
             "newEquationPlaceholder": "Новое уравнение",

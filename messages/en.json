@@ -271,6 +271,32 @@
         },
         "placeholder": "Type / to get started",
         "Elements": {
+          "FloatingToolbarButtons": {
+            "askAI": "Ask ai",
+            "bold": "Bold",
+            "italic": "Italic",
+            "underline": "Underline",
+            "strikethrough": "Strikethrough",
+            "code": "Code",
+            "markAsEquation": "Mark as equation",
+            "link": "Link"
+          },
+          "TurnIntoDropdownMenu": {
+            "turnInto": "Turn into",
+            "items": {
+              "text": "Text",
+              "heading1": "Heading 1",
+              "heading2": "Heading 2",
+              "heading3": "Heading 3",
+              "bulletedList": "Bulleted list",
+              "numberedList": "Numbered list",
+              "todoList": "To-do list",
+              "toggleList": "Toggle list",
+              "code": "Code",
+              "quote": "Quote",
+              "threeColumns": "3 columns"
+            }
+          },
           "EquationElement": {
             "done": "Done",
             "newEquationPlaceholder": "New equation",
