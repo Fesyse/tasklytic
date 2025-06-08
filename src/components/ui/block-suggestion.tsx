@@ -53,6 +53,7 @@ import { cn } from "@/lib/utils"
 
 import { useDiscussions } from "@/hooks/use-discussions"
 import { authClient } from "@/lib/auth-client"
+import { useLocale } from "next-intl"
 import { useParams } from "next/navigation"
 import { type TComment, Comment, formatCommentDate } from "./comment"
 import { CommentCreateForm } from "./comment-create-form"
@@ -103,6 +104,7 @@ export const BlockSuggestionCard = ({
   isLast: boolean
   suggestion: ResolvedSuggestion
 }) => {
+  const locale = useLocale()
   const { api, editor } = useEditorPlugin(SuggestionPlugin)
   const { data: session } = authClient.useSession()
 
@@ -149,7 +151,7 @@ export const BlockSuggestionCard = ({
           </h4>
           <div className="text-muted-foreground/80 text-xs leading-none">
             <span className="mr-1">
-              {formatCommentDate(new Date(suggestion.createdAt))}
+              {formatCommentDate(new Date(suggestion.createdAt), locale)}
             </span>
           </div>
         </div>

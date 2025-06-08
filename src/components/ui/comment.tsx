@@ -30,13 +30,18 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
+import { ru, type Locale } from "date-fns/locale"
 
 import { authClient } from "@/lib/auth-client"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { useCommentEditor } from "./comment-create-form"
 import { Editor, EditorContainer } from "./editor"
 
-export const formatCommentDate = (date: Date) => {
+const FormatCommentDateLocales: Record<string, Locale> = {
+  ru: ru
+}
+
+export const formatCommentDate = (date: Date, locale: string) => {
   const now = new Date()
   const diffMinutes = differenceInMinutes(now, date)
   const diffHours = differenceInHours(now, date)
@@ -52,7 +57,9 @@ export const formatCommentDate = (date: Date) => {
     return `${diffDays}d`
   }
 
-  return format(date, "MM/dd/yyyy")
+  return format(date, "MM/dd/yyyy", {
+    locale: FormatCommentDateLocales[locale]
+  })
 }
 
 export interface TComment {
@@ -128,6 +135,7 @@ export function Comment(props: {
     }
   }
 
+  const locale = useLocale()
   const { tf } = useEditorPlugin(CommentsPlugin)
 
   // Check if comment belongs to current user
@@ -191,7 +199,7 @@ export function Comment(props: {
 
         <div className="text-muted-foreground/80 text-xs leading-none">
           <span className="mr-1">
-            {formatCommentDate(new Date(comment.createdAt))}
+            {formatCommentDate(new Date(comment.createdAt), locale)}
           </span>
           {comment.isEdited && <span>(edited)</span>}
         </div>
