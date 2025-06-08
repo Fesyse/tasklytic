@@ -2,8 +2,6 @@
 
 import * as React from "react"
 
-import type { DropdownMenuProps } from "@radix-ui/react-dropdown-menu"
-
 import { isUrl } from "@udecode/plate"
 import {
   AudioPlugin,
@@ -38,15 +36,15 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 
-import {
-  ToolbarSplitButton,
-  ToolbarSplitButtonPrimary,
-  ToolbarSplitButtonSecondary
-} from "./toolbar"
+import { ToolbarButton } from "./toolbar"
 
 const MEDIA_CONFIG: Record<
   string,
@@ -83,18 +81,39 @@ const MEDIA_CONFIG: Record<
   }
 }
 
-export function MediaToolbarButton({
-  nodeType,
-  ...props
-}: DropdownMenuProps & { nodeType: string }) {
-  const currentConfig = MEDIA_CONFIG[nodeType]
-
-  const editor = useEditorRef()
+export function MediaToolbarButtonTest() {
   const [open, setOpen] = React.useState(false)
-  const [dialogOpen, setDialogOpen] = React.useState(false)
 
+  return (
+    <DropdownMenu open={open} onOpenChange={setOpen}>
+      <DropdownMenuTrigger asChild>
+        <ToolbarButton>
+          <ImageIcon />
+        </ToolbarButton>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent align="start" sideOffset={10} alignOffset={-7}>
+        <DropdownMenuGroup>
+          {Object.entries(MEDIA_CONFIG).map(([nodeType, config]) => (
+            <MediaToolbarButton config={config} nodeType={nodeType} />
+          ))}
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
+
+function MediaToolbarButton({
+  config,
+  nodeType
+}: {
+  config: (typeof MEDIA_CONFIG)[string]
+  nodeType: string
+}) {
+  const editor = useEditorRef()
+  const [dialogOpen, setDialogOpen] = React.useState(false)
   const { openFilePicker } = useFilePicker({
-    accept: currentConfig?.accept,
+    accept: config.accept,
     multiple: true,
     onFilesSelected: ({ plainFiles: updatedFiles }) => {
       editor.getTransforms(PlaceholderPlugin).insert.media(updatedFiles)
@@ -103,60 +122,41 @@ export function MediaToolbarButton({
 
   return (
     <>
-      <ToolbarSplitButton
-        onClick={() => {
-          openFilePicker()
-        }}
-        onKeyDown={(e) => {
-          if (e.key === "ArrowDown") {
-            e.preventDefault()
-            setOpen(true)
-          }
-        }}
-        pressed={open}
-      >
-        <ToolbarSplitButtonPrimary>
-          {currentConfig?.icon}
-        </ToolbarSplitButtonPrimary>
-
-        <DropdownMenu
-          open={open}
-          onOpenChange={setOpen}
-          modal={false}
-          {...props}
-        >
-          <DropdownMenuTrigger asChild>
-            <ToolbarSplitButtonSecondary />
-          </DropdownMenuTrigger>
-
-          <DropdownMenuContent
-            onClick={(e) => e.stopPropagation()}
-            align="start"
-            alignOffset={-32}
-          >
-            <DropdownMenuGroup>
-              <DropdownMenuItem onSelect={() => openFilePicker()}>
-                {currentConfig?.icon}
-                Upload from computer
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => setDialogOpen(true)}>
-                <LinkIcon />
-                Insert via URL
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </ToolbarSplitButton>
-
-      <AlertDialog
-        open={dialogOpen}
-        onOpenChange={(value) => {
-          setDialogOpen(value)
-        }}
-      >
+      <DropdownMenuSub>
+        <DropdownMenuSubTrigger className="gap-2">
+          {config.icon} {config.title}
+        </DropdownMenuSubTrigger>
+        <DropdownMenuPortal>
+          <DropdownMenuSubContent>
+            <DropdownMenuItem
+              onPointerDown={(e) => e.preventDefault()}
+              onSelect={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                openFilePicker()
+              }}
+            >
+              {config.icon}
+              Upload from computer
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onPointerDown={(e) => e.preventDefault()}
+              onSelect={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                setDialogOpen(true)
+              }}
+            >
+              <LinkIcon />
+              Insert via URL
+            </DropdownMenuItem>
+          </DropdownMenuSubContent>
+        </DropdownMenuPortal>
+      </DropdownMenuSub>
+      <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <AlertDialogContent className="gap-6">
           <MediaUrlDialogContent
-            currentConfig={currentConfig}
+            currentConfig={config}
             nodeType={nodeType}
             setOpen={setDialogOpen}
           />

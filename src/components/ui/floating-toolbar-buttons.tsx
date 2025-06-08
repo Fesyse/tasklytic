@@ -20,9 +20,11 @@ import {
 import { useTranslations } from "next-intl"
 import { AIToolbarButton } from "./ai-toolbar-button"
 import { CommentToolbarButton } from "./comment-toolbar-button"
+import { FontSizeToolbarButton } from "./font-size-toolbar-button"
 import { InlineEquationToolbarButton } from "./inline-equation-toolbar-button"
 import { LinkToolbarButton } from "./link-toolbar-button"
 import { MarkToolbarButton } from "./mark-toolbar-button"
+import { MediaToolbarButtonTest } from "./media-toolbar-button"
 import { MoreDropdownMenu } from "./more-dropdown-menu"
 import { SuggestionToolbarButton } from "./suggestion-toolbar-button"
 import { ToolbarGroup } from "./toolbar"
@@ -47,7 +49,11 @@ export function FloatingToolbarButtons() {
 
           <ToolbarGroup>
             <TurnIntoDropdownMenu />
-
+          </ToolbarGroup>
+          <ToolbarGroup>
+            <FontSizeToolbarButton />
+          </ToolbarGroup>
+          <ToolbarGroup>
             <MarkToolbarButton
               nodeType={BoldPlugin.key}
               tooltip={`${t("bold")} (⌘+B)`}
@@ -86,6 +92,9 @@ export function FloatingToolbarButtons() {
             <InlineEquationToolbarButton />
 
             <LinkToolbarButton />
+          </ToolbarGroup>
+          <ToolbarGroup>
+            <MediaToolbarButtonTest />
           </ToolbarGroup>
         </>
       )}

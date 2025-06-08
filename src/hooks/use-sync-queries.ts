@@ -7,7 +7,7 @@ import { useCallback, useEffect, useRef } from "react"
 import { useSyncedNote, useSyncedNotes } from "./use-sync"
 
 // Helper for debouncing sync operations
-function useDebouncedSync(syncNow: () => Promise<void>, delay = 2000) {
+function useDebouncedSync(syncNow: () => Promise<void>, delay = 10000) {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
   const pendingSyncRef = useRef<boolean>(false)
   const lastSyncTimeRef = useRef<number>(0)
