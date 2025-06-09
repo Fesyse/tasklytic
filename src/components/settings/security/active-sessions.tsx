@@ -4,14 +4,24 @@ import { RevokeSessionButton } from "@/components/settings/security/revoke-sessi
 import { Skeleton } from "@/components/ui/skeleton"
 import { authClient } from "@/lib/auth-client"
 import { getRandomInt } from "@/lib/utils"
+import type { ActiveSession } from "@/server/auth"
 import { MobileIcon } from "@radix-ui/react-icons"
 import { Laptop } from "lucide-react"
+import { useEffect, useState } from "react"
 import { UAParser } from "ua-parser-js"
 
 export const ActiveSessions = () => {
   const { data: currentSession } = authClient.useSession()
-  const { data: activeSessions, isPending: isActiveSessionsLoading } =
+  const { data: initialActiveSessions, isPending: isActiveSessionsLoading } =
     authClient.useListSessions()
+
+  const [activeSessions, setActiveSessions] = useState<ActiveSession[] | null>(
+    initialActiveSessions
+  )
+
+  useEffect(() => {
+    if (initialActiveSessions) setActiveSessions(initialActiveSessions)
+  }, [initialActiveSessions])
 
   return (
     <section className="flex w-max flex-col gap-1">
@@ -50,6 +60,15 @@ export const ActiveSessions = () => {
                       <RevokeSessionButton
                         currentSession={currentSession}
                         session={session}
+                        onRevokeSession={(revokedSession) =>
+                          setActiveSessions((prev) => {
+                            if (!prev) return null
+
+                            return prev.filter(
+                              (session) => session.id !== revokedSession.id
+                            )
+                          })
+                        }
                       />
                     </div>
                   </div>

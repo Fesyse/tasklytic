@@ -6,14 +6,17 @@ import { Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "sonner"
+
 type RevokeSessionButtonProps = {
   currentSession: Session
   session: ActiveSession
+  onRevokeSession: (session: ActiveSession) => void
 }
 
 export const RevokeSessionButton: React.FC<RevokeSessionButtonProps> = ({
   currentSession,
-  session
+  session,
+  onRevokeSession
 }) => {
   const router = useRouter()
   const [isTerminating, setIsTerminating] = useState<string>()
@@ -37,6 +40,7 @@ export const RevokeSessionButton: React.FC<RevokeSessionButtonProps> = ({
           toast.error(res.error.message)
         } else {
           toast.success("Session terminated successfully")
+          onRevokeSession(session)
         }
         router.refresh()
         setIsTerminating(undefined)
