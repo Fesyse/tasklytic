@@ -36,6 +36,7 @@ import { authClient } from "@/lib/auth-client"
 import { useLocale, useTranslations } from "next-intl"
 import { useCommentEditor } from "./comment-create-form"
 import { Editor, EditorContainer } from "./editor"
+import { Skeleton } from "./skeleton"
 
 const FormatCommentDateLocales: Record<string, Locale> = {
   ru: ru
@@ -318,6 +319,7 @@ export function CommentMoreDropdown(props: CommentMoreDropdownProps) {
     onRemoveComment
   } = props
 
+  const { data: session, isPending: isSessionLoading } = authClient.useSession()
   const t = useTranslations("Dashboard.Note.Editor.Elements.CommentElement")
   const selectedEditCommentRef = React.useRef<boolean>(false)
 
@@ -336,6 +338,9 @@ export function CommentMoreDropdown(props: CommentMoreDropdownProps) {
 
     setEditingId(comment.id)
   }, [comment.id, setEditingId])
+
+  if (isSessionLoading || !session) return <Skeleton className="size-6" />
+  if (session.user.id !== comment.userId) return null
 
   return (
     <DropdownMenu
