@@ -1,18 +1,19 @@
 import { InvitationsDialog } from "@/components/layouts/dashboard/sidebar/invitations-dialog"
 import { InvitePeopleDialog } from "@/components/layouts/dashboard/sidebar/invite-people-dialog"
-import { SettingsDialog } from "@/components/settings"
 import { useLiveQuery } from "dexie-react-hooks"
 import {
   CalendarIcon,
   FileIcon,
   HomeIcon,
   InboxIcon,
+  SettingsIcon,
   type LucideIcon
 } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { authClient } from "./auth-client"
 import type { Note } from "./db-client"
 import { getNotes } from "./db-queries"
+import { useSettingsDialog } from "./stores/settings-dialog"
 import { tryCatch } from "./utils"
 
 export type NavItem =
@@ -25,6 +26,13 @@ export type NavItem =
   | {
       component: React.JSX.Element
       type: "component"
+    }
+  | {
+      title: string
+      action: () => void
+      icon: LucideIcon
+      isActive: boolean
+      type: "action"
     }
 export type NoteNavItem = {
   id: string
@@ -64,6 +72,7 @@ export const useSidebarNav = (): SidebarNav => {
   const t = useTranslations("Dashboard.Sidebar")
   const { data: organization } = authClient.useActiveOrganization()
   const { data: session } = authClient.useSession()
+  const { open: settingsDialogOpen, openSettingsDialog } = useSettingsDialog()
 
   const result = useLiveQuery(() => {
     if (!organization?.id) return tryCatch(Promise.resolve([]))
@@ -152,8 +161,11 @@ export const useSidebarNav = (): SidebarNav => {
         type: "url"
       },
       {
-        component: <SettingsDialog key="settings-dialog" />,
-        type: "component"
+        title: t("NavSecondary.settings"),
+        icon: SettingsIcon,
+        action: openSettingsDialog.bind(null, "profile"),
+        isActive: settingsDialogOpen,
+        type: "action"
       }
     ]
   }

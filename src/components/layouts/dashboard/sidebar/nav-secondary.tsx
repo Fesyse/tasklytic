@@ -5,43 +5,24 @@ import * as React from "react"
 import {
   SidebarGroup,
   SidebarGroupContent,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem
+  SidebarMenu
 } from "@/components/ui/sidebar"
-import type { NavItem } from "@/lib/sidebar"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+import type { NavItem as TNavItem } from "@/lib/sidebar"
+import { NavItem } from "./nav-item"
 
 export function NavSecondary({
   items,
   ...props
 }: {
-  items: NavItem[]
+  items: TNavItem[]
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
-  const pathname = usePathname()
-
   return (
     <SidebarGroup {...props}>
       <SidebarGroupContent>
         <SidebarMenu>
-          {items.map((item) =>
-            item.type === "url" ? (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname.startsWith(item.url)}
-                >
-                  <Link href={item.url} prefetch>
-                    <item.icon />
-                    <span>{item.title}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ) : (
-              item.component
-            )
-          )}
+          {items.map((item, i) => (
+            <NavItem item={item} key={i} />
+          ))}
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>

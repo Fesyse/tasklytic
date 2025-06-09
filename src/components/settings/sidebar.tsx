@@ -9,8 +9,8 @@ import {
   SidebarMenuItem,
   SidebarProvider
 } from "@/components/ui/sidebar"
+import { useSettingsDialog } from "@/lib/stores/settings-dialog"
 import { LockIcon, UserIcon } from "lucide-react"
-import type { SettingsTab } from "."
 
 const settingsNav = [
   {
@@ -32,12 +32,9 @@ const settingsNav = [
   }
 ] as const
 
-type SettingsSidebarProps = {
-  tab: SettingsTab
-  setTab: React.Dispatch<React.SetStateAction<SettingsTab>>
-}
+export function SettingsSidebar() {
+  const { setSettingsDialogTab, tab } = useSettingsDialog()
 
-export function SettingsSidebar({ tab, setTab }: SettingsSidebarProps) {
   return (
     <SidebarProvider className="bg-noise min-h-full w-auto border-r">
       <Sidebar collapsible="none" className="bg-inherit">
@@ -51,7 +48,7 @@ export function SettingsSidebar({ tab, setTab }: SettingsSidebarProps) {
                     <SidebarMenuItem key={index}>
                       <SidebarMenuButton
                         isActive={tab === item.value}
-                        onClick={() => setTab(item.value)}
+                        onClick={() => setSettingsDialogTab(item.value)}
                       >
                         <item.icon /> <span>{item.label}</span>
                       </SidebarMenuButton>

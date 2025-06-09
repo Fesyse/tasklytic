@@ -169,6 +169,18 @@
     "creatingOrganizationButton": "Создание организации..."
   },
   "Dashboard": {
+    "Settings": {
+      "tabs": {
+        "profile": {
+          "title": "Настройки профиля",
+          "description": "Управление настройками аккаунта и предпочтениями электронной почты."
+        },
+        "account": {
+          "title": "Настройки безопасности",
+          "description": "Управление настройками безопасности аккаунта."
+        }
+      }
+    },
     "Sidebar": {
       "OrganizationSwitcher": {
         "organizations": "Организации",

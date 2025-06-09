@@ -16,15 +16,13 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from "@/components/ui/sidebar"
-import type { NavItem } from "@/lib/sidebar"
+import type { NavItem as TNavItem } from "@/lib/sidebar"
 import { useTranslations } from "next-intl"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
 import { CreateNoteButton } from "./create-note-button"
+import { NavItem } from "./nav-item"
 
-export function NavMain({ items }: { items: NavItem[] }) {
+export function NavMain({ items }: { items: TNavItem[] }) {
   const t = useTranslations("Dashboard.Sidebar.NavMain")
-  const pathname = usePathname()
 
   return (
     <SidebarGroup>
@@ -58,20 +56,9 @@ export function NavMain({ items }: { items: NavItem[] }) {
           </SidebarMenuItem>
         </SidebarMenu>
         <SidebarMenu>
-          {items.map((item) =>
-            item.type === "url" ? (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton asChild isActive={pathname === item.url}>
-                  <Link href={item.url} prefetch>
-                    <item.icon />
-                    <span>{item.title}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ) : (
-              item.component
-            )
-          )}
+          {items.map((item, i) => (
+            <NavItem item={item} key={i} />
+          ))}
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>

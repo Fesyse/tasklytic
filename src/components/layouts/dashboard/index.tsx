@@ -3,6 +3,7 @@
 import { SidebarProvider } from "@/components/ui/sidebar"
 
 import { AppSidebar } from "@/components/layouts/dashboard/sidebar"
+import { SettingsProvider } from "@/components/providers/settings-provider"
 import { SidebarInset } from "@/components/ui/sidebar"
 import { useSync } from "@/hooks/use-sync"
 import { authClient } from "@/lib/auth-client"
@@ -29,11 +30,13 @@ const DashboardSync = () => {
 export const DashboardLayout = ({ children }: React.PropsWithChildren) => {
   return (
     <SidebarProvider>
-      {/* Add the sync component to ensure notes are synced in all dashboard routes */}
-      <DashboardSync />
+      <SettingsProvider>
+        {/* Add the sync component to ensure notes are synced in all dashboard routes */}
+        <DashboardSync />
 
-      <AppSidebar />
-      <SidebarInset className="relative">{children}</SidebarInset>
+        <AppSidebar />
+        <SidebarInset className="relative">{children}</SidebarInset>
+      </SettingsProvider>
     </SidebarProvider>
   )
 }
