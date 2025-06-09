@@ -4,6 +4,7 @@ import { authClient } from "@/lib/auth-client"
 import type { Note } from "@/lib/db-client"
 import { useQueryClient } from "@tanstack/react-query"
 import { Star } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { useCallback } from "react"
 import { toast } from "sonner"
 
@@ -19,6 +20,7 @@ export const NoteFavoriteButton = ({
   updateNoteFavorite,
   note
 }: FavoriteButtonProps) => {
+  const t = useTranslations("Dashboard.Note.Editor.ContentHeader")
   const queryClient = useQueryClient()
 
   const { data: session } = authClient.useSession()
@@ -67,7 +69,9 @@ export const NoteFavoriteButton = ({
       <Star
         className={`mr-1 size-4 ${note?.isFavorited ? "fill-yellow-400 text-yellow-400" : ""}`}
       />
-      {note?.isFavorited ? "Remove from favorites" : "Add to favorites"}
+      {t("toggleFavorite", {
+        isFavorited: note?.isFavorited ? "true" : "false"
+      })}
     </Button>
   )
 }

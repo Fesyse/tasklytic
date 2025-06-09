@@ -1,11 +1,15 @@
 import { getSessionCookie } from "better-auth/cookies"
+import createIntlMiddleware from "next-intl/middleware"
 import { NextRequest, NextResponse } from "next/server"
+import { routing } from "./i18n/routing"
+
+const handleI18nRouting = createIntlMiddleware(routing)
 
 export async function middleware(request: NextRequest) {
-  const sessionCookie = getSessionCookie(request)
-
   const pathname = request.nextUrl.pathname
   const searchParams = request.nextUrl.searchParams
+
+  const sessionCookie = getSessionCookie(request)
 
   if (sessionCookie) {
     if (pathname === "/") {
@@ -25,6 +29,11 @@ export async function middleware(request: NextRequest) {
     if (pathname.startsWith("/dashboard")) {
       return NextResponse.redirect(new URL("/auth/sign-in", request.url))
     }
+  }
+
+  if (!pathname.startsWith("/dashboard")) {
+    const response = handleI18nRouting(request)
+    return response
   }
 
   return NextResponse.next()

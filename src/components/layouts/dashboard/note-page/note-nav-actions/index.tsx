@@ -43,7 +43,7 @@ import { useToggleFavorite } from "@/hooks/use-note"
 import { useSyncedNoteQueries } from "@/hooks/use-sync-queries"
 import { getBaseUrl } from "@/lib/utils"
 import { useEditorState } from "@udecode/plate/react"
-import { formatDistance } from "date-fns"
+import { useFormatter, useNow, useTranslations } from "next-intl"
 import { useParams, usePathname } from "next/navigation"
 import { useEffect, useMemo } from "react"
 import { toast } from "sonner"
@@ -65,6 +65,10 @@ type NoteNavActionsType = (
 )[][]
 
 export function NoteNavActions() {
+  const t = useTranslations("Dashboard.Note.Header")
+  const format = useFormatter()
+  const now = useNow()
+
   const pathname = usePathname()
   const { undo, redo } = useEditorState()
   const { noteId } = useParams<{ noteId: string }>()
@@ -85,13 +89,13 @@ export function NoteNavActions() {
     () => [
       [
         {
-          label: "Customize Page",
+          label: t("NoteNavActions.customizePage"),
           icon: Settings2,
           action: () => {},
           type: "action"
         },
         {
-          label: "Turn into wiki",
+          label: t("NoteNavActions.turnIntoWiki"),
           icon: FileText,
           action: () => {},
           type: "action"
@@ -99,26 +103,26 @@ export function NoteNavActions() {
       ],
       [
         {
-          label: "Copy Link",
+          label: t("NoteNavActions.copyLink"),
           icon: Link,
           action: copyLink,
           shortcut: "CTRL+SHIFT+C",
           type: "action"
         },
         {
-          label: "Duplicate",
+          label: t("NoteNavActions.duplicate"),
           icon: Copy,
           action: () => {},
           type: "action"
         },
         {
-          label: "Move to",
+          label: t("NoteNavActions.moveTo"),
           icon: CornerUpRight,
           action: () => {},
           type: "action"
         },
         {
-          label: "Move to Trash",
+          label: t("NoteNavActions.moveToTrash"),
           icon: Trash2,
           action: () => {},
           type: "action"
@@ -126,14 +130,14 @@ export function NoteNavActions() {
       ],
       [
         {
-          label: "Undo",
+          label: t("NoteNavActions.undo"),
           icon: CornerUpLeft,
           action: undo,
           shortcut: "CTRL+Z",
           type: "action"
         },
         {
-          label: "Redo",
+          label: t("NoteNavActions.redo"),
           icon: CornerUpRight,
           action: redo,
           shortcut: "CTRL+Y",
@@ -142,25 +146,25 @@ export function NoteNavActions() {
       ],
       [
         {
-          label: "View analytics",
+          label: t("NoteNavActions.viewAnalytics"),
           icon: LineChart,
           action: () => {},
           type: "action"
         },
         {
-          label: "Version History",
+          label: t("NoteNavActions.versionHistory"),
           icon: GalleryVerticalEnd,
           action: () => {},
           type: "action"
         },
         {
-          label: "Show delete pages",
+          label: t("NoteNavActions.showDeletePages"),
           icon: Trash,
           action: () => {},
           type: "action"
         },
         {
-          label: "Notifications",
+          label: t("NoteNavActions.notifications"),
           icon: Bell,
           action: () => {},
           type: "action"
@@ -207,24 +211,20 @@ export function NoteNavActions() {
           <Tooltip>
             <TooltipTrigger asChild>
               <div className="text-muted-foreground hidden font-medium md:inline-block">
-                Edited{" "}
-                {formatDistance(note.updatedAt, new Date(), {
-                  addSuffix: true
-                })}
+                {t("EditedState.edited")}{" "}
+                {format.relativeTime(note.updatedAt, now)}
               </div>
             </TooltipTrigger>
             <TooltipContent>
               <p>
-                Edited by <strong>{note.updatedByUserName}</strong> on{" "}
-                {formatDistance(note.updatedAt, new Date(), {
-                  addSuffix: true
-                })}
+                {t("EditedState.editedBy")}{" "}
+                <strong>{note.updatedByUserName}</strong>{" "}
+                {format.relativeTime(note.updatedAt, now)}
               </p>
               <p>
-                Created by <strong>{note.createdByUserName}</strong> on{" "}
-                {formatDistance(note.createdAt, new Date(), {
-                  addSuffix: true
-                })}
+                {t("EditedState.createdBy")}{" "}
+                <strong>{note.createdByUserName}</strong>{" "}
+                {format.relativeTime(note.updatedAt, now)}
               </p>
             </TooltipContent>
           </Tooltip>
@@ -246,7 +246,9 @@ export function NoteNavActions() {
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            {note?.isFavorited ? "Remove from favorites" : "Add to favorites"}
+            {t("toggleFavorite", {
+              isFavorited: note?.isFavorited ? "true" : "false"
+            })}
           </TooltipContent>
         </Tooltip>
         <Popover>
@@ -260,7 +262,7 @@ export function NoteNavActions() {
             </Button>
           </PopoverTrigger>
           <PopoverContent
-            className="w-56 overflow-hidden rounded-lg p-0"
+            className="overflow-hidden rounded-lg p-0"
             align="end"
           >
             <Sidebar collapsible="none" className="bg-transparent">

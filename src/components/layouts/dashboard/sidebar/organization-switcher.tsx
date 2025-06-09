@@ -19,8 +19,10 @@ import { SidebarMenuSkeleton, useSidebar } from "@/components/ui/sidebar"
 import { authClient } from "@/lib/auth-client"
 import { dexieDB } from "@/lib/db-client"
 import { cn, tryCatch } from "@/lib/utils"
+import { useTranslations } from "next-intl"
 
 export function OrganizationSwitcher() {
+  const t = useTranslations("Dashboard.Sidebar.OrganizationSwitcher")
   const { open: sidebarOpen } = useSidebar()
   const [isOpen, setIsOpen] = useState(false)
   const router = useRouter()
@@ -151,11 +153,15 @@ export function OrganizationSwitcher() {
         )}
       </div>
       <DropdownMenuContent className="w-[200px]">
-        <DropdownMenuLabel>Organizations</DropdownMenuLabel>
+        <DropdownMenuLabel>{t("organizations")}</DropdownMenuLabel>
         {isLoading ? (
-          <DropdownMenuItem disabled>Loading...</DropdownMenuItem>
+          <DropdownMenuItem disabled>
+            {t("loadingOrganizationsFallback")}
+          </DropdownMenuItem>
         ) : organizations?.length === 0 ? (
-          <DropdownMenuItem disabled>No organizations</DropdownMenuItem>
+          <DropdownMenuItem disabled>
+            {t("noOrganizationsFallback")}
+          </DropdownMenuItem>
         ) : (
           organizations?.map((org) => (
             <DropdownMenuItem
@@ -178,7 +184,7 @@ export function OrganizationSwitcher() {
         <DropdownMenuItem onClick={() => router.push("/new-organization")}>
           <div className="flex items-center gap-2">
             <PlusCircle className="h-4 w-4" />
-            <span>Create Organization</span>
+            <span>{t("createOrganizationButton")}</span>
           </div>
         </DropdownMenuItem>
       </DropdownMenuContent>

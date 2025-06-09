@@ -1,7 +1,5 @@
 "use client"
 
-import * as React from "react"
-
 import {
   BoldPlugin,
   CodePlugin,
@@ -19,17 +17,23 @@ import {
   WandSparklesIcon
 } from "lucide-react"
 
+import { useTranslations } from "next-intl"
 import { AIToolbarButton } from "./ai-toolbar-button"
 import { CommentToolbarButton } from "./comment-toolbar-button"
+import { FontSizeToolbarButton } from "./font-size-toolbar-button"
 import { InlineEquationToolbarButton } from "./inline-equation-toolbar-button"
 import { LinkToolbarButton } from "./link-toolbar-button"
 import { MarkToolbarButton } from "./mark-toolbar-button"
+import { MediaToolbarButtonTest } from "./media-toolbar-button"
 import { MoreDropdownMenu } from "./more-dropdown-menu"
 import { SuggestionToolbarButton } from "./suggestion-toolbar-button"
 import { ToolbarGroup } from "./toolbar"
 import { TurnIntoDropdownMenu } from "./turn-into-dropdown-menu"
 
 export function FloatingToolbarButtons() {
+  const t = useTranslations(
+    "Dashboard.Note.Editor.Elements.FloatingToolbarButtons"
+  )
   const readOnly = useEditorReadOnly()
 
   return (
@@ -37,47 +41,60 @@ export function FloatingToolbarButtons() {
       {!readOnly && (
         <>
           <ToolbarGroup>
-            <AIToolbarButton tooltip="AI commands">
+            <AIToolbarButton tooltip={t("aiCommands")}>
               <WandSparklesIcon />
-              Ask AI
+              {t("askAI")}
             </AIToolbarButton>
           </ToolbarGroup>
 
           <ToolbarGroup>
             <TurnIntoDropdownMenu />
-
-            <MarkToolbarButton nodeType={BoldPlugin.key} tooltip="Bold (⌘+B)">
+          </ToolbarGroup>
+          <ToolbarGroup>
+            <FontSizeToolbarButton />
+          </ToolbarGroup>
+          <ToolbarGroup>
+            <MarkToolbarButton
+              nodeType={BoldPlugin.key}
+              tooltip={`${t("bold")} (⌘+B)`}
+            >
               <BoldIcon />
             </MarkToolbarButton>
 
             <MarkToolbarButton
               nodeType={ItalicPlugin.key}
-              tooltip="Italic (⌘+I)"
+              tooltip={`${t("italic")} (⌘+I)`}
             >
               <ItalicIcon />
             </MarkToolbarButton>
 
             <MarkToolbarButton
               nodeType={UnderlinePlugin.key}
-              tooltip="Underline (⌘+U)"
+              tooltip={`${t("underline")} (⌘+U)`}
             >
               <UnderlineIcon />
             </MarkToolbarButton>
 
             <MarkToolbarButton
               nodeType={StrikethroughPlugin.key}
-              tooltip="Strikethrough (⌘+⇧+M)"
+              tooltip={`${t("strikethrough")} (⌘+⇧+M)`}
             >
               <StrikethroughIcon />
             </MarkToolbarButton>
 
-            <MarkToolbarButton nodeType={CodePlugin.key} tooltip="Code (⌘+E)">
+            <MarkToolbarButton
+              nodeType={CodePlugin.key}
+              tooltip={`${t("code")} (⌘+E)`}
+            >
               <Code2Icon />
             </MarkToolbarButton>
 
             <InlineEquationToolbarButton />
 
             <LinkToolbarButton />
+          </ToolbarGroup>
+          <ToolbarGroup>
+            <MediaToolbarButtonTest />
           </ToolbarGroup>
         </>
       )}

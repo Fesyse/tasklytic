@@ -4,6 +4,7 @@ import { SparklesText } from "@/components/ui/sparkles-text"
 import { TextEffect } from "@/components/ui/text-effect"
 import { siteConfig } from "@/lib/site-config"
 import { ArrowRight } from "lucide-react"
+import { useTranslations } from "next-intl"
 import Image from "next/image"
 import Link from "next/link"
 
@@ -28,11 +29,13 @@ const transitionVariants = {
 }
 
 export function HeroSection() {
+  const t = useTranslations("HomePage.HeroSection")
+
   return (
     <>
       <div
         aria-hidden
-        className="absolute inset-0 isolate z-10 hidden opacity-65 contain-strict lg:block"
+        className="absolute inset-0 isolate hidden opacity-65 contain-strict lg:block"
       >
         <div className="absolute top-0 left-0 h-320 w-140 -translate-y-87.5 -rotate-45 rounded-full bg-[radial-gradient(68.54%_68.72%_at_55.02%_31.46%,hsla(0,0%,85%,.08)_0,hsla(0,0%,55%,.02)_50%,hsla(0,0%,45%,0)_80%)]" />
         <div className="absolute top-0 left-0 h-320 w-60 [translate:5%_-50%] -rotate-45 rounded-full bg-[radial-gradient(50%_50%_at_50%_50%,hsla(0,0%,85%,.06)_0,hsla(0,0%,45%,.02)_80%,transparent_100%)]" />
@@ -80,11 +83,11 @@ export function HeroSection() {
             <div className="text-center sm:mx-auto lg:mt-0 lg:mr-auto">
               <AnimatedGroup variants={transitionVariants}>
                 <Link
-                  href="#link"
-                  className="hover:bg-background dark:hover:border-t-border bg-muted group mx-auto flex w-fit items-center gap-4 rounded-full border p-1 pl-4 shadow-md shadow-zinc-950/5 transition-colors duration-300 dark:border-t-white/5 dark:shadow-zinc-950"
+                  href={siteConfig.announcementLink}
+                  className="hover:bg-background dark:hover:border-t-border bg-muted group relative z-50 mx-auto flex w-fit items-center gap-4 rounded-full border p-1 pl-4 shadow-md shadow-zinc-950/5 transition-colors duration-300 dark:border-t-white/5 dark:shadow-zinc-950"
                 >
                   <span className="text-foreground text-sm">
-                    {siteConfig.announcement}
+                    {t("announcement")}
                   </span>
                   <span className="dark:border-background block h-4 w-0.5 border-l bg-white dark:bg-zinc-700"></span>
 
@@ -103,7 +106,7 @@ export function HeroSection() {
 
               <h1 className="mt-8 text-4xl text-balance md:text-7xl lg:mt-16 xl:text-[5.25rem]">
                 <TextEffect preset="fade-in-blur" speedSegment={0.3} as="span">
-                  Improve your discipline, improve your life with
+                  {t("title")}
                 </TextEffect>
                 <SparklesText
                   withFadeIn
@@ -124,7 +127,7 @@ export function HeroSection() {
                 as="p"
                 className="mx-auto mt-8 max-w-2xl text-balance sm:text-lg"
               >
-                {siteConfig.secondDescription}
+                {t("description")}
               </TextEffect>
 
               <AnimatedGroup
@@ -151,7 +154,7 @@ export function HeroSection() {
                     className="rounded-xl px-5 text-base"
                   >
                     <Link href="/auth/sign-up">
-                      <span className="text-nowrap">Start for free</span>
+                      <span className="text-nowrap">{t("start")}</span>
                     </Link>
                   </Button>
                 </div>
@@ -163,7 +166,7 @@ export function HeroSection() {
                   className="h-10.5 rounded-xl px-5"
                 >
                   <Link href="/pricing">
-                    <span className="text-nowrap">Pricing</span>
+                    <span className="text-nowrap">{t("pricing")}</span>
                   </Link>
                 </Button>
               </AnimatedGroup>

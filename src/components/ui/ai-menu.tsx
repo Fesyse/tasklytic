@@ -20,15 +20,17 @@ import {
 import { Command as CommandPrimitive } from "cmdk"
 import { Loader2Icon } from "lucide-react"
 
+import { useChat } from "@/components/editor/use-chat"
 import { Command, CommandList } from "@/components/ui/command"
 import { Popover, PopoverAnchor, PopoverContent } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
-import { useChat } from "@/components/editor/use-chat"
 
+import { useTranslations } from "next-intl"
 import { AIChatEditor } from "./ai-chat-editor"
 import { AIMenuItems } from "./ai-menu-items"
 
 export function AIMenu() {
+  const t = useTranslations("Dashboard.Note.Editor.Elements.AIMenu")
   const { api, editor } = useEditorPlugin(AIChatPlugin)
   const open = usePluginOption(AIChatPlugin, "open")
   const mode = usePluginOption(AIChatPlugin, "mode")
@@ -147,7 +149,7 @@ export function AIMenu() {
           {isLoading ? (
             <div className="text-muted-foreground flex grow items-center gap-2 p-2 text-sm select-none">
               <Loader2Icon className="size-4 animate-spin" />
-              {messages.length > 1 ? "Editing..." : "Thinking..."}
+              {messages.length > 1 ? t("editingState") : t("thinkingState")}
             </div>
           ) : (
             <CommandPrimitive.Input
@@ -168,7 +170,7 @@ export function AIMenu() {
                 }
               }}
               onValueChange={setInput}
-              placeholder="Ask AI anything..."
+              placeholder={t("placeholder")}
               data-plate-focus
               autoFocus
             />

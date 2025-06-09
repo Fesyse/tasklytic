@@ -37,6 +37,7 @@ import { authClient } from "@/lib/auth-client"
 import { siteConfig } from "@/lib/site-config"
 import { cn } from "@/lib/utils"
 import { AnimatePresence, motion } from "motion/react"
+import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 
 const organizationSchema = z.object({
@@ -55,6 +56,7 @@ export default function NewOrganizationPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [isCheckingSlug, setIsCheckingSlug] = useState(false)
   const [slugError, setSlugError] = useState<string | null>(null)
+  const t = useTranslations("NewOrganization")
 
   const form = useForm<OrganizationSchema>({
     resolver: zodResolver(organizationSchema),
@@ -80,10 +82,10 @@ export default function NewOrganizationPage() {
         })
 
         if (response.error) {
-          setSlugError("This slug is already taken. Please choose another one.")
+          setSlugError(t("slugTakenError"))
           form.setError("slug", {
             type: "manual",
-            message: "This slug is already taken. Please choose another one."
+            message: t("slugTakenError")
           })
         } else {
           form.clearErrors("slug")
@@ -94,7 +96,7 @@ export default function NewOrganizationPage() {
         setIsCheckingSlug(false)
       }
     },
-    [form]
+    [form, t]
   )
 
   // Check slug availability when slug changes
@@ -124,10 +126,10 @@ export default function NewOrganizationPage() {
       })
 
       if (slugResponse.error) {
-        setSlugError("This slug is already taken. Please choose another one.")
+        setSlugError(t("slugTakenError"))
         form.setError("slug", {
           type: "manual",
-          message: "This slug is already taken. Please choose another one."
+          message: t("slugTakenError")
         })
         setIsLoading(false)
         return
@@ -199,11 +201,9 @@ export default function NewOrganizationPage() {
         >
           <Card>
             <CardHeader>
-              <CardTitle>Create your organization</CardTitle>
+              <CardTitle>{t("createOrganizationTitle")}</CardTitle>
               <CardDescription>
-                {step === 1
-                  ? "How would you like to use Tasklytic?"
-                  : "Choose your default layout"}
+                {step === 1 ? t("step1Description") : t("step2Description")}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -214,10 +214,10 @@ export default function NewOrganizationPage() {
                     name="name"
                     render={({ field }) => (
                       <FormItem className="grid gap-3">
-                        <FormLabel>Organization Name</FormLabel>
+                        <FormLabel>{t("organizationNameLabel")}</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="My Workspace"
+                            placeholder={t("organizationNamePlaceholder")}
                             {...field}
                             onChange={(e) => handleNameInput(e, field)}
                           />
@@ -232,11 +232,11 @@ export default function NewOrganizationPage() {
                     name="slug"
                     render={({ field }) => (
                       <FormItem className="grid gap-3">
-                        <FormLabel>URL Slug</FormLabel>
+                        <FormLabel>{t("slugLabel")}</FormLabel>
                         <div className="relative">
                           <FormControl>
                             <Input
-                              placeholder="my-workspace"
+                              placeholder={t("slugPlaceholder")}
                               {...field}
                               onChange={(e) => {
                                 field.onChange(e)
@@ -272,7 +272,7 @@ export default function NewOrganizationPage() {
                     name="teamType"
                     render={({ field }) => (
                       <FormItem className="space-y-4">
-                        <FormLabel>Usage Type</FormLabel>
+                        <FormLabel>{t("teamTypeLabel")}</FormLabel>
                         <div className="grid grid-cols-2 gap-4">
                           <FormControl>
                             <button
@@ -288,7 +288,7 @@ export default function NewOrganizationPage() {
                               <div className="text-center">
                                 <p className="font-medium">Solo</p>
                                 <p className="text-muted-foreground text-xs">
-                                  Use Tasklytic alone
+                                  {t("soloOptionDescription")}
                                 </p>
                               </div>
                             </button>
@@ -307,7 +307,7 @@ export default function NewOrganizationPage() {
                               <div className="text-center">
                                 <p className="font-medium">Team</p>
                                 <p className="text-muted-foreground text-xs">
-                                  Collaborate with others
+                                  {t("teamOptionDescription")}
                                 </p>
                               </div>
                             </button>
@@ -324,7 +324,7 @@ export default function NewOrganizationPage() {
                   name="layoutType"
                   render={({ field }) => (
                     <FormItem className="space-y-4">
-                      <FormLabel>Layout Style</FormLabel>
+                      <FormLabel>{t("layoutTypeLabel")}</FormLabel>
                       <div className="grid gap-4">
                         <FormControl>
                           <button
@@ -340,10 +340,11 @@ export default function NewOrganizationPage() {
                           >
                             <Layout className="mt-1 h-5 w-5" />
                             <div>
-                              <p className="font-medium">Default</p>
+                              <p className="font-medium">
+                                {t("defaultLayoutOptionLabel")}
+                              </p>
                               <p className="text-muted-foreground text-sm">
-                                Standard layout with sidebar navigation and
-                                content area
+                                {t("defaultLayoutOptionDescription")}
                               </p>
                             </div>
                           </button>
@@ -362,9 +363,11 @@ export default function NewOrganizationPage() {
                           >
                             <Minimize className="mt-1 h-5 w-5" />
                             <div>
-                              <p className="font-medium">Minimalist</p>
+                              <p className="font-medium">
+                                {t("minimalistLayoutOptionLabel")}
+                              </p>
                               <p className="text-muted-foreground text-sm">
-                                Clean interface with minimal distractions
+                                {t("minimalistLayoutOptionDescription")}
                               </p>
                             </div>
                           </button>
@@ -383,10 +386,11 @@ export default function NewOrganizationPage() {
                           >
                             <LayoutDashboard className="mt-1 h-5 w-5" />
                             <div>
-                              <p className="font-medium">Detailed</p>
+                              <p className="font-medium">
+                                {t("detailedLayoutOptionLabel")}
+                              </p>
                               <p className="text-muted-foreground text-sm">
-                                Dashboard-focused view with comprehensive
-                                analytics
+                                {t("detailedLayoutOptionDescription")}
                               </p>
                             </div>
                           </button>
@@ -406,7 +410,7 @@ export default function NewOrganizationPage() {
                     variant="outline"
                     onClick={() => setStep(1)}
                   >
-                    Back
+                    {t("previousStepButton")}
                   </Button>
                   <Button
                     type="submit"
@@ -415,7 +419,7 @@ export default function NewOrganizationPage() {
                     {isLoading && (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     )}
-                    Create Organization
+                    {t("creatingOrganizationButton")}
                   </Button>
                 </>
               ) : (
@@ -425,7 +429,7 @@ export default function NewOrganizationPage() {
                     variant="outline"
                     onClick={() => router.push("/dashboard")}
                   >
-                    Cancel
+                    {t("cancelButton")}
                   </Button>
                   <Button
                     type="button"
@@ -436,7 +440,7 @@ export default function NewOrganizationPage() {
                     }}
                     disabled={!form.formState.isValid || isCheckingSlug}
                   >
-                    Next
+                    {t("nextStepButton")}
                   </Button>
                 </>
               )}

@@ -8,9 +8,13 @@ import { MessageSquareTextIcon } from "lucide-react"
 
 import { commentsPlugin } from "@/components/editor/plugins/comments-plugin"
 
+import { useTranslations } from "next-intl"
 import { ToolbarButton } from "./toolbar"
 
 export function CommentToolbarButton() {
+  const t = useTranslations(
+    "Dashboard.Note.Editor.Elements.FloatingToolbarButtons"
+  )
   const { editor, setOption, tf } = useEditorPlugin(commentsPlugin)
 
   const onCommentToolbarButton = React.useCallback(() => {
@@ -26,7 +30,7 @@ export function CommentToolbarButton() {
     <ToolbarButton
       onClick={onCommentToolbarButton}
       data-plate-prevent-overlay
-      tooltip="Comment"
+      tooltip={t("comment")}
     >
       <MessageSquareTextIcon />
     </ToolbarButton>

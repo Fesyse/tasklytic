@@ -124,12 +124,14 @@ import { EquationElementStatic } from "@/components/ui/equation-element-static"
 import { InlineEquationElementStatic } from "@/components/ui/inline-equation-element-static"
 import { SidebarMenuButton } from "@/components/ui/sidebar"
 import { useNote } from "@/hooks/use-note"
+import { useTranslations } from "next-intl"
 import { useTheme } from "next-themes"
 
 const siteUrl = "https://platejs.org"
 const lowlight = createLowlight(all)
 
 export function ExportActionButton(props: DropdownMenuProps) {
+  const t = useTranslations("Dashboard.Note.Header.NoteNavActions.Export")
   const { data: note } = useNote()
   const editor = useEditorRef()
   const [open, setOpen] = React.useState(false)
@@ -457,26 +459,26 @@ export function ExportActionButton(props: DropdownMenuProps) {
       <DropdownMenuTrigger asChild>
         <SidebarMenuButton>
           <ArrowDownToLineIcon />
-          <span>Export</span>
+          <span>{t("export")}</span>
         </SidebarMenuButton>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="start">
         <DropdownMenuGroup>
-          <DropdownMenuItem onSelect={exportToHtml}>
-            Export as HTML
+          <DropdownMenuItem className="gap-4" onSelect={exportToHtml}>
+            {t("html")}
             <CodeXml className="ml-auto" />
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={exportToPdf}>
-            Export as PDF
+          <DropdownMenuItem className="gap-4" onSelect={exportToPdf}>
+            {t("pdf")}
             <FileText className="ml-auto" />
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={exportToImage}>
-            Export as Image
+          <DropdownMenuItem className="gap-4" onSelect={exportToImage}>
+            {t("image")}
             <Image className="ml-auto" />
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={exportToMarkdown}>
-            Export as Markdown
+          <DropdownMenuItem className="gap-4" onSelect={exportToMarkdown}>
+            {t("markdown")}
             <Heading1 className="ml-auto" />
           </DropdownMenuItem>
         </DropdownMenuGroup>

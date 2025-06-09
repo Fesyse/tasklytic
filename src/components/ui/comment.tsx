@@ -30,12 +30,19 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
+import { ru, type Locale } from "date-fns/locale"
 
 import { authClient } from "@/lib/auth-client"
+import { useLocale, useTranslations } from "next-intl"
 import { useCommentEditor } from "./comment-create-form"
 import { Editor, EditorContainer } from "./editor"
+import { Skeleton } from "./skeleton"
 
-export const formatCommentDate = (date: Date) => {
+const FormatCommentDateLocales: Record<string, Locale> = {
+  ru: ru
+}
+
+export const formatCommentDate = (date: Date, locale: string) => {
   const now = new Date()
   const diffMinutes = differenceInMinutes(now, date)
   const diffHours = differenceInHours(now, date)
@@ -51,7 +58,9 @@ export const formatCommentDate = (date: Date) => {
     return `${diffDays}d`
   }
 
-  return format(date, "MM/dd/yyyy")
+  return format(date, "MM/dd/yyyy", {
+    locale: FormatCommentDateLocales[locale]
+  })
 }
 
 export interface TComment {
@@ -127,6 +136,7 @@ export function Comment(props: {
     }
   }
 
+  const locale = useLocale()
   const { tf } = useEditorPlugin(CommentsPlugin)
 
   // Check if comment belongs to current user
@@ -190,7 +200,7 @@ export function Comment(props: {
 
         <div className="text-muted-foreground/80 text-xs leading-none">
           <span className="mr-1">
-            {formatCommentDate(new Date(comment.createdAt))}
+            {formatCommentDate(new Date(comment.createdAt), locale)}
           </span>
           {comment.isEdited && <span>(edited)</span>}
         </div>
@@ -199,8 +209,9 @@ export function Comment(props: {
           <div className="absolute top-0 right-0 flex space-x-1">
             {index === 0 && (
               <Button
+                size="smallIcon"
                 variant="ghost"
-                className="text-muted-foreground h-6 p-1"
+                className="text-muted-foreground"
                 onClick={onResolveComment}
                 type="button"
               >
@@ -308,6 +319,8 @@ export function CommentMoreDropdown(props: CommentMoreDropdownProps) {
     onRemoveComment
   } = props
 
+  const { data: session, isPending: isSessionLoading } = authClient.useSession()
+  const t = useTranslations("Dashboard.Note.Editor.Elements.CommentElement")
   const selectedEditCommentRef = React.useRef<boolean>(false)
 
   const onDeleteComment = React.useCallback(() => {
@@ -326,6 +339,9 @@ export function CommentMoreDropdown(props: CommentMoreDropdownProps) {
     setEditingId(comment.id)
   }, [comment.id, setEditingId])
 
+  if (isSessionLoading || !session) return <Skeleton className="size-6" />
+  if (session.user.id !== comment.userId) return null
+
   return (
     <DropdownMenu
       open={dropdownOpen}
@@ -333,7 +349,11 @@ export function CommentMoreDropdown(props: CommentMoreDropdownProps) {
       modal={false}
     >
       <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-        <Button variant="ghost" className={cn("text-muted-foreground h-6 p-1")}>
+        <Button
+          size="smallIcon"
+          variant="ghost"
+          className={cn("text-muted-foreground")}
+        >
           <MoreHorizontalIcon className="size-4" />
         </Button>
       </DropdownMenuTrigger>
@@ -351,11 +371,11 @@ export function CommentMoreDropdown(props: CommentMoreDropdownProps) {
         <DropdownMenuGroup>
           <DropdownMenuItem onClick={onEditComment}>
             <PencilIcon className="size-4" />
-            Edit comment
+            {t("edit")}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={onDeleteComment}>
             <TrashIcon className="size-4" />
-            Delete comment
+            {t("delete")}
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>

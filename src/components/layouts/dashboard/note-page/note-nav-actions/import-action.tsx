@@ -18,10 +18,12 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import { SidebarMenuButton } from "@/components/ui/sidebar"
+import { useTranslations } from "next-intl"
 
 type ImportType = "html" | "markdown"
 
 export function ImportActionButton(props: DropdownMenuProps) {
+  const t = useTranslations("Dashboard.Note.Header.NoteNavActions.Import")
   const editor = useEditorRef()
   const [open, setOpen] = React.useState(false)
 
@@ -71,19 +73,19 @@ export function ImportActionButton(props: DropdownMenuProps) {
       <DropdownMenuTrigger asChild>
         <SidebarMenuButton>
           <ArrowUpToLineIcon />
-          <span>Import</span>
+          <span>{t("import")}</span>
         </SidebarMenuButton>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="start">
         <DropdownMenuGroup>
           <DropdownMenuItem onSelect={openHtmlFilePicker}>
-            Import from HTML
+            {t("html")}
             <CodeXml className="ml-auto" />
           </DropdownMenuItem>
 
           <DropdownMenuItem onSelect={openMdFilePicker}>
-            Import from Markdown
+            {t("markdown")}
             <Heading1 className="ml-auto" />
           </DropdownMenuItem>
         </DropdownMenuGroup>

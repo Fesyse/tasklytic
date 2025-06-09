@@ -1,7 +1,9 @@
 import { ChevronRight } from "lucide-react"
+import { useTranslations } from "next-intl"
 import Link from "next/link"
 
 export const CompaniesSection = () => {
+  const t = useTranslations("HomePage.CompaniesSection")
   return (
     <section className="bg-background bg-noise relative pt-16 pb-16 md:pb-32">
       <div
@@ -14,7 +16,7 @@ export const CompaniesSection = () => {
             href="/"
             className="block text-sm duration-150 hover:opacity-75"
           >
-            <span> Meet Our Customers</span>
+            <span>{t("hover")}</span>
 
             <ChevronRight className="ml-1 inline-block size-3" />
           </Link>

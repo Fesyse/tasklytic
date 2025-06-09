@@ -22,6 +22,7 @@ import {
   PopoverTrigger
 } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
+import { useTranslations } from "next-intl"
 
 const languages: { label: string; value: string }[] = [
   { label: "Auto", value: "auto" },
@@ -116,6 +117,7 @@ const languages: { label: string; value: string }[] = [
 ]
 
 export function CodeBlockCombobox() {
+  const t = useTranslations("Dashboard.Note.Editor.Elements.CodeBlockCombobox")
   const [open, setOpen] = React.useState(false)
   const readOnly = useReadOnly()
   const editor = useEditorRef()
@@ -158,9 +160,9 @@ export function CodeBlockCombobox() {
             className="h-9"
             value={searchValue}
             onValueChange={(value) => setSearchValue(value)}
-            placeholder="Search language..."
+            placeholder={t("searchLanguage")}
           />
-          <CommandEmpty>No language found.</CommandEmpty>
+          <CommandEmpty>{t("noLanguageFallback")}</CommandEmpty>
 
           <CommandList className="h-[344px] overflow-y-auto">
             <CommandGroup>

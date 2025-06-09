@@ -1,36 +1,40 @@
+import LanguageSelector from "@/components/language-selector"
 import { ModeToggle } from "@/components/mode-toggle"
 import { Icons } from "@/components/ui/icons"
 import { siteConfig } from "@/lib/site-config"
+import { useTranslations } from "next-intl"
 import Link from "next/link"
 
 const links = [
   {
-    title: "Features",
+    key: "features",
     href: "#features"
   },
   {
-    title: "Solution",
+    key: "solution",
     href: "#"
   },
   {
-    title: "Customers",
+    key: "customers",
     href: "#"
   },
   {
-    title: "Pricing",
+    key: "pricing",
     href: "/pricing"
   },
   {
-    title: "Help",
+    key: "help",
     href: "/help"
   },
   {
-    title: "About",
+    key: "about",
     href: "/about-us"
   }
-]
+] as const
 
 export function Footer() {
+  const t = useTranslations("HomeFooter")
+
   return (
     <footer className="py-16 md:py-32">
       <div className="mx-auto max-w-5xl px-6">
@@ -49,7 +53,7 @@ export function Footer() {
               href={link.href}
               className="text-muted-foreground hover:text-primary block duration-150"
             >
-              <span>{link.title}</span>
+              <span>{t(`Nav.${link.key}`)}</span>
             </Link>
           ))}
         </div>
@@ -180,10 +184,11 @@ export function Footer() {
             </svg>
           </Link>
           <ModeToggle className="rounded-full" />
+          <LanguageSelector className="rounded-full" />
         </div>
         <span className="text-muted-foreground block text-center text-sm">
           {" "}
-          © {new Date().getFullYear()} {siteConfig.name}, All rights reserved
+          © {new Date().getFullYear()} {siteConfig.name}, {t("rights")}
         </span>
       </div>
     </footer>

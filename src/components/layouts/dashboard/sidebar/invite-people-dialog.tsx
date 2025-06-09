@@ -10,10 +10,12 @@ import {
 } from "@/components/ui/dialog"
 import { SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
 import { UserRoundPlusIcon } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { useState } from "react"
 import { InvitePeopleForm } from "./invite-people-form"
 
 export const InvitePeopleDialog = () => {
+  const t = useTranslations("Dashboard.Sidebar.NavSecondary")
   const [open, setOpen] = useState(false)
 
   return (
@@ -22,13 +24,13 @@ export const InvitePeopleDialog = () => {
         <SidebarMenuItem>
           <SidebarMenuButton>
             <UserRoundPlusIcon />
-            <span>Invite people</span>
+            <span>{t("invitePeople")}</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </DialogTrigger>
       <DialogContent className="sm:max-w-96">
         <DialogHeader>
-          <DialogTitle>Invite people</DialogTitle>
+          <DialogTitle>{t("invitePeople")}</DialogTitle>
           <DialogDescription>
             Add more people into your organization
           </DialogDescription>

@@ -12,8 +12,11 @@ import {
   PopoverTrigger
 } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
+import { useLocale, useTranslations } from "next-intl"
 
 export function DateElement(props: PlateElementProps<TDateElement>) {
+  const locale = useLocale()
+  const t = useTranslations("Dashboard.Note.Editor.Elements.DateElement")
   const { editor, element } = props
 
   const readOnly = useReadOnly()
@@ -42,15 +45,18 @@ export function DateElement(props: PlateElementProps<TDateElement>) {
             new Date(today.setDate(today.getDate() + 2)).toDateString() ===
             elementDate.toDateString()
 
-          if (isToday) return "Today"
-          if (isYesterday) return "Yesterday"
-          if (isTomorrow) return "Tomorrow"
+          if (isToday) return t("today")
+          if (isYesterday) return t("yesterday")
+          if (isTomorrow) return t("tomorrow")
 
-          return elementDate.toLocaleDateString(undefined, {
-            day: "numeric",
-            month: "long",
-            year: "numeric"
-          })
+          return elementDate.toLocaleDateString(
+            `${locale}-${locale.toUpperCase()}`,
+            {
+              day: "numeric",
+              month: "long",
+              year: "numeric"
+            }
+          )
         })()
       ) : (
         <span>Pick a date</span>

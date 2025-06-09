@@ -46,6 +46,7 @@ import {
   insertInlineElement
 } from "@/components/editor/transforms"
 
+import { useTranslations } from "next-intl"
 import {
   InlineCombobox,
   InlineComboboxContent,
@@ -71,158 +72,169 @@ interface Item {
   label?: string
 }
 
-const groups: Group[] = [
-  {
-    group: "AI",
-    items: [
-      {
-        focusEditor: false,
-        icon: <SparklesIcon />,
-        value: "AI",
-        onSelect: (editor) => {
-          editor.getApi(AIChatPlugin).aiChat.show()
+function getGroups(
+  t: ReturnType<
+    typeof useTranslations<"Dashboard.Note.Editor.Elements.SlashInputElement.groups">
+  >
+): Group[] {
+  return [
+    {
+      group: t("AI.label"),
+      items: [
+        {
+          focusEditor: false,
+          icon: <SparklesIcon />,
+          value: t("AI.items.ai"),
+          onSelect: (editor) => {
+            editor.getApi(AIChatPlugin).aiChat.show()
+          }
         }
-      }
-    ]
-  },
-  {
-    group: "Basic blocks",
-    items: [
-      {
-        icon: <PilcrowIcon />,
-        keywords: ["paragraph"],
-        label: "Text",
-        value: ParagraphPlugin.key
-      },
-      {
-        icon: <Heading1Icon />,
-        keywords: ["title", "h1"],
-        label: "Heading 1",
-        value: HEADING_KEYS.h2
-      },
-      {
-        icon: <Heading2Icon />,
-        keywords: ["subtitle", "h2"],
-        label: "Heading 2",
-        value: HEADING_KEYS.h3
-      },
-      {
-        icon: <Heading3Icon />,
-        keywords: ["subtitle", "h3"],
-        label: "Heading 3",
-        value: HEADING_KEYS.h4
-      },
-      {
-        icon: <ListIcon />,
-        keywords: ["unordered", "ul", "-"],
-        label: "Bulleted list",
-        value: ListStyleType.Disc
-      },
-      {
-        icon: <ListOrdered />,
-        keywords: ["ordered", "ol", "1"],
-        label: "Numbered list",
-        value: ListStyleType.Decimal
-      },
-      {
-        icon: <Square />,
-        keywords: ["checklist", "task", "checkbox", "[]"],
-        label: "To-do list",
-        value: INDENT_LIST_KEYS.todo
-      },
-      {
-        icon: <ChevronRightIcon />,
-        keywords: ["collapsible", "expandable"],
-        label: "Toggle",
-        value: TogglePlugin.key
-      },
-      {
-        icon: <Code2 />,
-        keywords: ["```"],
-        label: "Code Block",
-        value: CodeBlockPlugin.key
-      },
-      {
-        icon: <Table />,
-        label: "Table",
-        value: TablePlugin.key
-      },
-      {
-        icon: <Quote />,
-        keywords: ["citation", "blockquote", "quote", ">"],
-        label: "Blockquote",
-        value: BlockquotePlugin.key
-      },
-      {
-        description: "Insert a highlighted block.",
-        icon: <LightbulbIcon />,
-        keywords: ["note"],
-        label: "Callout",
-        value: CalloutPlugin.key
-      }
-    ].map((item) => ({
-      ...item,
-      onSelect: (editor, value) => {
-        insertBlock(editor, value)
-      }
-    }))
-  },
-  {
-    group: "Advanced blocks",
-    items: [
-      {
-        icon: <TableOfContentsIcon />,
-        keywords: ["toc"],
-        label: "Table of contents",
-        value: TocPlugin.key
-      },
-      {
-        icon: <Columns3Icon />,
-        label: "3 columns",
-        value: "action_three_columns"
-      },
-      {
-        focusEditor: false,
-        icon: <RadicalIcon />,
-        label: "Equation",
-        value: EquationPlugin.key
-      }
-    ].map((item) => ({
-      ...item,
-      onSelect: (editor, value) => {
-        insertBlock(editor, value)
-      }
-    }))
-  },
-  {
-    group: "Inline",
-    items: [
-      {
-        focusEditor: true,
-        icon: <CalendarIcon />,
-        keywords: ["time"],
-        label: "Date",
-        value: DatePlugin.key
-      },
-      {
-        focusEditor: false,
-        icon: <RadicalIcon />,
-        label: "Inline Equation",
-        value: InlineEquationPlugin.key
-      }
-    ].map((item) => ({
-      ...item,
-      onSelect: (editor, value) => {
-        insertInlineElement(editor, value)
-      }
-    }))
-  }
-]
+      ]
+    },
+    {
+      group: t("BasicBlocks.label"),
+      items: [
+        {
+          icon: <PilcrowIcon />,
+          keywords: ["paragraph"],
+          label: t("BasicBlocks.items.text"),
+          value: ParagraphPlugin.key
+        },
+        {
+          icon: <Heading1Icon />,
+          keywords: ["title", "h1"],
+          label: t("BasicBlocks.items.heading1"),
+          value: HEADING_KEYS.h2
+        },
+        {
+          icon: <Heading2Icon />,
+          keywords: ["subtitle", "h2"],
+          label: t("BasicBlocks.items.heading2"),
+          value: HEADING_KEYS.h3
+        },
+        {
+          icon: <Heading3Icon />,
+          keywords: ["subtitle", "h3"],
+          label: t("BasicBlocks.items.heading3"),
+          value: HEADING_KEYS.h4
+        },
+        {
+          icon: <ListIcon />,
+          keywords: ["unordered", "ul", "-"],
+          label: t("BasicBlocks.items.bulletedList"),
+          value: ListStyleType.Disc
+        },
+        {
+          icon: <ListOrdered />,
+          keywords: ["ordered", "ol", "1"],
+          label: t("BasicBlocks.items.numberedList"),
+          value: ListStyleType.Decimal
+        },
+        {
+          icon: <Square />,
+          keywords: ["checklist", "task", "checkbox", "[]"],
+          label: t("BasicBlocks.items.todoList"),
+          value: INDENT_LIST_KEYS.todo
+        },
+        {
+          icon: <ChevronRightIcon />,
+          keywords: ["collapsible", "expandable"],
+          label: t("BasicBlocks.items.toggle"),
+          value: TogglePlugin.key
+        },
+        {
+          icon: <Code2 />,
+          keywords: ["```"],
+          label: t("BasicBlocks.items.codeBlock"),
+          value: CodeBlockPlugin.key
+        },
+        {
+          icon: <Table />,
+          label: t("BasicBlocks.items.table"),
+          value: TablePlugin.key
+        },
+        {
+          icon: <Quote />,
+          keywords: ["citation", "blockquote", "quote", ">"],
+          label: t("BasicBlocks.items.blockquote"),
+          value: BlockquotePlugin.key
+        },
+        {
+          description: "Insert a highlighted block.",
+          icon: <LightbulbIcon />,
+          keywords: ["note"],
+          label: t("BasicBlocks.items.callout"),
+          value: CalloutPlugin.key
+        }
+      ].map((item) => ({
+        ...item,
+        onSelect: (editor, value) => {
+          insertBlock(editor, value)
+        }
+      }))
+    },
+    {
+      group: t("AdvancedBlocks.label"),
+      items: [
+        {
+          icon: <TableOfContentsIcon />,
+          keywords: ["toc"],
+          label: t("AdvancedBlocks.items.toc"),
+          value: TocPlugin.key
+        },
+        {
+          icon: <Columns3Icon />,
+          label: t("AdvancedBlocks.items.threeColumns"),
+          value: "action_three_columns"
+        },
+        {
+          focusEditor: false,
+          icon: <RadicalIcon />,
+          label: t("AdvancedBlocks.items.equation"),
+          value: EquationPlugin.key
+        }
+      ].map((item) => ({
+        ...item,
+        onSelect: (editor, value) => {
+          insertBlock(editor, value)
+        }
+      }))
+    },
+    {
+      group: t("Inline.label"),
+      items: [
+        {
+          focusEditor: true,
+          icon: <CalendarIcon />,
+          keywords: ["time"],
+          label: t("Inline.items.date"),
+          value: DatePlugin.key
+        },
+        {
+          focusEditor: false,
+          icon: <RadicalIcon />,
+          label: t("Inline.items.inlineEquation"),
+          value: InlineEquationPlugin.key
+        }
+      ].map((item) => ({
+        ...item,
+        onSelect: (editor, value) => {
+          insertInlineElement(editor, value)
+        }
+      }))
+    }
+  ]
+}
 
 export function SlashInputElement(
   props: PlateElementProps<TSlashInputElement>
 ) {
+  const t = useTranslations(
+    "Dashboard.Note.Editor.Elements.SlashInputElement.groups"
+  )
   const { editor, element } = props
+
+  const groups = React.useMemo(() => getGroups(t), [t])
 
   return (
     <PlateElement {...props} as="span" data-slate-value={element.value}>

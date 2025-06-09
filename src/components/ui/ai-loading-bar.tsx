@@ -6,8 +6,10 @@ import { Pause } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { useTranslations } from "next-intl"
 
 export const AILoadingBar = () => {
+  const t = useTranslations("Dashboard.Note.Editor.Elements.AIMenu")
   const chat = usePluginOption(AIChatPlugin, "chat")
   const mode = usePluginOption(AIChatPlugin, "mode")
 
@@ -28,7 +30,9 @@ export const AILoadingBar = () => {
       )}
     >
       <span className="border-muted-foreground h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" />
-      <span>{status === "submitted" ? "Thinking..." : "Writing..."}</span>
+      <span>
+        {status === "submitted" ? t("thinkingState") : t("editingState")}
+      </span>
       <Button
         size="sm"
         variant="ghost"
@@ -36,7 +40,7 @@ export const AILoadingBar = () => {
         onClick={() => api.aiChat.stop()}
       >
         <Pause className="h-4 w-4" />
-        Stop
+        {t("stop")}
         <kbd className="bg-border text-muted-foreground ml-1 rounded px-1 font-mono text-[10px] shadow-sm">
           Esc
         </kbd>

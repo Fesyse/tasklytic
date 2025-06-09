@@ -28,6 +28,21 @@ import {
   ContextMenuTrigger
 } from "@/components/ui/context-menu"
 import { useIsTouchDevice } from "@/hooks/use-is-touch-device"
+import {
+  AlignCenter,
+  AlignRight,
+  Bot,
+  Copy,
+  Heading2,
+  Heading3,
+  Indent,
+  Outdent,
+  Quote,
+  Trash,
+  Type,
+  WandSparkles
+} from "lucide-react"
+import { useTranslations } from "next-intl"
 
 type Value = "askAI" | null
 
@@ -36,6 +51,8 @@ export function BlockContextMenu({ children }: { children: React.ReactNode }) {
   const [value, setValue] = React.useState<Value>(null)
   const isTouch = useIsTouchDevice()
   const [readOnly] = usePlateState("readOnly")
+
+  const t = useTranslations("Dashboard.Note.Editor.Elements.BlockContextMenu")
 
   const handleTurnInto = React.useCallback(
     (type: string) => {
@@ -116,17 +133,8 @@ export function BlockContextMenu({ children }: { children: React.ReactNode }) {
               setValue("askAI")
             }}
           >
-            Ask AI
-          </ContextMenuItem>
-          <ContextMenuItem
-            onClick={() => {
-              editor
-                .getTransforms(BlockSelectionPlugin)
-                .blockSelection.removeNodes()
-              editor.tf.focus()
-            }}
-          >
-            Delete
+            <Bot className="mr-2 h-4 w-4" />
+            {t("askAI")}
           </ContextMenuItem>
           <ContextMenuItem
             onClick={() => {
@@ -135,28 +143,36 @@ export function BlockContextMenu({ children }: { children: React.ReactNode }) {
                 .blockSelection.duplicate()
             }}
           >
-            Duplicate
+            <Copy className="mr-2 h-4 w-4" />
+            {t("duplicate")}
             {/* <ContextMenuShortcut>⌘ + D</ContextMenuShortcut> */}
           </ContextMenuItem>
           <ContextMenuSub>
-            <ContextMenuSubTrigger>Turn into</ContextMenuSubTrigger>
+            <ContextMenuSubTrigger>
+              <WandSparkles className="text-muted-foreground mr-4 size-4" />
+              {t("turnInto")}
+            </ContextMenuSubTrigger>
             <ContextMenuSubContent className="w-48">
               <ContextMenuItem
                 onClick={() => handleTurnInto(ParagraphPlugin.key)}
               >
-                Paragraph
+                <Type className="mr-2 h-4 w-4" />
+                {t("items.paragraph")}
               </ContextMenuItem>
 
               <ContextMenuItem onClick={() => handleTurnInto(HEADING_KEYS.h2)}>
-                Heading 2
+                <Heading2 className="mr-2 h-4 w-4" />
+                {t("items.heading2")}
               </ContextMenuItem>
               <ContextMenuItem onClick={() => handleTurnInto(HEADING_KEYS.h3)}>
-                Heading 3
+                <Heading3 className="mr-2 h-4 w-4" />
+                {t("items.heading3")}
               </ContextMenuItem>
               <ContextMenuItem
                 onClick={() => handleTurnInto(BlockquotePlugin.key)}
               >
-                Blockquote
+                <Quote className="mr-2 h-4 w-4" />
+                {t("items.blockquote")}
               </ContextMenuItem>
             </ContextMenuSubContent>
           </ContextMenuSub>
@@ -170,7 +186,8 @@ export function BlockContextMenu({ children }: { children: React.ReactNode }) {
                 .blockSelection.setIndent(1)
             }
           >
-            Indent
+            <Indent className="mr-2 h-4 w-4" />
+            {t("indent")}
           </ContextMenuItem>
           <ContextMenuItem
             onClick={() =>
@@ -179,23 +196,41 @@ export function BlockContextMenu({ children }: { children: React.ReactNode }) {
                 .blockSelection.setIndent(-1)
             }
           >
-            Outdent
+            <Outdent className="mr-2 h-4 w-4" />
+            {t("outdent")}
           </ContextMenuItem>
           <ContextMenuSub>
-            <ContextMenuSubTrigger>Align</ContextMenuSubTrigger>
+            <ContextMenuSubTrigger>
+              <WandSparkles className="text-muted-foreground mr-4 size-4" />
+              {t("align")}
+            </ContextMenuSubTrigger>
             <ContextMenuSubContent className="w-48">
               <ContextMenuItem onClick={() => handleAlign("left")}>
-                Left
+                <AlignRight className="mr-2 h-4 w-4" />
+                {t("alignItems.left")}
               </ContextMenuItem>
               <ContextMenuItem onClick={() => handleAlign("center")}>
-                Center
+                <AlignCenter className="mr-2 h-4 w-4" />
+                {t("alignItems.center")}
               </ContextMenuItem>
               <ContextMenuItem onClick={() => handleAlign("right")}>
-                Right
+                <AlignRight className="mr-2 h-4 w-4" />
+                {t("alignItems.right")}
               </ContextMenuItem>
             </ContextMenuSubContent>
           </ContextMenuSub>
         </ContextMenuGroup>
+        <ContextMenuItem
+          onClick={() => {
+            editor
+              .getTransforms(BlockSelectionPlugin)
+              .blockSelection.removeNodes()
+            editor.tf.focus()
+          }}
+        >
+          <Trash className="mr-2 h-4 w-4" />
+          {t("delete")}
+        </ContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>
   )

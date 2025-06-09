@@ -10,9 +10,12 @@ import {
 import { Button } from "@/components/ui/button"
 import { Icons } from "@/components/ui/icons"
 import { cn } from "@/lib/utils"
+import { useTranslations } from "next-intl"
 import Link from "next/link"
 
 export default function IntegrationsSection() {
+  const t = useTranslations("HomePage.IntegrationsSection")
+
   return (
     <section className="relative">
       <div
@@ -108,15 +111,12 @@ export default function IntegrationsSection() {
           </div>
           <div className="mx-auto mt-12 max-w-lg space-y-6 text-center">
             <h2 className="text-3xl font-semibold text-balance md:text-4xl">
-              Integrate with your favorite tools
+              {t("title")}
             </h2>
-            <p className="text-muted-foreground">
-              Connect seamlessly with popular platforms and services to enhance
-              your workflow.
-            </p>
+            <p className="text-muted-foreground">{t("description")}</p>
 
             <Button variant="outline" size="sm" asChild>
-              <Link href="/auth/sign-up">Get Started</Link>
+              <Link href="/auth/sign-up">{t("start")}</Link>
             </Button>
           </div>
         </div>
