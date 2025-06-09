@@ -1,9 +1,34 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { invitations, organizations, users } from "@/server/db/schema"
+import { kv } from "@/server/kv"
 import { and, eq } from "drizzle-orm"
 
 export const organizationRouter = createTRPCRouter({
   getInvitations: protectedProcedure.query(async ({ ctx }) => {
+    const cacheKey = `user:${ctx.session.user.email}:invitations`
+    const cachedInvitations = await kv.get(cacheKey)
+
+    if (cachedInvitations) {
+      console.log(
+        `[TRPC] Invitations cache hit for user: ${ctx.session.user.email}`
+      )
+      return cachedInvitations as {
+        id: string
+        email: string
+        status: string
+        expiresAt: Date
+        organizationId: string
+        role: string | null
+        inviterId: string
+        organizationName: string
+        inviterEmail: string
+      }[]
+    }
+
+    console.log(
+      `[TRPC] Invitations cache miss for user: ${ctx.session.user.email}`
+    )
+
     const invitationsResult = await ctx.db
       .select({
         id: invitations.id,
@@ -28,6 +53,9 @@ export const organizationRouter = createTRPCRouter({
           eq(invitations.status, "pending")
         )
       )
+
+    // Cache the invitations for 5 minutes (300 seconds)
+    await kv.set(cacheKey, invitationsResult, { ex: 300 })
 
     return invitationsResult
   })

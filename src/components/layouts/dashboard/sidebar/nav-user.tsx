@@ -24,19 +24,44 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { authClient } from "@/lib/auth-client"
 import type { User } from "better-auth"
 import { HomeIcon, SettingsIcon, UserIcon } from "lucide-react"
+import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
 export function NavUser() {
+  const t = useTranslations("Dashboard.Sidebar.NavUser")
   const { data: session, isPending, error } = authClient.useSession()
   const user = session?.user
 
+  const { data: activeOrg, isPending: isLoadingActiveOrg } =
+    authClient.useActiveOrganization()
   const { isMobile } = useSidebar()
   const router = useRouter()
 
   if (error) {
     toast.error("Error fetching user.")
+  }
+
+  const handleSignOut = () => {
+    if (isLoadingActiveOrg || !user)
+      return toast.error("Loading application data, can't sign out right now.")
+
+    if (activeOrg) localStorage.setItem(`activeOrg:${user.id}`, activeOrg.id)
+
+    void authClient.signOut({
+      fetchOptions: {
+        onError: (error) => {
+          toast.error("Error signing out, try again later.", {
+            description: error.error?.message
+          })
+        },
+        onSuccess: () => {
+          toast.success("Signed out successfully!")
+          router.push("/")
+        }
+      }
+    })
   }
 
   return (
@@ -77,36 +102,20 @@ export function NavUser() {
               <DropdownMenuItem asChild>
                 <Link href="/settings">
                   <SettingsIcon />
-                  Settings
+                  {t("settings")}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href="/home">
                   <HomeIcon />
-                  Home
+                  {t("homePage")}
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() =>
-                authClient.signOut({
-                  fetchOptions: {
-                    onError: (error) => {
-                      toast.error("Error signing out, try again later.", {
-                        description: error.error?.message
-                      })
-                    },
-                    onSuccess: () => {
-                      toast.success("Signed out successfully!")
-                      router.push("/")
-                    }
-                  }
-                })
-              }
-            >
+            <DropdownMenuItem onClick={handleSignOut}>
               <IconLogout />
-              Log out
+              {t("logout")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

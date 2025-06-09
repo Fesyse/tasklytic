@@ -16,6 +16,10 @@ type Note = {
   createdByUserName: string
   isPublic: boolean
   parentNoteId: string | null
+  isFavorited?: boolean
+  isDeleted?: boolean
+  favoritedByUserId?: string | null
+  cover?: string
 }
 
 type Block = {
@@ -30,6 +34,7 @@ type Discussion = {
   noteId: string
   blockId: string
   documentContent?: string
+  updatedAt: Date
   createdAt: Date
   isResolved: boolean
   userId: string
@@ -39,25 +44,34 @@ type Comment = {
   id: string
   discussionId: string
   contentRich: any // Using any for now, but should be Value from @udecode/plate
+  updatedAt: Date
   createdAt: Date
   isEdited: boolean
   userId: string
+  userImage?: string
 }
 
-const dexieDB = new Dexie(`${siteConfig.name}Database`) as Dexie & {
-  notes: EntityTable<Note, "id">
-  blocks: EntityTable<Block, "id">
-  discussions: EntityTable<Discussion, "id">
-  comments: EntityTable<Comment, "id">
+const createDexieDB = () => {
+  const dexieDB = new Dexie(`${siteConfig.name}Database`) as Dexie & {
+    notes: EntityTable<Note, "id">
+    blocks: EntityTable<Block, "id">
+    discussions: EntityTable<Discussion, "id">
+    comments: EntityTable<Comment, "id">
+  }
+
+  dexieDB.version(1).stores({
+    notes:
+      "&id, title, emoji, emojiSlug, isPublic, organizationId, parentNoteId, updatedByUserId, updatedByUserName, updatedAt, createdByUserId, createdByUserName, createdAt, isFavorited, favoritedByUserId, cover, [id+organizationId], isDeleted",
+    blocks: "&id, noteId, content, order",
+    discussions:
+      "&id, noteId, blockId, isResolved, userId, updatedAt, createdAt",
+    comments: "&id, discussionId, userId, updatedAt, createdAt, isEdited"
+  })
+
+  return dexieDB
 }
 
-dexieDB.version(1).stores({
-  notes:
-    "&id, title, emoji, emojiSlug, isPublic, organizationId, parentNoteId, updatedByUserId, updatedByUserName, updatedAt, createdByUserId, createdByUserName, createdAt, [id+organizationId]",
-  blocks: "&id, noteId, content, order",
-  discussions: "&id, noteId, blockId, isResolved, userId, createdAt",
-  comments: "&id, discussionId, userId, createdAt, isEdited"
-})
+const dexieDB = createDexieDB()
 
-export { dexieDB }
-export type { Comment, Discussion, Note }
+export { createDexieDB, dexieDB }
+export type { Block, Comment, Discussion, Note }

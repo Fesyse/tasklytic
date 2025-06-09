@@ -19,7 +19,7 @@ const geist = Geist({
   variable: "--font-geist-sans"
 })
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
   modal
 }: Readonly<{
@@ -27,7 +27,7 @@ export default function RootLayout({
   modal: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${geist.variable}`}>
+    <html className={`${geist.variable}`} suppressHydrationWarning>
       <head>
         <meta name="apple-mobile-web-app-title" content="Tasklytic" />
         <link rel="icon" href="/icon.svg" sizes="any" type="image/svg+" />

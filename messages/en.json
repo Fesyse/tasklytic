@@ -1,0 +1,506 @@
+{
+  "HomePage": {
+    "HeroSection": {
+      "announcement": "We are in beta!",
+      "title": "Improve your discipline, improve your life with",
+      "description": "Develop ironclad self-discipline with our habit-tracking and goal-setting app. Break down your goals, track your progress, and stay motivated with personalized reminders and insights.",
+      "start": "Start for free",
+      "pricing": "Pricing"
+    },
+    "CompaniesSection": {
+      "hover": "Meet Our Customers"
+    },
+    "IntegrationsSection": {
+      "title": "Integrate with your favorite tools",
+      "description": "Connect seamlessly with popular platforms and services to enhance your workflow.",
+      "start": "Get started"
+    }
+  },
+  "HomeHeader": {
+    "Nav": {
+      "features": "Features",
+      "solution": "Solution",
+      "pricing": "Pricing",
+      "about": "About"
+    },
+
+    "Login": {
+      "login": "Login",
+      "sign-up": "Sign up",
+      "start": "Get started",
+      "go-to-dashboard": "Go to dashboard",
+      "short-go-to-dashboard": "Dashboard"
+    }
+  },
+  "HomeFooter": {
+    "Nav": {
+      "features": "Features",
+      "solution": "Solution",
+      "customers": "Customers",
+      "pricing": "Pricing",
+      "help": "Help",
+      "about": "About"
+    },
+
+    "rights": "All rights reserved"
+  },
+  "ModeToggle": {
+    "label": "Change theme",
+
+    "dark": "Dark",
+    "light": "Light",
+    "system": "System"
+  },
+  "Auth": {
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "VerifyEmail": {
+      "checkEmailTitle": "Check your email",
+      "verificationLinkDescription": "We've sent a verification link to your email address. Please click the link to verify your account."
+    },
+    "ForgotPassword": {
+      "title": "Forgot password",
+      "description": "Please fill out form below to recover your account",
+      "Fields": {
+        "email": "Email",
+        "emailPlaceholder": "Enter your email"
+      },
+      "submit": "Send reset instructions"
+    },
+    "SignIn": {
+      "title": "Sign in",
+      "description": "Enter your email below to sign in to your account",
+      "Fields": {
+        "email": "Email",
+        "password": "Password",
+        "forgotPassword": "Forgot password?"
+      }
+    },
+    "SignUp": {
+      "title": "Sign up",
+      "description": "Enter your email below to create new account",
+      "Fields": {
+        "name": "Name",
+        "email": "Email",
+        "password": "Password",
+        "confirmPassword": "Confirm password"
+      }
+    },
+    "continueWith": "Or continue with",
+    "socialProvider": "Sign in with {provider}",
+    "accountExist": "Already have an account?",
+    "accountDoesntExist": "Don't have an account?",
+    "ForgotPasswordProceed": {
+      "passwordLengthError": "Password must be at least 8 characters long",
+      "turnstileRequiredError": "You need to verify that you are human, click checkbox above",
+      "passwordsMatchError": "Passwords do not match",
+      "resetTokenMissingError": "Reset token is missing. Please try the password reset process again.",
+      "notRobotError": "Please verify you are not a robot",
+      "botDetectedError": "Seems like you are bot, try again later.",
+      "resetPasswordFailedError": "Failed to reset password. Please try again.",
+      "unexpectedError": "An unexpected error occurred. Please try again.",
+      "successTitle": "Password Reset Successful",
+      "successShortTitle": "Success!",
+      "successDescription": "Your password has been reset successfully.",
+      "successRedirectMessage": "Your password has been reset. You will be redirected to the sign-in page shortly.",
+      "goToSignInButton": "Go to Sign In",
+      "invalidResetTitle": "Invalid Password Reset",
+      "invalidResetDescription": "We couldn't process your password reset request.",
+      "errorAlertTitle": "Error",
+      "tryAgainButton": "Try Again",
+      "resetPasswordTitle": "Reset your password",
+      "resetPasswordDescription": "Enter your new password below",
+      "newPasswordLabel": "New Password",
+      "newPasswordPlaceholder": "Enter your new password",
+      "confirmPasswordLabel": "Confirm Password",
+      "confirmPasswordPlaceholder": "Confirm your new password",
+      "turnstileError": "Security check failed. Please try again.",
+      "turnstileExpired": "Security check expired. Please verify again."
+    }
+  },
+  "AcceptInvitation": {
+    "title": "Organization Invitation",
+    "loadingDetails": "Loading invitation details...",
+    "errorTitle": "Error",
+    "errorMessage": "There was a problem with this invitation",
+    "returnToDashboard": "Return to Dashboard",
+    "acceptedTitle": "Invitation Accepted",
+    "acceptedMessage": "You have successfully joined the organization",
+    "redirecting": "Redirecting you to the dashboard...",
+    "invitedToJoin": "You have been invited to join",
+    "anOrganization": "an organization",
+    "invitedBy": "You were invited by",
+    "aTeamMember": "a team member",
+    "toJoinOrganization": "to join their organization.",
+    "role": "Role:",
+    "memberRole": "Member",
+    "acceptButton": "Accept Invitation",
+    "acceptingButton": "Accepting...",
+    "rejectButton": "Reject Invitation",
+    "rejectingButton": "Rejecting...",
+    "rejectedMessage": "Invitation rejected",
+    "rejectedNewUserRedirect": "Redirecting to create new organization, because youre dont have one"
+  },
+  "NewOrganization": {
+    "createOrganizationTitle": "Create your organization",
+    "step1Description": "How would you like to use Tasklytic?",
+    "step2Description": "Choose your default layout",
+    "organizationNameLabel": "Organization Name",
+    "organizationNamePlaceholder": "My Workspace",
+    "slugLabel": "URL Slug",
+    "slugPlaceholder": "my-workspace",
+    "slugTakenError": "This slug is already taken. Please choose another one.",
+    "teamTypeLabel": "Team Type",
+    "soloOptionLabel": "Solo",
+    "soloOptionDescription": "Just myself",
+    "teamOptionLabel": "Team",
+    "teamOptionDescription": "With my team",
+    "layoutTypeLabel": "Default Layout",
+    "defaultLayoutOptionLabel": "Default",
+    "defaultLayoutOptionDescription": "Standard layout for general use",
+    "minimalistLayoutOptionLabel": "Minimalist",
+    "minimalistLayoutOptionDescription": "Clean and simple layout",
+    "detailedLayoutOptionLabel": "Detailed",
+    "detailedLayoutOptionDescription": "Comprehensive view with more details",
+    "cancelButton": "Cancel",
+    "nextStepButton": "Next Step",
+    "previousStepButton": "Previous Step",
+    "createOrganizationButton": "Create Organization",
+    "creatingOrganizationButton": "Creating Organization..."
+  },
+  "Dashboard": {
+    "Sidebar": {
+      "OrganizationSwitcher": {
+        "organizations": "Organizations",
+        "loadingOrganizationsFallback": "Loading...",
+        "noOrganizationsFallback": "No organizations",
+        "createOrganizationButton": "Create organization"
+      },
+      "NavMain": {
+        "quickCreateTooltip": "Quick Create",
+        "quickCreateButton": "Quick Create",
+        "inbox": "Inbox",
+        "home": "Home"
+      },
+      "NavNotes": {
+        "privateNotesLabel": "Private",
+        "favoriteNotesLabel": "Favorite",
+        "sharedNotesLabel": "Shared",
+        "noNotesFallback": "No notes",
+        "Actions": {
+          "toggleFavorite": "{isFavorite, select, true {Remove from} other {Add to}} favorites",
+          "copyLink": "Copy link",
+          "openInNewTab": "Open in new tab",
+          "delete": "Delete"
+        }
+      },
+      "NavSecondary": {
+        "invitations": "Invitations",
+        "invitePeople": "Invite people",
+        "calendar": "Calendar",
+        "settings": "Settings"
+      },
+      "NavUser": {
+        "settings": "Settings",
+        "homePage": "Home page",
+        "logout": "Logout"
+      },
+      "InvitationsDialog": {
+        "title": "Organization Invitations",
+        "description": "View and manage your organization invitations",
+        "errorFallback": "Error loading invitations",
+        "noInvitationsFallback": "You don't have any pending invitations",
+        "Invitation": {
+          "organization": "Organization",
+          "unknownInviter": "Unknown",
+          "member": "Member",
+          "decline": "Decline",
+          "rejectingFallback": "Rejecting...",
+          "accept": "Accept",
+          "acceptingFallback": "Accepting...",
+          "refresh": "Refresh invitations"
+        }
+      }
+    },
+    "Note": {
+      "Header": {
+        "SavedState": {
+          "saved": "Saved",
+          "saving": "Saving...",
+          "autoSaving": "Auto-saving...",
+          "unsaved": "Unsaved changes"
+        },
+        "EditedState": {
+          "edited": "Edited",
+          "editedBy": "Edited by",
+          "createdBy": "Created by"
+        },
+        "toggleFavorite": "{isFavorited, select, true {Remove from} other {Add to}} favorites",
+        "NoteNavActions": {
+          "customizePage": "Customize Page",
+          "turnIntoWiki": "Turn into wiki",
+          "copyLink": "Copy Link",
+          "duplicate": "Duplicate",
+          "moveTo": "Move to",
+          "moveToTrash": "Move to Trash",
+          "undo": "Undo",
+          "redo": "Redo",
+          "viewAnalytics": "View analytics",
+          "versionHistory": "Version History",
+          "showDeletePages": "Show delete pages",
+          "notifications": "Notifications",
+          "Import": {
+            "import": "Import",
+            "html": "Import from HTML",
+            "markdown": "Import from Markdown"
+          },
+          "Export": {
+            "export": "Export",
+            "html": "Export as HTML",
+            "pdf": "Export as PDF",
+            "image": "Export as Image",
+            "markdown": "Export as Markdown"
+          }
+        }
+      },
+      "Editor": {
+        "ContentHeader": {
+          "addIcon": "Add icon",
+          "toggleCover": "{hasCover, select, true {Remove} other {Add}} cover",
+          "toggleFavorite": "{isFavorited, select, true {Remove from} other {Add to}} favorites"
+        },
+        "placeholder": "Type / to get started",
+        "Elements": {
+          "CommentElement": {
+            "reply": "Reply...",
+            "edit": "Edit",
+            "delete": "Delete"
+          },
+          "LinkFloatingToolbar": {
+            "textToDesplay": "Text to desplay",
+            "pasteLink": "Paste link",
+            "editLink": "Edit link"
+          },
+          "FloatingToolbarButtons": {
+            "aiCommands": "AI commands",
+            "askAI": "Ask ai",
+            "bold": "Bold",
+            "italic": "Italic",
+            "underline": "Underline",
+            "strikethrough": "Strikethrough",
+            "code": "Code",
+            "markAsEquation": "Mark as equation",
+            "link": "Link",
+            "comment": "Comment",
+            "suggestionEdits": "{isSuggesting, select, true {Turn off suggesting} other {Suggestion edits}}",
+            "Insert": {
+              "label": "Insert",
+
+              "keyboardInput": "Keyboard input",
+              "superscript": "Superscript",
+              "subscript": "Subscript"
+            }
+          },
+          "TurnIntoDropdownMenu": {
+            "turnInto": "Turn into",
+            "items": {
+              "text": "Text",
+              "heading1": "Heading 1",
+              "heading2": "Heading 2",
+              "heading3": "Heading 3",
+              "bulletedList": "Bulleted list",
+              "numberedList": "Numbered list",
+              "todoList": "To-do list",
+              "toggleList": "Toggle list",
+              "code": "Code",
+              "quote": "Quote",
+              "threeColumns": "3 columns"
+            }
+          },
+          "BlockContextMenu": {
+            "askAI": "Ask AI",
+            "delete": "Delete",
+            "duplicate": "Duplicate",
+            "turnInto": "Turn into",
+            "items": {
+              "paragraph": "Paragraph",
+              "heading2": "Heading 2",
+              "heading3": "Heading 3",
+              "blockquote": "Blockquote"
+            },
+            "indent": "Indent",
+            "outdent": "Outdent",
+            "align": "Align",
+            "alignItems": {
+              "left": "Left",
+              "center": "Center",
+              "right": "Right"
+            }
+          },
+          "EquationElement": {
+            "done": "Done",
+            "newEquationPlaceholder": "New equation",
+            "addTextEquation": "Add a Tex equation"
+          },
+          "TocElement": {
+            "noHeadingsFallback": "Create a heading to display the table of contents."
+          },
+          "TableElement": {
+            "Tooltips": {
+              "backgroundColor": "Background color",
+              "mergeCells": "Merge cells",
+              "splitCells": "Split cells",
+              "cellBorders": "Cell borders",
+              "deleteTable": "Delete table",
+              "insertRowBefore": "Insert row before",
+              "insertRowAfter": "Insert row after",
+              "deleteRow": "Delete row",
+              "insertColumnBefore": "Insert column before",
+              "insertColumnAfter": "Insert column after",
+              "deleteColumn": "Delete column"
+            },
+            "BorderButtons": {
+              "topBorder": "Top border",
+              "rightBorder": "Right border",
+              "bottomBorder": "Bottom border",
+              "leftBorder": "Left border",
+              "noBorder": "No border",
+              "allBorders": "Outside borders"
+            },
+            "colorsLabel": "Colors",
+            "clearColor": "Clear"
+          },
+          "CodeBlockCombobox": {
+            "searchLanguage": "Search language...",
+            "noLanguageFallback": "No language found."
+          },
+          "DateElement": {
+            "today": "Today",
+            "yesterday": "Yesterday",
+            "tomorrow": "Tomorrow"
+          },
+          "Draggable": {
+            "handleTooltip": "Drag to move",
+            "ColumnDragHandle": {
+              "handleTooltip": "Drag to move column"
+            }
+          },
+          "SlashInputElement": {
+            "groups": {
+              "AI": {
+                "label": "AI",
+                "items": {
+                  "ai": "AI"
+                }
+              },
+              "BasicBlocks": {
+                "label": "Basic blocks",
+                "items": {
+                  "text": "Text",
+                  "heading1": "Heading 1",
+                  "heading2": "Heading 2",
+                  "heading3": "Heading 3",
+                  "bulletedList": "Bulleted list",
+                  "numberedList": "Numbered list",
+                  "todoList": "To-do list",
+                  "toggle": "Toggle",
+                  "codeBlock": "Code Block",
+                  "table": "Table",
+                  "blockquote": "Blockquote",
+                  "callout": "Callout"
+                }
+              },
+              "AdvancedBlocks": {
+                "label": "Advanced blocks",
+                "items": {
+                  "toc": "Table of contents",
+                  "threeColumns": "3 columns",
+                  "equation": "Equation"
+                }
+              },
+              "Inline": {
+                "label": "Inline",
+                "items": {
+                  "date": "Date",
+                  "inlineEquation": "Inline Equation"
+                }
+              }
+            }
+          },
+          "AIMenu": {
+            "placeholder": "Ask AI anything...",
+            "editingState": "Editing...",
+            "thinkingState": "Thinking...",
+            "stop": "Stop",
+            "items": {
+              "accept": "Accept",
+              "continueWriting": "Continue writing",
+              "discard": "Discard",
+              "emojify": "Emojify",
+              "explain": "Explain",
+              "fixSpellingGrammar": "Fix spelling & grammar",
+              "generateMarkdownSample": "Generate Markdown sample",
+              "generateMdxSample": "Generate MDX sample",
+              "improveWriting": "Improve writing",
+              "insertBelow": "Insert below",
+              "makeLonger": "Make longer",
+              "makeShorter": "Make shorter",
+              "replaceSelection": "Replace selection",
+              "simplifyLanguage": "Simplify language",
+              "addSummary": "Add a summary",
+              "tryAgain": "Try again",
+              "prompts": {
+                "continueWritingEmpty": "<Document>\n{editor}\n</Document>\nStart writing a new paragraph AFTER <Document> ONLY ONE SENTENCE",
+                "continueWritingNonEmpty": "Continue writing AFTER <Block> ONLY ONE SENTENCE. DONT REPEAT THE TEXT.",
+                "emojify": "Emojify",
+                "explainDefault": "Explain {editor}",
+                "explainSelecting": "Explain",
+                "fixSpellingGrammar": "Fix spelling and grammar",
+                "generateMarkdownSample": "Generate a markdown sample",
+                "generateMdxSample": "Generate a mdx sample",
+                "improveWriting": "Improve the writing",
+                "makeLonger": "Make longer",
+                "makeShorter": "Make shorter",
+                "simplifyLanguage": "Simplify the language",
+                "addSummaryDefault": "Summarize {editor}",
+                "addSummarySelecting": "Summarize"
+              }
+            }
+          }
+        }
+      }
+    },
+    "Blocks": {
+      "Columns": {
+        "threeColumns": "Three columns"
+      },
+      "Callout": {
+        "callout": "Callout",
+        "defaultEmoji": "\uD83D\uDCE2"
+      },
+      "Image": {
+        "image": "Image",
+        "addViaLink": "Add via link",
+        "pasteImageLink": "Paste the image link...",
+        "uploadImage": "Upload image"
+      },
+      "Link": {
+        "link": "Link",
+        "text": "Text",
+        "url": "URL",
+        "openInNewTab": "Open in new tab",
+        "cancel": "Cancel",
+        "save": "Save"
+      },
+      "Table": {
+        "table": "Table",
+        "columns": "Columns",
+        "rows": "Rows"
+      },
+      "Toggle": {
+        "toggle": "Toggle",
+        "emptyPlaceholder": "Empty toggle"
+      }
+    }
+  }
+}

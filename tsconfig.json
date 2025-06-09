@@ -28,11 +28,15 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@/emails/*": ["./emails/*"]
-    }
+      "$/*": ["./emails/*"],
+      "tests": ["./tests"]
+    },
+
+    // Tests
+    "types": ["vitest/globals", "@vitest/browser/providers/playwright"]
   },
   "include": [
-    "next-env.d.ts",
+    "*.d.ts",
     "**/*.ts",
     "**/*.tsx",
     "**/*.cjs",

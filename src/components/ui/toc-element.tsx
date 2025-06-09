@@ -1,12 +1,11 @@
 "use client"
 
-import * as React from "react"
-
 import type { PlateElementProps } from "@udecode/plate/react"
 
 import { useTocElement, useTocElementState } from "@udecode/plate-heading/react"
 import { PlateElement } from "@udecode/plate/react"
 import { cva } from "class-variance-authority"
+import { useTranslations } from "next-intl"
 
 import { Button } from "@/components/ui/button"
 
@@ -24,6 +23,7 @@ const headingItemVariants = cva(
 )
 
 export function TocElement(props: PlateElementProps) {
+  const t = useTranslations("Dashboard.Note.Editor.Elements.TocElement")
   const state = useTocElementState()
   const { props: btnProps } = useTocElement(state)
   const { headingList } = state
@@ -46,9 +46,7 @@ export function TocElement(props: PlateElementProps) {
             </Button>
           ))
         ) : (
-          <div className="text-sm text-gray-500">
-            Create a heading to display the table of contents.
-          </div>
+          <div className="text-sm text-gray-500">{t("noHeadingsFallback")}</div>
         )}
       </div>
       {props.children}

@@ -3,7 +3,7 @@
 import { useMutation } from "@tanstack/react-query"
 import { Check, ChevronsUpDown, PlusCircle, Users } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -17,32 +17,55 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { SidebarMenuSkeleton, useSidebar } from "@/components/ui/sidebar"
 import { authClient } from "@/lib/auth-client"
-import { cn } from "@/lib/utils"
+import { dexieDB } from "@/lib/db-client"
+import { cn, tryCatch } from "@/lib/utils"
+import { useTranslations } from "next-intl"
 
 export function OrganizationSwitcher() {
+  const t = useTranslations("Dashboard.Sidebar.OrganizationSwitcher")
   const { open: sidebarOpen } = useSidebar()
   const [isOpen, setIsOpen] = useState(false)
   const router = useRouter()
 
-  // Fetch organizations with React Query
   const {
     data: organizations,
     isPending: isLoadingOrganizations,
     error: organizationsError,
     isRefetching
   } = authClient.useListOrganizations()
+  const { data: session } = authClient.useSession()
+  const user = session?.user
 
-  // Fetch active organization with React Query
   const { data: activeOrg, isPending: isLoadingActiveOrg } =
     authClient.useActiveOrganization()
+
+  const activeOrgIdFromLocalStorage = useMemo(() => {
+    if (typeof window === "undefined") return null
+    const activeOrgId = localStorage.getItem(`activeOrg:${user?.id}`)
+    return activeOrgId ? activeOrgId : null
+  }, [user?.id])
 
   // Mutation for switching organizations
   const switchOrgMutation = useMutation({
     mutationFn: async (organizationId: string) => {
-      const { error } = await authClient.organization.setActive({
-        organizationId
-      })
-      if (error) throw error
+      const { error: organizationError } =
+        await authClient.organization.setActive({
+          organizationId
+        })
+      if (organizationError) throw organizationError
+
+      const { error: dexieError } = await tryCatch(
+        Promise.all([
+          dexieDB.comments.clear(),
+          dexieDB.discussions.clear(),
+          dexieDB.blocks.clear(),
+          dexieDB.notes.clear()
+        ])
+      )
+
+      if (dexieError) throw dexieDB
+
+      return { skipToast: false }
     },
     onError: (error) => {
       console.error("Error switching organization:", error)
@@ -57,6 +80,8 @@ export function OrganizationSwitcher() {
   const isLoading = isLoadingOrganizations || isLoadingActiveOrg
 
   const switchOrganization = async (orgId: string) => {
+    if (orgId === activeOrg?.id) return
+
     await switchOrgMutation.mutateAsync(orgId)
   }
 
@@ -82,10 +107,30 @@ export function OrganizationSwitcher() {
     isLoadingActiveOrg
   ])
 
+  useEffect(() => {
+    if (isLoadingActiveOrg || activeOrg) return
+
+    const newActiveOrganizationId =
+      activeOrgIdFromLocalStorage ?? organizations?.[0]?.id
+
+    if (!newActiveOrganizationId) return
+
+    authClient.organization.setActive({
+      organizationId: newActiveOrganizationId
+    })
+  }, [
+    activeOrg,
+    activeOrgIdFromLocalStorage,
+    isLoadingOrganizations,
+    organizations
+  ])
+
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <div className="group/menu-item relative grow transition-all duration-200 ease-in-out">
-        {activeOrg ? (
+        {activeOrg ||
+        activeOrgIdFromLocalStorage ||
+        (!isLoadingActiveOrg && !isLoadingOrganizations) ? (
           <DropdownMenuTrigger asChild>
             <Button
               variant="outline"
@@ -98,7 +143,15 @@ export function OrganizationSwitcher() {
                 }
               >
                 <Users />
-                <span>{activeOrg.name}</span>
+                <span>
+                  {activeOrg
+                    ? activeOrg.name
+                    : (
+                        organizations?.find(
+                          (org) => org.id === activeOrgIdFromLocalStorage
+                        ) ?? organizations?.[0]
+                      )?.name}
+                </span>
               </span>
               {sidebarOpen ? (
                 <ChevronsUpDown className="ml-auto h-4 w-4 shrink-0 opacity-50" />
@@ -110,11 +163,15 @@ export function OrganizationSwitcher() {
         )}
       </div>
       <DropdownMenuContent className="w-[200px]">
-        <DropdownMenuLabel>Organizations</DropdownMenuLabel>
+        <DropdownMenuLabel>{t("organizations")}</DropdownMenuLabel>
         {isLoading ? (
-          <DropdownMenuItem disabled>Loading...</DropdownMenuItem>
+          <DropdownMenuItem disabled>
+            {t("loadingOrganizationsFallback")}
+          </DropdownMenuItem>
         ) : organizations?.length === 0 ? (
-          <DropdownMenuItem disabled>No organizations</DropdownMenuItem>
+          <DropdownMenuItem disabled>
+            {t("noOrganizationsFallback")}
+          </DropdownMenuItem>
         ) : (
           organizations?.map((org) => (
             <DropdownMenuItem
@@ -137,7 +194,7 @@ export function OrganizationSwitcher() {
         <DropdownMenuItem onClick={() => router.push("/new-organization")}>
           <div className="flex items-center gap-2">
             <PlusCircle className="h-4 w-4" />
-            <span>Create Organization</span>
+            <span>{t("createOrganizationButton")}</span>
           </div>
         </DropdownMenuItem>
       </DropdownMenuContent>

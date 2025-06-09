@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 
 import { type SlateEditor, NodeApi } from "@udecode/plate"
@@ -27,6 +25,7 @@ import {
 } from "lucide-react"
 
 import { CommandGroup, CommandItem } from "@/components/ui/command"
+import { useTranslations } from "next-intl"
 
 export type EditorChatState =
   | "cursorCommand"
@@ -34,245 +33,270 @@ export type EditorChatState =
   | "selectionCommand"
   | "selectionSuggestion"
 
-export const aiChatItems = {
-  accept: {
-    icon: <Check />,
-    label: "Accept",
-    value: "accept",
-    onSelect: ({ editor }) => {
-      editor.getTransforms(AIChatPlugin).aiChat.accept()
-      editor.tf.focus({ edge: "end" })
-    }
-  },
-  continueWrite: {
-    icon: <PenLine />,
-    label: "Continue writing",
-    value: "continueWrite",
-    onSelect: ({ editor }) => {
-      const ancestorNode = editor.api.block({ highest: true })
+type AiChatItem = {
+  icon: React.ReactNode
+  label: string
+  value: string
+  component?: React.ComponentType<{ menuState: EditorChatState }>
+  filterItems?: boolean
+  items?: { label: string; value: string }[]
+  shortcut?: string
+  onSelect?: ({
+    aiEditor,
+    editor
+  }: {
+    aiEditor: SlateEditor
+    editor: PlateEditor
+  }) => void
+}
 
-      if (!ancestorNode) return
+type AiChatItems = {
+  [K in keyof ReturnType<typeof getAiChatItems>]: AiChatItem
+}
 
-      const isEmpty = NodeApi.string(ancestorNode[0]).trim().length === 0
+const getAiChatItems = (
+  t: ReturnType<
+    typeof useTranslations<"Dashboard.Note.Editor.Elements.AIMenu.items">
+  >
+) =>
+  ({
+    accept: {
+      icon: <Check />,
+      label: t("accept"),
+      value: "accept",
+      onSelect: ({ editor }: { editor: PlateEditor }) => {
+        editor.getTransforms(AIChatPlugin).aiChat.accept()
+        editor.tf.focus({ edge: "end" })
+      }
+    },
+    continueWrite: {
+      icon: <PenLine />,
+      label: t("continueWriting"),
+      value: "continueWrite",
+      onSelect: ({ editor }: { editor: PlateEditor }) => {
+        const ancestorNode = editor.api.block({ highest: true })
 
-      void editor.getApi(AIChatPlugin).aiChat.submit({
-        mode: "insert",
-        prompt: isEmpty
-          ? `<Document>
-{editor}
-</Document>
-Start writing a new paragraph AFTER <Document> ONLY ONE SENTENCE`
-          : "Continue writing AFTER <Block> ONLY ONE SENTENCE. DONT REPEAT THE TEXT."
-      })
-    }
-  },
-  discard: {
-    icon: <X />,
-    label: "Discard",
-    shortcut: "Escape",
-    value: "discard",
-    onSelect: ({ editor }) => {
-      editor.getTransforms(AIPlugin).ai.undo()
-      editor.getApi(AIChatPlugin).aiChat.hide()
-    }
-  },
-  emojify: {
-    icon: <SmileIcon />,
-    label: "Emojify",
-    value: "emojify",
-    onSelect: ({ editor }) => {
-      void editor.getApi(AIChatPlugin).aiChat.submit({
-        prompt: "Emojify"
-      })
-    }
-  },
-  explain: {
-    icon: <BadgeHelp />,
-    label: "Explain",
-    value: "explain",
-    onSelect: ({ editor }) => {
-      void editor.getApi(AIChatPlugin).aiChat.submit({
-        prompt: {
-          default: "Explain {editor}",
-          selecting: "Explain"
-        }
-      })
-    }
-  },
-  fixSpelling: {
-    icon: <Check />,
-    label: "Fix spelling & grammar",
-    value: "fixSpelling",
-    onSelect: ({ editor }) => {
-      void editor.getApi(AIChatPlugin).aiChat.submit({
-        prompt: "Fix spelling and grammar"
-      })
-    }
-  },
-  generateMarkdownSample: {
-    icon: <BookOpenCheck />,
-    label: "Generate Markdown sample",
-    value: "generateMarkdownSample",
-    onSelect: ({ editor }) => {
-      void editor.getApi(AIChatPlugin).aiChat.submit({
-        prompt: "Generate a markdown sample"
-      })
-    }
-  },
-  generateMdxSample: {
-    icon: <BookOpenCheck />,
-    label: "Generate MDX sample",
-    value: "generateMdxSample",
-    onSelect: ({ editor }) => {
-      void editor.getApi(AIChatPlugin).aiChat.submit({
-        prompt: "Generate a mdx sample"
-      })
-    }
-  },
-  improveWriting: {
-    icon: <Wand />,
-    label: "Improve writing",
-    value: "improveWriting",
-    onSelect: ({ editor }) => {
-      void editor.getApi(AIChatPlugin).aiChat.submit({
-        prompt: "Improve the writing"
-      })
-    }
-  },
-  insertBelow: {
-    icon: <ListEnd />,
-    label: "Insert below",
-    value: "insertBelow",
-    onSelect: ({ aiEditor, editor }) => {
-      void editor.getTransforms(AIChatPlugin).aiChat.insertBelow(aiEditor)
-    }
-  },
-  makeLonger: {
-    icon: <ListPlus />,
-    label: "Make longer",
-    value: "makeLonger",
-    onSelect: ({ editor }) => {
-      void editor.getApi(AIChatPlugin).aiChat.submit({
-        prompt: "Make longer"
-      })
-    }
-  },
-  makeShorter: {
-    icon: <ListMinus />,
-    label: "Make shorter",
-    value: "makeShorter",
-    onSelect: ({ editor }) => {
-      void editor.getApi(AIChatPlugin).aiChat.submit({
-        prompt: "Make shorter"
-      })
-    }
-  },
-  replace: {
-    icon: <Check />,
-    label: "Replace selection",
-    value: "replace",
-    onSelect: ({ aiEditor, editor }) => {
-      void editor.getTransforms(AIChatPlugin).aiChat.replaceSelection(aiEditor)
-    }
-  },
-  simplifyLanguage: {
-    icon: <FeatherIcon />,
-    label: "Simplify language",
-    value: "simplifyLanguage",
-    onSelect: ({ editor }) => {
-      void editor.getApi(AIChatPlugin).aiChat.submit({
-        prompt: "Simplify the language"
-      })
-    }
-  },
-  summarize: {
-    icon: <Album />,
-    label: "Add a summary",
-    value: "summarize",
-    onSelect: ({ editor }) => {
-      void editor.getApi(AIChatPlugin).aiChat.submit({
-        mode: "insert",
-        prompt: {
-          default: "Summarize {editor}",
-          selecting: "Summarize"
-        }
-      })
-    }
-  },
-  tryAgain: {
-    icon: <CornerUpLeft />,
-    label: "Try again",
-    value: "tryAgain",
-    onSelect: ({ editor }) => {
-      void editor.getApi(AIChatPlugin).aiChat.reload()
-    }
-  }
-} satisfies Record<
-  string,
-  {
-    icon: React.ReactNode
-    label: string
-    value: string
-    component?: React.ComponentType<{ menuState: EditorChatState }>
-    filterItems?: boolean
-    items?: { label: string; value: string }[]
-    shortcut?: string
-    onSelect?: ({
-      aiEditor,
-      editor
-    }: {
-      aiEditor: SlateEditor
-      editor: PlateEditor
-    }) => void
-  }
->
+        if (!ancestorNode) return
 
-const menuStateItems: Record<
+        const isEmpty = NodeApi.string(ancestorNode[0]).trim().length === 0
+
+        void editor.getApi(AIChatPlugin).aiChat.submit({
+          mode: "insert",
+          prompt: isEmpty
+            ? t("prompts.continueWritingEmpty", { editor: "{editor}" })
+            : t("prompts.continueWritingNonEmpty")
+        })
+      }
+    },
+    discard: {
+      icon: <X />,
+      label: t("discard"),
+      shortcut: "Escape",
+      value: "discard",
+      onSelect: ({ editor }: { editor: PlateEditor }) => {
+        editor.getTransforms(AIPlugin).ai?.undo()
+        editor.getApi(AIChatPlugin).aiChat.hide()
+      }
+    },
+    emojify: {
+      icon: <SmileIcon />,
+      label: t("emojify"),
+      value: "emojify",
+      onSelect: ({ editor }: { editor: PlateEditor }) => {
+        void editor.getApi(AIChatPlugin).aiChat.submit({
+          prompt: t("prompts.emojify")
+        })
+      }
+    },
+    explain: {
+      icon: <BadgeHelp />,
+      label: t("explain"),
+      value: "explain",
+      onSelect: ({ editor }: { editor: PlateEditor }) => {
+        void editor.getApi(AIChatPlugin).aiChat.submit({
+          prompt: {
+            default: t("prompts.explainDefault", { editor: "{editor}" }),
+            selecting: t("prompts.explainSelecting")
+          }
+        })
+      }
+    },
+    fixSpelling: {
+      icon: <Check />,
+      label: t("fixSpellingGrammar"),
+      value: "fixSpelling",
+      onSelect: ({ editor }: { editor: PlateEditor }) => {
+        void editor.getApi(AIChatPlugin).aiChat.submit({
+          prompt: t("prompts.fixSpellingGrammar")
+        })
+      }
+    },
+    generateMarkdownSample: {
+      icon: <BookOpenCheck />,
+      label: t("generateMarkdownSample"),
+      value: "generateMarkdownSample",
+      onSelect: ({ editor }: { editor: PlateEditor }) => {
+        void editor.getApi(AIChatPlugin).aiChat.submit({
+          prompt: t("prompts.generateMarkdownSample")
+        })
+      }
+    },
+    generateMdxSample: {
+      icon: <BookOpenCheck />,
+      label: t("generateMdxSample"),
+      value: "generateMdxSample",
+      onSelect: ({ editor }: { editor: PlateEditor }) => {
+        void editor.getApi(AIChatPlugin).aiChat.submit({
+          prompt: t("prompts.generateMdxSample")
+        })
+      }
+    },
+    improveWriting: {
+      icon: <Wand />,
+      label: t("improveWriting"),
+      value: "improveWriting",
+      onSelect: ({ editor }: { editor: PlateEditor }) => {
+        void editor.getApi(AIChatPlugin).aiChat.submit({
+          prompt: t("prompts.improveWriting")
+        })
+      }
+    },
+    insertBelow: {
+      icon: <ListEnd />,
+      label: t("insertBelow"),
+      value: "insertBelow",
+      onSelect: ({
+        aiEditor,
+        editor
+      }: {
+        aiEditor: SlateEditor
+        editor: PlateEditor
+      }) => {
+        void editor.getTransforms(AIChatPlugin).aiChat.insertBelow(aiEditor)
+      }
+    },
+    makeLonger: {
+      icon: <ListPlus />,
+      label: t("makeLonger"),
+      value: "makeLonger",
+      onSelect: ({ editor }: { editor: PlateEditor }) => {
+        void editor.getApi(AIChatPlugin).aiChat.submit({
+          prompt: t("prompts.makeLonger")
+        })
+      }
+    },
+    makeShorter: {
+      icon: <ListMinus />,
+      label: t("makeShorter"),
+      value: "makeShorter",
+      onSelect: ({ editor }: { editor: PlateEditor }) => {
+        void editor.getApi(AIChatPlugin).aiChat.submit({
+          prompt: t("prompts.makeShorter")
+        })
+      }
+    },
+    replace: {
+      icon: <Check />,
+      label: t("replaceSelection"),
+      value: "replace",
+      onSelect: ({
+        aiEditor,
+        editor
+      }: {
+        aiEditor: SlateEditor
+        editor: PlateEditor
+      }) => {
+        void editor
+          .getTransforms(AIChatPlugin)
+          .aiChat.replaceSelection(aiEditor)
+      }
+    },
+    simplifyLanguage: {
+      icon: <FeatherIcon />,
+      label: t("simplifyLanguage"),
+      value: "simplifyLanguage",
+      onSelect: ({ editor }: { editor: PlateEditor }) => {
+        void editor.getApi(AIChatPlugin).aiChat.submit({
+          prompt: t("prompts.simplifyLanguage")
+        })
+      }
+    },
+    summarize: {
+      icon: <Album />,
+      label: t("addSummary"),
+      value: "summarize",
+      onSelect: ({ editor }: { editor: PlateEditor }) => {
+        void editor.getApi(AIChatPlugin).aiChat.submit({
+          mode: "insert",
+          prompt: {
+            default: t("prompts.addSummaryDefault", { editor: "{editor}" }),
+            selecting: t("prompts.addSummarySelecting")
+          }
+        })
+      }
+    },
+    tryAgain: {
+      icon: <CornerUpLeft />,
+      label: t("tryAgain"),
+      value: "tryAgain",
+      onSelect: ({ editor }: { editor: PlateEditor }) => {
+        void editor.getApi(AIChatPlugin).aiChat.reload()
+      }
+    }
+  }) as const
+
+type MenuStateItems = Record<
   EditorChatState,
   {
-    items: (typeof aiChatItems)[keyof typeof aiChatItems][]
+    items: AiChatItem[]
     heading?: string
   }[]
-> = {
+>
+
+const menuStateItems = (aiChatItemsFn: AiChatItems): MenuStateItems => ({
   cursorCommand: [
     {
       items: [
-        aiChatItems.generateMdxSample,
-        aiChatItems.generateMarkdownSample,
-        aiChatItems.continueWrite,
-        aiChatItems.summarize,
-        aiChatItems.explain
+        aiChatItemsFn.generateMdxSample,
+        aiChatItemsFn.generateMarkdownSample,
+        aiChatItemsFn.continueWrite,
+        aiChatItemsFn.summarize,
+        aiChatItemsFn.explain
       ]
     }
   ],
   cursorSuggestion: [
     {
-      items: [aiChatItems.accept, aiChatItems.discard, aiChatItems.tryAgain]
+      items: [
+        aiChatItemsFn.accept,
+        aiChatItemsFn.discard,
+        aiChatItemsFn.tryAgain
+      ]
     }
   ],
   selectionCommand: [
     {
       items: [
-        aiChatItems.improveWriting,
-        aiChatItems.emojify,
-        aiChatItems.makeLonger,
-        aiChatItems.makeShorter,
-        aiChatItems.fixSpelling,
-        aiChatItems.simplifyLanguage
+        aiChatItemsFn.improveWriting,
+        aiChatItemsFn.emojify,
+        aiChatItemsFn.makeLonger,
+        aiChatItemsFn.makeShorter,
+        aiChatItemsFn.fixSpelling,
+        aiChatItemsFn.simplifyLanguage
       ]
     }
   ],
   selectionSuggestion: [
     {
       items: [
-        aiChatItems.replace,
-        aiChatItems.insertBelow,
-        aiChatItems.discard,
-        aiChatItems.tryAgain
+        aiChatItemsFn.replace,
+        aiChatItemsFn.insertBelow,
+        aiChatItemsFn.discard,
+        aiChatItemsFn.tryAgain
       ]
     }
   ]
-}
+})
 
 export const AIMenuItems = ({
   setValue
@@ -284,6 +308,9 @@ export const AIMenuItems = ({
   const aiEditor = usePluginOption(AIChatPlugin, "aiEditor")!
   const isSelecting = useIsSelecting()
 
+  const t = useTranslations("Dashboard.Note.Editor.Elements.AIMenu.items")
+  const translatedAiChatItems = React.useMemo(() => getAiChatItems(t), [t])
+
   const menuState = React.useMemo(() => {
     if (messages && messages.length > 0) {
       return isSelecting ? "selectionSuggestion" : "cursorSuggestion"
@@ -293,20 +320,23 @@ export const AIMenuItems = ({
   }, [isSelecting, messages])
 
   const menuGroups = React.useMemo(() => {
-    const items = menuStateItems[menuState]
+    const items = menuStateItems(translatedAiChatItems)[menuState]
 
     return items
-  }, [menuState])
+  }, [menuState, translatedAiChatItems])
 
   React.useEffect(() => {
-    if (menuGroups.length > 0 && menuGroups[0].items.length > 0) {
-      setValue(menuGroups[0].items[0].value)
+    if (menuGroups.length > 0 && (menuGroups[0]?.items.length ?? 0) > 0) {
+      const value = menuGroups[0]?.items[0]?.value
+      if (!value) return
+
+      setValue(value)
     }
   }, [menuGroups, setValue])
 
   return (
     <>
-      {menuGroups.map((group, index) => (
+      {menuGroups.map((group, index: number) => (
         <CommandGroup key={index} heading={group.heading}>
           {group.items.map((menuItem) => (
             <CommandItem

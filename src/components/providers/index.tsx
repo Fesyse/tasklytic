@@ -1,5 +1,3 @@
-"use client"
-
 import { PostHogProvider } from "@/components/providers/posthog-provider"
 import { Toaster } from "@/components/ui/sonner"
 import { TRPCReactProvider } from "@/trpc/react"

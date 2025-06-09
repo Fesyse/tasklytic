@@ -1,7 +1,14 @@
-import type { Metadata } from "next"
+import { DashboardLayout as Layout } from "@/components/layouts/dashboard"
+import { SyncProvider } from "@/providers/sync-provider"
+import { NextIntlClientProvider } from "next-intl"
+import type React from "react"
 
-export { DashboardLayout as default } from "@/components/layouts/dashboard"
-
-export const metadata: Metadata = {
-  title: "Dashboard"
+export default function DashboardLayout({ children }: React.PropsWithChildren) {
+  return (
+    <SyncProvider>
+      <NextIntlClientProvider>
+        <Layout>{children}</Layout>
+      </NextIntlClientProvider>
+    </SyncProvider>
+  )
 }

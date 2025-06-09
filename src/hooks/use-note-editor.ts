@@ -1,12 +1,14 @@
 import { useCreateEditor } from "@/components/editor/use-create-editor"
 import { useNoteEditorContext } from "@/contexts/note-editor-context"
+import { useSyncContext } from "@/contexts/sync-context"
 import { authClient } from "@/lib/auth-client"
 import { dexieDB } from "@/lib/db-client"
 import { tryCatch } from "@/lib/utils"
+import { api } from "@/trpc/react"
 import { useQueryClient } from "@tanstack/react-query"
 import type { Value } from "@udecode/plate"
 import type { User } from "better-auth"
-import { notFound, useParams } from "next/navigation"
+import { notFound, useParams, useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { useNote } from "./use-note"
@@ -16,10 +18,16 @@ export function useNoteEditor() {
     useNoteEditorContext()
   const { noteId } = useParams<{ noteId: string }>()
   const queryClient = useQueryClient()
+  const router = useRouter()
+  const { syncNow } = useSyncContext()
 
   const { data: session } = authClient.useSession()
   const { data: organization } = authClient.useActiveOrganization()
   const { data: note, isLoading, isError } = useNote()
+  const utils = api.useUtils()
+
+  const [isServerFetching, setIsServerFetching] = useState(false)
+  const [serverFetchAttempted, setServerFetchAttempted] = useState(false)
 
   const editor = useCreateEditor({
     skipInitialization: true
@@ -28,6 +36,92 @@ export function useNoteEditor() {
   const [previousEditorValue, setPreviousEditorValue] = useState<
     Value | undefined
   >()
+
+  // If no local data is found but we haven't tried server fetch yet,
+  // attempt to fetch the note directly from the server
+  useEffect(() => {
+    const fetchNoteFromServer = async () => {
+      if (isError && !serverFetchAttempted && noteId && organization?.id) {
+        setIsServerFetching(true)
+
+        try {
+          // Try to get note data directly from server
+          const serverNote = await utils.sync.getNotes
+            .fetch({
+              organizationId: organization.id
+            })
+            .then((notes) => notes.find((note) => note.id === noteId))
+
+          if (serverNote) {
+            // Store in local DB
+            await dexieDB.notes.put({
+              id: serverNote.id,
+              title: serverNote.title,
+              emoji: serverNote.emoji || undefined,
+              emojiSlug: serverNote.emojiSlug || undefined,
+              organizationId: serverNote.organizationId,
+              updatedAt: serverNote.updatedAt,
+              createdAt: serverNote.createdAt,
+              updatedByUserId: serverNote.updatedByUserId,
+              updatedByUserName: serverNote.updatedByUserName,
+              createdByUserId: serverNote.createdByUserId,
+              createdByUserName: serverNote.createdByUserName,
+              isPublic: serverNote.isPublic,
+              parentNoteId: serverNote.parentNoteId
+            })
+
+            // Get blocks for this note
+            const blockData = await utils.sync.getBlocks.fetch({
+              noteId: serverNote.id
+            })
+
+            if (blockData && blockData.length > 0) {
+              // Store blocks in local DB
+              await dexieDB.transaction("rw", dexieDB.blocks, async () => {
+                const blocksToPut = blockData.map((block: any) => ({
+                  id: block.id,
+                  noteId: block.noteId,
+                  content: JSON.parse(block.content),
+                  order: block.order
+                }))
+                await dexieDB.blocks.bulkPut(blocksToPut) // idempotent upsert
+              })
+            }
+
+            // Sync discussions and comments
+            await syncNow()
+
+            // Invalidate queries to refresh the UI
+            queryClient.invalidateQueries({
+              queryKey: ["note", noteId, organization.id]
+            })
+
+            // Refresh the page to show the note
+            router.refresh()
+          } else {
+            // If note doesn't exist on server either, show not found
+            notFound()
+          }
+        } catch (err) {
+          console.error("Error fetching note from server:", err)
+          notFound()
+        } finally {
+          setIsServerFetching(false)
+          setServerFetchAttempted(true)
+        }
+      }
+    }
+
+    fetchNoteFromServer()
+  }, [
+    isError,
+    noteId,
+    organization?.id,
+    serverFetchAttempted,
+    queryClient,
+    router,
+    syncNow
+  ])
 
   useEffect(() => {
     if (note?.blocks && editor) {
@@ -71,31 +165,45 @@ export function useNoteEditor() {
             order: index
           }))
 
-        await saveNotesLocally({
-          user: session.user,
-          noteId,
-          oldValue: sortedPreviousEditorValue,
-          newValue: sortedValue
-        })
+        // Check if there are actual changes to save
+        const hasRealChanges =
+          JSON.stringify(sortedPreviousEditorValue) !==
+          JSON.stringify(sortedValue)
 
-        setPreviousEditorValue(sortedValue)
-
-        // Update React Query cache
-        if (organization?.id) {
-          // Optimistically update the cache
-          queryClient.setQueryData(["note", noteId, organization.id], {
-            ...note,
-            blocks: sortedValue,
-            updatedAt: new Date(),
-            updatedByUserId: session.user.id,
-            updatedByUserName: session.user.name
+        if (hasRealChanges) {
+          await saveNotesLocally({
+            user: session.user,
+            noteId,
+            oldValue: sortedPreviousEditorValue,
+            newValue: sortedValue
           })
+
+          setPreviousEditorValue(sortedValue)
+
+          // Update React Query cache
+          if (organization?.id) {
+            // Optimistically update the cache
+            queryClient.setQueryData(["note", noteId, organization.id], {
+              ...note,
+              blocks: sortedValue,
+              updatedAt: new Date(),
+              updatedByUserId: session.user.id,
+              updatedByUserName: session.user.name
+            })
+          }
+
+          // Only trigger manual sync if there were actual changes
+          // and it's a manual save (not auto-save)
+          if (!isAutoSave) {
+            await syncNow()
+          }
         }
 
         if (isAutoSave) {
           setIsAutoSaving(false)
         } else {
           setIsSaving(false)
+          // We removed the sync here since it's now conditionally called above
         }
 
         setIsChanged(false)
@@ -111,7 +219,8 @@ export function useNoteEditor() {
       previousEditorValue,
       session,
       organization?.id,
-      queryClient
+      queryClient,
+      syncNow
     ]
   )
 
@@ -121,7 +230,7 @@ export function useNoteEditor() {
 
     const autoSaveTimeout = setTimeout(() => {
       saveNote(true)
-    }, 3000) // Auto-save after 3 seconds of changes
+    }, 60 * 1000) // Auto-save after 60 seconds of changes
 
     return () => clearTimeout(autoSaveTimeout)
   }, [isChanged, isLoading, saveNote])
@@ -156,18 +265,20 @@ export function useNoteEditor() {
     }
   }, [isChanged])
 
-  if (isError) notFound()
+  // Only return notFound if server fetch was attempted and failed
+  if (isError && serverFetchAttempted) notFound()
+
   if (!note)
     return {
       editor,
-      isLoading,
+      isLoading: isLoading || isServerFetching,
       note: undefined,
       saveNote
     }
 
   return {
     editor,
-    isLoading,
+    isLoading: isLoading || isServerFetching,
     note,
     saveNote
   }
@@ -193,10 +304,6 @@ async function saveNotesLocally(data: {
     const oldBlock = data.oldValue.find((b) => b.id === block.id)
     return JSON.stringify(oldBlock) !== JSON.stringify(block)
   })
-
-  console.log("createdBlocks", createdBlocks)
-  console.log("updatedBlocks", updatedBlocks)
-  console.log("deletedBlocks", deletedBlocks)
 
   const [{ error: blocksError }, { error: noteError }] = await Promise.all([
     tryCatch(

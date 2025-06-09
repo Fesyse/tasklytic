@@ -43,6 +43,7 @@ import {
   TooltipTrigger
 } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
+import { useTranslations } from "next-intl"
 
 const UNDRAGGABLE_KEYS = [
   ColumnItemPlugin.key,
@@ -217,6 +218,7 @@ function Gutter({
 }
 
 const DragHandle = React.memo(function DragHandle() {
+  const t = useTranslations("Dashboard.Note.Editor.Elements.Draggable")
   const editor = useEditorRef()
   const element = useElement()
 
@@ -235,7 +237,7 @@ const DragHandle = React.memo(function DragHandle() {
           <GripVertical className="text-muted-foreground" />
         </div>
       </TooltipTrigger>
-      <TooltipContent>Drag to move</TooltipContent>
+      <TooltipContent>{t("handleTooltip")}</TooltipContent>
     </Tooltip>
   )
 })

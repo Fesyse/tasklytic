@@ -23,12 +23,10 @@ import {
   type CreatePlateEditorOptions,
   Plate,
   PlateLeaf,
-  useEditorRef,
-  usePluginOption
+  useEditorRef
 } from "@udecode/plate/react"
 import { ArrowUpIcon } from "lucide-react"
 
-import { discussionPlugin } from "@/components/editor/plugins/discussion-plugin"
 import { useCreateEditor } from "@/components/editor/use-create-editor"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -36,6 +34,8 @@ import { useDiscussions } from "@/hooks/use-discussions"
 import { authClient } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
 
+import { useTranslations } from "next-intl"
+import { useParams } from "next/navigation"
 import { AILeaf } from "./ai-leaf"
 import { DateElement } from "./date-element"
 import { Editor, EditorContainer } from "./editor"
@@ -88,10 +88,11 @@ export function CommentCreateForm({
   discussionId?: string
   focusOnMount?: boolean
 }) {
+  const t = useTranslations("Dashboard.Note.Editor.Elements.CommentElement")
   const editor = useEditorRef()
   const commentId = useCommentId()
   const discussionId = discussionIdProp ?? commentId
-  const noteId = usePluginOption(discussionPlugin, "noteId") || ""
+  const { noteId } = useParams<{ noteId: string }>()
   const { addComment, addDiscussion } = useDiscussions(noteId)
 
   const session = authClient.useSession()
@@ -137,23 +138,21 @@ export function CommentCreateForm({
       .join("")
 
     // Get the blockId from the first comment node entry
-    const blockId = commentsNodeEntry[0][1][0].toString()
+    const blockId = commentsNodeEntry[0]?.[1]?.[0]?.toString()
+
+    if (!blockId) return
 
     // Create new discussion with first comment
-    const newDiscussionId = await addDiscussion(
-      blockId,
-      documentContent,
-      commentValue
-    )
+    const newDiscussionId = await addDiscussion(blockId, documentContent)
 
     if (!newDiscussionId) return
 
-    const id = newDiscussionId
+    await addComment(newDiscussionId, commentValue)
 
     commentsNodeEntry.forEach(([, path]) => {
       editor.tf.setNodes(
         {
-          [getCommentKey(id)]: true
+          [getCommentKey(newDiscussionId)]: true
         },
         { at: path, split: true }
       )
@@ -169,11 +168,13 @@ export function CommentCreateForm({
   ])
 
   return (
-    <div className={cn("flex w-full", className)}>
+    <div className={cn("flex w-full items-center", className)}>
       <div className="mt-2 mr-1 shrink-0">
-        <Avatar className="size-5">
+        <Avatar className="size-8">
           <AvatarImage alt={userInfo?.name} src={userInfo?.avatarUrl} />
-          <AvatarFallback>{userInfo?.name?.[0]}</AvatarFallback>
+          <AvatarFallback>
+            {userInfo?.name?.slice(0, 2).toUpperCase()}
+          </AvatarFallback>
         </Avatar>
       </div>
 
@@ -187,31 +188,29 @@ export function CommentCreateForm({
           <EditorContainer variant="comment">
             <Editor
               variant="comment"
-              className="min-h-20 grow pt-0.5 pr-8"
+              className="h-full grow"
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault()
                   onAddComment()
                 }
               }}
-              placeholder="Reply..."
+              placeholder={t("reply")}
               autoComplete="off"
               autoFocus={autoFocus}
             />
-
-            <Button
-              className="absolute top-1 right-1"
-              variant="ghost"
-              size="icon"
-              disabled={!commentContent}
-              onClick={() => {
-                onAddComment()
-              }}
-            >
-              <ArrowUpIcon className="size-4" />
-            </Button>
           </EditorContainer>
         </Plate>
+        <Button
+          variant="outline"
+          size="icon"
+          disabled={!commentContent}
+          onClick={() => {
+            onAddComment()
+          }}
+        >
+          <ArrowUpIcon className="size-4" />
+        </Button>
       </div>
     </div>
   )

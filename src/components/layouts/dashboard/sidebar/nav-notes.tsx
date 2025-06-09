@@ -30,32 +30,39 @@ import {
   useSidebar
 } from "@/components/ui/sidebar"
 import { usePrefetchNotes } from "@/hooks/use-prefetch-notes"
+import { useSync } from "@/hooks/use-sync"
 import { authClient } from "@/lib/auth-client"
-import { createNote, deleteNote } from "@/lib/db-queries"
+import { type Note } from "@/lib/db-client"
+import { createNote, deleteNote, updateNoteFavorited } from "@/lib/db-queries"
 import type { NoteNavItem } from "@/lib/sidebar"
 import { cn, getBaseUrl } from "@/lib/utils"
+import { useQueryClient } from "@tanstack/react-query"
 import {
   ArrowUpRight,
   ChevronDown,
   LinkIcon,
   MoreHorizontal,
   PlusIcon,
+  StarIcon,
+  StarOffIcon,
   Trash2
 } from "lucide-react"
+import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { useState } from "react"
+import { useCallback, useState } from "react"
 import { toast } from "sonner"
 
 export function NavNotes({
   notes,
-  type,
-  isLoading
+  type
 }: {
-  type: "private" | "shared"
-  notes: NoteNavItem[] | undefined
-  isLoading: boolean
+  type: "private" | "shared" | "favorites"
+  notes: NoteNavItem[]
 }) {
+  const t = useTranslations("Dashboard.Sidebar.NavNotes")
+
+  const { open } = useSidebar()
   const router = useRouter()
   const { data: activeOrganization } = authClient.useActiveOrganization()
   const { data: session } = authClient.useSession()
@@ -77,31 +84,43 @@ export function NavNotes({
     router.push(`/dashboard/note/${noteId}`)
   }
 
+  const getSectionTitle = () => {
+    switch (type) {
+      case "private":
+        return t("privateNotesLabel")
+      case "shared":
+        return t("sharedNotesLabel")
+      case "favorites":
+        return (
+          <span className="flex items-center gap-1.5">
+            <StarIcon className="size-4 fill-yellow-400 text-yellow-400" />
+            {t("favoriteNotesLabel")}
+          </span>
+        )
+      default:
+        return ""
+    }
+  }
+
   return (
     <SidebarGroup>
-      {!isLoading && !notes?.length && type === "shared" ? null : (
-        <SidebarGroupLabel>
-          {type === "private" ? "Private" : "Shared"}
-        </SidebarGroupLabel>
-      )}
-      {!isLoading && !notes?.length && type === "shared" ? null : (
-        <SidebarGroupAction onClick={handleCreateNote}>
-          <PlusIcon className="size-4" />
-        </SidebarGroupAction>
+      {!notes.length && (type === "shared" || type === "favorites") ? null : (
+        <>
+          <SidebarGroupLabel>{getSectionTitle()}</SidebarGroupLabel>
+          <SidebarGroupAction onClick={handleCreateNote}>
+            <PlusIcon className="size-4" />
+          </SidebarGroupAction>
+        </>
       )}
       <SidebarGroupContent>
         <SidebarMenu>
-          {isLoading || !notes ? (
-            Array.from({ length: 5 }).map((_, i) => (
-              <SidebarMenuItem key={i}>
-                <SidebarMenuSkeleton showIcon />
-              </SidebarMenuItem>
-            ))
-          ) : !notes.length && type === "private" ? (
+          {!notes.length && type !== "shared" && type !== "favorites" ? (
             <SidebarMenuItem>
-              <span className="text-muted-foreground ml-2 text-xs">
-                No notes
-              </span>
+              {open ? (
+                <span className="text-muted-foreground ml-2 text-xs">
+                  No notes
+                </span>
+              ) : null}
             </SidebarMenuItem>
           ) : (
             notes.map((item) => <Note key={item.id} item={item} />)
@@ -113,6 +132,7 @@ export function NavNotes({
 }
 
 function Note({ item, level = 0 }: { level?: number; item: NoteNavItem }) {
+  const t = useTranslations("Dashboard.Sidebar.NavNotes.Actions")
   const [isDeleting, setIsDeleting] = useState(false)
   const pathname = usePathname()
   const { isMobile, open: sidebarOpen } = useSidebar()
@@ -120,9 +140,10 @@ function Note({ item, level = 0 }: { level?: number; item: NoteNavItem }) {
   const [isActionsOpen, setIsActionsOpen] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
   const { prefetchNote } = usePrefetchNotes()
-
+  const queryClient = useQueryClient()
   const { data: activeOrganization } = authClient.useActiveOrganization()
   const { data: session } = authClient.useSession()
+  const { syncNotes } = useSync()
 
   const fullUrl = `${getBaseUrl()}${item.url}`
   const isActive = pathname === item.url
@@ -173,12 +194,17 @@ function Note({ item, level = 0 }: { level?: number; item: NoteNavItem }) {
   }
 
   const handleDeleteNote = async (noteId: string) => {
-    const { error } = await deleteNote(noteId)
+    const { error } = await deleteNote(noteId, false)
 
     if (error) {
       toast.error("An error occurred while deleting the note")
       return
     }
+
+    // Trigger sync to update the server
+    syncNotes().catch((error) => {
+      console.error("Error syncing after delete:", error)
+    })
 
     toast.success("Note deleted successfully")
     if (pathname === `/dashboard/note/${noteId}`) {
@@ -190,6 +216,75 @@ function Note({ item, level = 0 }: { level?: number; item: NoteNavItem }) {
     e.preventDefault()
     e.stopPropagation()
     setIsExpanded(!isExpanded)
+  }
+
+  const updateNoteFavorite = useCallback(
+    async (isFavorited: boolean, favoritedByUserId: string | null) => {
+      if (!session?.user) {
+        return {
+          data: null,
+          error: new Error("User not authenticated")
+        }
+      }
+      if (!item) return { data: null, error: new Error("Note not found") }
+
+      const { data, error } = await updateNoteFavorited({
+        id: item.id,
+        isFavorited,
+        favoritedByUserId,
+        updatedByUserName: session.user.name,
+        updatedByUserId: session.user.id
+      })
+
+      if (error) {
+        toast.error("Failed to update favorite status")
+        console.error(error)
+      }
+      return { data, error }
+    },
+    [item]
+  )
+
+  const handleToggleFavorite = () => {
+    if (!activeOrganization || !session) return
+
+    const newFavoritedState = !item.isFavorited
+
+    // Use the updateNoteFavorite from useSyncedNoteQueries hook
+    updateNoteFavorite(
+      newFavoritedState,
+      newFavoritedState ? session.user.id : null
+    )
+      .then(({ error }) => {
+        if (error) {
+          toast.error("Failed to update favorite status")
+          console.error(error)
+          return
+        }
+
+        // Trigger sync to update the server
+        syncNotes().catch((error) => {
+          console.error("Error syncing after toggling favorite:", error)
+        })
+
+        // Optimistically update the cache
+        queryClient.setQueryData(
+          ["note", item.id, activeOrganization.id],
+          (old: Note) => ({
+            ...old,
+            isFavorited: newFavoritedState,
+            favoritedByUserId: newFavoritedState ? session.user.id : null
+          })
+        )
+
+        toast.success(
+          newFavoritedState ? "Added to favorites" : "Removed from favorites"
+        )
+      })
+      .catch((error) => {
+        toast.error("Failed to update favorite status")
+        console.error(error)
+      })
   }
 
   return (
@@ -210,7 +305,8 @@ function Note({ item, level = 0 }: { level?: number; item: NoteNavItem }) {
               <span
                 className={cn({
                   "transition-all duration-200 ease-in-out group-hover/sidebar-note-button:opacity-0":
-                    hasSubNotes
+                    hasSubNotes,
+                  "opacity-0": isExpanded
                 })}
               >
                 {typeof item.icon === "string" ? (
@@ -228,7 +324,8 @@ function Note({ item, level = 0 }: { level?: number; item: NoteNavItem }) {
                     className={cn(
                       "text-muted-foreground relative z-10 size-4 opacity-0 transition-all duration-200 ease-in-out group-hover/sidebar-note-button:opacity-100",
                       {
-                        "-rotate-90": !isExpanded
+                        "-rotate-90": !isExpanded,
+                        "opacity-100": isExpanded
                       }
                     )}
                   />
@@ -263,18 +360,31 @@ function Note({ item, level = 0 }: { level?: number; item: NoteNavItem }) {
             side={isMobile ? "bottom" : "right"}
             align={isMobile ? "end" : "start"}
           >
+            <DropdownMenuItem onClick={() => handleToggleFavorite()}>
+              {item.isFavorited ? (
+                <StarOffIcon className="text-muted-foreground" />
+              ) : (
+                <StarIcon className="text-muted-foreground" />
+              )}
+              <span>
+                {t("toggleFavorite", {
+                  isFavorite: item?.isFavorited ? "true" : "false"
+                })}
+              </span>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => handleCopyLink(fullUrl)}>
               <LinkIcon className="text-muted-foreground" />
-              <span>Copy Link</span>
+              <span>{t("copyLink")}</span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => handleOpenInNewTab(fullUrl)}>
               <ArrowUpRight className="text-muted-foreground" />
-              <span>Open in New Tab</span>
+              <span>{t("openInNewTab")}</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => setIsDeleting(true)}>
               <Trash2 className="text-muted-foreground" />
-              <span>Delete</span>
+              <span>{t("delete")}</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

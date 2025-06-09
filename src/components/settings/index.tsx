@@ -1,11 +1,12 @@
 "use client"
 
+import { CardContent } from "@/components/ui/card"
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
+import { Separator } from "@/components/ui/separator"
+import { SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
 import { SettingsIcon } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { useState } from "react"
-import { CardContent } from "../ui/card"
-import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog"
-import { Separator } from "../ui/separator"
-import { SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar"
 import { SettingsProfile } from "./profile"
 import { SettingsSecurity } from "./security"
 import { SettingsSidebar } from "./sidebar"
@@ -25,6 +26,7 @@ const settingsTabs = {
 export type SettingsTab = keyof typeof settingsTabs
 
 export const SettingsDialog = () => {
+  const t = useTranslations("Dashboard.Sidebar.NavSecondary")
   const [tab, setTab] = useState<SettingsTab>("profile")
 
   return (
@@ -33,7 +35,7 @@ export const SettingsDialog = () => {
         <SidebarMenuItem>
           <SidebarMenuButton>
             <SettingsIcon />
-            <span>Settings</span>
+            <span>{t("settings")}</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </DialogTrigger>

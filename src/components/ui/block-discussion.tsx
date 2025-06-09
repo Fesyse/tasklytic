@@ -28,10 +28,7 @@ import {
 } from "lucide-react"
 
 import { commentsPlugin } from "@/components/editor/plugins/comments-plugin"
-import {
-  type TDiscussion,
-  discussionPlugin
-} from "@/components/editor/plugins/discussion-plugin"
+import { type TDiscussion } from "@/components/editor/plugins/discussion-plugin"
 import { suggestionPlugin } from "@/components/editor/plugins/suggestion-plugin"
 import { Button } from "@/components/ui/button"
 import {
@@ -42,7 +39,8 @@ import {
 } from "@/components/ui/popover"
 
 import { useDiscussions } from "@/hooks/use-discussions"
-import { Value } from "@udecode/plate"
+import { type Value } from "@udecode/plate"
+import { useParams } from "next/navigation"
 import {
   BlockSuggestionCard,
   isResolvedSuggestion,
@@ -214,7 +212,7 @@ const BlockCommentsContent = ({
           side="bottom"
         >
           {isCommenting ? (
-            <CommentCreateForm className="p-4" focusOnMount />
+            <CommentCreateForm className="p-2" focusOnMount />
           ) : (
             <React.Fragment>
               {noneActive ? (
@@ -293,7 +291,7 @@ export const BlockComment = ({
   isLast: boolean
 }) => {
   const [editingId, setEditingId] = React.useState<string | null>(null)
-  const noteId = usePluginOption(discussionPlugin, "noteId") || ""
+  const { noteId } = useParams<{ noteId: string }>()
   const {
     updateCommentContent,
     removeComment,
@@ -361,7 +359,7 @@ export const useResolvedDiscussion = (
   blockPath: Path
 ) => {
   const { api, getOption, setOption } = useEditorPlugin(commentsPlugin)
-  const noteId = usePluginOption(discussionPlugin, "noteId") || ""
+  const { noteId } = useParams<{ noteId: string }>()
   const { discussions } = useDiscussions(noteId)
 
   commentNodes.forEach(([node]) => {

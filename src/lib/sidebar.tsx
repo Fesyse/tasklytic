@@ -9,6 +9,7 @@ import {
   InboxIcon,
   type LucideIcon
 } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { authClient } from "./auth-client"
 import type { Note } from "./db-client"
 import { getNotes } from "./db-queries"
@@ -30,6 +31,7 @@ export type NoteNavItem = {
   title: string
   url: string
   icon: string | LucideIcon
+  isFavorited: boolean
 
   subNotes:
     | {
@@ -42,14 +44,27 @@ export type NoteNavItem = {
 type SidebarNav = {
   navMain: NavItem[]
 
-  privateNotes: { isLoading: boolean; items: NoteNavItem[] | undefined }
-  sharedNotes: { isLoading: boolean; items: NoteNavItem[] | undefined }
-
   navSecondary: NavItem[]
-}
+} & (
+  | {
+      isNotesLoading: true
+      favoriteNotes: undefined
+      privateNotes: undefined
+      sharedNotes: undefined
+    }
+  | {
+      isNotesLoading: false
+      favoriteNotes: NoteNavItem[]
+      privateNotes: NoteNavItem[]
+      sharedNotes: NoteNavItem[]
+    }
+)
 
 export const useSidebarNav = (): SidebarNav => {
+  const t = useTranslations("Dashboard.Sidebar")
   const { data: organization } = authClient.useActiveOrganization()
+  const { data: session } = authClient.useSession()
+
   const result = useLiveQuery(() => {
     if (!organization?.id) return tryCatch(Promise.resolve([]))
     return getNotes(organization.id)
@@ -72,6 +87,8 @@ export const useSidebarNav = (): SidebarNav => {
       icon: note.emoji ?? FileIcon,
       title: note.title,
       url: `/dashboard/note/${note.id}`,
+      isFavorited:
+        note.isFavorited || note.favoritedByUserId === session?.user.id,
       subNotes: {
         isLoading: false,
         items: buildNoteHierarchy(notes, note.id)
@@ -79,39 +96,46 @@ export const useSidebarNav = (): SidebarNav => {
     }))
   }
 
+  const isNotesLoading = result === undefined || !result.data
+
   return {
     navMain: [
       {
-        title: "Home",
+        title: t("NavMain.home"),
         url: "/dashboard",
         icon: HomeIcon,
         type: "url"
       },
       {
-        title: "Inbox",
+        title: t("NavMain.inbox"),
         url: "/dashboard/inbox",
         icon: InboxIcon,
         type: "url"
       }
     ],
-    privateNotes: {
-      isLoading: result === undefined || !result.data,
-      items: result?.data
-        ? buildNoteHierarchy(
-            result.data.filter((note) => !note.isPublic),
-            null
-          )
-        : []
-    },
-    sharedNotes: {
-      isLoading: result === undefined || !result.data,
-      items: result?.data
-        ? buildNoteHierarchy(
-            result.data.filter((note) => note.isPublic),
-            null
-          )
-        : []
-    },
+    isNotesLoading,
+    favoriteNotes: !isNotesLoading
+      ? buildNoteHierarchy(
+          result.data.filter((note) =>
+            note.parentNoteId === null
+              ? note.isFavorited && note.favoritedByUserId === session?.user.id
+              : true
+          ),
+          null
+        )
+      : undefined,
+    privateNotes: !isNotesLoading
+      ? buildNoteHierarchy(
+          result.data.filter((note) => !note.isPublic),
+          null
+        )
+      : undefined,
+    sharedNotes: !isNotesLoading
+      ? buildNoteHierarchy(
+          result.data.filter((note) => note.isPublic),
+          null
+        )
+      : undefined,
     navSecondary: [
       {
         component: <InvitationsDialog key="invitations-dialog" />,
@@ -122,7 +146,7 @@ export const useSidebarNav = (): SidebarNav => {
         type: "component"
       },
       {
-        title: "Calendar",
+        title: t("NavSecondary.calendar"),
         url: "/dashboard/calendar",
         icon: CalendarIcon,
         type: "url"

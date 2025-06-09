@@ -3,21 +3,25 @@
 import { Button } from "@/components/ui/button"
 import { Icons } from "@/components/ui/icons"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Link } from "@/i18n/routing"
 import { authClient } from "@/lib/auth-client"
 import { siteConfig } from "@/lib/site-config"
 import { cn } from "@/lib/utils"
 import { Menu, X } from "lucide-react"
-import Link from "next/link"
+import { useTranslations } from "next-intl"
+import NextLink from "next/link"
 import React from "react"
 
 const menuItems = [
-  { name: "Features", href: "#features" },
-  { name: "Solution", href: "#solution" },
-  { name: "Pricing", href: "#pricing" },
-  { name: "About", href: "#about" }
-]
+  { key: "features", href: "#features" },
+  { key: "solution", href: "#solution" },
+  { key: "pricing", href: "#pricing" },
+  { key: "about", href: "#about" }
+] as const
 
 export const Header = () => {
+  const t = useTranslations("HomeHeader")
+
   const { data, isPending } = authClient.useSession()
   const [menuState, setMenuState] = React.useState(false)
   const [isScrolled, setIsScrolled] = React.useState(false)
@@ -71,7 +75,7 @@ export const Header = () => {
                       href={item.href}
                       className="text-muted-foreground hover:text-accent-foreground block duration-150"
                     >
-                      <span>{item.name}</span>
+                      <span>{t(`Nav.${item.key}`)}</span>
                     </Link>
                   </li>
                 ))}
@@ -87,7 +91,7 @@ export const Header = () => {
                         href={item.href}
                         className="text-muted-foreground hover:text-accent-foreground block duration-150"
                       >
-                        <span>{item.name}</span>
+                        <span>{t(`Nav.${item.key}`)}</span>
                       </Link>
                     </li>
                   ))}
@@ -105,7 +109,7 @@ export const Header = () => {
                       className={cn(isScrolled && "lg:hidden")}
                     >
                       <Link href="/auth/sign-in">
-                        <span>Login</span>
+                        <span>{t("Login.login")}</span>
                       </Link>
                     </Button>
                     <Button
@@ -114,7 +118,7 @@ export const Header = () => {
                       className={cn(isScrolled && "lg:hidden")}
                     >
                       <Link href="/auth/sign-up">
-                        <span>Sign Up</span>
+                        <span>{t("Login.sign-up")}</span>
                       </Link>
                     </Button>
                     <Button
@@ -123,15 +127,17 @@ export const Header = () => {
                       className={cn(isScrolled ? "lg:inline-flex" : "hidden")}
                     >
                       <Link href="/auth/sign-up">
-                        <span>Get Started</span>
+                        <span>{t("Login.start")}</span>
                       </Link>
                     </Button>
                   </>
                 ) : (
                   <Button asChild variant="outline" size="sm">
-                    <Link href="/dashboard">
-                      {isScrolled ? "Dashboard" : "Go to Dashboard"}
-                    </Link>
+                    <NextLink href="/dashboard">
+                      {isScrolled
+                        ? t("Login.short-go-to-dashboard")
+                        : t("Login.go-to-dashboard")}
+                    </NextLink>
                   </Button>
                 )}
               </div>

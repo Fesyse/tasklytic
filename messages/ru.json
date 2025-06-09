@@ -1,0 +1,505 @@
+{
+  "HomePage": {
+    "HeroSection": {
+      "announcement": "Мы в бета-версии!",
+      "title": "Улучшите свою дисциплину, улучшите свою жизнь вместе с",
+      "description": "Развивайте железную самодисциплину с помощью нашего приложения для отслеживания привычек и постановки целей. Разбивайте цели на части, отслеживайте прогресс и оставайтесь мотивированными с помощью персонализированных напоминаний и аналитики.",
+      "start": "Начать бесплатно",
+      "pricing": "Цены"
+    },
+    "CompaniesSection": {
+      "hover": "Познакомьтесь с нашими клиентами"
+    },
+    "IntegrationsSection": {
+      "title": "Интегрируйтесь с любимыми инструментами",
+      "description": "Беспрепятственно подключайтесь к популярным платформам и сервисам для улучшения рабочего процесса.",
+      "start": "Начать"
+    }
+  },
+  "HomeHeader": {
+    "Nav": {
+      "features": "Возможности",
+      "solution": "Решение",
+      "pricing": "Цены",
+      "about": "О нас"
+    },
+
+    "Login": {
+      "login": "Войти",
+      "sign-up": "Регистрация",
+      "start": "Начать",
+      "go-to-dashboard": "Перейти в дашборд",
+      "short-go-to-dashboard": "Дашборд"
+    }
+  },
+  "HomeFooter": {
+    "Nav": {
+      "features": "Возможности",
+      "solution": "Решение",
+      "customers": "Клиенты",
+      "pricing": "Цены",
+      "help": "Помощь",
+      "about": "О нас"
+    },
+
+    "rights": "Все права защищены"
+  },
+  "ModeToggle": {
+    "label": "Поменять тему",
+
+    "dark": "Тёмная",
+    "light": "Светлая",
+    "system": "Системная"
+  },
+  "Auth": {
+    "signIn": "Войти",
+    "signUp": "Регистрация",
+    "VerifyEmail": {
+      "checkEmailTitle": "Проверьте вашу почту",
+      "verificationLinkDescription": "Мы отправили ссылку для подтверждения на вашу почту. Пожалуйста, перейдите по ссылке, чтобы подтвердить ваш аккаунт."
+    },
+    "ForgotPassword": {
+      "title": "Забыли пароль",
+      "description": "Пожалуйста, заполните форму ниже, чтобы восстановить ваш аккаунт",
+      "Fields": {
+        "email": "Почта",
+        "emailPlaceholder": "Введите вашу почту"
+      },
+      "submit": "Отправить инструкции по сбросу"
+    },
+    "SignIn": {
+      "title": "Войти",
+      "description": "Введите вашу почту ниже, чтобы войти в аккаунт",
+      "Fields": {
+        "email": "Почта",
+        "password": "Пароль",
+        "forgotPassword": "Забыли пароль?"
+      }
+    },
+    "SignUp": {
+      "title": "Регистрация",
+      "description": "Введите вашу почту ниже, чтобы создать новый аккаунт",
+      "Fields": {
+        "name": "Логин",
+        "email": "Почта",
+        "password": "Пароль",
+        "confirmPassword": "Подтвердите пароль"
+      }
+    },
+    "continueWith": "Или продолжить с",
+    "socialProvider": "Войти с помощью {provider}",
+    "accountExist": "Уже есть аккаунт?",
+    "accountDoesntExist": "Ещё нет аккаунта?",
+    "ForgotPasswordProceed": {
+      "passwordLengthError": "Пароль должен содержать не менее 8 символов",
+      "turnstileRequiredError": "Необходимо подтвердить, что вы не робот, установите флажок выше",
+      "passwordsMatchError": "Пароли не совпадают",
+      "resetTokenMissingError": "Отсутствует токен сброса. Пожалуйста, повторите процедуру сброса пароля.",
+      "notRobotError": "Пожалуйста, подтвердите, что вы не робот",
+      "botDetectedError": "Похоже, вы бот, попробуйте позже.",
+      "resetPasswordFailedError": "Не удалось сбросить пароль. Пожалуйста, попробуйте снова.",
+      "unexpectedError": "Произошла непредвиденная ошибка. Пожалуйста, попробуйте снова.",
+      "successTitle": "Пароль успешно сброшен",
+      "successShortTitle": "Success!",
+      "successDescription": "Ваш пароль был успешно сброшен.",
+      "successRedirectMessage": "Ваш пароль сброшен. Вы будете перенаправлены на страницу входа в ближайшее время.",
+      "goToSignInButton": "Перейти ко входу",
+      "invalidResetTitle": "Неверный сброс пароля",
+      "invalidResetDescription": "Не удалось обработать ваш запрос на сброс пароля.",
+      "errorAlertTitle": "Ошибка",
+      "tryAgainButton": "Повторить попытку",
+      "resetPasswordTitle": "Сбросить ваш пароль",
+      "resetPasswordDescription": "Введите ваш новый пароль ниже",
+      "newPasswordLabel": "Новый пароль",
+      "newPasswordPlaceholder": "Введите ваш новый пароль",
+      "confirmPasswordLabel": "Подтвердите пароль",
+      "confirmPasswordPlaceholder": "Подтвердите ваш новый пароль",
+      "turnstileError": "Проверка безопасности не удалась. Пожалуйста, попробуйте снова.",
+      "turnstileExpired": "Срок действия проверки безопасности истек. Пожалуйста, проверьте еще раз."
+    }
+  },
+  "AcceptInvitation": {
+    "title": "Приглашение в организацию",
+    "loadingDetails": "Загрузка деталей приглашения...",
+    "errorTitle": "Ошибка",
+    "errorMessage": "Возникла проблема с этим приглашением",
+    "returnToDashboard": "Вернуться в панель управления",
+    "acceptedTitle": "Приглашение принято",
+    "acceptedMessage": "Вы успешно присоединились к организации",
+    "redirecting": "Перенаправление в панель управления...",
+    "invitedToJoin": "Вас пригласили присоединиться к",
+    "anOrganization": "организации",
+    "invitedBy": "Вас пригласил",
+    "aTeamMember": "участник команды",
+    "toJoinOrganization": "присоединиться к их организации.",
+    "role": "Роль:",
+    "memberRole": "Участник",
+    "acceptButton": "Принять приглашение",
+    "acceptingButton": "Принятие...",
+    "rejectButton": "Отклонить приглашение",
+    "rejectingButton": "Отклонение...",
+    "rejectedMessage": "Приглашение отклонено",
+    "rejectedNewUserRedirect": "Перенаправление на создание новой организации, так как у вас её нет"
+  },
+  "NewOrganization": {
+    "createOrganizationTitle": "Создайте вашу организацию",
+    "step1Description": "Как бы вы хотели использовать Tasklytic?",
+    "step2Description": "Выберите макет по умолчанию",
+    "organizationNameLabel": "Название организации",
+    "organizationNamePlaceholder": "Моя рабочая область",
+    "slugLabel": "URL-идентификатор",
+    "slugPlaceholder": "moya-rabocheya-oblast",
+    "slugTakenError": "Этот идентификатор уже занят. Пожалуйста, выберите другой.",
+    "teamTypeLabel": "Тип команды",
+    "soloOptionLabel": "Соло",
+    "soloOptionDescription": "Только я",
+    "teamOptionLabel": "Команда",
+    "teamOptionDescription": "С моей командой",
+    "layoutTypeLabel": "Макет по умолчанию",
+    "defaultLayoutOptionLabel": "Стандартный",
+    "defaultLayoutOptionDescription": "Стандартный макет для общего использования",
+    "minimalistLayoutOptionLabel": "Минималистичный",
+    "minimalistLayoutOptionDescription": "Чистый и простой макет",
+    "detailedLayoutOptionLabel": "Подробный",
+    "detailedLayoutOptionDescription": "Подробный вид с дополнительной информацией",
+    "cancelButton": "Отменить",
+    "nextStepButton": "Следующий шаг",
+    "previousStepButton": "Предыдущий шаг",
+    "createOrganizationButton": "Создать организацию",
+    "creatingOrganizationButton": "Создание организации..."
+  },
+  "Dashboard": {
+    "Sidebar": {
+      "OrganizationSwitcher": {
+        "organizations": "Организации",
+        "loadingOrganizationsFallback": "Загрузка...",
+        "noOrganizationsFallback": "Нет организаций",
+        "createOrganizationButton": "Создать организацию"
+      },
+      "NavMain": {
+        "quickCreateTooltip": "Создать",
+        "quickCreateButton": "Создать",
+        "inbox": "Входящие",
+        "home": "Дашборд"
+      },
+      "NavNotes": {
+        "privateNotesLabel": "Личные",
+        "favoriteNotesLabel": "Избранное",
+        "sharedNotesLabel": "Общие",
+        "noNotesFallback": "Нет заметок",
+        "Actions": {
+          "toggleFavorite": "{isFavorite, select, true {Удалить из избранного} other {Добавить в избранное}}",
+          "copyLink": "Копировать ссылку",
+          "openInNewTab": "Открыть в новой вкладке",
+          "delete": "Удалить"
+        }
+      },
+      "NavSecondary": {
+        "invitations": "Приглашения",
+        "invitePeople": "Пригласить людей",
+        "calendar": "Календарь",
+        "settings": "Настройки"
+      },
+      "NavUser": {
+        "settings": "Настройки",
+        "homePage": "Главная страница",
+        "logout": "Выйти"
+      },
+      "InvitationsDialog": {
+        "title": "Приглашения в организацию",
+        "description": "Просмотр и управление приглашениями в организацию",
+        "errorFallback": "Ошибка загрузки приглашений",
+        "noInvitationsFallback": "У вас нет ожидающих приглашений",
+        "Invitation": {
+          "organization": "Организация",
+          "unknownInviter": "Неизвестно",
+          "member": "Участник",
+          "decline": "Отклонить",
+          "rejectingFallback": "Отклонение...",
+          "accept": "Принять",
+          "acceptingFallback": "Принятие...",
+          "refresh": "Обновить приглашения"
+        }
+      }
+    },
+    "Note": {
+      "Header": {
+        "SavedState": {
+          "saved": "Сохранено",
+          "saving": "Сохранение...",
+          "autoSaving": "Автосохранение...",
+          "unsaved": "Несохраненные изменения"
+        },
+        "EditedState": {
+          "edited": "Изменено",
+          "editedBy": "Измененный",
+          "createdBy": "Созданный"
+        },
+        "toggleFavorite": "{isFavorited, select, true {Удалить из избранного} other {Добавить в избранное}}",
+        "NoteNavActions": {
+          "customizePage": "Настроить страницу",
+          "turnIntoWiki": "Превратить в вики",
+          "copyLink": "Копировать ссылку",
+          "duplicate": "Дублировать",
+          "moveTo": "Переместить в",
+          "moveToTrash": "Переместить в корзину",
+          "undo": "Отменить",
+          "redo": "Повторить",
+          "viewAnalytics": "Просмотр аналитики",
+          "versionHistory": "История версий",
+          "showDeletePages": "Показать удаленные страницы",
+          "notifications": "Уведомления",
+          "Import": {
+            "import": "Импорт",
+            "html": "Импорт из HTML",
+            "markdown": "Импорт из Markdown"
+          },
+          "Export": {
+            "export": "Экспорт",
+            "html": "Экспорт как HTML",
+            "pdf": "Экспорт как PDF",
+            "image": "Экспорт как изображение",
+            "markdown": "Экспорт как Markdown"
+          }
+        }
+      },
+      "Editor": {
+        "ContentHeader": {
+          "addIcon": "Добавить иконку",
+          "toggleCover": "{hasCover, select, true {Убрать} other {Добавить}} обложку",
+          "toggleFavorite": "{isFavorited, select, true {Удалить из избранного} other {Добавить в избранное}}"
+        },
+        "placeholder": "Напишите / чтобы начать",
+        "Elements": {
+          "CommentElement": {
+            "reply": "Ответить...",
+            "edit": "Редактировать",
+            "delete": "Удалить"
+          },
+          "LinkFloatingToolbar": {
+            "textToDesplay": "Текст для отображения",
+            "pasteLink": "Вставьтессылку",
+            "editLink": "Редактировать ссылку"
+          },
+          "FloatingToolbarButtons": {
+            "aiCommands": "Команды ИИ",
+            "askAI": "Спросить ИИ",
+            "bold": "Жирный",
+            "italic": "Курсив",
+            "underline": "Подчеркнутый",
+            "strikethrough": "Зачеркнутый",
+            "code": "Код",
+            "markAsEquation": "Отметить как уравнение",
+            "link": "Ссылка",
+            "comment": "Комментарий",
+            "suggestionEdits": "{isSuggesting, select, true {Отключить предложения} other {Предлагаемые правки}}",
+            "Insert": {
+              "label": "Вставить",
+              "keyboardInput": "Ввод с клавиатуры",
+              "superscript": "Верхний индекс",
+              "subscript": "Нижний индекс"
+            }
+          },
+          "TurnIntoDropdownMenu": {
+            "turnInto": "Превратить в",
+            "items": {
+              "text": "Текст",
+              "heading1": "Заголовок 1",
+              "heading2": "Заголовок 2",
+              "heading3": "Заголовок 3",
+              "bulletedList": "Маркированный список",
+              "numberedList": "Нумерованный список",
+              "todoList": "Список дел",
+              "toggleList": "Сворачиваемый список",
+              "code": "Код",
+              "quote": "Цитата",
+              "threeColumns": "3 колонки"
+            }
+          },
+          "BlockContextMenu": {
+            "askAI": "Спросить ИИ",
+            "delete": "Удалить",
+            "duplicate": "Дублировать",
+            "turnInto": "Превратить в",
+            "items": {
+              "paragraph": "Параграф",
+              "heading2": "Заголовок 2",
+              "heading3": "Заголовок 3",
+              "blockquote": "Цитата"
+            },
+            "indent": "Отступ",
+            "outdent": "Убрать отступ",
+            "align": "Выравнивание",
+            "alignItems": {
+              "left": "Слева",
+              "center": "По центру",
+              "right": "Справа"
+            }
+          },
+          "EquationElement": {
+            "done": "Готово",
+            "newEquationPlaceholder": "Новое уравнение",
+            "addTextEquation": "Добавить уравнение Tex"
+          },
+          "TocElement": {
+            "noHeadingsFallback": "Создайте заголовок, чтобы отобразить оглавление."
+          },
+          "TableElement": {
+            "Tooltips": {
+              "backgroundColor": "Цвет фона",
+              "mergeCells": "Объединить ячейки",
+              "splitCells": "Разделить ячейки",
+              "cellBorders": "Границы ячеек",
+              "deleteTable": "Удалить таблицу",
+              "insertRowBefore": "Вставить строку перед",
+              "insertRowAfter": "Вставить строку после",
+              "deleteRow": "Удалить строку",
+              "insertColumnBefore": "Вставить столбец перед",
+              "insertColumnAfter": "Вставить столбец после",
+              "deleteColumn": "Удалить столбец"
+            },
+            "BorderButtons": {
+              "topBorder": "Верхняя граница",
+              "rightBorder": "Правая граница",
+              "bottomBorder": "Нижняя граница",
+              "leftBorder": "Левая граница",
+              "noBorder": "Без границы",
+              "allBorders": "Внешние границы"
+            },
+            "colorsLabel": "Цвета",
+            "clearColor": "Очистить"
+          },
+          "CodeBlockCombobox": {
+            "searchLanguage": "Найти язык...",
+            "noLanguageFallback": "Язык не найден."
+          },
+          "DateElement": {
+            "today": "Сегодня",
+            "yesterday": "Вчера",
+            "tomorrow": "Завтра"
+          },
+          "Draggable": {
+            "handleTooltip": "Зажмите для перемещения",
+            "ColumnDragHandle": {
+              "handleTooltip": "Зажмите для перемещения колонки"
+            }
+          },
+          "SlashInputElement": {
+            "groups": {
+              "AI": {
+                "label": "ИИ",
+                "items": {
+                  "ai": "ИИ"
+                }
+              },
+              "BasicBlocks": {
+                "label": "Базовые блоки",
+                "items": {
+                  "text": "Текст",
+                  "heading1": "Заголовок 1",
+                  "heading2": "Заголовок 2",
+                  "heading3": "Заголовок 3",
+                  "bulletedList": "Маркированный список",
+                  "numberedList": "Нумерованный список",
+                  "todoList": "Список дел",
+                  "toggle": "Переключатель",
+                  "codeBlock": "Блок кода",
+                  "table": "Таблица",
+                  "blockquote": "Цитата",
+                  "callout": "Выделение"
+                }
+              },
+              "AdvancedBlocks": {
+                "label": "Расширенные блоки",
+                "items": {
+                  "toc": "Содержание",
+                  "threeColumns": "3 колонки",
+                  "equation": "Уравнение"
+                }
+              },
+              "Inline": {
+                "label": "Встроенные элементы",
+                "items": {
+                  "date": "Дата",
+                  "inlineEquation": "Встроенное уравнение"
+                }
+              }
+            }
+          },
+          "AIMenu": {
+            "placeholder": "Спросите ИИ о чем угодно...",
+            "editingState": "Редактирование...",
+            "thinkingState": "Размышление...",
+            "stop": "Остановить",
+            "items": {
+              "accept": "Принять",
+              "continueWriting": "Продолжить писать",
+              "discard": "Отклонить",
+              "emojify": "Добавить эмодзи",
+              "explain": "Объяснить",
+              "fixSpellingGrammar": "Исправить орфографию и грамматику",
+              "generateMarkdownSample": "Сгенерировать пример Markdown",
+              "generateMdxSample": "Сгенерировать пример MDX",
+              "improveWriting": "Улучшить написание",
+              "insertBelow": "Вставить ниже",
+              "makeLonger": "Сделать длиннее",
+              "makeShorter": "Сделать короче",
+              "replaceSelection": "Заменить выделение",
+              "simplifyLanguage": "Упростить язык",
+              "addSummary": "Добавить краткое содержание",
+              "tryAgain": "Попробовать снова",
+              "prompts": {
+                "continueWritingEmpty": "<Document>\n{editor}\n</Document>\nНачать новый абзац ПОСЛЕ <Document> ТОЛЬКО ОДНО ПРЕДЛОЖЕНИЕ",
+                "continueWritingNonEmpty": "Продолжить писать ПОСЛЕ <Block> ТОЛЬКО ОДНО ПРЕДЛОЖЕНИЕ. НЕ ПОВТОРЯЙТЕ ТЕКСТ.",
+                "emojify": "Добавить эмодзи",
+                "explainDefault": "Объяснить {editor}",
+                "explainSelecting": "Объяснить",
+                "fixSpellingGrammar": "Исправить орфографию и грамматику",
+                "generateMarkdownSample": "Сгенерировать пример Markdown",
+                "generateMdxSample": "Сгенерировать пример MDX",
+                "improveWriting": "Улучшить написание",
+                "makeLonger": "Сделать длиннее",
+                "makeShorter": "Сделать короче",
+                "simplifyLanguage": "Упростить язык",
+                "addSummaryDefault": "Резюмировать {editor}",
+                "addSummarySelecting": "Резюмировать"
+              }
+            }
+          }
+        }
+      }
+    },
+    "Blocks": {
+      "Columns": {
+        "threeColumns": "Три колонки"
+      },
+      "Callout": {
+        "callout": "Выноска",
+        "defaultEmoji": "\uD83D\uDCE2"
+      },
+      "Image": {
+        "image": "Изображение",
+        "addViaLink": "Добавить по ссылке",
+        "pasteImageLink": "Вставьте ссылку на изображение...",
+        "uploadImage": "Загрузить изображение"
+      },
+      "Link": {
+        "link": "Ссылка",
+        "text": "Текст",
+        "url": "URL",
+        "openInNewTab": "Открыть в новой вкладке",
+        "cancel": "Отмена",
+        "save": "Сохранить"
+      },
+      "Table": {
+        "table": "Таблица",
+        "columns": "Столбцы",
+        "rows": "Строки"
+      },
+      "Toggle": {
+        "toggle": "Переключатель",
+        "emptyPlaceholder": "Пустой переключатель"
+      }
+    }
+  }
+}

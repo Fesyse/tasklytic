@@ -2,6 +2,7 @@ import { init } from "@paralleldrive/cuid2"
 import { relations } from "drizzle-orm"
 import {
   boolean,
+  foreignKey,
   index,
   integer,
   pgEnum,
@@ -410,3 +411,115 @@ export type NewTwoFactor = typeof twoFactor.$inferInsert
 export type CalendarView = (typeof calendarViewEnum.enumValues)[number]
 export type EventColor = (typeof eventColorEnum.enumValues)[number]
 export type BadgeVariant = (typeof badgeVariantEnum.enumValues)[number]
+
+// Notes Management Schema
+
+export const notes = createTable(
+  "note",
+  {
+    id: text("id").primaryKey(),
+    title: text("title").notNull(),
+    emoji: text("emoji"),
+    emojiSlug: text("emoji_slug"),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organizations.id, { onDelete: "cascade" }),
+    updatedAt: timestamp("updated_at").notNull(),
+    createdAt: timestamp("created_at").notNull(),
+    updatedByUserId: text("updated_by_user_id")
+      .notNull()
+      .references(() => users.id),
+    updatedByUserName: text("updated_by_user_name").notNull(),
+    createdByUserId: text("created_by_user_id")
+      .notNull()
+      .references(() => users.id),
+    createdByUserName: text("created_by_user_name").notNull(),
+    isPublic: boolean("is_public").notNull().default(false),
+    parentNoteId: text("parent_note_id"),
+    isFavorited: boolean("is_favorited").notNull().default(false),
+    favoritedByUserId: text("favorited_by_user_id").references(() => users.id),
+    cover: text("cover")
+  },
+  (table) => ({
+    parentNoteIdForeignKey: foreignKey({
+      columns: [table.parentNoteId],
+      foreignColumns: [table.id],
+      name: "note_parent_note_id_fk"
+    }),
+    organizationIdIdx: index("note_organization_id_idx").on(
+      table.organizationId
+    ),
+    parentNoteIdIdx: index("note_parent_note_id_idx").on(table.parentNoteId),
+    titleIdx: index("note_title_idx").on(table.title)
+  })
+)
+
+export const blocks = createTable(
+  "block",
+  {
+    id: text("id").primaryKey(),
+    noteId: text("note_id")
+      .notNull()
+      .references(() => notes.id, { onDelete: "cascade" }),
+    content: text("content").notNull(), // JSON content stored as text
+    order: integer("order").notNull()
+  },
+  (table) => ({
+    noteIdIdx: index("block_note_id_idx").on(table.noteId)
+  })
+)
+
+export const discussions = createTable(
+  "discussion",
+  {
+    id: text("id").primaryKey(),
+    noteId: text("note_id")
+      .notNull()
+      .references(() => notes.id, { onDelete: "cascade" }),
+    blockId: text("block_id").notNull(),
+    documentContent: text("document_content"),
+    createdAt: timestamp("created_at").notNull(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+    isResolved: boolean("is_resolved").notNull().default(false),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id)
+  },
+  (table) => ({
+    noteIdIdx: index("discussion_note_id_idx").on(table.noteId),
+    blockIdIdx: index("discussion_block_id_idx").on(table.blockId),
+    userIdIdx: index("discussion_user_id_idx").on(table.userId)
+  })
+)
+
+export const comments = createTable(
+  "comment",
+  {
+    id: text("id").primaryKey(),
+    discussionId: text("discussion_id")
+      .notNull()
+      .references(() => discussions.id, { onDelete: "cascade" }),
+    contentRich: text("content_rich").notNull(), // JSON content stored as text
+    createdAt: timestamp("created_at").notNull(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+    isEdited: boolean("is_edited").notNull().default(false),
+    userImage: text("user_image"),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id)
+  },
+  (table) => ({
+    discussionIdIdx: index("comment_discussion_id_idx").on(table.discussionId),
+    userIdIdx: index("comment_user_id_idx").on(table.userId)
+  })
+)
+
+// Expose types for notes, blocks, discussions, and comments
+export type Note = typeof notes.$inferSelect
+export type NewNote = typeof notes.$inferInsert
+export type Block = typeof blocks.$inferSelect
+export type NewBlock = typeof blocks.$inferInsert
+export type Discussion = typeof discussions.$inferSelect
+export type NewDiscussion = typeof discussions.$inferInsert
+export type Comment = typeof comments.$inferSelect
+export type NewComment = typeof comments.$inferInsert
