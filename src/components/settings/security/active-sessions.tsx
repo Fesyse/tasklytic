@@ -42,6 +42,11 @@ export const ActiveSessions = () => {
                       )}
                       {new UAParser(session.userAgent || "").getOS().name},{" "}
                       {new UAParser(session.userAgent || "").getBrowser().name}
+                      {currentSession?.session.id === session.id && (
+                        <span className="text-muted-foreground ml-1 text-xs">
+                          (Current Session)
+                        </span>
+                      )}
                       <RevokeSessionButton
                         currentSession={currentSession}
                         session={session}

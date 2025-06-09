@@ -92,20 +92,15 @@ export function OrganizationSwitcher() {
       )
       return
     }
+
     if (
-      (!organizations?.length && !isLoadingOrganizations && !isRefetching) ||
-      (!activeOrg && !isLoadingActiveOrg)
+      organizations?.length === 0 &&
+      !isLoadingOrganizations &&
+      !isRefetching
     ) {
       router.push("/new-organization")
     }
-  }, [
-    organizations,
-    activeOrg,
-    isLoadingOrganizations,
-    organizationsError,
-    isRefetching,
-    isLoadingActiveOrg
-  ])
+  }, [organizations, isLoadingOrganizations, organizationsError, isRefetching])
 
   useEffect(() => {
     if (isLoadingActiveOrg || activeOrg) return

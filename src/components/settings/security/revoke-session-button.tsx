@@ -23,9 +23,15 @@ export const RevokeSessionButton: React.FC<RevokeSessionButtonProps> = ({
       className="border-muted-foreground cursor-pointer text-xs text-red-500 underline opacity-80"
       onClick={async () => {
         setIsTerminating(session.id)
-        const res = await authClient.revokeSession({
-          token: session.token
-        })
+        let res
+
+        if (currentSession?.session.id === session.id) {
+          res = await authClient.signOut()
+        } else {
+          res = await authClient.revokeSession({
+            token: session.token
+          })
+        }
 
         if (res.error) {
           toast.error(res.error.message)
