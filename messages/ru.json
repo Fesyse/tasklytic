@@ -316,6 +316,26 @@
               "threeColumns": "3 колонки"
             }
           },
+          "BlockContextMenu": {
+            "askAI": "Спросить ИИ",
+            "delete": "Удалить",
+            "duplicate": "Дублировать",
+            "turnInto": "Превратить в",
+            "items": {
+              "paragraph": "Параграф",
+              "heading2": "Заголовок 2",
+              "heading3": "Заголовок 3",
+              "blockquote": "Цитата"
+            },
+            "indent": "Отступ",
+            "outdent": "Убрать отступ",
+            "align": "Выравнивание",
+            "alignItems": {
+              "left": "Слева",
+              "center": "По центру",
+              "right": "Справа"
+            }
+          },
           "EquationElement": {
             "done": "Готово",
             "newEquationPlaceholder": "Новое уравнение",

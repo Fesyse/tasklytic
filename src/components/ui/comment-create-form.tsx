@@ -168,11 +168,13 @@ export function CommentCreateForm({
   ])
 
   return (
-    <div className={cn("flex w-full", className)}>
+    <div className={cn("flex w-full items-center", className)}>
       <div className="mt-2 mr-1 shrink-0">
-        <Avatar className="size-5">
+        <Avatar className="size-8">
           <AvatarImage alt={userInfo?.name} src={userInfo?.avatarUrl} />
-          <AvatarFallback>{userInfo?.name?.[0]}</AvatarFallback>
+          <AvatarFallback>
+            {userInfo?.name?.slice(0, 2).toUpperCase()}
+          </AvatarFallback>
         </Avatar>
       </div>
 
@@ -186,7 +188,7 @@ export function CommentCreateForm({
           <EditorContainer variant="comment">
             <Editor
               variant="comment"
-              className="min-h-20 grow pt-0.5 pr-8"
+              className="h-full grow"
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault()
@@ -197,20 +199,18 @@ export function CommentCreateForm({
               autoComplete="off"
               autoFocus={autoFocus}
             />
-
-            <Button
-              className="absolute top-1 right-1"
-              variant="ghost"
-              size="icon"
-              disabled={!commentContent}
-              onClick={() => {
-                onAddComment()
-              }}
-            >
-              <ArrowUpIcon className="size-4" />
-            </Button>
           </EditorContainer>
         </Plate>
+        <Button
+          variant="outline"
+          size="icon"
+          disabled={!commentContent}
+          onClick={() => {
+            onAddComment()
+          }}
+        >
+          <ArrowUpIcon className="size-4" />
+        </Button>
       </div>
     </div>
   )

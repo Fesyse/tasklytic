@@ -317,6 +317,26 @@
               "threeColumns": "3 columns"
             }
           },
+          "BlockContextMenu": {
+            "askAI": "Ask AI",
+            "delete": "Delete",
+            "duplicate": "Duplicate",
+            "turnInto": "Turn into",
+            "items": {
+              "paragraph": "Paragraph",
+              "heading2": "Heading 2",
+              "heading3": "Heading 3",
+              "blockquote": "Blockquote"
+            },
+            "indent": "Indent",
+            "outdent": "Outdent",
+            "align": "Align",
+            "alignItems": {
+              "left": "Left",
+              "center": "Center",
+              "right": "Right"
+            }
+          },
           "EquationElement": {
             "done": "Done",
             "newEquationPlaceholder": "New equation",
