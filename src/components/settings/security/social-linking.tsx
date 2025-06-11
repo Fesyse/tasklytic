@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Icons } from "@/components/ui/icons"
 import { authClient } from "@/lib/auth-client"
 import { AlertCircle, Github, Mail } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
@@ -24,6 +25,10 @@ const defaultSocialAccounts = [
 export function SocialLinking() {
   const { data: session } = authClient.useSession()
   const { data: userAccounts } = authClient.useListUserAccounts()
+
+  const t = useTranslations(
+    "Dashboard.Settings.tabs.accountGroup.security.SocialLinking"
+  )
 
   const getDefaultSocialAccounts = () => {
     return defaultSocialAccounts.map<SocialAccount>((account) => ({
@@ -47,11 +52,9 @@ export function SocialLinking() {
     })
 
     if (error) {
-      toast.error(`Failed to link ${provider} to your account`)
+      toast.error(t("toast.failedToLink", { provider }))
     } else {
-      toast.success(
-        `Redirecting to link ${provider} social provider to your account...`
-      )
+      toast.success(t("toast.redirectingToLink", { provider }))
     }
   }
 
@@ -60,7 +63,7 @@ export function SocialLinking() {
 
     if (error) {
       console.error("Failed to disconnect account:", error)
-      toast.error(`Failed to disconnect ${provider} account!`)
+      toast.error(t("toast.failedToDisconnect", { provider }))
     } else {
       setSocialAccounts((accounts) =>
         accounts.map((account) =>
@@ -69,7 +72,7 @@ export function SocialLinking() {
             : account
         )
       )
-      toast.success(`Successfully disconnected ${provider} account!`)
+      toast.success(t("toast.successfullyDisconnected", { provider }))
     }
   }
 
@@ -95,11 +98,10 @@ export function SocialLinking() {
       <div className="flex flex-col space-y-1.5">
         <div className="flex flex-col space-y-1.5">
           <h3 className="leading-none font-semibold tracking-tight">
-            Connected Accounts
+            {t("connectedAccountsTitle")}
           </h3>
           <p className="text-muted-foreground text-sm">
-            Connect your social accounts to enable single sign-on and additional
-            features
+            {t("connectedAccountsDescription")}
           </p>
         </div>
       </div>
@@ -123,7 +125,9 @@ export function SocialLinking() {
                     {account.email}
                   </div>
                 ) : (
-                  <p className="text-muted-foreground text-sm">Not connected</p>
+                  <p className="text-muted-foreground text-sm">
+                    {t("notConnected")}
+                  </p>
                 )}
               </div>
             </div>
@@ -136,18 +140,15 @@ export function SocialLinking() {
                   : handleConnect(account.provider)
               }
             >
-              {account.connected ? "Disconnect" : "Connect"}
+              {account.connected ? t("disconnectButton") : t("connectButton")}
             </Button>
           </div>
         ))}
 
         <Alert variant="warning" className="[&>svg~*]:pl-8">
           <AlertCircle className="size-5" />
-          <AlertTitle>Warning</AlertTitle>
-          <AlertDescription>
-            In case email of your current social account(s) will unmatch with
-            your current email, it will result an error.
-          </AlertDescription>
+          <AlertTitle>{t("warningTitle")}</AlertTitle>
+          <AlertDescription>{t("warningDescription")}</AlertDescription>
         </Alert>
       </div>
     </section>

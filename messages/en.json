@@ -188,6 +188,21 @@
               "currentSession": "Current session",
               "terminateButton": "Terminate",
               "signOutButton": "Sign out"
+            },
+            "SocialLinking": {
+              "connectedAccountsTitle": "Connected Accounts",
+              "connectedAccountsDescription": "Connect your social accounts to enable single sign-on and additional features",
+              "notConnected": "Not connected",
+              "disconnectButton": "Disconnect",
+              "connectButton": "Connect",
+              "warningTitle": "Warning",
+              "warningDescription": "In case email of your current social account(s) will unmatch with your current email, it will result an error.",
+              "toast": {
+                "failedToLink": "Failed to link {provider} to your account",
+                "redirectingToLink": "Redirecting to link {provider} social provider to your account...",
+                "failedToDisconnect": "Failed to disconnect {provider} account!",
+                "successfullyDisconnected": "Successfully disconnected {provider} account!"
+              }
             }
           }
         }

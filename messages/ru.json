@@ -188,6 +188,21 @@
               "currentSession": "Текущая сессия",
               "terminateButton": "Завершить",
               "signOutButton": "Выйти"
+            },
+            "SocialLinking": {
+              "connectedAccountsTitle": "Подключенные аккаунты",
+              "connectedAccountsDescription": "Подключите свои социальные аккаунты, чтобы включить единый вход и дополнительные функции",
+              "notConnected": "Не подключено",
+              "disconnectButton": "Отключить",
+              "connectButton": "Подключить",
+              "warningTitle": "Предупреждение",
+              "warningDescription": "Если адрес электронной почты вашего текущего социального аккаунта(ов) не совпадет с вашим текущим адресом электронной почты, это приведет к ошибке.",
+              "toast": {
+                "failedToLink": "Не удалось привязать {provider} к вашему аккаунту",
+                "redirectingToLink": "Перенаправление для привязки социального провайдера {provider} к вашему аккаунту...",
+                "failedToDisconnect": "Не удалось отключить аккаунт {provider}!",
+                "successfullyDisconnected": "Аккаунт {provider} успешно отключен!"
+              }
             }
           }
         }
