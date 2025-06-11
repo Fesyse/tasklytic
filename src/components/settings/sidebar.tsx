@@ -10,7 +10,7 @@ import {
   SidebarProvider
 } from "@/components/ui/sidebar"
 import { useSettingsDialog } from "@/lib/stores/settings-dialog"
-import { LockIcon, UserIcon } from "lucide-react"
+import { LockIcon, Settings2Icon, UserIcon } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useMemo } from "react"
 
@@ -25,6 +25,11 @@ const getSettingsNav = (
           label: t("accountGroup.profile.label"),
           value: "profile",
           icon: UserIcon
+        },
+        {
+          label: t("accountGroup.preferences.label"),
+          value: "preferences",
+          icon: Settings2Icon
         },
         {
           label: t("accountGroup.security.label"),

@@ -178,6 +178,24 @@
             "title": "Profile Settings",
             "description": "Manage your account settings and set e-mail preferences."
           },
+          "preferences": {
+            "label": "Preferences",
+            "title": "Preferences Settings",
+            "description": "Manage your display and language preferences.",
+            "themeChange": {
+              "placeholder": "Theme",
+              "title": "Theme",
+              "description": "Choose your preferred theme for the application.",
+              "light": "Light",
+              "dark": "Dark",
+              "system": "System"
+            },
+            "languageChooser": {
+              "title": "Language",
+              "description": "Select your preferred language for the application.",
+              "placeholder": "Language"
+            }
+          },
           "security": {
             "label": "Security",
             "title": "Security Settings",

@@ -1,3 +1,4 @@
+import { Preferences } from "@/components/settings/preferences"
 import { SettingsProfile } from "@/components/settings/profile"
 import { SettingsSecurity } from "@/components/settings/security"
 import { SettingsSidebar } from "@/components/settings/sidebar"
@@ -20,6 +21,11 @@ const getSettingsTabs = (
     content: <SettingsSecurity />,
     title: t("security.title"),
     description: t("security.description")
+  },
+  preferences: {
+    content: <Preferences />,
+    title: t("preferences.title"),
+    description: t("preferences.description")
   }
 })
 export type SettingsTab = keyof ReturnType<typeof getSettingsTabs>

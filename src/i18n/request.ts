@@ -1,4 +1,5 @@
 import { LOCALE_COOKIE_NAME } from "@/lib/locale"
+import { tryCatch } from "@/lib/utils"
 import { getRequestConfig } from "next-intl/server"
 import { cookies } from "next/headers"
 import { routing } from "./routing"
@@ -14,8 +15,25 @@ export default getRequestConfig(async ({ requestLocale }) => {
     locale = newLocale ?? routing.defaultLocale
   }
 
+  const { data: importedMesages, error } = await tryCatch(
+    (async () => {
+      try {
+        const res = await import(`../../messages/${locale}.json`)
+        return res.default
+      } catch {
+        const res = await import(`../../messages/en.json`)
+        locale = "en"
+        return res.default
+      }
+    })()
+  )
+
+  if (error) {
+    console.error("[LANGUAGE REQUEST] error: ", error)
+  }
+
   return {
     locale,
-    messages: (await import(`../../messages/${locale}.json`)).default
+    messages: importedMesages
   }
 })
