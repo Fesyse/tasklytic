@@ -1,7 +1,7 @@
+import { useSyncContext } from "@/components/providers/sync-provider"
 import { authClient } from "@/lib/auth-client"
 import { dexieDB, type Note } from "@/lib/db-client"
 import { tryCatch } from "@/lib/utils"
-import { useSyncContext } from "@/providers/sync-provider"
 import { createId } from "@/server/db/schema"
 import { useCallback, useEffect, useRef } from "react"
 import { useSyncedNote, useSyncedNotes } from "./use-sync"

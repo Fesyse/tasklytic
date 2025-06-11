@@ -163,7 +163,7 @@ export const useSidebarNav = (): SidebarNav => {
       {
         title: t("NavSecondary.settings"),
         icon: SettingsIcon,
-        action: openSettingsDialog.bind(null, "profile"),
+        action: openSettingsDialog.bind(null, undefined),
         isActive: settingsDialogOpen,
         type: "action"
       }

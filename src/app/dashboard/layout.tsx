@@ -1,5 +1,5 @@
 import { DashboardLayout as Layout } from "@/components/layouts/dashboard"
-import { SyncProvider } from "@/providers/sync-provider"
+import { SyncProvider } from "@/components/providers/sync-provider"
 import { NextIntlClientProvider } from "next-intl"
 import type React from "react"
 

@@ -1,6 +1,5 @@
 import { getBaseUrl } from "@/lib/utils"
 import type { UserAccount } from "@/server/auth"
-import { profileImageClient } from "@better-auth-kit/profile-image"
 import {
   BetterFetchError,
   type BetterFetch,
@@ -153,5 +152,5 @@ export const hooksPlugin = () => {
 
 export const authClient = createAuthClient({
   baseURL: `${getBaseUrl()}/api/auth`,
-  plugins: [organizationClient(), profileImageClient(), hooksPlugin()]
+  plugins: [organizationClient(), hooksPlugin()]
 })
