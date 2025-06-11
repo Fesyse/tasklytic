@@ -33,6 +33,24 @@ const getSettingsTabs = (
 })
 export type SettingsTab = keyof ReturnType<typeof getSettingsTabs>
 
+const contentVariants = {
+  initial: {
+    opacity: 0,
+    filter: "blur(24px)",
+    height: 0
+  },
+  animate: {
+    opacity: 1,
+    filter: "blur(0px)",
+    height: "auto"
+  },
+  exit: {
+    opacity: 0,
+    filter: "blur(24px)",
+    height: 0
+  }
+}
+
 export function SettingsDialog() {
   const { open, toggleSettingsDialog, tab } = useSettingsDialog()
 
@@ -62,21 +80,10 @@ export function SettingsDialog() {
               <AnimatePresence>
                 <motion.div
                   key={tab}
-                  initial={{
-                    opacity: 0,
-                    filter: "blur(24px)",
-                    height: 0
-                  }}
-                  animate={{
-                    opacity: 1,
-                    filter: "blur(0px)",
-                    height: "auto"
-                  }}
-                  exit={{
-                    opacity: 0,
-                    filter: "blur(24px)",
-                    height: 0
-                  }}
+                  variants={contentVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
                 >
                   {settingsTabs[tab].content}
                 </motion.div>
