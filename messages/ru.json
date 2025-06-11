@@ -344,7 +344,7 @@
           "toggleCover": "{hasCover, select, true {Убрать} other {Добавить}} обложку",
           "toggleFavorite": "{isFavorited, select, true {Удалить из избранного} other {Добавить в избранное}}"
         },
-        "placeholder": "Напишите / чтобы начать",
+        "placeholder": "Пишите, нажмите пробел для ИИ, / для команд...",
         "Elements": {
           "CommentElement": {
             "reply": "Ответить...",
