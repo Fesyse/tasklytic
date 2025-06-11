@@ -11,28 +11,35 @@ import {
 } from "@/components/ui/sidebar"
 import { useSettingsDialog } from "@/lib/stores/settings-dialog"
 import { LockIcon, UserIcon } from "lucide-react"
+import { useTranslations } from "next-intl"
+import { useMemo } from "react"
 
-const settingsNav = [
-  {
-    label: "Account",
-    items: [
-      {
-        label: "Profile",
-        value: "profile",
-        icon: UserIcon,
-        href: "/settings"
-      },
-      {
-        label: "Security",
-        value: "security",
-        icon: LockIcon,
-        href: "/settings/security"
-      }
-    ]
-  }
-] as const
+const getSettingsNav = (
+  t: ReturnType<typeof useTranslations<"Dashboard.Settings.tabs">>
+) =>
+  [
+    {
+      label: t("accountGroup.label"),
+      items: [
+        {
+          label: t("accountGroup.profile.label"),
+          value: "profile",
+          icon: UserIcon,
+          href: "/settings"
+        },
+        {
+          label: t("accountGroup.security.label"),
+          value: "security",
+          icon: LockIcon,
+          href: "/settings/security"
+        }
+      ]
+    }
+  ] as const
 
 export function SettingsSidebar() {
+  const t = useTranslations("Dashboard.Settings.tabs")
+  const settingsNav = useMemo(() => getSettingsNav(t), [t])
   const { setSettingsDialogTab, tab } = useSettingsDialog()
 
   return (

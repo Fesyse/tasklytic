@@ -9,7 +9,7 @@ import { useTranslations } from "next-intl"
 import { useMemo } from "react"
 
 const getSettingsTabs = (
-  t: ReturnType<typeof useTranslations<"Dashboard.Settings.tabs">>
+  t: ReturnType<typeof useTranslations<"Dashboard.Settings.tabs.accountGroup">>
 ) => ({
   profile: {
     content: <SettingsProfile />,
@@ -18,8 +18,8 @@ const getSettingsTabs = (
   },
   security: {
     content: <SettingsSecurity />,
-    title: t("account.title"),
-    description: t("account.description")
+    title: t("security.title"),
+    description: t("security.description")
   }
 })
 export type SettingsTab = keyof ReturnType<typeof getSettingsTabs>
@@ -27,7 +27,7 @@ export type SettingsTab = keyof ReturnType<typeof getSettingsTabs>
 export function SettingsProvider({ children }: React.PropsWithChildren) {
   const { open, toggleSettingsDialog, tab } = useSettingsDialog()
 
-  const t = useTranslations("Dashboard.Settings.tabs")
+  const t = useTranslations("Dashboard.Settings.tabs.accountGroup")
   const settingsTabs = useMemo(() => getSettingsTabs(t), [t])
 
   return (

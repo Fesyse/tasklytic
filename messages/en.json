@@ -171,13 +171,18 @@
   "Dashboard": {
     "Settings": {
       "tabs": {
-        "profile": {
-          "title": "Profile Settings",
-          "description": "Manage your account settings and set e-mail preferences."
-        },
-        "account": {
-          "title": "Security Settings",
-          "description": "Manage your account security settings."
+        "accountGroup": {
+          "label": "Account",
+          "profile": {
+            "label": "Profile",
+            "title": "Profile Settings",
+            "description": "Manage your account settings and set e-mail preferences."
+          },
+          "security": {
+            "label": "Security",
+            "title": "Security Settings",
+            "description": "Manage your account security settings."
+          }
         }
       }
     },
