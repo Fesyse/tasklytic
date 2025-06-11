@@ -229,7 +229,24 @@
           "general": {
             "label": "General",
             "title": "General Settings",
-            "description": "Manage your account settings and set e-mail preferences."
+            "description": "Manage your account settings and set e-mail preferences.",
+            "organizationName": {
+              "label": "Organization Name",
+              "placeholder": "Your organization name",
+              "description": "This is the name of your organization that will be displayed to other members."
+            },
+            "updateButton": "Update organization",
+            "deleteOrganization": {
+              "title": "Delete organization",
+              "description": "Permanently delete your organization and all of its contents from our platform. This action is not reversible and cannot be undone.",
+              "button": "Delete organization",
+              "alert": {
+                "title": "Are you absolutely sure?",
+                "description": "This action cannot be undone. This will permanently delete your organization and remove your data from our servers.",
+                "cancel": "Cancel",
+                "confirm": "Yes, delete organization"
+              }
+            }
           },
           "members": {
             "label": "Members",
