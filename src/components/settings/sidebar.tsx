@@ -1,6 +1,7 @@
 import { SettingsAccountPreferences } from "@/components/settings/account/preferences"
 import { SettingsAccountProfile } from "@/components/settings/account/profile"
 import { SettingsAccountSecurity } from "@/components/settings/account/security"
+import { SettingsOrganizationGeneral } from "@/components/settings/organization/general"
 import {
   Sidebar,
   SidebarContent,
@@ -82,7 +83,7 @@ export const getSettingsNav = (
           description: t("organizationGroup.general.description"),
           value: "organization-general",
           icon: SettingsIcon,
-          content: <div></div>
+          content: <SettingsOrganizationGeneral />
         },
         {
           label: t("organizationGroup.members.label"),
