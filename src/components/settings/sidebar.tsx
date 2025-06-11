@@ -34,6 +34,8 @@ export const getSettingsNav = (
   label: string
   items: {
     label: string
+    title: string
+    description: string
     value: SettingsTab
     icon: LucideIcon
     content: React.ReactNode
@@ -45,18 +47,24 @@ export const getSettingsNav = (
       items: [
         {
           label: t("accountGroup.profile.label"),
+          title: t("accountGroup.profile.title"),
+          description: t("accountGroup.profile.description"),
           value: "account-profile",
           icon: UserIcon,
           content: <SettingsProfile />
         },
         {
           label: t("accountGroup.preferences.label"),
+          title: t("accountGroup.preferences.title"),
+          description: t("accountGroup.preferences.description"),
           value: "account-preferences",
           icon: Settings2Icon,
           content: <SettingsPreferences />
         },
         {
           label: t("accountGroup.security.label"),
+          title: t("accountGroup.security.title"),
+          description: t("accountGroup.security.description"),
           value: "account-security",
           icon: LockIcon,
           content: <SettingsSecurity />
@@ -68,18 +76,24 @@ export const getSettingsNav = (
       items: [
         {
           label: t("organizationGroup.general.label"),
+          title: t("organizationGroup.general.title"),
+          description: t("organizationGroup.general.description"),
           value: "organization-general",
           icon: SettingsIcon,
           content: <div></div>
         },
         {
           label: t("organizationGroup.members.label"),
+          title: t("organizationGroup.members.title"),
+          description: t("organizationGroup.members.description"),
           value: "organization-members",
           icon: UsersIcon,
           content: <div></div>
         },
         {
           label: t("organizationGroup.security.label"),
+          title: t("organizationGroup.security.title"),
+          description: t("organizationGroup.security.description"),
           value: "organization-security",
           icon: KeyIcon,
           content: <div></div>

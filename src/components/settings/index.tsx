@@ -5,13 +5,12 @@ import { CardContent } from "@/components/ui/card"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
 import {
-  SETTINGS_TABS,
   useSettingsDialog,
   type SettingsTab
 } from "@/lib/stores/settings-dialog"
 import { AnimatePresence, motion } from "motion/react"
 import { useTranslations } from "next-intl"
-import { useMemo, type ReactNode } from "react"
+import { useMemo } from "react"
 
 const contentVariants = {
   initial: {
@@ -31,6 +30,11 @@ const contentVariants = {
   }
 }
 
+type SettingsTabsObject = Record<
+  SettingsTab,
+  ReturnType<typeof getSettingsNav>[number]["items"][number]
+>
+
 export function SettingsDialog() {
   const { open, toggleSettingsDialog, tab } = useSettingsDialog()
 
@@ -38,43 +42,21 @@ export function SettingsDialog() {
   const settingsTabs = useMemo(() => {
     const settingsNav = getSettingsNav(t)
 
-    const descriptionMap: Record<SettingsTab, string> = {
-      "account-profile": "accountGroup.profile.description",
-      "account-preferences": "accountGroup.preferences.description",
-      "account-security": "accountGroup.security.description",
-      "organization-general": "organizationGroup.general.description",
-      "organization-members": "organizationGroup.members.description",
-      "organization-security": "organizationGroup.security.description"
-    }
-
-    const acc: Record<
-      SettingsTab,
-      { title: string; description: string; content: ReactNode }
-    > = SETTINGS_TABS.reduce(
-      (obj, tab) => {
-        obj[tab] = { title: "", description: "", content: null }
-        return obj
-      },
-      {} as Record<
-        SettingsTab,
-        { title: string; description: string; content: ReactNode }
-      >
+    return (
+      settingsNav
+        // Get all items
+        .map((group) => group.items)
+        // Flatten them
+        .flat()
+        // Make object in shape as SettingsTabsObject type
+        .reduce(
+          (prevValue, value) => ({
+            ...prevValue,
+            [value.value]: value
+          }),
+          {}
+        ) as SettingsTabsObject
     )
-
-    settingsNav.forEach((group) => {
-      group.items.forEach((item) => {
-        acc[item.value] = {
-          title: item.label,
-          description: t(descriptionMap[item.value] as Parameters<typeof t>[0]),
-          content: item.content
-        }
-      })
-    })
-
-    return acc as Record<
-      SettingsTab,
-      { title: string; description: string; content: ReactNode }
-    >
   }, [t])
 
   return (
