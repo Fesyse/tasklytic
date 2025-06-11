@@ -1,22 +1,28 @@
-import type { SettingsTab } from "@/components/providers/settings-provider"
 import { atom } from "nanostores"
 import { parseAsBoolean, parseAsStringLiteral, useQueryState } from "nuqs"
 import { useEffect } from "react"
+
+export const SETTINGS_TABS = [
+  "account-profile",
+  "account-preferences",
+  "account-security",
+  "organization-general",
+  "organization-members",
+  "organization-security"
+] as const
+
+export type SettingsTab = (typeof SETTINGS_TABS)[number]
 
 export type SettingsDialogStore = {
   open: boolean
   tab: SettingsTab
 }
 
-const SETTINGS_TABS = [
-  "profile",
-  "preferences",
-  "security"
-] as const satisfies SettingsTab[]
+const DEFAULT_SETTINGS_TAB = SETTINGS_TABS[0]
 
 export const $settingsDialog = atom<SettingsDialogStore>({
   open: false,
-  tab: "profile"
+  tab: DEFAULT_SETTINGS_TAB
 })
 
 export const useSettingsDialog = () => {
@@ -28,7 +34,7 @@ export const useSettingsDialog = () => {
     })
   const [tabFromSearchParams, setTabFromSearchParams] = useQueryState("tab", {
     ...parseAsStringLiteral(SETTINGS_TABS),
-    defaultValue: "profile",
+    defaultValue: DEFAULT_SETTINGS_TAB,
     clearOnDefault: true
   })
 

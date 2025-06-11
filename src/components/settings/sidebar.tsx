@@ -9,32 +9,80 @@ import {
   SidebarMenuItem,
   SidebarProvider
 } from "@/components/ui/sidebar"
-import { useSettingsDialog } from "@/lib/stores/settings-dialog"
-import { LockIcon, Settings2Icon, UserIcon } from "lucide-react"
+import {
+  useSettingsDialog,
+  type SettingsTab
+} from "@/lib/stores/settings-dialog"
+import {
+  KeyIcon,
+  LockIcon,
+  Settings2Icon,
+  SettingsIcon,
+  UserIcon,
+  UsersIcon,
+  type LucideIcon
+} from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useMemo } from "react"
+import { SettingsPreferences } from "./preferences"
+import { SettingsProfile } from "./profile"
+import { SettingsSecurity } from "./security"
 
-const getSettingsNav = (
+export const getSettingsNav = (
   t: ReturnType<typeof useTranslations<"Dashboard.Settings.tabs">>
-) =>
+): {
+  label: string
+  items: {
+    label: string
+    value: SettingsTab
+    icon: LucideIcon
+    content: React.ReactNode
+  }[]
+}[] =>
   [
     {
       label: t("accountGroup.label"),
       items: [
         {
           label: t("accountGroup.profile.label"),
-          value: "profile",
-          icon: UserIcon
+          value: "account-profile",
+          icon: UserIcon,
+          content: <SettingsProfile />
         },
         {
           label: t("accountGroup.preferences.label"),
-          value: "preferences",
-          icon: Settings2Icon
+          value: "account-preferences",
+          icon: Settings2Icon,
+          content: <SettingsPreferences />
         },
         {
           label: t("accountGroup.security.label"),
-          value: "security",
-          icon: LockIcon
+          value: "account-security",
+          icon: LockIcon,
+          content: <SettingsSecurity />
+        }
+      ]
+    },
+    {
+      label: t("organizationGroup.label"),
+      items: [
+        {
+          label: t("organizationGroup.general.label"),
+          value: "organization-general",
+          icon: SettingsIcon,
+          content: <div></div>
+        },
+        {
+          label: t("organizationGroup.members.label"),
+          value: "organization-members",
+          icon: UsersIcon,
+          content: <div></div>
+        },
+        {
+          label: t("organizationGroup.security.label"),
+          value: "organization-security",
+          icon: KeyIcon,
+          content: <div></div>
         }
       ]
     }

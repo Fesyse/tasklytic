@@ -223,6 +223,24 @@
               }
             }
           }
+        },
+        "organizationGroup": {
+          "label": "Organization",
+          "general": {
+            "label": "General",
+            "title": "General Settings",
+            "description": "Manage your account settings and set e-mail preferences."
+          },
+          "members": {
+            "label": "Members",
+            "title": "Members Settings",
+            "description": "Manage your display and language preferences."
+          },
+          "security": {
+            "label": "Security",
+            "title": "Security Settings",
+            "description": "Manage your account security settings."
+          }
         }
       }
     },

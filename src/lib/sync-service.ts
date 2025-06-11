@@ -155,6 +155,10 @@ export class SyncService {
       // Collect all blocks for all provided notes
       const allClientBlocks = []
       for (const noteId of noteIds) {
+        if (!noteId || typeof noteId !== "string") {
+          console.warn(`[SYNC] Skipping invalid noteId: ${noteId}`)
+          continue
+        }
         const noteBlocks = await dexieDB.blocks
           .where("noteId")
           .equals(noteId)

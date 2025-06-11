@@ -1,37 +1,17 @@
 "use client"
 
-import { Preferences } from "@/components/settings/preferences"
-import { SettingsProfile } from "@/components/settings/profile"
-import { SettingsSecurity } from "@/components/settings/security"
-import { SettingsSidebar } from "@/components/settings/sidebar"
+import { getSettingsNav, SettingsSidebar } from "@/components/settings/sidebar"
 import { CardContent } from "@/components/ui/card"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
-import { useSettingsDialog } from "@/lib/stores/settings-dialog"
+import {
+  SETTINGS_TABS,
+  useSettingsDialog,
+  type SettingsTab
+} from "@/lib/stores/settings-dialog"
 import { AnimatePresence, motion } from "motion/react"
 import { useTranslations } from "next-intl"
-import { useMemo } from "react"
-
-const getSettingsTabs = (
-  t: ReturnType<typeof useTranslations<"Dashboard.Settings.tabs.accountGroup">>
-) => ({
-  profile: {
-    content: <SettingsProfile />,
-    title: t("profile.title"),
-    description: t("profile.description")
-  },
-  security: {
-    content: <SettingsSecurity />,
-    title: t("security.title"),
-    description: t("security.description")
-  },
-  preferences: {
-    content: <Preferences />,
-    title: t("preferences.title"),
-    description: t("preferences.description")
-  }
-})
-export type SettingsTab = keyof ReturnType<typeof getSettingsTabs>
+import { useMemo, type ReactNode } from "react"
 
 const contentVariants = {
   initial: {
@@ -54,8 +34,48 @@ const contentVariants = {
 export function SettingsDialog() {
   const { open, toggleSettingsDialog, tab } = useSettingsDialog()
 
-  const t = useTranslations("Dashboard.Settings.tabs.accountGroup")
-  const settingsTabs = useMemo(() => getSettingsTabs(t), [t])
+  const t = useTranslations("Dashboard.Settings.tabs")
+  const settingsTabs = useMemo(() => {
+    const settingsNav = getSettingsNav(t)
+
+    const descriptionMap: Record<SettingsTab, string> = {
+      "account-profile": "accountGroup.profile.description",
+      "account-preferences": "accountGroup.preferences.description",
+      "account-security": "accountGroup.security.description",
+      "organization-general": "organizationGroup.general.description",
+      "organization-members": "organizationGroup.members.description",
+      "organization-security": "organizationGroup.security.description"
+    }
+
+    const acc: Record<
+      SettingsTab,
+      { title: string; description: string; content: ReactNode }
+    > = SETTINGS_TABS.reduce(
+      (obj, tab) => {
+        obj[tab] = { title: "", description: "", content: null }
+        return obj
+      },
+      {} as Record<
+        SettingsTab,
+        { title: string; description: string; content: ReactNode }
+      >
+    )
+
+    settingsNav.forEach((group) => {
+      group.items.forEach((item) => {
+        acc[item.value] = {
+          title: item.label,
+          description: t(descriptionMap[item.value] as Parameters<typeof t>[0]),
+          content: item.content
+        }
+      })
+    })
+
+    return acc as Record<
+      SettingsTab,
+      { title: string; description: string; content: ReactNode }
+    >
+  }, [t])
 
   return (
     <Dialog
