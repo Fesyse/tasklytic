@@ -24,14 +24,12 @@ const getSettingsNav = (
         {
           label: t("accountGroup.profile.label"),
           value: "profile",
-          icon: UserIcon,
-          href: "/settings"
+          icon: UserIcon
         },
         {
           label: t("accountGroup.security.label"),
           value: "security",
-          icon: LockIcon,
-          href: "/settings/security"
+          icon: LockIcon
         }
       ]
     }

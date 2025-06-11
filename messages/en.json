@@ -181,7 +181,14 @@
           "security": {
             "label": "Security",
             "title": "Security Settings",
-            "description": "Manage your account security settings."
+            "description": "Manage your account security settings.",
+            "ActiveSessions": {
+              "title": "Active sessions",
+              "description": "Manipulate active sessions",
+              "currentSession": "Current session",
+              "terminateButton": "Terminate",
+              "signOutButton": "Sign out"
+            }
           }
         }
       }

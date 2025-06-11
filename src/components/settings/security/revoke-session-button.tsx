@@ -1,8 +1,7 @@
-"use client"
-
 import { authClient } from "@/lib/auth-client"
 import type { ActiveSession, Session } from "@/server/auth"
 import { Loader2 } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "sonner"
@@ -18,6 +17,9 @@ export const RevokeSessionButton: React.FC<RevokeSessionButtonProps> = ({
   session,
   onRevokeSession
 }) => {
+  const t = useTranslations(
+    "Dashboard.Settings.tabs.accountGroup.security.ActiveSessions"
+  )
   const router = useRouter()
   const [isTerminating, setIsTerminating] = useState<string>()
 
@@ -49,9 +51,9 @@ export const RevokeSessionButton: React.FC<RevokeSessionButtonProps> = ({
       {isTerminating === session.id ? (
         <Loader2 className="size-4 animate-spin" />
       ) : session.id === currentSession?.session.id ? (
-        "Sign Out"
+        t("signOutButton")
       ) : (
-        "Terminate"
+        t("terminateButton")
       )}
     </button>
   )

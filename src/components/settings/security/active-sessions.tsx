@@ -7,10 +7,14 @@ import { getRandomInt } from "@/lib/utils"
 import type { ActiveSession } from "@/server/auth"
 import { MobileIcon } from "@radix-ui/react-icons"
 import { Laptop } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { useEffect, useState } from "react"
 import { UAParser } from "ua-parser-js"
 
 export const ActiveSessions = () => {
+  const t = useTranslations(
+    "Dashboard.Settings.tabs.accountGroup.security.ActiveSessions"
+  )
   const { data: currentSession } = authClient.useSession()
   const { data: initialActiveSessions, isPending: isActiveSessionsLoading } =
     authClient.useListSessions()
@@ -27,11 +31,9 @@ export const ActiveSessions = () => {
     <section className="flex w-max flex-col gap-1">
       <div className="flex flex-col space-y-1.5">
         <h3 className="leading-none font-semibold tracking-tight">
-          Active Sessions
+          {t("title")}
         </h3>
-        <p className="text-muted-foreground text-sm">
-          Manipulate active sessions
-        </p>
+        <p className="text-muted-foreground text-sm">{t("description")}</p>
       </div>
       <div className="mt-3 space-y-2">
         {isActiveSessionsLoading || !activeSessions
@@ -54,7 +56,7 @@ export const ActiveSessions = () => {
                       {new UAParser(session.userAgent || "").getBrowser().name}
                       {currentSession?.session.id === session.id && (
                         <span className="text-muted-foreground ml-1 text-xs">
-                          (Current Session)
+                          ({t("currentSession")})
                         </span>
                       )}
                       <RevokeSessionButton
