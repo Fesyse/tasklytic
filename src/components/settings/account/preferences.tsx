@@ -15,7 +15,7 @@ import { LanguagesIcon, Loader2 } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
 
-export function SettingsPreferences() {
+export function SettingsAccountPreferences() {
   const [isChangingLanguage, setIsChangingLanguage] = useState(false)
   const t = useTranslations("Dashboard.Settings.tabs.accountGroup.preferences")
   const currentLocale = useLocale()

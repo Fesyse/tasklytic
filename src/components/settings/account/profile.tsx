@@ -42,7 +42,7 @@ const profileFormSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>
 
-export function SettingsProfile() {
+export function SettingsAccountProfile() {
   const [isUpdated, setIsUpdated] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isChangedEmail, setIsChangedEmail] = useState(false)

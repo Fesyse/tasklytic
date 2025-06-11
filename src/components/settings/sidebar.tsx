@@ -1,3 +1,6 @@
+import { SettingsAccountPreferences } from "@/components/settings/account/preferences"
+import { SettingsAccountProfile } from "@/components/settings/account/profile"
+import { SettingsAccountSecurity } from "@/components/settings/account/security"
 import {
   Sidebar,
   SidebarContent,
@@ -24,13 +27,8 @@ import {
 } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useMemo } from "react"
-import { SettingsPreferences } from "./preferences"
-import { SettingsProfile } from "./profile"
-import { SettingsSecurity } from "./security"
 
-export const getSettingsNav = (
-  t: ReturnType<typeof useTranslations<"Dashboard.Settings.tabs">>
-): {
+export type SettingsNav = {
   label: string
   items: {
     label: string
@@ -40,7 +38,11 @@ export const getSettingsNav = (
     icon: LucideIcon
     content: React.ReactNode
   }[]
-}[] =>
+}[]
+
+export const getSettingsNav = (
+  t: ReturnType<typeof useTranslations<"Dashboard.Settings.tabs">>
+): SettingsNav =>
   [
     {
       label: t("accountGroup.label"),
@@ -51,7 +53,7 @@ export const getSettingsNav = (
           description: t("accountGroup.profile.description"),
           value: "account-profile",
           icon: UserIcon,
-          content: <SettingsProfile />
+          content: <SettingsAccountProfile />
         },
         {
           label: t("accountGroup.preferences.label"),
@@ -59,7 +61,7 @@ export const getSettingsNav = (
           description: t("accountGroup.preferences.description"),
           value: "account-preferences",
           icon: Settings2Icon,
-          content: <SettingsPreferences />
+          content: <SettingsAccountPreferences />
         },
         {
           label: t("accountGroup.security.label"),
@@ -67,7 +69,7 @@ export const getSettingsNav = (
           description: t("accountGroup.security.description"),
           value: "account-security",
           icon: LockIcon,
-          content: <SettingsSecurity />
+          content: <SettingsAccountSecurity />
         }
       ]
     },

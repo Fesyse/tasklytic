@@ -1,13 +1,24 @@
 "use client"
 
-import { getSettingsNav, SettingsSidebar } from "@/components/settings/sidebar"
+import {
+  getSettingsNav,
+  SettingsSidebar,
+  type SettingsNav
+} from "@/components/settings/sidebar"
 import { CardContent } from "@/components/ui/card"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
 import {
   useSettingsDialog,
   type SettingsTab
 } from "@/lib/stores/settings-dialog"
+import { VisuallyHidden } from "@ariakit/react"
 import { AnimatePresence, motion } from "motion/react"
 import { useTranslations } from "next-intl"
 import { useMemo } from "react"
@@ -32,7 +43,7 @@ const contentVariants = {
 
 type SettingsTabsObject = Record<
   SettingsTab,
-  ReturnType<typeof getSettingsNav>[number]["items"][number]
+  SettingsNav[number]["items"][number]
 >
 
 export function SettingsDialog() {
@@ -65,6 +76,12 @@ export function SettingsDialog() {
       open={open}
       onOpenChange={toggleSettingsDialog}
     >
+      <VisuallyHidden>
+        <DialogHeader>
+          <DialogTitle>{settingsTabs[tab].title}</DialogTitle>
+          <DialogDescription>{settingsTabs[tab].description}</DialogDescription>
+        </DialogHeader>
+      </VisuallyHidden>
       <DialogContent className="grid w-full grid-cols-[10rem_1fr] items-start gap-4 overflow-hidden p-0 sm:max-w-4xl">
         <SettingsSidebar />
         <CardContent className="py-6">

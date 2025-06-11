@@ -27,16 +27,19 @@ export const $settingsDialog = atom<SettingsDialogStore>({
 
 export const useSettingsDialog = () => {
   const [dialogOpenFromSearchParams, setDialogOpenFromSearchParams] =
-    useQueryState("dialogOpen", {
+    useQueryState("settingsDialogOpen", {
       ...parseAsBoolean,
       defaultValue: false,
       clearOnDefault: true
     })
-  const [tabFromSearchParams, setTabFromSearchParams] = useQueryState("tab", {
-    ...parseAsStringLiteral(SETTINGS_TABS),
-    defaultValue: DEFAULT_SETTINGS_TAB,
-    clearOnDefault: true
-  })
+  const [tabFromSearchParams, setTabFromSearchParams] = useQueryState(
+    "settingsTab",
+    {
+      ...parseAsStringLiteral(SETTINGS_TABS),
+      defaultValue: DEFAULT_SETTINGS_TAB,
+      clearOnDefault: true
+    }
+  )
 
   // Synchronize the nanostores atom with the query state
   useEffect(() => {
