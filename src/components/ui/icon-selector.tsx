@@ -160,7 +160,7 @@ export function IconSelector({ onSelect, selectedIcon }: IconSelectorProps) {
 
           <TabsContent value="icons">
             <FixedSizeList
-              height={filteredIcons.length === 0 ? 0 : 64 * 4}
+              height={filteredIcons.length === 0 ? 0 : 57.75 * 4}
               itemCount={filteredIcons.length}
               itemSize={8 * 4}
               width={COLUMNS * (8 * 4)}
