@@ -1,4 +1,11 @@
-import type { FileRouter } from "@/server/uploadthing"
+import type {
+  FileRouter,
+  FileRouter as OurFileRouter
+} from "@/server/uploadthing"
+import {
+  generateUploadButton,
+  generateUploadDropzone
+} from "@uploadthing/react"
 import { genUploader } from "uploadthing/client"
 import { tryCatch } from "./utils"
 
@@ -17,3 +24,6 @@ export const uploadFile = async (file: File, uploader: keyof FileRouter) => {
 
   return { data: res[0]?.ufsUrl, error: undefined }
 }
+
+export const UploadDropzone = generateUploadDropzone<OurFileRouter>()
+export const UploadButton = generateUploadButton<OurFileRouter>()

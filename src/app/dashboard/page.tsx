@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { IconSelector } from "@/components/ui/icon-selector"
 import { useQuery } from "@tanstack/react-query"
+import Image from "next/image"
 import { useState } from "react"
 
 export default function DashboardPage() {
@@ -30,6 +31,11 @@ export default function DashboardPage() {
     if (selectedIcon.type === "lucide") {
       return <RenderLucideIcon selectedIcon={selectedIcon} />
     }
+
+    if (selectedIcon.type === "upload")
+      return (
+        <Image src={selectedIcon.value} alt="shit" width={40} height={40} />
+      )
 
     return (
       <div className="bg-muted text-muted-foreground flex h-12 w-12 items-center justify-center rounded-lg">

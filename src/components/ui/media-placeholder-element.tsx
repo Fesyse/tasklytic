@@ -18,8 +18,8 @@ import { PlateElement, useEditorPlugin, withHOC } from "@udecode/plate/react"
 import { AudioLines, FileUp, Film, ImageIcon, Loader2Icon } from "lucide-react"
 import { useFilePicker } from "use-file-picker"
 
-import { cn } from "@/lib/utils"
 import { useUploadFile } from "@/hooks/use-upload-file"
+import { cn } from "@/lib/utils"
 
 const CONTENT: Record<
   string,
@@ -61,7 +61,7 @@ export const MediaPlaceholderElement = withHOC(
     const { api } = useEditorPlugin(PlaceholderPlugin)
 
     const { isUploading, progress, uploadedFile, uploadFile, uploadingFile } =
-      useUploadFile()
+      useUploadFile("editorUploader")
 
     const loading = isUploading && uploadingFile
 
@@ -72,7 +72,7 @@ export const MediaPlaceholderElement = withHOC(
     const imageRef = React.useRef<HTMLImageElement>(null)
 
     const { openFilePicker } = useFilePicker({
-      accept: currentContent.accept,
+      accept: currentContent?.accept,
       multiple: true,
       onFilesSelected: ({ plainFiles: updatedFiles }) => {
         const firstFile = updatedFiles[0]
@@ -152,11 +152,11 @@ export const MediaPlaceholderElement = withHOC(
             contentEditable={false}
           >
             <div className="text-muted-foreground/80 relative mr-3 flex [&_svg]:size-6">
-              {currentContent.icon}
+              {currentContent?.icon}
             </div>
             <div className="text-muted-foreground text-sm whitespace-nowrap">
               <div>
-                {loading ? uploadingFile?.name : currentContent.content}
+                {loading ? uploadingFile?.name : currentContent?.content}
               </div>
 
               {loading && !isImage && (

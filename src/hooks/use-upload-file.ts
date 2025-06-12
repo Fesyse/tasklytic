@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import type { OurFileRouter } from "@/server/uploadthing"
+import type { FileRouter } from "@/server/uploadthing"
 import type {
   ClientUploadedFileData,
   UploadFilesOptions
@@ -14,18 +14,17 @@ export type UploadedFile<T = unknown> = ClientUploadedFileData<T>
 
 interface UseUploadFileProps
   extends Pick<
-    UploadFilesOptions<OurFileRouter["editorUploader"]>,
+    UploadFilesOptions<FileRouter["editorUploader"]>,
     "headers" | "onUploadBegin" | "onUploadProgress" | "skipPolling"
   > {
   onUploadComplete?: (file: UploadedFile) => void
   onUploadError?: (error: unknown) => void
 }
 
-export function useUploadFile({
-  onUploadComplete,
-  onUploadError,
-  ...props
-}: UseUploadFileProps = {}) {
+export function useUploadFile(
+  endpoint: keyof FileRouter,
+  { onUploadComplete, onUploadError, ...props }: UseUploadFileProps = {}
+) {
   const [uploadedFile, setUploadedFile] = React.useState<UploadedFile>()
   const [uploadingFile, setUploadingFile] = React.useState<File>()
   const [progress, setProgress] = React.useState<number>(0)
@@ -36,7 +35,7 @@ export function useUploadFile({
     setUploadingFile(file)
 
     try {
-      const res = await uploadFiles("editorUploader", {
+      const res = await uploadFiles(endpoint, {
         ...props,
         files: [file],
         onUploadProgress: ({ progress }) => {

@@ -18,7 +18,30 @@ export const fileRouter = {
         url: file.ufsUrl
       }
     }),
-  profileImageUploader: f(["image"])
+  profileImageUploader: f({
+    image: {
+      maxFileSize: "4MB",
+      maxFileCount: 1
+    }
+  })
+    .middleware(() => {
+      return {}
+    })
+    .onUploadComplete(({ file }) => {
+      return {
+        key: file.key,
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        url: file.ufsUrl
+      }
+    }),
+  iconUploadter: f({
+    image: {
+      maxFileSize: "4MB",
+      maxFileCount: 1
+    }
+  })
     .middleware(() => {
       return {}
     })
