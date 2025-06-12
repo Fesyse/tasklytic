@@ -7,9 +7,10 @@ import {
   EmojiPickerSearch
 } from "@/components/ui/emoji-picker"
 import { Tabs, TabsContent, TabsList } from "@/components/ui/tabs"
+import { getRandomInt } from "@/lib/utils"
 import * as TabsPrimitive from "@radix-ui/react-tabs"
 import Fuse from "fuse.js"
-import { icons, Search, Upload } from "lucide-react"
+import { icons, Search, ShuffleIcon, Upload } from "lucide-react"
 import React, { Suspense, useMemo, useState } from "react"
 import { FixedSizeList } from "react-window"
 import { Input } from "./input"
@@ -18,12 +19,14 @@ import { Separator } from "./separator"
 // Get all Lucide icon names
 const lucideIconNames = Object.keys(icons)
 
+type SelectedIcon = { type: "emoji" | "lucide" | "upload"; value: string }
+
 type IconSelectorProps = {
   onSelect: (icon: {
     type: "emoji" | "lucide" | "upload"
     value: string
   }) => void
-  selectedIcon?: { type: "emoji" | "lucide" | "upload"; value: string }
+  selectedIcon?: SelectedIcon
 }
 
 const COLUMNS = 11
@@ -49,6 +52,17 @@ export function IconSelector({ onSelect, selectedIcon }: IconSelectorProps) {
     return fuse.search(searchTerm).map((result) => result.item)
   }, [searchTerm])
 
+  function setRandomIcon() {
+    const iconName =
+      lucideIconNames[getRandomInt(0, lucideIconNames.length - 1)]!
+
+    const newIcon: SelectedIcon = {
+      type: "lucide",
+      value: iconName
+    }
+    onSelect(newIcon)
+  }
+
   return (
     <Card className="w-96 overflow-hidden p-0">
       <Tabs
@@ -60,49 +74,63 @@ export function IconSelector({ onSelect, selectedIcon }: IconSelectorProps) {
         className="w-full space-y-2"
       >
         <div className="space-y-1 pt-2">
-          <TabsList className="flex w-full justify-start bg-transparent px-2">
-            <TabsPrimitive.Trigger value="emoji" asChild>
-              <Button
-                className="data-[state='active']:text-foreground flex-0 rounded-lg"
-                variant="ghost"
-                size="sm"
-              >
-                Emoji
-              </Button>
-            </TabsPrimitive.Trigger>
-            <TabsPrimitive.Trigger value="icons" asChild>
-              <Button
-                className="data-[state='active']:text-foreground flex-0 rounded-lg"
-                variant="ghost"
-                size="sm"
-              >
-                Icons
-              </Button>
-            </TabsPrimitive.Trigger>
-            <TabsPrimitive.Trigger value="upload" asChild>
-              <Button
-                className="data-[state='active']:text-foreground flex-0 rounded-lg"
-                variant="ghost"
-                size="sm"
-              >
-                Upload
-              </Button>
-            </TabsPrimitive.Trigger>
-          </TabsList>
+          <div className="flex justify-between px-2">
+            <TabsList className="flex justify-start bg-transparent">
+              <TabsPrimitive.Trigger value="emoji" asChild>
+                <Button
+                  className="data-[state='active']:text-foreground flex-0 rounded-lg"
+                  variant="ghost"
+                  size="sm"
+                >
+                  Emoji
+                </Button>
+              </TabsPrimitive.Trigger>
+              <TabsPrimitive.Trigger value="icons" asChild>
+                <Button
+                  className="data-[state='active']:text-foreground flex-0 rounded-lg"
+                  variant="ghost"
+                  size="sm"
+                >
+                  Icons
+                </Button>
+              </TabsPrimitive.Trigger>
+              <TabsPrimitive.Trigger value="upload" asChild>
+                <Button
+                  className="data-[state='active']:text-foreground flex-0 rounded-lg"
+                  variant="ghost"
+                  size="sm"
+                >
+                  Upload
+                </Button>
+              </TabsPrimitive.Trigger>
+            </TabsList>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground rounded-lg"
+            >
+              Remove
+            </Button>
+          </div>
           <Separator />
         </div>
 
-        <div className="space-y-2 px-2 pb-2">
+        <div className="space-y-2 px-2">
           {activeTab === "icons" && (
-            <div className="relative w-full">
-              <Search className="text-muted-foreground absolute top-1/2 left-2 z-10 size-4 -translate-y-1/2 transform" />
-              <Input
-                type="text"
-                className="pl-8 text-xs"
-                placeholder="Search icon..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+            <div className="flex gap-2">
+              <div className="relative w-full">
+                <Search className="text-muted-foreground absolute top-1/2 left-2 z-10 size-4 -translate-y-1/2 transform" />
+                <Input
+                  type="text"
+                  className="pl-8 text-xs"
+                  placeholder="Search icon..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              <Button variant="secondary" size="icon" onClick={setRandomIcon}>
+                <ShuffleIcon />
+              </Button>
             </div>
           )}
 
