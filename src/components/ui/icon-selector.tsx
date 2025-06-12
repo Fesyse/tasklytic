@@ -4,7 +4,8 @@ import {
   EmojiPicker,
   EmojiPickerContent,
   EmojiPickerFooter,
-  EmojiPickerSearch
+  EmojiPickerSearch,
+  EmojiRandomPicker
 } from "@/components/ui/emoji-picker"
 import { Tabs, TabsContent, TabsList } from "@/components/ui/tabs"
 import { getRandomInt } from "@/lib/utils"
@@ -115,9 +116,9 @@ export function IconSelector({ onSelect, selectedIcon }: IconSelectorProps) {
           <Separator />
         </div>
 
-        <div className="space-y-2 px-2">
+        <div className="space-y-2">
           {activeTab === "icons" && (
-            <div className="flex gap-2">
+            <div className="flex gap-2 px-2">
               <div className="relative w-full">
                 <Search className="text-muted-foreground absolute top-1/2 left-2 z-10 size-4 -translate-y-1/2 transform" />
                 <Input
@@ -142,9 +143,18 @@ export function IconSelector({ onSelect, selectedIcon }: IconSelectorProps) {
               className="max-h-80 w-full [&_[data-slot='emoji-picker-emoji']]:size-8"
               columns={COLUMNS + 2}
             >
-              <EmojiPickerSearch placeholder="Search emojis..." />
-              <EmojiPickerContent className="scrollbar-hide min-h-40" />
-              <EmojiPickerFooter />
+              <div className="flex gap-2 px-2">
+                <EmojiPickerSearch placeholder="Search emojis..." />
+                <EmojiRandomPicker
+                  onRandomEmojiSelect={(emoji) => {
+                    onSelect({ type: "emoji", value: emoji.emoji })
+                  }}
+                  variant="secondary"
+                  size="icon"
+                />
+              </div>
+              <EmojiPickerContent className="scrollbar-hide min-h-40 px-2" />
+              <EmojiPickerFooter className="px-4" />
             </EmojiPicker>
           </TabsContent>
 
@@ -169,7 +179,7 @@ export function IconSelector({ onSelect, selectedIcon }: IconSelectorProps) {
                 No icons found.
               </div>
             )}
-            <div className="flex w-full min-w-0 items-center gap-1 border-t p-2">
+            <div className="flex w-full min-w-0 items-center gap-1 border-t p-2 px-4">
               {hoveredIcon ? (
                 <div className="flex h-7 flex-none items-center justify-center">
                   <Suspense
@@ -193,7 +203,7 @@ export function IconSelector({ onSelect, selectedIcon }: IconSelectorProps) {
             </div>
           </TabsContent>
 
-          <TabsContent value="upload">
+          <TabsContent value="upload" className="p-2 pt-0">
             <div className="border-muted-foreground/25 flex h-64 flex-col items-center justify-center rounded-lg border-2 border-dashed">
               <Upload className="text-muted-foreground mb-4 h-12 w-12" />
               <p className="text-muted-foreground mb-4 text-center text-sm">
