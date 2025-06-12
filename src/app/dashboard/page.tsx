@@ -55,7 +55,7 @@ export default function DashboardPage() {
             <div className="flex items-start justify-center gap-8">
               <IconSelector
                 onSelect={setSelectedIcon}
-                selectedIcon={selectedIcon || undefined}
+                selectedIcon={selectedIcon ?? undefined}
               />
 
               <Card className="w-64">

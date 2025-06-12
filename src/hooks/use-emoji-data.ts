@@ -3,7 +3,7 @@ import { useQuery, type UseQueryOptions } from "@tanstack/react-query"
 import type { Emoji } from "frimousse"
 
 export const useEmojiData = (
-  options: Omit<UseQueryOptions<Emoji[], Error>, "queryKey" | "queryFn">
+  options?: Omit<UseQueryOptions<Emoji[], Error>, "queryKey" | "queryFn">
 ) => {
   return useQuery<Emoji[], Error>({
     queryKey: ["emoji-data"],

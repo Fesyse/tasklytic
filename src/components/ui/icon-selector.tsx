@@ -1,190 +1,19 @@
-"use client"
-
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import * as LucideIcons from "lucide-react"
 import {
-  ImagesIcon as Icons,
-  ImageIcon,
-  Search,
-  Smile,
-  Upload
-} from "lucide-react"
-import { Suspense, useMemo, useState } from "react"
-
-// Common emojis organized by category
-const emojiCategories: Record<string, string[]> = {
-  "Smileys & People": [
-    "😀",
-    "😃",
-    "😄",
-    "😁",
-    "😆",
-    "😅",
-    "😂",
-    "🤣",
-    "😊",
-    "😇",
-    "🙂",
-    "🙃",
-    "😉",
-    "😌",
-    "😍",
-    "🥰",
-    "😘",
-    "😗",
-    "😙",
-    "😚",
-    "😋",
-    "😛",
-    "😝",
-    "😜",
-    "🤪",
-    "🤨",
-    "🧐",
-    "🤓",
-    "😎",
-    "🤩",
-    "🥳"
-  ],
-  "Animals & Nature": [
-    "🐶",
-    "🐱",
-    "🐭",
-    "🐹",
-    "🐰",
-    "🦊",
-    "🐻",
-    "🐼",
-    "🐨",
-    "🐯",
-    "🦁",
-    "🐮",
-    "🐷",
-    "🐸",
-    "🐵",
-    "🐔",
-    "🐧",
-    "🐦",
-    "🐤",
-    "🐣",
-    "🐥",
-    "🦆",
-    "🦅",
-    "🦉",
-    "🦇",
-    "🐺",
-    "🐗",
-    "🐴",
-    "🦄",
-    "🐝"
-  ],
-  "Food & Drink": [
-    "🍎",
-    "🍐",
-    "🍊",
-    "🍋",
-    "🍌",
-    "🍉",
-    "🍇",
-    "🍓",
-    "🍈",
-    "🍒",
-    "🍑",
-    "🥭",
-    "🍍",
-    "🥥",
-    "🥝",
-    "🍅",
-    "🍆",
-    "🥑",
-    "🥦",
-    "🥬",
-    "🥒",
-    "🌶️",
-    "🌽",
-    "🥕",
-    "🧄",
-    "🧅",
-    "🥔",
-    "🍠",
-    "🥐",
-    "🍞"
-  ],
-  Activities: [
-    "⚽",
-    "🏀",
-    "🏈",
-    "⚾",
-    "🥎",
-    "🎾",
-    "🏐",
-    "🏉",
-    "🥏",
-    "🎱",
-    "🪀",
-    "🏓",
-    "🏸",
-    "🏒",
-    "🏑",
-    "🥍",
-    "🏏",
-    "🪃",
-    "🥅",
-    "⛳",
-    "🪁",
-    "🏹",
-    "🎣",
-    "🤿",
-    "🥊",
-    "🥋",
-    "🎽",
-    "🛹",
-    "🛷",
-    "⛸️"
-  ],
-  Objects: [
-    "⌚",
-    "📱",
-    "📲",
-    "💻",
-    "⌨️",
-    "🖥️",
-    "🖨️",
-    "🖱️",
-    "🖲️",
-    "🕹️",
-    "🗜️",
-    "💽",
-    "💾",
-    "💿",
-    "📀",
-    "📼",
-    "📷",
-    "📸",
-    "📹",
-    "🎥",
-    "📽️",
-    "🎞️",
-    "📞",
-    "☎️",
-    "📟",
-    "📠",
-    "📺",
-    "📻",
-    "🎙️",
-    "🎚️"
-  ]
-}
+  EmojiPicker,
+  EmojiPickerContent,
+  EmojiPickerFooter,
+  EmojiPickerSearch
+} from "@/components/ui/emoji-picker"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import Fuse from "fuse.js"
+import { icons, Search, Upload } from "lucide-react"
+import React, { Suspense, useMemo, useState } from "react"
+import { FixedSizeList } from "react-window"
 
 // Get all Lucide icon names
-const lucideIconNames = Object.keys(LucideIcons).filter(
-  ([name]) => name !== "default" && name !== "createLucideIcon"
-)
+const lucideIconNames = Object.keys(icons)
 
 type IconSelectorProps = {
   onSelect: (icon: {
@@ -197,148 +26,120 @@ type IconSelectorProps = {
 export function IconSelector({ onSelect, selectedIcon }: IconSelectorProps) {
   const [searchTerm, setSearchTerm] = useState("")
   const [activeTab, setActiveTab] = useState("emoji")
+  const [hoveredIcon, setHoveredIcon] = useState<string | null>(null)
 
-  // Filter emojis based on search
-  const filteredEmojis = useMemo(() => {
-    if (!searchTerm) return emojiCategories
-
-    const filtered: typeof emojiCategories = {}
-    Object.entries(emojiCategories).forEach(([category, emojis]) => {
-      const matchingEmojis = emojis.filter(() =>
-        category.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-      if (matchingEmojis.length > 0) {
-        filtered[category] = matchingEmojis
-      }
+  // Initialize Fuse.js for Lucide icons
+  const fuse = useMemo(() => {
+    return new Fuse(lucideIconNames, {
+      keys: ["name"],
+      includeScore: true,
+      threshold: 0.3 // Adjust threshold as needed
     })
-    return filtered
-  }, [searchTerm])
+  }, [])
 
   // Filter Lucide icons based on search
   const filteredIcons = useMemo(() => {
-    if (!searchTerm.length) return lucideIconNames.slice(0, 100) // Show first 100 icons initially
-    return lucideIconNames
-      .filter((name) => name.toLowerCase().includes(searchTerm.toLowerCase()))
-      .slice(0, 50) // Limit search results
+    if (!searchTerm.length) return lucideIconNames
+
+    return fuse.search(searchTerm).map((result) => result.item)
   }, [searchTerm])
 
-  const LazyIcon = ({ iconName }: { iconName: string }) => {
-    const IconComponent = LucideIcons[
-      iconName as keyof typeof LucideIcons
-    ] as any
-    return IconComponent ? <IconComponent size={20} /> : null
-  }
-
   return (
-    <Card className="w-80 p-4">
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="emoji" className="flex items-center gap-2">
-            <Smile size={16} />
+    <Card className="w-82 overflow-hidden p-2">
+      <Tabs
+        value={activeTab}
+        onValueChange={(tab) => {
+          setSearchTerm("")
+          setActiveTab(tab)
+        }}
+        className="w-full"
+      >
+        <TabsList className="flex w-full bg-transparent">
+          <TabsTrigger
+            value="emoji"
+            className="flex items-center gap-2 bg-transparent"
+          >
             Emoji
           </TabsTrigger>
-          <TabsTrigger value="icons" className="flex items-center gap-2">
-            <Icons size={16} />
+          <TabsTrigger
+            value="icons"
+            className="flex items-center gap-2 bg-transparent"
+          >
             Icons
           </TabsTrigger>
-          <TabsTrigger value="upload" className="flex items-center gap-2">
-            <ImageIcon size={16} />
+          <TabsTrigger
+            value="upload"
+            className="flex items-center gap-2 bg-transparent"
+          >
             Upload
           </TabsTrigger>
         </TabsList>
 
-        <div className="mt-4">
-          <div className="relative">
-            <Search
-              className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2 transform"
-              size={16}
-            />
-            <Input
-              placeholder={
-                activeTab === "emoji"
-                  ? "Search emojis..."
-                  : activeTab === "icons"
-                    ? "Search icons..."
-                    : "Upload custom icon"
-              }
+        {activeTab === "icons" && (
+          <div className="flex h-9 items-center gap-2 border-b px-3">
+            <Search className="size-4 shrink-0 opacity-50" />
+            <input
+              className="placeholder:text-muted-foreground flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50"
+              placeholder="Search icon..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-              disabled={activeTab === "upload"}
             />
           </div>
-        </div>
+        )}
 
-        <TabsContent value="emoji" className="mt-4">
-          <ScrollArea className="h-64">
-            <div className="space-y-4">
-              {Object.entries(filteredEmojis).map(([category, emojis]) => (
-                <div key={category}>
-                  <Badge variant="secondary" className="mb-2 text-xs">
-                    {category}
-                  </Badge>
-                  <div className="grid grid-cols-8 gap-1">
-                    {emojis.map((emoji, index) => (
-                      <Button
-                        key={`${emoji}-${index}`}
-                        variant={
-                          selectedIcon?.type === "emoji" &&
-                          selectedIcon?.value === emoji
-                            ? "default"
-                            : "ghost"
-                        }
-                        size="sm"
-                        className="hover:bg-accent h-8 w-8 p-0 text-lg"
-                        onClick={() =>
-                          onSelect({ type: "emoji", value: emoji })
-                        }
-                      >
-                        {emoji}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </ScrollArea>
+        <TabsContent value="emoji">
+          <EmojiPicker
+            onEmojiSelect={(emoji) => {
+              onSelect({ type: "emoji", value: emoji.emoji })
+            }}
+            className="max-h-80 w-full [&_[data-slot='emoji-picker-emoji']]:size-8"
+            columns={10}
+          >
+            <EmojiPickerSearch placeholder="Search emojis..." />
+            <EmojiPickerContent className="scrollbar-hide min-h-40" />
+            <EmojiPickerFooter />
+          </EmojiPicker>
         </TabsContent>
 
-        <TabsContent value="icons" className="mt-4">
-          <ScrollArea className="h-64">
-            <div className="grid grid-cols-6 gap-1">
-              {filteredIcons.map((iconName) => (
-                <Button
-                  key={iconName}
-                  variant={
-                    selectedIcon?.type === "lucide" &&
-                    selectedIcon?.value === iconName
-                      ? "default"
-                      : "ghost"
-                  }
-                  size="sm"
-                  className="hover:bg-accent h-10 w-10 p-0"
-                  onClick={() => onSelect({ type: "lucide", value: iconName })}
-                  title={iconName}
+        <TabsContent value="icons">
+          <FixedSizeList
+            height={filteredIcons.length === 0 ? 0 : 64 * 4}
+            itemCount={filteredIcons.length}
+            itemSize={8 * 4}
+            width={80 * 4 - 10}
+            itemData={{ onSelect, filteredIcons, selectedIcon, setHoveredIcon }}
+            className="scrollbar-hide"
+          >
+            {LucideIconRow}
+          </FixedSizeList>
+          {filteredIcons.length === 0 && (
+            <div className="text-muted-foreground flex min-h-40 items-center justify-center text-center text-sm">
+              No icons found.
+            </div>
+          )}
+          <div className="flex w-full min-w-0 items-center gap-1 border-t p-2">
+            {hoveredIcon ? (
+              <div className="flex h-7 flex-none items-center justify-center">
+                <Suspense
+                  fallback={<div className="bg-muted animate-pulse rounded" />}
                 >
-                  <Suspense
-                    fallback={
-                      <div className="bg-muted h-5 w-5 animate-pulse rounded" />
-                    }
-                  >
-                    <LazyIcon iconName={iconName} />
-                  </Suspense>
-                </Button>
-              ))}
-            </div>
-            {filteredIcons.length === 0 && (
-              <div className="text-muted-foreground py-8 text-center">
-                No icons found matching "{searchTerm}"
+                  {icons[hoveredIcon as keyof typeof icons] &&
+                    React.createElement(
+                      icons[hoveredIcon as keyof typeof icons],
+                      { size: 20 }
+                    )}
+                </Suspense>
+                <span className="ml-2 truncate text-xs">{hoveredIcon}</span>
               </div>
+            ) : (
+              <span className="text-muted-foreground ml-1.5 flex h-7 items-center truncate text-xs">
+                Select an icon...
+              </span>
             )}
-          </ScrollArea>
+          </div>
         </TabsContent>
 
-        <TabsContent value="upload" className="mt-4">
+        <TabsContent value="upload">
           <div className="border-muted-foreground/25 flex h-64 flex-col items-center justify-center rounded-lg border-2 border-dashed">
             <Upload className="text-muted-foreground mb-4 h-12 w-12" />
             <p className="text-muted-foreground mb-4 text-center text-sm">
@@ -354,5 +155,57 @@ export function IconSelector({ onSelect, selectedIcon }: IconSelectorProps) {
         </TabsContent>
       </Tabs>
     </Card>
+  )
+}
+
+type LucideIconRowProps = {
+  index: number
+  style: React.CSSProperties
+  data: {
+    onSelect: IconSelectorProps["onSelect"]
+    filteredIcons: string[]
+    selectedIcon?: IconSelectorProps["selectedIcon"]
+    setHoveredIcon: React.Dispatch<React.SetStateAction<string | null>>
+  }
+}
+
+function LucideIconRow({ index, style, data }: LucideIconRowProps) {
+  const columns = 9
+
+  const { onSelect, filteredIcons, selectedIcon, setHoveredIcon } = data
+  const startIndex = index * columns
+  const endIndex = Math.min(startIndex + columns, filteredIcons.length)
+  const iconsInRow = filteredIcons.slice(startIndex, endIndex)
+
+  return (
+    <div
+      style={{
+        ...style,
+        gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`
+      }}
+      className="grid gap-1"
+    >
+      {iconsInRow.map((iconName) => {
+        const IconComponent = icons[iconName as keyof typeof icons] as any
+        return (
+          <Button
+            key={iconName}
+            variant={selectedIcon?.value === iconName ? "default" : "ghost"}
+            size="sm"
+            className="hover:bg-accent h-8 w-8 p-0"
+            onClick={() => onSelect({ type: "lucide", value: iconName })}
+            onMouseEnter={() => setHoveredIcon(iconName)}
+            onMouseLeave={() => setHoveredIcon(null)}
+            title={iconName}
+          >
+            <Suspense
+              fallback={<div className="bg-muted h-8 animate-pulse rounded" />}
+            >
+              {IconComponent ? <IconComponent size={24} /> : null}
+            </Suspense>
+          </Button>
+        )
+      })}
+    </div>
   )
 }
