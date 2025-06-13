@@ -201,7 +201,7 @@ function UploadTabContent({
     uploadedFile,
     isUploading,
     progress: uploadProgress
-  } = useUploadFile("iconUploadter", {
+  } = useUploadFile("iconUploader", {
     onUploadComplete: (file) => {
       onUploadComplete(file.url)
       onPick({ type: "upload", value: file.ufsUrl })

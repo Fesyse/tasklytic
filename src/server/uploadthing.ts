@@ -36,7 +36,7 @@ export const fileRouter = {
         url: file.ufsUrl
       }
     }),
-  iconUploadter: f({
+  iconUploader: f({
     image: {
       maxFileSize: "4MB",
       maxFileCount: 1
