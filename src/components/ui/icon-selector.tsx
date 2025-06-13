@@ -14,7 +14,7 @@ import { getCroppedImg } from "@/lib/crop-image"
 import { getRandomInt } from "@/lib/utils"
 import * as TabsPrimitive from "@radix-ui/react-tabs"
 import Fuse from "fuse.js"
-import { icons, Search, ShuffleIcon } from "lucide-react"
+import { icons, Search, ShuffleIcon, UploadIcon } from "lucide-react"
 import React, { Suspense, useCallback, useMemo, useState } from "react"
 import Cropper from "react-easy-crop"
 import { FixedSizeList } from "react-window"
@@ -32,10 +32,12 @@ export type SelectedIcon = {
 }
 
 export type IconSelectorProps = {
-  onSelect: (icon: {
-    type: "emoji" | "lucide" | "upload"
-    value: string
-  }) => void
+  onSelect: (
+    icon: {
+      type: "emoji" | "lucide" | "upload"
+      value: string
+    } | null
+  ) => void
   selectedIcon?: SelectedIcon
 }
 
@@ -98,7 +100,7 @@ function IconsTabContent({
 }: IconsTabContentProps) {
   return (
     <TabsContent value="icons">
-      <div className="flex gap-2 px-2">
+      <div className="flex gap-2 px-2 pb-2">
         <div className="relative w-full">
           <Search className="text-muted-foreground absolute top-1/2 left-2 z-10 size-4 -translate-y-1/2 transform" />
           <Input
@@ -234,7 +236,7 @@ function UploadTabContent({
       <div className="space-y-4">
         {!imageSrc ? (
           <div
-            className="text-muted-foreground flex h-32 cursor-pointer items-center justify-center rounded-md border border-dashed text-sm"
+            className="text-muted-foreground flex h-64 cursor-pointer flex-col items-center justify-center gap-4 rounded-md border border-dashed text-sm"
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => {
               e.preventDefault()
@@ -261,6 +263,7 @@ function UploadTabContent({
               input.click()
             }}
           >
+            <UploadIcon className="size-8" />
             Drag & drop an image or click to select
           </div>
         ) : (
@@ -341,6 +344,10 @@ export function IconSelector({ onSelect, selectedIcon }: IconSelectorProps) {
     onSelect(newIcon)
   }
 
+  function removeIcon() {
+    onSelect(null)
+  }
+
   return (
     <Card className="w-96 overflow-hidden p-0">
       <Tabs
@@ -383,6 +390,7 @@ export function IconSelector({ onSelect, selectedIcon }: IconSelectorProps) {
               </TabsPrimitive.Trigger>
             </TabsList>
             <Button
+              onClick={() => removeIcon()}
               variant="ghost"
               size="sm"
               className="text-muted-foreground rounded-lg"
