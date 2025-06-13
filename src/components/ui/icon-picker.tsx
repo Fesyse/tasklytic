@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
 import {
   EmojiPicker,
   EmojiPickerContent,
@@ -12,7 +11,9 @@ import { Tabs, TabsContent, TabsList } from "@/components/ui/tabs"
 import { useUploadFile } from "@/hooks/use-upload-file"
 import { getCroppedImg } from "@/lib/crop-image"
 import { getRandomInt } from "@/lib/utils"
+import * as PopoverPrimitive from "@radix-ui/react-popover"
 import * as TabsPrimitive from "@radix-ui/react-tabs"
+import { useQuery } from "@tanstack/react-query"
 import Fuse from "fuse.js"
 import { icons, Loader2, Search, ShuffleIcon, UploadIcon } from "lucide-react"
 import Image from "next/image"
@@ -21,40 +22,58 @@ import Cropper from "react-easy-crop"
 import { FixedSizeList } from "react-window"
 import { toast } from "sonner"
 import { Input } from "./input"
-import { LucideIconRow } from "./lucide-icon-row"
+import { Popover, PopoverContent, PopoverTrigger } from "./popover"
 import { Progress } from "./progress"
 import { Separator } from "./separator"
 
-// Get all Lucide icon names
-const lucideIconNames = Object.keys(icons)
-
-export type SelectedIcon = {
+export type PickedIcon = {
   type: "emoji" | "lucide" | "upload"
   value: string
 }
 
-export type IconSelectorProps = {
-  onSelect: (
-    icon: {
-      type: "emoji" | "lucide" | "upload"
-      value: string
-    } | null
-  ) => void
-  selectedIcon?: SelectedIcon
+export type OnPickIcon = (
+  icon: {
+    type: "emoji" | "lucide" | "upload"
+    value: string
+  } | null
+) => void
+
+export type IconPickerProps = React.ComponentProps<typeof PopoverPrimitive.Root>
+
+export type IconPickerContentProps = Omit<
+  React.ComponentProps<typeof PopoverPrimitive.Content>,
+  "onPick"
+> & {
+  onPick: OnPickIcon
+  pickedIcon?: PickedIcon
 }
+
+export const IconPickerTrigger = (
+  props: React.ComponentProps<typeof PopoverPrimitive.Trigger>
+) => <PopoverTrigger {...props} />
+
+IconPickerTrigger.displayName = "IconPickerTrigger"
+
+export function IconPicker({ children }: IconPickerProps) {
+  return <Popover>{children}</Popover>
+}
+
+// Get all Lucide icon names
+const lucideIconNames = Object.keys(icons)
 
 const COLUMNS = 11
 
 type EmojiTabContentProps = {
-  onSelect: IconSelectorProps["onSelect"]
+  onPick: OnPickIcon
+  pickedIcon?: PickedIcon
 }
 
-function EmojiTabContent({ onSelect }: EmojiTabContentProps) {
+function EmojiTabContent({ onPick }: EmojiTabContentProps) {
   return (
     <TabsContent value="emoji">
       <EmojiPicker
         onEmojiSelect={(emoji) => {
-          onSelect({ type: "emoji", value: emoji.emoji })
+          onPick({ type: "emoji", value: emoji.emoji })
         }}
         className="max-h-80 w-full [&_[data-slot='emoji-picker-emoji']]:size-8"
         columns={COLUMNS + 2}
@@ -63,7 +82,7 @@ function EmojiTabContent({ onSelect }: EmojiTabContentProps) {
           <EmojiPickerSearch placeholder="Search emojis..." />
           <EmojiRandomPicker
             onRandomEmojiSelect={(emoji) => {
-              onSelect({ type: "emoji", value: emoji.emoji })
+              onPick({ type: "emoji", value: emoji.emoji })
             }}
             variant="secondary"
             size="icon"
@@ -76,13 +95,11 @@ function EmojiTabContent({ onSelect }: EmojiTabContentProps) {
   )
 }
 
-type IconsTabContentProps = {
+type IconsTabContentProps = EmojiTabContentProps & {
   searchTerm: string
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>
   setRandomIcon: () => void
   filteredIcons: string[]
-  onSelect: IconSelectorProps["onSelect"]
-  selectedIcon?: IconSelectorProps["selectedIcon"]
   setHoveredIcon: React.Dispatch<React.SetStateAction<string | null>>
   hoveredIcon: string | null
 }
@@ -92,8 +109,8 @@ function IconsTabContent({
   setSearchTerm,
   setRandomIcon,
   filteredIcons,
-  onSelect,
-  selectedIcon,
+  onPick,
+  pickedIcon,
   setHoveredIcon,
   hoveredIcon
 }: IconsTabContentProps) {
@@ -121,9 +138,9 @@ function IconsTabContent({
         itemSize={8 * 4}
         width={COLUMNS * (8 * 4)}
         itemData={{
-          onSelect,
+          onPick,
           filteredIcons,
-          selectedIcon,
+          pickedIcon,
           setHoveredIcon
         }}
         className="scrollbar-hide mx-auto"
@@ -150,7 +167,7 @@ function IconsTabContent({
           </div>
         ) : (
           <span className="text-muted-foreground ml-1.5 flex h-7 items-center truncate text-xs">
-            Select an icons...
+            Pick an icons...
           </span>
         )}
       </div>
@@ -161,13 +178,13 @@ function IconsTabContent({
 type UploadTabContentProps = {
   onUploadComplete: (imageUrl: string) => void
   onUploadError: (error: Error) => void
-  onSelect: IconSelectorProps["onSelect"]
+  onPick: OnPickIcon
 }
 
 function UploadTabContent({
   onUploadComplete,
   onUploadError,
-  onSelect
+  onPick
 }: UploadTabContentProps) {
   const [imageSrc, setImageSrc] = useState<string | null>(null)
   const [crop, setCrop] = useState({ x: 0, y: 0 })
@@ -187,7 +204,7 @@ function UploadTabContent({
   } = useUploadFile("iconUploadter", {
     onUploadComplete: (file) => {
       onUploadComplete(file.url)
-      onSelect({ type: "upload", value: file.ufsUrl })
+      onPick({ type: "upload", value: file.ufsUrl })
     },
     onUploadError: (error) => onUploadError(error as Error)
   })
@@ -268,7 +285,7 @@ function UploadTabContent({
             }}
           >
             <UploadIcon className="size-8" />
-            Drag & drop an image or click to select
+            Drag & drop an image or click to pick
           </div>
         ) : !uploadedFile ? (
           <div className="relative h-64 w-full overflow-hidden rounded-md border">
@@ -358,7 +375,10 @@ function UploadTabContent({
   )
 }
 
-export function IconSelector({ onSelect, selectedIcon }: IconSelectorProps) {
+export const IconPickerContent = ({
+  onPick,
+  pickedIcon
+}: IconPickerContentProps) => {
   const [searchTerm, setSearchTerm] = useState("")
   const [activeTab, setActiveTab] = useState("emoji")
   const [hoveredIcon, setHoveredIcon] = useState<string | null>(null)
@@ -383,19 +403,19 @@ export function IconSelector({ onSelect, selectedIcon }: IconSelectorProps) {
     const iconName =
       lucideIconNames[getRandomInt(0, lucideIconNames.length - 1)]!
 
-    const newIcon: SelectedIcon = {
+    const newIcon: PickedIcon = {
       type: "lucide",
       value: iconName
     }
-    onSelect(newIcon)
+    onPick(newIcon)
   }
 
   function removeIcon() {
-    onSelect(null)
+    onPick(null)
   }
 
   return (
-    <Card className="w-96 overflow-hidden p-0">
+    <PopoverContent className="w-96 overflow-hidden p-0">
       <Tabs
         value={activeTab}
         onValueChange={(tab) => {
@@ -448,30 +468,118 @@ export function IconSelector({ onSelect, selectedIcon }: IconSelectorProps) {
         </div>
 
         <div className="space-y-2">
-          <EmojiTabContent onSelect={onSelect} />
+          <EmojiTabContent onPick={onPick} />
           <IconsTabContent
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
             setRandomIcon={setRandomIcon}
             filteredIcons={filteredIcons}
-            onSelect={onSelect}
-            selectedIcon={selectedIcon}
+            onPick={onPick}
+            pickedIcon={pickedIcon}
             setHoveredIcon={setHoveredIcon}
             hoveredIcon={hoveredIcon}
           />
           <UploadTabContent
             onUploadComplete={(imageUrl) => {
-              onSelect({ type: "upload", value: imageUrl })
+              onPick({ type: "upload", value: imageUrl })
             }}
             onUploadError={(error: Error) => {
               toast.error(`There was and error uploading your image`, {
                 description: error.message
               })
             }}
-            onSelect={onSelect}
+            onPick={onPick}
           />
         </div>
       </Tabs>
-    </Card>
+    </PopoverContent>
   )
+}
+
+type LucideIconRowProps = {
+  index: number
+  style: React.CSSProperties
+  data: {
+    onPick: OnPickIcon
+    filteredIcons: string[]
+    pickedIcon?: PickedIcon
+    setHoveredIcon: React.Dispatch<React.SetStateAction<string | null>>
+  }
+}
+
+function LucideIconRow({ index, style, data }: LucideIconRowProps) {
+  const { onPick, filteredIcons, pickedIcon, setHoveredIcon } = data
+  const startIndex = index * COLUMNS
+  const endIndex = Math.min(startIndex + COLUMNS, filteredIcons.length)
+  const iconsInRow = filteredIcons.slice(startIndex, endIndex)
+
+  return (
+    <div
+      style={{
+        ...style,
+        gridTemplateColumns: `repeat(${COLUMNS}, minmax(0, 1fr))`
+      }}
+      className="grid gap-1"
+    >
+      {iconsInRow.map((iconName) => {
+        const IconComponent = icons[iconName as keyof typeof icons] as any
+        return (
+          <Button
+            key={iconName}
+            variant={pickedIcon?.value === iconName ? "default" : "ghost"}
+            size="sm"
+            className="hover:bg-accent h-8 w-8 p-0"
+            onClick={() => onPick({ type: "lucide", value: iconName })}
+            onMouseEnter={() => setHoveredIcon(iconName)}
+            onMouseLeave={() => setHoveredIcon(null)}
+            title={iconName}
+          >
+            <Suspense
+              fallback={<div className="bg-muted h-8 animate-pulse rounded" />}
+            >
+              {IconComponent ? <IconComponent className="!size-6" /> : null}
+            </Suspense>
+          </Button>
+        )
+      })}
+    </div>
+  )
+}
+
+export function PickedIcon({ icon }: { icon: PickedIcon }) {
+  if (!icon)
+    return (
+      <div className="bg-muted text-muted-foreground flex h-12 w-12 items-center justify-center rounded-lg">
+        No icon
+      </div>
+    )
+
+  if (icon.type === "emoji") {
+    return (
+      <div className="bg-muted flex h-12 w-12 items-center justify-center rounded-lg text-2xl">
+        {icon.value}
+      </div>
+    )
+  }
+
+  if (icon.type === "lucide") {
+    return <RenderLucideIcon icon={icon} />
+  }
+
+  if (icon.type === "upload")
+    return <Image src={icon.value} alt="shit" width={40} height={40} />
+
+  return null
+}
+function RenderLucideIcon({ icon }: { icon: PickedIcon }) {
+  const { data: LucideIcons } = useQuery({
+    queryKey: ["lucide-icons"],
+    queryFn: () => import("lucide-react")
+  })
+
+  const IconComponent = LucideIcons
+    ? (LucideIcons[icon.value as keyof typeof LucideIcons] as any)
+    : undefined
+
+  return IconComponent && <IconComponent size={24} />
 }
