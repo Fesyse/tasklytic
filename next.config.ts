@@ -4,7 +4,7 @@
  */
 import type { NextConfig } from "next"
 import createNextIntlPlugin from "next-intl/plugin"
-import "./src/env"
+import { env } from "./src/env"
 
 const config: NextConfig = {
   redirects: async () => [
@@ -16,6 +16,11 @@ const config: NextConfig = {
   ],
   images: {
     remotePatterns: [
+      {
+        hostname: `${env.UPLOADTHING_APP_ID}.ufs.sh`,
+        protocol: "https",
+        pathname: "/f/**"
+      },
       {
         hostname: "ik.imagekit.io",
         protocol: "https",

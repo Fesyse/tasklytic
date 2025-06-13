@@ -14,13 +14,15 @@ import { getCroppedImg } from "@/lib/crop-image"
 import { getRandomInt } from "@/lib/utils"
 import * as TabsPrimitive from "@radix-ui/react-tabs"
 import Fuse from "fuse.js"
-import { icons, Search, ShuffleIcon, UploadIcon } from "lucide-react"
+import { icons, Loader2, Search, ShuffleIcon, UploadIcon } from "lucide-react"
+import Image from "next/image"
 import React, { Suspense, useCallback, useMemo, useState } from "react"
 import Cropper from "react-easy-crop"
 import { FixedSizeList } from "react-window"
 import { toast } from "sonner"
 import { Input } from "./input"
 import { LucideIconRow } from "./lucide-icon-row"
+import { Progress } from "./progress"
 import { Separator } from "./separator"
 
 // Get all Lucide icon names
@@ -45,10 +47,9 @@ const COLUMNS = 11
 
 type EmojiTabContentProps = {
   onSelect: IconSelectorProps["onSelect"]
-  COLUMNS: number
 }
 
-function EmojiTabContent({ onSelect, COLUMNS }: EmojiTabContentProps) {
+function EmojiTabContent({ onSelect }: EmojiTabContentProps) {
   return (
     <TabsContent value="emoji">
       <EmojiPicker
@@ -84,7 +85,6 @@ type IconsTabContentProps = {
   selectedIcon?: IconSelectorProps["selectedIcon"]
   setHoveredIcon: React.Dispatch<React.SetStateAction<string | null>>
   hoveredIcon: string | null
-  COLUMNS: number
 }
 
 function IconsTabContent({
@@ -95,8 +95,7 @@ function IconsTabContent({
   onSelect,
   selectedIcon,
   setHoveredIcon,
-  hoveredIcon,
-  COLUMNS
+  hoveredIcon
 }: IconsTabContentProps) {
   return (
     <TabsContent value="icons">
@@ -118,7 +117,7 @@ function IconsTabContent({
 
       <FixedSizeList
         height={filteredIcons.length === 0 ? 0 : 57.75 * 4}
-        itemCount={filteredIcons.length}
+        itemCount={Math.ceil(filteredIcons.length / COLUMNS)}
         itemSize={8 * 4}
         width={COLUMNS * (8 * 4)}
         itemData={{
@@ -180,7 +179,12 @@ function UploadTabContent({
     height: number
   } | null>(null)
 
-  const { uploadFile, isUploading } = useUploadFile("iconUploadter", {
+  const {
+    uploadFile,
+    uploadedFile,
+    isUploading,
+    progress: uploadProgress
+  } = useUploadFile("iconUploadter", {
     onUploadComplete: (file) => {
       onUploadComplete(file.url)
       onSelect({ type: "upload", value: file.ufsUrl })
@@ -233,7 +237,7 @@ function UploadTabContent({
 
   return (
     <TabsContent value="upload" className="p-2 pt-0">
-      <div className="space-y-4">
+      <div className="relative space-y-4">
         {!imageSrc ? (
           <div
             className="text-muted-foreground flex h-64 cursor-pointer flex-col items-center justify-center gap-4 rounded-md border border-dashed text-sm"
@@ -266,7 +270,7 @@ function UploadTabContent({
             <UploadIcon className="size-8" />
             Drag & drop an image or click to select
           </div>
-        ) : (
+        ) : !uploadedFile ? (
           <div className="relative h-64 w-full overflow-hidden rounded-md border">
             <Cropper
               image={imageSrc}
@@ -277,36 +281,78 @@ function UploadTabContent({
               onCropComplete={onCropComplete}
               onZoomChange={setZoom}
               restrictPosition={true}
-              onMediaLoaded={(mediaSize) => {
-                setZoom(364 / mediaSize.naturalWidth)
-              }}
             />
           </div>
-        )}
-
-        {imageSrc && (
-          <div className="space-y-2">
-            <div className="flex flex-col justify-center">
-              <Slider
-                id="zoom"
-                min={2.5}
-                max={10}
-                step={0.1}
-                value={[zoom]}
-                onValueChange={([val]: [number]) => setZoom(val)}
-                className="w-full"
+        ) : (
+          <div className="flex flex-col items-center justify-center gap-2 rounded py-4">
+            <p className="text-muted-foreground text-sm">
+              Uploaded successfully!
+            </p>
+            <div className="flex gap-2">
+              <Image
+                className="rounded-md border-6 border-black"
+                src={uploadedFile.ufsUrl}
+                alt={uploadedFile.name}
+                width={120}
+                height={120}
               />
-              <div className="flex justify-between">
-                <div className="text-muted-foreground">+</div>
-                <div className="text-muted-foreground">-</div>
-              </div>
+              <Image
+                className="rounded-md border-6 border-white"
+                src={uploadedFile.ufsUrl}
+                alt={uploadedFile.name}
+                width={120}
+                height={120}
+              />
             </div>
-
-            <Button onClick={showCroppedImage} disabled={isUploading}>
-              {isUploading ? "Uploading..." : "Crop & Upload"}
-            </Button>
           </div>
         )}
+
+        {imageSrc && !uploadedFile ? (
+          <div className="space-y-2">
+            {isUploading ? (
+              <Progress value={uploadProgress} />
+            ) : (
+              <div className="flex flex-col justify-center">
+                <Slider
+                  id="zoom"
+                  min={1}
+                  max={10}
+                  step={0.1}
+                  value={[zoom]}
+                  onValueChange={([val]: [number]) => setZoom(val)}
+                  className="w-full"
+                />
+                <div className="flex justify-between">
+                  <div className="text-muted-foreground">+</div>
+                  <div className="text-muted-foreground">-</div>
+                </div>
+              </div>
+            )}
+
+            <div className="flex justify-between">
+              <Button
+                disabled={isUploading}
+                variant="secondary"
+                onClick={() => {
+                  setImageSrc(null)
+                }}
+              >
+                Back
+              </Button>
+
+              <Button onClick={showCroppedImage} disabled={isUploading}>
+                {isUploading ? (
+                  <>
+                    <Loader2 className="animate-spin" />
+                    <span>Saving...</span>
+                  </>
+                ) : (
+                  "Save"
+                )}
+              </Button>
+            </div>
+          </div>
+        ) : null}
       </div>
     </TabsContent>
   )
@@ -402,7 +448,7 @@ export function IconSelector({ onSelect, selectedIcon }: IconSelectorProps) {
         </div>
 
         <div className="space-y-2">
-          <EmojiTabContent onSelect={onSelect} COLUMNS={COLUMNS} />
+          <EmojiTabContent onSelect={onSelect} />
           <IconsTabContent
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
@@ -412,7 +458,6 @@ export function IconSelector({ onSelect, selectedIcon }: IconSelectorProps) {
             selectedIcon={selectedIcon}
             setHoveredIcon={setHoveredIcon}
             hoveredIcon={hoveredIcon}
-            COLUMNS={COLUMNS}
           />
           <UploadTabContent
             onUploadComplete={(imageUrl) => {
