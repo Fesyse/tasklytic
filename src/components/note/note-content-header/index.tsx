@@ -39,7 +39,7 @@ export const NoteContentHeader = () => {
           })}
         >
           {note?.cover ? (
-            <div className="absolute bottom-[calc(100%+var(--spacing)*4)] left-0 z-10">
+            <div className="absolute bottom-[calc(100%+var(--spacing)*4)] left-4 z-10">
               <NoteEmoji size={84} isAddingEmoji={isAddingEmoji} note={note} />
             </div>
           ) : null}

@@ -13,6 +13,7 @@ import { useTranslations } from "next-intl"
 import { authClient } from "./auth-client"
 import type { Note } from "./db-client"
 import { getNotes } from "./db-queries"
+import { useSettingsDialog } from "./stores/settings-dialog"
 import { tryCatch } from "./utils"
 
 export type NavItem =
@@ -25,6 +26,13 @@ export type NavItem =
   | {
       component: React.JSX.Element
       type: "component"
+    }
+  | {
+      title: string
+      action: () => void
+      icon: LucideIcon
+      isActive: boolean
+      type: "action"
     }
 export type NoteNavItem = {
   id: string
@@ -64,6 +72,7 @@ export const useSidebarNav = (): SidebarNav => {
   const t = useTranslations("Dashboard.Sidebar")
   const { data: organization } = authClient.useActiveOrganization()
   const { data: session } = authClient.useSession()
+  const { open: settingsDialogOpen, openSettingsDialog } = useSettingsDialog()
 
   const result = useLiveQuery(() => {
     if (!organization?.id) return tryCatch(Promise.resolve([]))
@@ -114,7 +123,7 @@ export const useSidebarNav = (): SidebarNav => {
       }
     ],
     isNotesLoading,
-    favoriteNotes: result?.data
+    favoriteNotes: !isNotesLoading
       ? buildNoteHierarchy(
           result.data.filter((note) =>
             note.parentNoteId === null
@@ -124,13 +133,13 @@ export const useSidebarNav = (): SidebarNav => {
           null
         )
       : undefined,
-    privateNotes: result?.data
+    privateNotes: !isNotesLoading
       ? buildNoteHierarchy(
           result.data.filter((note) => !note.isPublic),
           null
         )
       : undefined,
-    sharedNotes: result?.data
+    sharedNotes: !isNotesLoading
       ? buildNoteHierarchy(
           result.data.filter((note) => note.isPublic),
           null
@@ -153,9 +162,10 @@ export const useSidebarNav = (): SidebarNav => {
       },
       {
         title: t("NavSecondary.settings"),
-        url: "/settings",
         icon: SettingsIcon,
-        type: "url"
+        action: openSettingsDialog.bind(null, undefined),
+        isActive: settingsDialogOpen,
+        type: "action"
       }
     ]
   }

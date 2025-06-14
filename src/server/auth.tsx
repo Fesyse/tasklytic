@@ -45,7 +45,24 @@ export const auth = betterAuth({
     provider: "pg"
   }),
   user: {
-    modelName: "users"
+    modelName: "users",
+    changeEmail: {
+      enabled: true,
+      sendChangeEmailVerification: async ({ user, newEmail, url }) => {
+        const { error } = await resend.emails.send({
+          from: siteConfig.emails.noreply,
+          to: newEmail,
+          subject: "Verify your email | Change email - Tasklytic",
+          react: (
+            <VerifyEmail type="change-email" url={url} userName={user.name} />
+          )
+        })
+
+        if (error) {
+          throw new Error(error.message)
+        }
+      }
+    }
   },
   session: {
     modelName: "sessions",
@@ -66,10 +83,11 @@ export const auth = betterAuth({
     sendOnSignUp: true,
     autoSignInAfterVerification: true,
     sendVerificationEmail: async ({ user, url }) => {
+      const subject = "Verify your email | Sign Up - Tasklytic"
       const { error } = await resend.emails.send({
         from: siteConfig.emails.noreply,
         to: user.email,
-        subject: "Verify your email | Sign Up - Tasklytic",
+        subject,
         react: <VerifyEmail url={url} userName={user.name} />
       })
 
@@ -122,4 +140,10 @@ export const auth = betterAuth({
   ]
 })
 
-export type Session = typeof auth.$Infer.Session
+export type Session = Awaited<ReturnType<typeof auth.api.getSession>>
+export type ActiveSession = Awaited<
+  ReturnType<typeof auth.api.listSessions>
+>[number]
+export type UserAccount = Awaited<
+  ReturnType<typeof auth.api.listUserAccounts>
+>[number]

@@ -61,7 +61,7 @@ export function ModeToggle({
           variant="outline"
           size={expanded ? "default" : "icon"}
           className={buttonClassName}
-          aria-label={`Change theme (current: ${theme || "system"})`}
+          aria-label={`Change theme (current: ${theme ?? "system"})`}
         >
           <SunIcon
             width={iconSize}

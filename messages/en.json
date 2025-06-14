@@ -169,6 +169,98 @@
     "creatingOrganizationButton": "Creating Organization..."
   },
   "Dashboard": {
+    "Settings": {
+      "tabs": {
+        "accountGroup": {
+          "label": "Account",
+          "profile": {
+            "label": "Profile",
+            "title": "Profile Settings",
+            "description": "Manage your account settings and set e-mail preferences."
+          },
+          "preferences": {
+            "label": "Preferences",
+            "title": "Preferences Settings",
+            "description": "Manage your display and language preferences.",
+            "themeChange": {
+              "placeholder": "Theme",
+              "title": "Theme",
+              "description": "Choose your preferred theme for the application.",
+              "light": "Light",
+              "dark": "Dark",
+              "system": "System"
+            },
+            "languageChooser": {
+              "title": "Language",
+              "description": "Select your preferred language for the application.",
+              "placeholder": "Language"
+            }
+          },
+          "security": {
+            "label": "Security",
+            "title": "Security Settings",
+            "description": "Manage your account security settings.",
+            "ActiveSessions": {
+              "title": "Active sessions",
+              "description": "Manipulate active sessions",
+              "currentSession": "Current session",
+              "terminateButton": "Terminate",
+              "signOutButton": "Sign out"
+            },
+            "SocialLinking": {
+              "connectedAccountsTitle": "Connected Accounts",
+              "connectedAccountsDescription": "Connect your social accounts to enable single sign-on and additional features",
+              "notConnected": "Not connected",
+              "disconnectButton": "Disconnect",
+              "connectButton": "Connect",
+              "warningTitle": "Warning",
+              "warningDescription": "In case email of your current social account(s) will unmatch with your current email, it will result an error.",
+              "toast": {
+                "failedToLink": "Failed to link {provider} to your account",
+                "redirectingToLink": "Redirecting to link {provider} social provider to your account...",
+                "failedToDisconnect": "Failed to disconnect {provider} account!",
+                "successfullyDisconnected": "Successfully disconnected {provider} account!"
+              }
+            }
+          }
+        },
+        "organizationGroup": {
+          "label": "Organization",
+          "general": {
+            "label": "General",
+            "title": "General Settings",
+            "description": "Manage your account settings and set e-mail preferences.",
+            "organizationName": {
+              "label": "Organization Name",
+              "placeholder": "Your organization name",
+              "description": "This is the name of your organization that will be displayed to other members."
+            },
+            "updateButton": "Update organization",
+            "deleteOrganization": {
+              "title": "Delete organization",
+              "description": "Permanently delete your organization and all of its contents from our platform. This action is not reversible and cannot be undone.",
+              "button": "Delete organization",
+              "alert": {
+                "title": "Are you absolutely sure?",
+                "description": "This action cannot be undone. This will permanently delete your organization and remove your data from our servers.",
+                "cancel": "Cancel",
+                "confirm": "Yes, delete organization"
+              }
+            }
+          },
+          "members": {
+            "label": "Members",
+            "title": "Members Settings",
+            "description": "Manage your display and language preferences."
+          },
+          "security": {
+            "label": "Security",
+            "title": "Security Settings",
+            "description": "Manage your account security settings."
+          }
+        }
+      }
+    },
     "Sidebar": {
       "OrganizationSwitcher": {
         "organizations": "Organizations",
@@ -269,7 +361,7 @@
           "toggleCover": "{hasCover, select, true {Remove} other {Add}} cover",
           "toggleFavorite": "{isFavorited, select, true {Remove from} other {Add to}} favorites"
         },
-        "placeholder": "Type / to get started",
+        "placeholder": "Write, press spacebar for AI, / for commands...",
         "Elements": {
           "CommentElement": {
             "reply": "Reply...",

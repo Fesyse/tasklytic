@@ -22,6 +22,7 @@ import {
 import { ModeToggle } from "@/components/mode-toggle"
 import { Skeleton } from "@/components/ui/skeleton"
 import { authClient } from "@/lib/auth-client"
+import { useSettingsDialog } from "@/lib/stores/settings-dialog"
 import type { User } from "better-auth"
 import { HomeIcon, SettingsIcon, UserIcon } from "lucide-react"
 import { useTranslations } from "next-intl"
@@ -30,6 +31,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
 export function NavUser() {
+  const { openSettingsDialog } = useSettingsDialog()
   const t = useTranslations("Dashboard.Sidebar.NavUser")
   const { data: session, isPending, error } = authClient.useSession()
   const user = session?.user
@@ -99,11 +101,11 @@ export function NavUser() {
                   className="hover:!bg-accent !bg-transparent !px-2"
                 />
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/settings">
-                  <SettingsIcon />
-                  {t("settings")}
-                </Link>
+              <DropdownMenuItem
+                onClick={openSettingsDialog.bind(null, "security")}
+              >
+                <SettingsIcon />
+                {t("settings")}
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href="/home">

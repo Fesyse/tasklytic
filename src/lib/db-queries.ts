@@ -33,6 +33,19 @@ export function createNote(data: {
   )
 }
 
+export async function deleteDiscussionByNoteId(noteId: string) {
+  const discussion = await dexieDB.discussions
+    .where("noteId")
+    .equals(noteId)
+    .first()
+  if (!discussion) return
+
+  await Promise.all([
+    dexieDB.discussions.where("noteId").equals(noteId).delete(),
+    dexieDB.comments.where("discussionId").equals(discussion.id).delete()
+  ])
+}
+
 export function deleteNote(
   id: string,
   strict = true
@@ -41,7 +54,8 @@ export function deleteNote(
     strict
       ? Promise.all([
           dexieDB.notes.delete(id),
-          dexieDB.notes.where("parentNoteId").equals(id).delete()
+          dexieDB.notes.where("parentNoteId").equals(id).delete(),
+          deleteDiscussionByNoteId(id)
         ]).then(() => undefined)
       : dexieDB.notes.update(id, { isDeleted: true }).then(() => undefined)
   )

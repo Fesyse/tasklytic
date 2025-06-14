@@ -92,7 +92,12 @@ export function OrganizationSwitcher() {
       )
       return
     }
-    if (!organizations?.length && !isLoadingOrganizations && !isRefetching) {
+
+    if (
+      organizations?.length === 0 &&
+      !isLoadingOrganizations &&
+      !isRefetching
+    ) {
       router.push("/new-organization")
     }
   }, [organizations, isLoadingOrganizations, organizationsError, isRefetching])

@@ -1,26 +1,34 @@
 "use client"
 
 import {
+  type Emoji,
   type EmojiPickerListCategoryHeaderProps,
   type EmojiPickerListEmojiProps,
   type EmojiPickerListRowProps,
-  EmojiPicker as EmojiPickerPrimitive
+  EmojiPicker as EmojiPickerPrimitive,
+  type Locale
 } from "frimousse"
-import { LoaderIcon, SearchIcon } from "lucide-react"
+import { LoaderIcon, SearchIcon, Shuffle } from "lucide-react"
 import type * as React from "react"
 
-import { cn } from "@/lib/utils"
+import { useEmojiData } from "@/hooks/use-emoji-data"
+import { cn, getRandomInt } from "@/lib/utils"
+import { useLocale } from "next-intl"
+import { Button, type ButtonProps } from "./button"
+import { inputVariants } from "./input"
 
 function EmojiPicker({
   className,
   ...props
 }: React.ComponentProps<typeof EmojiPickerPrimitive.Root>) {
+  const locale = useLocale()
   return (
     <EmojiPickerPrimitive.Root
       className={cn(
         "bg-popover text-popover-foreground isolate flex h-full w-fit flex-col overflow-hidden rounded-md",
         className
       )}
+      locale={locale as Locale}
       data-slot="emoji-picker"
       {...props}
     />
@@ -33,16 +41,43 @@ function EmojiPickerSearch({
 }: React.ComponentProps<typeof EmojiPickerPrimitive.Search>) {
   return (
     <div
-      className={cn("flex h-9 items-center gap-2 border-b px-3", className)}
+      className={cn("relative w-full", className)}
       data-slot="emoji-picker-search-wrapper"
     >
-      <SearchIcon className="size-4 shrink-0 opacity-50" />
+      <SearchIcon className="text-muted-foreground absolute top-1/2 left-2 z-10 size-4 -translate-y-1/2 transform" />
       <EmojiPickerPrimitive.Search
-        className="placeholder:text-muted-foreground flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50"
+        className={cn(inputVariants(), "!overflow-auto pl-8 text-xs")}
         data-slot="emoji-picker-search"
         {...props}
       />
     </div>
+  )
+}
+
+function EmojiRandomPicker({
+  onClick,
+  onRandomEmojiSelect,
+  children,
+  ...props
+}: ButtonProps & { onRandomEmojiSelect: (emoji: Emoji) => void }) {
+  const { data: emojis, isLoading } = useEmojiData()
+  const setRandomEmoji = () => {
+    if (isLoading || !emojis) return
+
+    const emoji = emojis[getRandomInt(0, emojis.length - 1)]!
+    onRandomEmojiSelect(emoji)
+  }
+
+  return (
+    <Button
+      onClick={(e) => {
+        setRandomEmoji()
+        onClick?.(e)
+      }}
+      {...props}
+    >
+      {children ?? <Shuffle />}
+    </Button>
   )
 }
 
@@ -158,4 +193,10 @@ function EmojiPickerFooter({
   )
 }
 
-export { EmojiPicker, EmojiPickerContent, EmojiPickerFooter, EmojiPickerSearch }
+export {
+  EmojiPicker,
+  EmojiPickerContent,
+  EmojiPickerFooter,
+  EmojiPickerSearch,
+  EmojiRandomPicker
+}

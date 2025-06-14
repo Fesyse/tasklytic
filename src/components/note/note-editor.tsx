@@ -1,6 +1,6 @@
 "use client"
 
-import { SettingsDialog, SettingsProvider } from "@/components/editor/settings"
+import { SettingsProvider } from "@/components/editor/settings"
 import { NoteHeader } from "@/components/layouts/dashboard/note-page/note-header"
 import { NoteContentHeader } from "@/components/note/note-content-header"
 import { NoteSkeleton } from "@/components/note/note-skeleton"
@@ -51,7 +51,6 @@ export const NoteEditor = () => {
                     placeholder={t("placeholder")}
                   />
                 </EditorContainer>
-                <SettingsDialog />
               </Plate>
             )}
           </DndProvider>
